@@ -18,10 +18,10 @@ public class Block {
     @Column(name="block_id")
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "email")
+    @JoinColumn(name = "block_from", referencedColumnName = "email")
     private Member from;
     @ManyToOne
-    @JoinColumn(name = "email")
+    @JoinColumn(name = "block_to", referencedColumnName = "email")
     private Member to;
 
     @Builder
