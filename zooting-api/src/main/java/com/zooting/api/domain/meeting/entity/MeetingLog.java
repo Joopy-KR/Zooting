@@ -17,16 +17,16 @@ public class MeetingLog {
     @Column(name="meetinglog_id")
     private Long id;
     @ManyToOne
-    @JoinColumn(name="email")
+    @JoinColumn(name="participant1", referencedColumnName = "email")
     private Member participant1;
     @ManyToOne
-    @JoinColumn(name="email")
+    @JoinColumn(name="participant2", referencedColumnName = "email")
     private Member participant2;
     @ManyToOne
-    @JoinColumn(name="email")
+    @JoinColumn(name="participant3", referencedColumnName = "email")
     private Member participant3;
     @ManyToOne
-    @JoinColumn(name="email")
+    @JoinColumn(name="participant4", referencedColumnName = "email")
     private Member participant4;
 
     @Builder

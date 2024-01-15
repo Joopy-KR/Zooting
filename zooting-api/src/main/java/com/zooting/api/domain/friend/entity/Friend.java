@@ -15,10 +15,10 @@ public class Friend {
     @Column(name="friend_id")
     private Long id;
     @ManyToOne
-    @JoinColumn(name="email")
+    @JoinColumn(name="follower", referencedColumnName = "email")
     private Member follower;
     @ManyToOne
-    @JoinColumn(name="email")
+    @JoinColumn(name="following", referencedColumnName = "email")
     private Member following;
 
     @Builder
