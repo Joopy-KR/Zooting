@@ -21,7 +21,7 @@ public class AnimalFace {
     @Column(name="animalface_id")
     private Long id;
     @OneToOne
-    @JoinColumn(name="member_id")
+    @JoinColumn(name="email")
     private Member member;
     private Long animal1;   // 강아지
     private Long animal2;   // 고양이

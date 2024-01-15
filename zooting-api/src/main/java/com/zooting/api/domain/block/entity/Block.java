@@ -1,9 +1,10 @@
-package com.zooting.api.domain.friend.entity;
+package com.zooting.api.domain.block.entity;
 import com.zooting.api.domain.member.entity.Member;
-
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Getter
@@ -17,10 +18,10 @@ public class Block {
     @Column(name="block_id")
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "block_from")
+    @JoinColumn(name = "email")
     private Member from;
     @ManyToOne
-    @JoinColumn(name = "block_to")
+    @JoinColumn(name = "email")
     private Member to;
 
     @Builder

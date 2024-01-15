@@ -17,10 +17,10 @@ public class FriendRequest {
     @Column(name="friend_request_id")
     private Long id;
     @ManyToOne
-    @JoinColumn(name="request_from")
+    @JoinColumn(name="email")
     private Member from;
     @ManyToOne
-    @JoinColumn(name="request_to")
+    @JoinColumn(name="email")
     private Member to;
 
     @Builder
