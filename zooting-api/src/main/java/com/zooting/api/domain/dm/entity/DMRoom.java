@@ -15,10 +15,10 @@ public class DMRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "from")
+    @JoinColumn(name = "sender")
     private Member fromMember;
     @ManyToOne
-    @JoinColumn(name = "to")
+    @JoinColumn(name = "receiver")
     private Member toMember;
 
     @Builder
