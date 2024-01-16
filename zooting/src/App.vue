@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>안녕</h1>
+    <RouterView></RouterView>
   </div>
 </template>
 
