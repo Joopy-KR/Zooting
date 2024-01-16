@@ -14,7 +14,7 @@ import lombok.Setter;
 public class MeetingLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="meetinglog_id")
+    @Column(name="meeting_log_id")
     private Long id;
     @ManyToOne
     @JoinColumn(name="participant1", referencedColumnName = "email")
