@@ -22,7 +22,7 @@ public class DM {
     @JoinColumn(name = "dm_id")
     private List<File> files;
     @ManyToOne
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "dm_room_id")
     private DMRoom dmRoom;
     private String message;
     private Boolean status;

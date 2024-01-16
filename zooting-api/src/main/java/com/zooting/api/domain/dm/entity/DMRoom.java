@@ -13,9 +13,10 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "dm_room")
 public class DMRoom {
     @Id
-    @Column(name = "room_id")
+    @Column(name = "dm_room_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne

@@ -13,7 +13,7 @@ import lombok.*;
 public class MaskInventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "inventory_id")
+    @Column(name = "mask_inventory_id")
     private Long id;
     @OneToOne
     @JoinColumn(name = "mask_id")
