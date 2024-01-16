@@ -15,16 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class DMWebSocketController {
 
     private final SimpMessageSendingOperations template;
-    private final RedisTemplate<String, Object> redisTemplate;
+//    private final RedisTemplate<String, Object> redisTemplate;
 //    private final DMWebSocketService dmWebSocketService;
 
     /**
      * 소켓을 통해 메시지가 들어오면 받아서 해당되는 채널로 전달
      */
-    @MessageMapping("/chat/sendMessage")
+    @MessageMapping("/chat/message")
     public void receiveAndSendMessage(DMDto dmDto, SimpMessageHeaderAccessor headerAccessor) {
         log.info("SEND_CHAT_SUCCESS (201 CREATED) ::");
-        template.convertAndSend("/sub/chat/a", dmDto);
-        redisTemplate.convertAndSend("/sub/chat", dmDto);
+//        template.convertAndSend("/sub/chat/", dmDto);
+        template.convertAndSend("/topic/chat/room/"+dmDto.roomId(), dmDto);
+//        redisTemplate.convertAndSend("/sub/chat", dmDto);
     }
 }
