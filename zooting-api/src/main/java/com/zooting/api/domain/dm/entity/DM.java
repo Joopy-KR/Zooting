@@ -23,7 +23,7 @@ public class DM {
     @Builder.Default
     private List<File> files = new ArrayList<>();
     @ManyToOne
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "dm_room_id")
     private DMRoom dmRoom;
     private String message;
     private Boolean status;

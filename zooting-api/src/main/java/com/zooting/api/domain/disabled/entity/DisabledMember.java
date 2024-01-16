@@ -9,9 +9,9 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class DisabledUser {
+public class DisabledMember {
     @Id
-    @Column(name = "id")
+    @Column(name = "disabled_member_id")
     private Long id;
     @ManyToOne
     @JoinColumn(name = "email")
@@ -22,7 +22,7 @@ public class DisabledUser {
     private String endDate;
 
     @Builder
-    public DisabledUser(Member member, String startDate, String endDate) {
+    public DisabledMember(Member member, String startDate, String endDate) {
         this.member = member;
         this.startDate = startDate;
         this.endDate = endDate;

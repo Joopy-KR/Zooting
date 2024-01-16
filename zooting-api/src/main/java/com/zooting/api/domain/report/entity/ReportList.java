@@ -13,9 +13,8 @@ import lombok.*;
 public class ReportList {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "report_list_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
     private String reason;
     private String date;

@@ -18,10 +18,10 @@ import lombok.Setter;
 public class AnimalFace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="animalface_id")
+    @Column(name="animal_face_id")
     private Long id;
     @OneToOne
-    @JoinColumn(name="email")
+    @JoinColumn(name="member_email", referencedColumnName = "email")
     private Member member;
     private Long animal1;   // 강아지
     private Long animal2;   // 고양이
@@ -38,6 +38,4 @@ public class AnimalFace {
         this.animal4 = animal4;
         this.animal5 = animal5;
     }
-
 }
-

@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 public class AdditionalInfo {
     @Id
-    @Column(name = "info_id")
+    @Column(name = "additional_info_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Long id;

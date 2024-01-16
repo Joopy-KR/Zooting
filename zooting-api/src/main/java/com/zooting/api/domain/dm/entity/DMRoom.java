@@ -9,16 +9,17 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "dm_room")
 public class DMRoom {
     @Id
-    @Column(name = "room_id")
+    @Column(name = "dm_room_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "sender")
+    @JoinColumn(name = "sender", referencedColumnName = "email")
     private Member fromMember;
     @ManyToOne
-    @JoinColumn(name = "receiver")
+    @JoinColumn(name = "receiver", referencedColumnName = "email")
     private Member toMember;
 
     @Builder

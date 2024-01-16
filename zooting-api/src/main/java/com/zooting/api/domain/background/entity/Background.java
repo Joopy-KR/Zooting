@@ -19,9 +19,8 @@ public class Background {
     private Long price;
 
     @Builder
-
     public Background(File file, Long price) {
-//        this.file = file;
+        this.file = file;
         this.price = price;
     }
 }

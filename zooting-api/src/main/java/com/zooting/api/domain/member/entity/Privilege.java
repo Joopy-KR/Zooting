@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Privilege {
     @Id
-    @Column(name = "id")
+    @Column(name = "privilege_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
