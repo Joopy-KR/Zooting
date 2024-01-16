@@ -54,6 +54,7 @@
         </div>
     </div>
 </template>
+
 <script setup lang="ts">
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
@@ -115,7 +116,7 @@ const toggleNotificationsTab = () => {
 }
 
 .side-tab {
-    @apply fixed inset-y-0 z-10 flex-shrink-0 w-64 transition-transform duration-300 transform bg-white border-r-2 border-indigo-100 shadow-lg left-14 rounded-tr-3xl rounded-br-3xl;
+    @apply fixed inset-y-0 z-10 flex-shrink-0 w-1/4 transition-transform duration-300 transform bg-white border-r-2 border-indigo-100 shadow-lg left-14 rounded-tr-3xl rounded-br-3xl;
 }
 
 .side-tab__content {
