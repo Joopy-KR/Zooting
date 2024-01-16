@@ -38,7 +38,16 @@ public class Member {
     private Privilege privilege;
     @OneToOne
     private AnimalFace animalFace;
-
+    @OneToMany(mappedBy = "from")
+    private List<Block> blockList;  // 내가 차단한 리스트
+    @OneToMany(mappedBy = "follower")
+    private List<Friend> friendList;    // 내 친구 목록
+    @OneToMany(mappedBy = "from")
+    private List<FriendRequest> friendRequestFromMeList;  // 내가 친구요청 보낸 목록
+    @OneToMany(mappedBy = "to")
+    private List<FriendRequest> friendRequestToMeList;  // 나에게 온 친구 요청
+    @OneToMany(mappedBy = "member")
+    private List<MeetingLog> meetingLogList ;   // 내 미팅 기록
     @OneToMany
     private List<DMRoom> DMRooms;
     @OneToMany
