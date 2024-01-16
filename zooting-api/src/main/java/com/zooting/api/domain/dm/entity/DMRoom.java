@@ -25,7 +25,7 @@ public class DMRoom {
     @ManyToOne
     @JoinColumn(name = "receiver")
     private Member receiver;
-    @OneToMany
+    @OneToMany(mappedBy = "dmRoom")
     private List<DM> dms = new ArrayList<>();
     @Builder
     public DMRoom(Member sender, Member receiver, List<DM> dms) {

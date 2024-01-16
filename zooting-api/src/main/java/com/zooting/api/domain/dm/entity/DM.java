@@ -18,8 +18,7 @@ public class DM {
     @Column(name = "dm_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany
-    @JoinColumn(name = "dm_id")
+    @OneToMany(mappedBy = "dm")
     private List<File> files;
     @ManyToOne
     @JoinColumn(name = "dm_room_id")
