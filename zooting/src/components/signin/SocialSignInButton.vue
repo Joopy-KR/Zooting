@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col m-4">
     <div class="content-center p-1">
       <a href="http://localhost:8080/login/oauth2/authorization/kakao">
         <img src="@/assets/images/login/kakao_login.png" alt="Kakao Login" class="w-full h-auto" />
