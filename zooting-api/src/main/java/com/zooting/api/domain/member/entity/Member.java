@@ -3,7 +3,7 @@ package com.zooting.api.domain.member.entity;
 
 import com.zooting.api.domain.animalface.entity.AnimalFace;
 import com.zooting.api.domain.background.entity.BackgroundInventory;
-import com.zooting.api.domain.disabled.entity.DisabledUser;
+import com.zooting.api.domain.disabled.entity.DisabledMember;
 import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.mask.entity.MaskInventory;
 import com.zooting.api.domain.report.entity.ReportList;
@@ -46,14 +46,14 @@ public class Member {
     @OneToMany
     private List<MaskInventory> myMasks;
     @OneToMany
-    private List<DisabledUser> disabledUsers;
+    private List<DisabledMember> disabledUsers;
     @OneToMany
     private List<ReportList> reportLists;
 
     @Builder
     public Member(String email, String gender, String nickname, Date birth, String address, Long point,
                   List<DMRoom> dmRooms, List<BackgroundInventory> myBackgrounds, List<MaskInventory> myMasks,
-                  List<DisabledUser> disabledUsers, List<ReportList> reportLists) {
+                  List<DisabledMember> disabledUsers, List<ReportList> reportLists) {
         this.email = email;
         this.gender = gender;
         this.nickname = nickname;
