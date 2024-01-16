@@ -41,7 +41,7 @@ public class Member {
     private List<FriendRequest> friendRequestFromMeList;  // 내가 친구요청 보낸 목록
     @OneToMany(mappedBy = "to")
     private List<FriendRequest> friendRequestToMeList;  // 나에게 온 친구 요청
-    @OneToMany(mappedBy = "participant1")
+    @OneToMany(mappedBy = "member")
     private List<MeetingLog> meetingLogList ;   // 내 미팅 기록
 
 
