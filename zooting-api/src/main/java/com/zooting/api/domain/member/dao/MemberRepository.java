@@ -7,6 +7,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.Date;
 
 public interface MemberRepository extends JpaRepository<Member, String> {
-    boolean existsBy(String nickname);
+    boolean existsByNickname(String nickname);
 
 }

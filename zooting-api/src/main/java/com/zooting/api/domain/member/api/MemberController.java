@@ -31,12 +31,6 @@ public class MemberController {
                 memberAdditionalInfoReq.address());
         return ResponseEntity.ok().build();
     }
-
-//    @PostMapping("/")
-//    public ResponseEntity saveAdditionalInfo(String email, String gender, String nickname, Date birth, String address) {
-//        memberService.saveAdditionalInfo(email, gender, nickname, birth, address);
-//        return ResponseEntity.ok().build();
-//    }
-
+    
 
 }
