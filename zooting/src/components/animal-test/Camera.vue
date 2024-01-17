@@ -1,6 +1,6 @@
 <template>
   <div class="main-div">
-    <div>
+    <!-- <div v-if="is_started"> -->
       <div id="webcam-container" style="position: relative;">
         <video id="webcam" ref="videoRef" autoplay playsinline></video>
         <img src="@/assets/tempGuide.png" alt="" class="guide" v-show="is_started">
@@ -10,7 +10,10 @@
       </a>
       <p v-show="!showButton">가이드라인에 얼굴을 맞춰주세요</p>
       <p v-show="is_started">사진은 저장되지 않습니다</p>
-    </div>
+    <!-- </div> -->
+    <!-- <div v-else>
+      <h1>로딩중입니다. 잠시만 기다려주세요</h1>
+    </div> -->
   </div>
 </template>
 
@@ -18,14 +21,14 @@
 <script setup type="text/javascript" lang="ts">
 
 import { ref, onMounted, nextTick, defineEmits } from 'vue'
-import { FaceDetector, FilesetResolver } from "@mediapipe/tasks-vision"
+import { FaceDetector, FilesetResolver, Detection } from "@mediapipe/tasks-vision"
 
 const emit = defineEmits(['workFinished']);
 
 // 얼굴인식 변수
 let faceDetector: FaceDetector
 let runningMode: string = "IMAGE"
-const videoRef = ref<any>(null)
+const videoRef = ref<HTMLVideoElement | null>(null)
 
 const is_started = ref(false)
 let is_working = true  // 촬영버튼 시 측정 동작을 멈추는 변수
@@ -62,24 +65,25 @@ const initializeFaceDetector = async () => {
 
 // 웹캠 실행 및 얼굴인식 시작(predictWebcam 함수)
 const enableCam = async () => {
-
   if (!faceDetector) {
-    alert("얼굴 인식 시스템이 로딩중입니다. 다시 시도해주세요")
+    alert("얼굴 인식 시스템이 로딩중입니다. 다시 시도해주세요");
     return;
   }
 
-  is_started.value = false
+  is_started.value = false;
 
   const constraints = {
     video: true
   };
-  
+
   try {
-    const stream = await navigator.mediaDevices.getUserMedia(constraints)
-    videoRef.value.srcObject = stream
-    videoRef.value.addEventListener("loadeddata", predictWebcam)
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    if (videoRef.value) {
+      videoRef.value.srcObject = stream;
+      videoRef.value.addEventListener("loadeddata", predictWebcam);
+    }
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 }
 
@@ -224,7 +228,6 @@ video {
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
-  height: 60vh;
 }
 
 section {
