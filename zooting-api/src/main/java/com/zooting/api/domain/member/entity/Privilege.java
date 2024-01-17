@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public enum Privilege {
-    USER, MANAGER, ADMIN
+    ANONYMOUS, USER, MANAGER, ADMIN
 }

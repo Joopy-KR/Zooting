@@ -26,9 +26,8 @@ public class MemberController {
     }
 
     @PostMapping("/email")
-    public ResponseEntity<Member> registerMemberByEmail(@RequestBody String email){
-        Member member = memberService.registerMemberByEmail(email);
-        return ResponseEntity.ok(member);
+    public ResponseEntity<Member> registerMember(@RequestBody Member member){
+        return ResponseEntity.ok(memberService.registerMember(member));
     }
 
     @GetMapping("/hello")

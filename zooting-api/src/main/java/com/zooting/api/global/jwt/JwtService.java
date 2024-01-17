@@ -1,13 +1,8 @@
 package com.zooting.api.global.jwt;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.KeyAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureAlgorithm;
-import java.nio.charset.StandardCharsets;
-import java.security.KeyStore.SecretKeyEntry;
-import java.util.Base64;
+import java.util.Date;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,14 +22,16 @@ public class JwtService {
     }
 
     public String createToken(String userEmail){
+        Date date = new Date();
+        Date expirationDate = new Date(date.getTime() + validityInMilliseconds);
+
         return Jwts.builder()
                 .claim("userEmail", userEmail)
                 .signWith(secretKey, Jwts.SIG.HS512)
                 .issuer(issuer)
+                .expiration(expirationDate)
                 .subject(userEmail)
                 .compact();
-
-
     }
 
 
