@@ -6,5 +6,5 @@ import com.zooting.api.domain.member.entity.Member;
 import java.util.List;
 
 public interface MemberService {
-    List<DMRoom> findByEmail(String sender);
+    List<DMRoom> getDmRooms(String sender);
 }
