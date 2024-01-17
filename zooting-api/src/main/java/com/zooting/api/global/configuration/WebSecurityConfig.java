@@ -40,7 +40,7 @@ public class WebSecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService))
-//                                .successHandler(customOAuth2SuccessHandler)
+                                .successHandler(customOAuth2SuccessHandler)
                         );
         return http.build();
     }
