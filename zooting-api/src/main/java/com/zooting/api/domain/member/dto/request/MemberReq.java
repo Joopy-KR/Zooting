@@ -6,18 +6,10 @@ import java.util.List;
 
 public record MemberReq(
        String email,
-       String gender,
        String nickname,
-       Date birth,
+       String birth,
        String address,
-       Long point,
-       Boolean status,
-       //additional info
-       String personality,
-       String animal,
        List<String> interest,
-       List<String> ideal_animal,
-       Long mask_id,
-       Long background_id
+       List<String> idealAnimal
 ) {
 }

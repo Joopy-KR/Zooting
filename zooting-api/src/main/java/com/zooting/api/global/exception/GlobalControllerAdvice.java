@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Log4j2
-@RestControllerAdvice
+//@RestControllerAdvice
 public class GlobalControllerAdvice {
     /**
      * 예외 처리 되지 않은 모든 에러 처리
