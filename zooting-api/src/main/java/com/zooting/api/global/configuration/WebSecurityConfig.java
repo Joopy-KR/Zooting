@@ -1,23 +1,48 @@
-package com.zooting.api.domain.member.service;
+package com.zooting.api.global.configuration;
 
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Service;
-@Service
-public class OAuth2UserService extends DefaultOAuth2UserService {
-    @Override
-    public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest){
-        OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
+import com.nimbusds.jwt.JWT;
+import com.zooting.api.global.security.CustomOAuth2SuccessHandler;
+import com.zooting.api.global.security.CustomOAuth2UserService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig {
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    WebSecurityConfig(
+            CustomOAuth2UserService customOAuth2UserService,
+            CustomOAuth2SuccessHandler customOAuth2SuccessHandler){
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.customOAuth2SuccessHandler = customOAuth2SuccessHandler;
+    }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
 
-        String registrationId = oAuth2UserRequest.getClientRegistration().getRegistrationId(); // 로그인한 플랫폼
+                // JWT 인증 방식은 Session을 사용하지 않으므로 비활성화 (STATELESS)
+                .sessionManagement(session ->
+                        session
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-        String userNameAttributeName = oAuth2UserRequest.getClientRegistration()
-                .getProviderDetails()
-                .getUserInfoEndpoint()
-                .getUserNameAttributeName();
+//                 JWT 토큰을 쿠키에 넣을지, LocalStorage에 넣을지에 따라 비활성화 여부 결정
+//                 .csrf(AbstractHttpConfigurer::disable)
 
-        System.out.println(userNameAttributeName);
-        return oAuth2User;
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/", "/error", "/login").permitAll()
+                        .anyRequest().authenticated())
+
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService))
+                        .successHandler(customOAuth2SuccessHandler));
+        return http.build();
     }
 }
