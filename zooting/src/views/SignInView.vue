@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import SocialSignInButton from "@/components/signin/SocialSignInButton.vue";
+import VideoComp from "@/components/signin/Video.vue";
+import DescriptionComp from "@/components/signin/Description.vue";
 </script>
 
 <template>
-  <div class="h-screen flex flex-col justify-center">
+  <div class="flex flex-col justify-center h-screen">
     <div class="flex flex-row divide-x-2 divide-gray-100">
-      <div class="flex flex-col justify-center w-7/12 m-4 text-center">
-        <h1>Description</h1>
+      <div class="flex flex-row justify-end w-7/12 max-h-screen">
+        <VideoComp />
       </div>
-      <div class="flex justify-center w-5/12">
-        <div class="flex flex-col justify-center w-1/2">
-          <div class="flex justify-center p-8">
-            <p class="text-6xl text-center text-purple-900">ZOOTING</p>
-          </div>
+      <div class="flex flex-col items-center justify-center w-5/12">
+        <DescriptionComp />
+        <div class="w-1/2">
           <SocialSignInButton />
         </div>
       </div>
@@ -20,4 +20,8 @@ import SocialSignInButton from "@/components/signin/SocialSignInButton.vue";
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.min-w-3.5 {
+  min-width: 3.5rem;
+}
+</style>
