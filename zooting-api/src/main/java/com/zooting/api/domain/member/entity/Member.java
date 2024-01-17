@@ -4,6 +4,7 @@ package com.zooting.api.domain.member.entity;
 import com.zooting.api.domain.animalface.entity.AnimalFace;
 import com.zooting.api.domain.background.entity.BackgroundInventory;
 import com.zooting.api.domain.block.entity.Block;
+import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.friend.entity.FriendRequest;
 import com.zooting.api.domain.mask.entity.MaskInventory;
@@ -54,10 +55,12 @@ public class Member {
     private List<BackgroundInventory> myBackgrounds;
     @OneToMany(mappedBy = "member")
     private List<MaskInventory> myMasks;
+    @OneToMany(mappedBy = "sender")
+    private List<DMRoom> dmRooms;
 
     @Builder
     public Member(String email, String gender, String nickname, Date birth, String address, Long point,
-                  List<BackgroundInventory> myBackgrounds, List<MaskInventory> myMasks) {
+                  List<BackgroundInventory> myBackgrounds, List<MaskInventory> myMasks, List<DMRoom> dmRooms) {
         this.email = email;
         this.gender = gender;
         this.nickname = nickname;
@@ -68,5 +71,6 @@ public class Member {
 
         this.myBackgrounds = Objects.nonNull(myBackgrounds) ? myBackgrounds : new ArrayList<>();
         this.myMasks = Objects.nonNull(myMasks) ? myMasks : new ArrayList<>();
+        this.dmRooms = Objects.nonNull(dmRooms) ? dmRooms : new ArrayList<>();
     }
 }

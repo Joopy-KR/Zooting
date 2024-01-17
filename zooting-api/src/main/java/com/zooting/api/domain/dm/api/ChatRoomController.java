@@ -1,7 +1,10 @@
 package com.zooting.api.domain.dm.api;
 
+import com.zooting.api.domain.dm.application.DMService;
 import com.zooting.api.domain.dm.dto.ChatRoom;
+import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.dm.service.ChatService;
+import com.zooting.api.domain.member.application.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +17,8 @@ import java.util.List;
 @RequestMapping("/chat")
 public class ChatRoomController {
     private final ChatService chatService;
+    private final DMService dmService;
+    private final MemberService memberService;
 
     // 채팅 리스트 화면
     @GetMapping("/room")
@@ -23,8 +28,12 @@ public class ChatRoomController {
     // 모든 채팅방 목록 반환
     @GetMapping("/rooms")
     @ResponseBody
-    public List<ChatRoom> room() {
-        return chatService.findAllRoom();
+//    public List<ChatRoom> room() {
+//        return chatService.findAllRoom();
+//    }
+    public List<DMRoom> room() {
+
+        return memberService.findByEmail("a");
     }
     // 채팅방 생성
     @PostMapping("/room")
@@ -44,5 +53,6 @@ public class ChatRoomController {
     public ChatRoom roomInfo(@PathVariable String roomId) {
         return chatService.findById(roomId);
     }
+
 }
 

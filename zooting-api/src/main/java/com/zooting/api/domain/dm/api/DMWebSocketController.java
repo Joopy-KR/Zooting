@@ -1,6 +1,8 @@
 package com.zooting.api.domain.dm.api;
 
+import com.zooting.api.domain.dm.application.DMService;
 import com.zooting.api.domain.dm.dto.DMDto;
+import com.zooting.api.domain.dm.entity.DMRoom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,7 +18,7 @@ public class DMWebSocketController {
 
     private final SimpMessageSendingOperations template;
 //    private final RedisTemplate<String, Object> redisTemplate;
-//    private final DMWebSocketService dmWebSocketService;
+    private final DMService dmService;
 
     /**
      * 소켓을 통해 메시지가 들어오면 받아서 해당되는 채널로 전달
@@ -24,8 +26,15 @@ public class DMWebSocketController {
     @MessageMapping("/chat/message")
     public void receiveAndSendMessage(DMDto dmDto, SimpMessageHeaderAccessor headerAccessor) {
         log.info("SEND_CHAT_SUCCESS (201 CREATED) ::");
+        log.info("dmDto {}", dmDto);
+        log.info("sender {}",dmDto.sender());
+        log.info("receiver {}", dmDto.receiver());
+        //ToDo : dmRoom Id 찾아오는 로직 변경 필요 채팅 칠때마다 쿼리날리는중,,
+        DMRoom dmRoom = dmService.getDMRoom(dmDto.sender(), dmDto.receiver());
 //        template.convertAndSend("/sub/chat/", dmDto);
-        template.convertAndSend("/topic/chat/room/"+dmDto.roomId(), dmDto);
+
+//        template.convertAndSend("/topic/chat/room/"+dmDto.roomId(), dmDto);
+        template.convertAndSend("/topic/chat/room/"+dmRoom.getId(), dmDto);
 //        redisTemplate.convertAndSend("/sub/chat", dmDto);
     }
 }

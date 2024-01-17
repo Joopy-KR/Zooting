@@ -32,6 +32,7 @@
     <li class="list-group-item list-group-item-action" v-for="item in chatrooms" v-bind:key="item.roomId" v-on:click="enterRoom(item.roomId)">
       {{item.roomName}}
     </li>
+
   </ul>
 </div>
 <!-- JavaScript -->
@@ -72,8 +73,10 @@
             },
             enterRoom: function(roomId) {
                 var sender = prompt('대화명을 입력해 주세요.');
-                if(sender !== "") {
+                var receiver = prompt('상대방을 입력해 주세요.');
+                if(sender !== "" && receiver != "") {
                     localStorage.setItem('wschat.sender',sender);
+                    localStorage.setItem('wschat.receiver',receiver);
                     localStorage.setItem('wschat.roomId',roomId);
                     location.href="/chat/room/enter/"+roomId;
                 }

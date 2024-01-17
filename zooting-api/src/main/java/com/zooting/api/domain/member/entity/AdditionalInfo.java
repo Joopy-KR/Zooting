@@ -12,7 +12,6 @@ public class AdditionalInfo {
     @Id
     @Column(name = "additional_info_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
     @OneToOne
     @JoinColumn(name = "email")

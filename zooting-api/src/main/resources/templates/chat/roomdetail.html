@@ -68,12 +68,14 @@
           roomId: "",
           room: {},
           sender: "",
+          receiver:"",
           message: "",
           messages: [],
         },
         created() {
           this.roomId = localStorage.getItem("wschat.roomId");
           this.sender = localStorage.getItem("wschat.sender");
+          this.receiver = localStorage.getItem("wschat.receiver");
           this.findRoom();
         },
         methods: {
@@ -90,6 +92,7 @@
                 type: "TALK",
                 roomId: this.roomId,
                 sender: this.sender,
+                receiver: this.receiver,
                 message: this.message,
               })
             );
@@ -99,6 +102,7 @@
             this.messages.unshift({
               type: recv.type,
               sender: recv.type == "ENTER" ? "[알림]" : recv.sender,
+              receiver: recv.receiver,
               message: recv.message,
             });
           },
@@ -124,6 +128,7 @@
                 type: "ENTER",
                 roomId: vm.$data.roomId,
                 sender: vm.$data.sender,
+                receiver: vm.$data.receiver,
               })
             );
           },
