@@ -3,6 +3,7 @@ package com.zooting.api.domain.member.application;
 import com.zooting.api.domain.member.dto.request.InterestsReq;
 import com.zooting.api.domain.member.dto.request.IntroduceReq;
 import com.zooting.api.domain.member.dto.request.MemberReq;
+import com.zooting.api.domain.member.dto.request.PersonalityReq;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 
 import java.text.ParseException;
@@ -14,4 +15,5 @@ public interface MemberService {
     void updateInterestsandIdeal(InterestsReq additionalReq);
     void updateIntroduce(IntroduceReq introduceReq);
     List<MemberRes> findMemberList(String email, String nickname);
+    void updatePersonality(PersonalityReq personalityReq);
 }

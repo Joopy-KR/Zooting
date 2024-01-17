@@ -4,6 +4,7 @@ import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.InterestsReq;
 import com.zooting.api.domain.member.dto.request.IntroduceReq;
 import com.zooting.api.domain.member.dto.request.MemberReq;
+import com.zooting.api.domain.member.dto.request.PersonalityReq;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
@@ -62,6 +63,15 @@ public class MemberController {
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 memberResList
+        );
+    }
+
+    @PutMapping("/characters")
+    public ResponseEntity<BaseResponse<String>> updatePersonality(@RequestBody PersonalityReq personalityReq) {
+        memberService.updatePersonality(personalityReq);
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                String.format("성격 수정 완료")
         );
     }
 }

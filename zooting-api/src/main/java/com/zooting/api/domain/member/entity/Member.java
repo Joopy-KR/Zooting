@@ -41,7 +41,11 @@ public class Member {
     @OneToOne(mappedBy = "member")
     private AnimalFace animalFace;
     @OneToMany(mappedBy = "from", cascade = CascadeType.ALL)
-    private List<Block> blockList;  // 내가 차단한 리스트
+    private List<Block> blockFromList;  // 내가 차단한 리스트
+    @OneToMany(mappedBy = "to", cascade = CascadeType.ALL)
+    private List<Block> blockToList;  // 나를 차단한 리스트
+
+
     @OneToMany(mappedBy = "follower")
     private List<Friend> friendList;    // 내 친구 목록
     @OneToMany(mappedBy = "from")

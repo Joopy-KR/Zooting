@@ -5,6 +5,7 @@ import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.request.InterestsReq;
 import com.zooting.api.domain.member.dto.request.IntroduceReq;
 import com.zooting.api.domain.member.dto.request.MemberReq;
+import com.zooting.api.domain.member.dto.request.PersonalityReq;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
 import com.zooting.api.domain.member.entity.Member;
@@ -60,8 +61,12 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByEmail(additionalReq.email())
                 .orElseThrow(()-> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
+        if(Objects.isNull(additionalInfo)) {
+            additionalInfo = new AdditionalInfo();
+        }
         additionalInfo.setInterest(additionalReq.interest().toString());
         additionalInfo.setIdealAnimal(additionalReq.idealAnimal().toString());
+        additionalInfo.setMember(member);
         memberRepository.save(member);
 
 
@@ -72,7 +77,11 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByEmail(introduceReq.email())
                 .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
+        if(Objects.isNull(additionalInfo)) {
+            additionalInfo = new AdditionalInfo();
+        }
         additionalInfo.setIntroduce(introduceReq.introduce());
+        additionalInfo.setMember(member);
         memberRepository.save(member);
     }
 
@@ -82,22 +91,33 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByEmail(email)
                 .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
-        // 내가 차단한 유저 리스트 추출
-        List<Block> blockList = member.getBlockList();
-        List<String> blockedMembers = new ArrayList<>();
-        for (var block : blockList) {
-            blockedMembers.add(block.getTo().getNickname());
-        }
-        // 나중에 공부 java stream
-//        List<String> nicknames = member.getBlockList().stream().map(block -> block.getTo().getNickname()).toList();
-        // 내가 차단하지 않은 유저 중 닉네임을 포함하는 유저를 검색
-        List<Member> findMembers = memberRepository.findByNicknameContainingAndNicknameNotIn(nickname, blockedMembers);
+        // 나를 차단한 유저 리스트 추출
+        List<Block> blockList = member.getBlockToList();
+        List<Member> findMembers;
 
-        List<MemberRes> resultList = new ArrayList<>();
-        for (var find : findMembers) {
-            resultList.add(new MemberRes(find.getNickname(), find.getEmail()));
+        if (! blockList.isEmpty()) {
+            List<String> blockMemberNicknames = blockList.stream().map(block -> block.getFrom().getNickname()).toList();
+            findMembers = memberRepository.findByNicknameContainingAndNicknameNotIn(nickname, blockMemberNicknames);
+        } else {
+            findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         }
+
+        List<MemberRes> resultList = findMembers.stream().map(mem -> new MemberRes(mem.getNickname(), mem.getEmail())).toList();
         return resultList;
+    }
+
+    @Transactional
+    @Override
+    public void updatePersonality(PersonalityReq personalityReq) {
+        Member member = memberRepository.findMemberByEmail(personalityReq.email())
+                .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        AdditionalInfo additionalInfo = member.getAdditionalInfo();
+        if(Objects.isNull(additionalInfo)) {
+            additionalInfo = new AdditionalInfo();
+        }
+        additionalInfo.setPersonality(personalityReq.personality());
+        additionalInfo.setMember(member);
+        memberRepository.save(member);
     }
 
 }

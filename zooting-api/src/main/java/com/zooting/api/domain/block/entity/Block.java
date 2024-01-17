@@ -32,12 +32,5 @@ public class Block {
         this.to = to;
     }
 
-//    public void setFrom(Member member){
-//        this.from = member;
-//        if (Objects.isNull(member.getBlockList()) ||
-//                member.getBlockList() != this) {
-//            member.setBlockList(this);
-//        }
-//    }
 
 }
