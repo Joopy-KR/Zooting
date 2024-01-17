@@ -4,6 +4,10 @@ import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 @Getter
 @Setter
 @Entity
@@ -16,15 +20,17 @@ public class DMRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "sender", referencedColumnName = "email")
-    private Member fromMember;
+    @JoinColumn(name = "sender")
+    private Member sender;
     @ManyToOne
-    @JoinColumn(name = "receiver", referencedColumnName = "email")
-    private Member toMember;
-
+    @JoinColumn(name = "receiver")
+    private Member receiver;
+    @OneToMany(mappedBy = "dmRoom")
+    private List<DM> dms = new ArrayList<>();
     @Builder
-    public DMRoom(Member fromMember, Member toMember) {
-        this.fromMember = fromMember;
-        this.toMember = toMember;
+    public DMRoom(Member sender, Member receiver, List<DM> dms) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.dms = Objects.nonNull(dms) ? dms : new ArrayList<>();
     }
 }

@@ -6,11 +6,11 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DM {
@@ -18,10 +18,8 @@ public class DM {
     @Column(name = "dm_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany
-    @JoinColumn(name = "dm_id")
-    @Builder.Default
-    private List<File> files = new ArrayList<>();
+    @OneToMany(mappedBy = "dm")
+    private List<File> files;
     @ManyToOne
     @JoinColumn(name = "dm_room_id")
     private DMRoom dmRoom;
@@ -30,7 +28,7 @@ public class DM {
 
     @Builder
     public DM(List<File> files, DMRoom dmRoom, String message, Boolean status) {
-        this.files = files;
+        this.files = Objects.nonNull(files) ? files : new ArrayList<>();
         this.dmRoom = dmRoom;
         this.message = message;
         this.status = status;
