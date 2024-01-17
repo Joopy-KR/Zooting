@@ -1,8 +1,8 @@
 <template>
-    <div class="flex flex-col items-center justify-center">
+    <div class="flex flex-col items-center justify-center h-screen">
       <!-- 설명 출력 -->
       <transition name="fade">
-        <p v-if="isDescription">가면으로 사용할 동물상을 분석할게요</p>
+          <p v-if="isDescription" class="text-4xl font-black">가면으로 사용할 동물상을 분석할게요</p>
       </transition>
   
       <!-- 동물상 테스트 출력 -->
