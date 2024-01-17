@@ -6,12 +6,14 @@ import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.dm.service.ChatService;
 import com.zooting.api.domain.member.application.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/chat")
@@ -26,14 +28,22 @@ public class ChatRoomController {
         return "/chat/room";
     }
     // 모든 채팅방 목록 반환
-    @GetMapping("/rooms")
-    @ResponseBody
+//    @GetMapping("/rooms")
+//    @ResponseBody
 //    public List<ChatRoom> room() {
 //        return chatService.findAllRoom();
 //    }
+    @GetMapping("/rooms")
+    @ResponseBody
     public List<DMRoom> room() {
-
-        return memberService.findByEmail("a");
+        String sender = "a";
+        log.info("sender {}",sender);
+        List<DMRoom> dmRooms = memberService.getDmRooms(sender);
+        for(DMRoom dmRoom: dmRooms){
+            log.info("dmRoomId {} {} {}", dmRoom.getId(), dmRoom.getSender(), dmRoom.getReceiver());
+        }
+//        return memberService.getDmRooms(sender);
+        return dmRooms;
     }
     // 채팅방 생성
     @PostMapping("/room")

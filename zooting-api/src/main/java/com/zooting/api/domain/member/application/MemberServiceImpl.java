@@ -17,8 +17,6 @@ public class MemberServiceImpl implements MemberService{
 
     @Override
     public List<DMRoom> getDmRooms(String sender) {
-        Member newMember = new Member();
-        newMember.setEmail(sender);
-        return memberRepository.findByEmail(newMember);
+        return memberRepository.findDMRoomsByEmail(sender);
     }
 }

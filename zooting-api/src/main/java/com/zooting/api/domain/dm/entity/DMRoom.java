@@ -1,5 +1,7 @@
 package com.zooting.api.domain.dm.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,9 +23,11 @@ public class DMRoom {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "sender")
+    @JsonIgnore //
     private Member sender;
     @ManyToOne
     @JoinColumn(name = "receiver")
+    @JsonIgnore
     private Member receiver;
     @OneToMany(mappedBy = "dmRoom")
     private List<DM> dms = new ArrayList<>();
