@@ -3,6 +3,8 @@ package com.zooting.api.domain.member.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -27,7 +29,6 @@ public class AdditionalInfo {
     private Long backgroundId;
 
     @Builder
-
     public AdditionalInfo(Member member, String personality, String animal, String interest, String idealAnimal, Long maskId, Long backgroundId) {
         this.member = member;
         this.personality = personality;
@@ -37,4 +38,6 @@ public class AdditionalInfo {
         this.maskId = maskId;
         this.backgroundId = backgroundId;
     }
+
+
 }
