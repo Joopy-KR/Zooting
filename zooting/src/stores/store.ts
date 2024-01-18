@@ -17,10 +17,26 @@ export const useAccessTokenStore = defineStore(
     });
 
     function setAccessToken(token: string | null) {
+      if (token) {
+        localStorage.setItem("accessToken", token);
+      } else {
+        localStorage.removeItem("accessToken");
+      }
       state.value.accessToken = token;
     }
     function getAccessToken() {
-      return state.value.accessToken;
+      if (state.value.accessToken) {
+        return state.value.accessToken;
+      } else {
+        const accessToken = localStorage.getItem("accessToken");
+        if (accessToken) {
+          state.value.accessToken = accessToken;
+          return accessToken;
+        } else {
+          // TODO: go to home page
+          alert("Access token not found");
+        }
+      }
     }
     return {
       setAccessToken,

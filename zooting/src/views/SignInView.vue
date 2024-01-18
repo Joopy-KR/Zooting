@@ -20,8 +20,4 @@ import DescriptionComp from "@/components/signin/Description.vue";
   </div>
 </template>
 
-<style scoped>
-.min-w-3.5 {
-  min-width: 3.5rem;
-}
-</style>
+<style scoped></style>

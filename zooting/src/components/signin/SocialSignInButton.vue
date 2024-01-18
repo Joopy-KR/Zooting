@@ -3,7 +3,7 @@
 <template>
   <div class="flex flex-col m-4">
     <div class="content-center p-1">
-      <a href="http://localhost:8080/login/oauth2/authorization/kakao">
+      <a href="http://localhost:8080/oauth2/authorization/kakao">
         <img src="@/assets/images/login/kakao_login.png" alt="Kakao Login" class="w-full h-auto" />
       </a>
     </div>
