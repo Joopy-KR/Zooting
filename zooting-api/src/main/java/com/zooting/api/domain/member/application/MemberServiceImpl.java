@@ -1,14 +1,17 @@
 package com.zooting.api.domain.member.application;
 
+import com.zooting.api.domain.block.dao.BlockRepository;
 import com.zooting.api.domain.block.entity.Block;
+import com.zooting.api.domain.friend.dao.FriendRepository;
+import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.member.dao.MemberRepository;
-import com.zooting.api.domain.member.dto.request.InterestsReq;
-import com.zooting.api.domain.member.dto.request.IntroduceReq;
-import com.zooting.api.domain.member.dto.request.MemberReq;
-import com.zooting.api.domain.member.dto.request.PersonalityReq;
+import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MemberRes;
+import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
 import com.zooting.api.domain.member.entity.Member;
+import com.zooting.api.domain.report.dao.ReportRepository;
+import com.zooting.api.domain.report.entity.ReportList;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +27,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
-
+    private final FriendRepository friendRepository;
+    private final BlockRepository blockRepository;
+    private final ReportRepository reportRepository;
     @Override
     public boolean existNickname(String nickname) {
         return memberRepository.existsByNickname(nickname);
@@ -42,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         member.setBirth(sdf.parse(memberReq.birth()));
         member.setAddress(memberReq.address());
-
+        member.setPoint(0L); // 추가 정보 저장 시 포인트 0으로 저장
 
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
         if (Objects.isNull(additionalInfo)) {
@@ -119,5 +124,67 @@ public class MemberServiceImpl implements MemberService {
         additionalInfo.setMember(member);
         memberRepository.save(member);
     }
+
+    @Transactional
+    @Override
+    public void insertBlockList(BlockReq blockReq) {
+        Member member = memberRepository.findMemberByEmail(blockReq.email())
+                .orElseThrow(()->new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
+        // 차단할 사람
+        Member blockMember = memberRepository.findMemberByNickname(blockReq.nickname())
+                .orElseThrow(()->new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
+
+        // 친구인지 확인
+        boolean flag = false;
+        for (var friend : member.getFriendList()) {
+            if (friend.getFollowing().equals(blockMember)) {
+                flag = true;
+            }
+        }
+        if (flag){
+            friendRepository.deleteFriendByFollowerAndFollowing(member, blockMember);
+            friendRepository.deleteFriendByFollowerAndFollowing(blockMember, member);
+        }
+        //차단 목록 등록
+        Block block = new Block();
+        block.setFrom(member);
+        block.setTo(blockMember);
+        blockRepository.save(block);
+
+    }
+
+    @Override
+    public void deleteBlock(BlockReq blockReq) {
+        // 차단한 사람
+        Member member = memberRepository.findMemberByEmail(blockReq.email())
+                .orElseThrow(()->new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
+        // 차단 당한 사람
+        Member blockedMember = memberRepository.findMemberByNickname(blockReq.nickname())
+                        .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        blockRepository.deleteBlockByFromAndTo(member, blockedMember);
+
+    }
+
+    @Override
+    public void insertReport(ReportReq reportReq) {
+        Member reportedMember = memberRepository.findMemberByEmail(reportReq.email())
+                .orElseThrow(()->new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
+        ReportList reportList = new ReportList();
+        reportList.setReason(reportReq.reason());
+        reportList.setDate(reportReq.date());
+        reportList.setMember(reportedMember);
+
+        reportRepository.save(reportList);
+    }
+
+    @Override
+    public PointRes findPoints(String nickname) {
+        Member member = memberRepository.findMemberByNickname(nickname)
+                .orElseThrow(()->new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
+        PointRes pointRes = new PointRes(member.getEmail(), member.getPoint());
+
+        return pointRes;
+    }
+
 
 }

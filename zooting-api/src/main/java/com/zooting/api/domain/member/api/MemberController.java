@@ -1,14 +1,14 @@
 package com.zooting.api.domain.member.api;
 
+import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.member.application.MemberService;
-import com.zooting.api.domain.member.dto.request.InterestsReq;
-import com.zooting.api.domain.member.dto.request.IntroduceReq;
-import com.zooting.api.domain.member.dto.request.MemberReq;
-import com.zooting.api.domain.member.dto.request.PersonalityReq;
+import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MemberRes;
+import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -74,4 +74,39 @@ public class MemberController {
                 String.format("성격 수정 완료")
         );
     }
+
+    @PostMapping("/block")
+    public ResponseEntity<BaseResponse<String>> saveBlockMember(@RequestBody BlockReq blockReq) {
+        memberService.insertBlockList(blockReq);
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                String.format("멤버 차단 완료")
+        );
+    }
+    @DeleteMapping("/block")
+    public ResponseEntity<BaseResponse<String>> deleteBlockMember(@RequestBody BlockReq blockReq) {
+        memberService.deleteBlock(blockReq);
+        return BaseResponse.success(
+                SuccessCode.DELETE_SUCCESS,
+                String.format("멤버 차단 해제 완료")
+        );
+    }
+
+    @PostMapping("/reports")
+    public ResponseEntity<BaseResponse<String>> insertReport(@RequestBody ReportReq reportReq) {
+        memberService.insertReport(reportReq);
+        return BaseResponse.success(
+                SuccessCode.INSERT_SUCCESS,
+                String.format(reportReq.email() + "에 대한 신고 완료")
+        );
+    }
+    @GetMapping("/points")
+    public ResponseEntity<BaseResponse<PointRes>> findPoints(@RequestParam(name="nickname") String nickname){
+        PointRes result = memberService.findPoints(nickname);
+        return BaseResponse.success(
+                SuccessCode.CHECK_SUCCESS,
+                result
+        );
+    }
+
 }
