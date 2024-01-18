@@ -1,9 +1,6 @@
 <template>
-  <div>
-    <button @click="testStart">
-      간단한 테스트를 통해
-      {{ nickname }} 님의 성격 유형을 알아볼게요
-    </button>
+  <div class="description__container" @click="testStart">
+      <p>간단한 테스트를 통해 {{ nickname }} 님의 성격 유형을 알아볼게요</p>
   </div>
 </template>
 
@@ -19,5 +16,10 @@ const testStart = () => {
 </script>
 
 <style scoped>
-
+.description__container {
+ @apply flex flex-col items-center justify-center w-screen h-screen text-center;
+}
+.description__container p {
+  @apply text-xl font-black
+}
 </style>
