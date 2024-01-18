@@ -108,5 +108,4 @@ public class MemberController {
                 result
         );
     }
-
 }
