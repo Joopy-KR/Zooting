@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,17 +29,29 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         log.info("OAuth2 로그인 성공, onAuthenticationSuccess 호출");
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
-        // 나중에 권한 담을수 있게 수정
-        boolean isAnonymous = oAuth2User.getAuthorities().stream()
-                .map(Object::toString)
-                .anyMatch(authority -> authority.equals(Privilege.ANONYMOUS.name()));
+        String userEmail = oAuth2User.getEmail();
+        Collection<String> userPrivileges = oAuth2User.getAuthorities().stream().map(Object::toString).toList();
 
-        if(isAnonymous){
-            String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
+        // 토큰 분기처리
+        if(isAnonymousUser(userPrivileges)){
+            log.info(userEmail + "는 최초 로그인 유저");
+            String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), userPrivileges);
+
+            log.info("OAuth2SuccessHandler에서 액세스 토큰 발급: " + accessToken);
             response.addHeader("Authorization", "Bearer " + accessToken);
             // 추가 정보 기입 페이지로 보내는 로직 추가
         } else {
 
         }
+    }
+
+    protected boolean isAnonymousUser(Collection<String> userPrivileges){
+        log.info("추가 정보 기입 여부 검증중");
+        for(String privilege : userPrivileges){
+            if(Privilege.ANONYMOUS.name().equals(privilege)){
+                return true;
+            }
+        }
+        return false;
     }
 }
