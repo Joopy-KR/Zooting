@@ -28,10 +28,8 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-
         log.info("필터 검증 진입");
         String token = tokenProcessor(request);
-
         if (token != null && jwtService.verifyToken(token)) {
             Authentication authentication = jwtService.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);

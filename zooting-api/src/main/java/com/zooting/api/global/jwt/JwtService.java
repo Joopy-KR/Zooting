@@ -44,14 +44,7 @@ public class JwtService {
                 .compact();
     }
     public boolean verifyToken(String token){
-        Jws<Claims> test = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
-
         log.debug("토큰 검증 시작: " + token);
-        log.debug("토큰 Claims: " + test);
-        log.debug("토큰 만료 시간: " + test.getPayload().getExpiration());
-        log.debug("현재 시간: " + new Date());
-        log.debug("토큰 만료되지 않음 여부: " + test.getPayload().getExpiration().after(new Date()));
-
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()

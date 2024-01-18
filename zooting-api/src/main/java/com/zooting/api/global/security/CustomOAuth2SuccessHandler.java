@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Component
@@ -34,13 +35,18 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
         // 토큰 분기처리
         if(isAnonymousUser(userPrivileges)){
-            log.info(userEmail + "는 최초 로그인 유저");
+            log.info(userEmail + "는 추가 정보가 없는 유저");
             String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), userPrivileges);
 
             log.info("OAuth2SuccessHandler에서 액세스 토큰 발급: " + accessToken);
-            response.addHeader("Authorization", "Bearer " + accessToken);
+            UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("/login")
+                            .queryParam("access-token", accessToken);
+
+            String redirectURI = uriComponentsBuilder.toUriString();
+            response.sendRedirect(redirectURI);
             // 추가 정보 기입 페이지로 보내는 로직 추가
         } else {
+            log.info(userEmail + "는 추가 정보가 있는 유저");
 
         }
     }
