@@ -2,7 +2,7 @@
     <div class="flex flex-col items-center justify-center h-screen">
       <!-- 설명 출력 -->
       <transition name="fade">
-          <p v-if="isDescription" class="text-4xl font-black">가면으로 사용할 동물상을 분석할게요</p>
+          <p v-if="isDescription" class="text-4xl font-bold">가면으로 사용할 동물상을 분석할게요</p>
       </transition>
   
       <!-- 동물상 테스트 출력 -->
@@ -15,7 +15,7 @@
 
     <!-- 설명 출력 -->
       <transition name="fade">
-        <p v-if="isLoading">동물상을 분석하는 중이에요</p>
+        <p v-if="isLoading" class="text-4xl font-bold">동물상을 분석하는 중이에요</p>
       </transition>
 
       <!-- 결과 출력 -->
@@ -45,19 +45,48 @@
   const isAnimal = ref(false)
 
   // 동물상 테스트 종료 후 결과 출력 전, 처리하는 함수
+  const gender = ref(0)
+
   async function isAnimalFinished(...args) {
     const maxVal = ref(-1)
     const maxIdx = ref(-1)
     args.forEach((item, index) => {
+        if (item === 'male') {
+          gender.value = 'male'
+        } else if (item === 'female') {
+          gender.value = 'female'
+        }
+        
         if (Number(item) > Number(maxVal.value)) {
             maxVal.value = Number(item)
             maxIdx.value = Number(index)
         }
     })
-    if (maxIdx.value === 0) {
-        resultAnimal.value = '강아지'
-    } else if (maxIdx.value === 1) {
-        resultAnimal.value = '고양이'
+
+    if (gender.value === 'male') {
+      if (maxIdx.value === 1) {
+          resultAnimal.value = '강아지'
+      } else if (maxIdx.value === 2) {
+          resultAnimal.value = '고양이'
+      } else if (maxIdx.value === 3) {
+          resultAnimal.value = '토끼'
+      } else if (maxIdx.value === 4) {
+          resultAnimal.value = '곰'
+      } else if (maxIdx.value === 5) {
+          resultAnimal.value = '공룡'
+      }
+    } else if (gender.value === 'female') {
+      if (maxIdx.value === 1) {
+          resultAnimal.value = '강아지'
+      } else if (maxIdx.value === 2) {
+          resultAnimal.value = '고양이'
+      } else if (maxIdx.value === 3) {
+          resultAnimal.value = '토끼'
+      } else if (maxIdx.value === 4) {
+          resultAnimal.value = '사슴'
+      } else if (maxIdx.value === 5) {
+          resultAnimal.value = '꼬부기'
+      }
     }
     // 다음 컴포넌트로 이동
     await wait(0.5)

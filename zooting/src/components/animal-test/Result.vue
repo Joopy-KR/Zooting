@@ -4,9 +4,9 @@
     v-if="resultAnimal === '강아지'">
     <img src="@/assets/animal_illustration/cat_illust.png" alt="고양이 사진" style="width: 200px;"
     v-if="resultAnimal === '고양이'">
-    <div>
-      <p>회원님은</p>
-      <p>{{ resultAnimal }}상이네요</p>
+    <div class="flex flex-col items-center justify-center">
+      <p class="text-xl">회원님은</p>
+      <p class="text-xl"><span class="font-bold">{{ resultAnimal }}상</span>이시네요</p>
     </div>
   </div>
 
