@@ -12,7 +12,6 @@ import java.util.List;
 @Repository
 public interface DMRepository extends JpaRepository<DM, Long>{
 
-    List<DM> findByDmRoomId(DMRoom dmRoom);
     List<File> getFilesById(Long dmId);
 
 }

@@ -49,29 +49,38 @@
         <li
           class="list-group-item list-group-item-action"
           v-for="item in chatrooms"
-          v-bind:key="item.id"
-          v-on:click="enterRoom(item.id)"
+          v-bind:key="item.dmRoomId"
+          v-on:click="enterRoom(item)"
         >
-          {{ item.id }} - {{ item }}
+          {{ item.dmRoomId }} - {{ item.sender }} - {{item.receiver}} - {{item}}
         </li>
       </ul>
     </div>
     <!-- JavaScript -->
     <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>
     <script src="/webjars/axios/0.17.1/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script>
+      var sock = new SockJS("/ws/dm");
+      var ws = Stomp.over(sock);
+      var reconnect = 0;
+      connect();
       var vm = new Vue({
         el: "#app",
         data: {
           room_name: "",
           chatrooms: [],
+          login:"",
         },
         created() {
+
+          this.login = prompt("대화명을 입력해 주세요.");
           this.findAllRoom();
         },
         methods: {
           findAllRoom: function () {
-            axios.get("/chat/rooms").then((response) => {
+            axios.get("/chat/rooms", {params:{sender:this.login}}).then((response) => {
               this.chatrooms = response.data;
             });
           },
@@ -94,18 +103,53 @@
                 });
             }
           },
-          enterRoom: function (roomId) {
-            var sender = prompt("대화명을 입력해 주세요.");
-            var receiver = prompt("상대방을 입력해 주세요.");
+          enterRoom: function (dmDto) {
+            var sender = dmDto.sender;
+            var receiver = dmDto.receiver;
             if (sender !== "" && receiver != "") {
               localStorage.setItem("wschat.sender", sender);
               localStorage.setItem("wschat.receiver", receiver);
-              localStorage.setItem("wschat.roomId", roomId);
-              location.href = "/chat/room/enter/" + roomId;
+              localStorage.setItem("wschat.roomId", dmDto.dmRoomId);
+              location.href = "/chat/room/enter/" + dmDto.dmRoomId;
             }
           },
         },
       });
+      function connect() {
+        // pub/sub event
+        ws.connect(
+                {},
+                function (frame) {
+                  ws.subscribe(
+                          "/sub/dm/" + vm.$data.login,
+                          function (message) {
+                            var recv = JSON.parse(message.body);
+                            vm.recvMessage(recv);
+                          }
+                  );
+                  // ws.send(
+                  //         "/app/chat/message",
+                  //         {},
+                  //         JSON.stringify({
+                  //           type: "ENTER",
+                  //           roomId: vm.$data.roomId,
+                  //           sender: vm.$data.sender,
+                  //           receiver: vm.$data.receiver,
+                  //         })
+                  // );
+                },
+                function (error) {
+                  if (reconnect++ <= 5) {
+                    setTimeout(function () {
+                      console.log("connection reconnect");
+                      sock = new SockJS("/ws/dm");
+                      ws = Stomp.over(sock);
+                      connect();
+                    }, 10 * 1000);
+                  }
+                }
+        );
+      }
     </script>
   </body>
 </html>

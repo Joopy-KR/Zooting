@@ -1,7 +1,9 @@
+// 프론트 테스트를 위한 임시 컨트롤러
 package com.zooting.api.domain.dm.api;
 
 import com.zooting.api.domain.dm.application.DMService;
 import com.zooting.api.domain.dm.dto.ChatRoom;
+import com.zooting.api.domain.dm.dto.DMDto;
 import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.dm.service.ChatService;
 import com.zooting.api.domain.member.application.MemberService;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -35,15 +38,22 @@ public class ChatRoomController {
 //    }
     @GetMapping("/rooms")
     @ResponseBody
-    public List<DMRoom> room() {
-        String sender = "a";
+    public List<DMDto> room(@RequestParam(value = "sender") String sender) {
+        List<DMDto> dmDtos = new ArrayList<>();
         log.info("sender {}",sender);
         List<DMRoom> dmRooms = memberService.getDmRooms(sender);
         for(DMRoom dmRoom: dmRooms){
-            log.info("dmRoomId {} {} {}", dmRoom.getId(), dmRoom.getSender(), dmRoom.getReceiver());
+            log.info("dmRoomId {} {} {}", dmRoom.getId(), dmRoom.getSender().getEmail(), dmRoom.getReceiver().getEmail());
+            DMDto newdmDto = new DMDto(dmRoom.getId(),null,null,dmRoom.getSender().getEmail(),dmRoom.getReceiver().getEmail(),null);
+            dmDtos.add(newdmDto);
         }
-//        return memberService.getDmRooms(sender);
-        return dmRooms;
+        List<DMRoom> dmRoomsReverse = memberService.getDmRoomsReverse(sender);
+        for(DMRoom dmRoom: dmRoomsReverse){
+            log.info("dmRoomId {} {} {}", dmRoom.getId(), dmRoom.getSender().getEmail(), dmRoom.getReceiver().getEmail());
+            DMDto newdmDto = new DMDto(dmRoom.getId(),null,null, dmRoom.getReceiver().getEmail(),dmRoom.getSender().getEmail(),null);
+            dmDtos.add(newdmDto);
+        }
+        return dmDtos;
     }
     // 채팅방 생성
     @PostMapping("/room")
@@ -56,6 +66,12 @@ public class ChatRoomController {
     public String roomDetail(Model model, @PathVariable String roomId) {
         model.addAttribute("roomId", roomId);
         return "/chat/roomdetail";
+    }
+
+    @GetMapping("/subtest")
+    public String subTest() {
+//        model.addAttribute("roomId", roomId);
+        return "/chat/subtest";
     }
     // 특정 채팅방 조회
     @GetMapping("/room/{roomId}")

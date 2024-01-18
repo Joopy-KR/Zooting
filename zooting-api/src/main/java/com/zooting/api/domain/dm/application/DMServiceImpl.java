@@ -2,12 +2,14 @@ package com.zooting.api.domain.dm.application;
 
 import com.zooting.api.domain.dm.dao.DMRepository;
 import com.zooting.api.domain.dm.dao.DMRoomRepository;
+import com.zooting.api.domain.dm.dto.DMDto;
 import com.zooting.api.domain.dm.entity.DM;
 import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.file.entity.File;
 import com.zooting.api.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,10 @@ public class DMServiceImpl implements DMService{
         newReceiver.setEmail(receiver);
         log.info("newReceiver {}", newReceiver.getEmail());
         DMRoom dmRoom = dmRoomRepository.findBySenderAndReceiver(newSender, newReceiver);
+        dmRoom.setDms(getDMList(dmRoom));
+//        for(DM dm : dmRoom.getDms()){
+//            log.info("{}", dm.getMessage());
+//        }
         return Objects.nonNull(dmRoom) ? dmRoom : createDMRoom(sender, receiver); // DM방이 없을 경우 생성
     }
 
@@ -52,11 +58,23 @@ public class DMServiceImpl implements DMService{
     }
     @Override
     public List<DM> getDMList(DMRoom dmRoom) {
-        return dmRepository.findByDmRoomId(dmRoom);
+        return dmRoomRepository.findDmsById(dmRoom.getId());
     }
 
     @Override
     public List<File> getDmFiles(Long id) {
         return dmRepository.getFilesById(id);
     }
+
+    @Override
+    @Async
+    @Transactional
+    public void saveDM(DMRoom dmRoom, DMDto dmDto) {
+        DM dm = new DM();
+        dm.setDmRoom(dmRoom);
+        dm.setMessage(dmDto.message());
+        dm.setSender(dmDto.sender());
+        dmRepository.save(dm);
+    }
+
 }

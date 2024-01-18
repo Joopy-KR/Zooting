@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface MemberService {
     List<DMRoom> getDmRooms(String sender);
+
+    List<DMRoom> getDmRoomsReverse(String sender);
 }

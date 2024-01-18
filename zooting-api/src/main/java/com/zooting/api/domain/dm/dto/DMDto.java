@@ -7,7 +7,6 @@ import com.zooting.api.domain.member.entity.Member;
 public record DMDto(
 
     Long dmRoomId,
-    String roomId,
     String message,
     Boolean status,
     String sender,

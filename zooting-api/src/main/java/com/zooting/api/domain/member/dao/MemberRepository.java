@@ -15,5 +15,6 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 
     @Query("SELECT m.dmRooms FROM Member m WHERE m.email = :email")
     List<DMRoom> findDMRoomsByEmail(@Param("email") String email);
-
+    @Query("SELECT m.dmRoomsReverse FROM Member m WHERE m.email = :email")
+    List<DMRoom> findDMRoomsReverseByEmail(@Param("email") String email);
 }

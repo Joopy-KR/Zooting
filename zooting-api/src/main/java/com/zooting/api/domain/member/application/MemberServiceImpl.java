@@ -19,4 +19,8 @@ public class MemberServiceImpl implements MemberService{
     public List<DMRoom> getDmRooms(String sender) {
         return memberRepository.findDMRoomsByEmail(sender);
     }
+    public List<DMRoom> getDmRoomsReverse(String sender) {
+        return memberRepository.findDMRoomsReverseByEmail(sender);
+    }
+
 }

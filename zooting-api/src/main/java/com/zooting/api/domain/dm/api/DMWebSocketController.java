@@ -26,15 +26,9 @@ public class DMWebSocketController {
     @MessageMapping("/chat/message")
     public void receiveAndSendMessage(DMDto dmDto, SimpMessageHeaderAccessor headerAccessor) {
         log.info("SEND_CHAT_SUCCESS (201 CREATED) ::");
-        log.info("dmDto {}", dmDto);
-        log.info("sender {}",dmDto.sender());
-        log.info("receiver {}", dmDto.receiver());
         //ToDo : dmRoom Id 찾아오는 로직 변경 필요 채팅 칠때마다 쿼리날리는중,,
         DMRoom dmRoom = dmService.getDMRoom(dmDto.sender(), dmDto.receiver());
-//        template.convertAndSend("/sub/chat/", dmDto);
-
-//        template.convertAndSend("/topic/chat/room/"+dmDto.roomId(), dmDto);
-        template.convertAndSend("/topic/chat/room/"+dmRoom.getId(), dmDto);
-//        redisTemplate.convertAndSend("/sub/chat", dmDto);
+        dmService.saveDM(dmRoom, dmDto); // 만약 save 가 실패하면?
+        template.convertAndSend("/sub/dm/"+dmDto.receiver(), dmDto);
     }
 }

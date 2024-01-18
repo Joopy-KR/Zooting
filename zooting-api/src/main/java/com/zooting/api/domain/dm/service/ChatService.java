@@ -1,3 +1,5 @@
+//프론트 테스트를 위한 임시 코드
+
 package com.zooting.api.domain.dm.service;
 
 import com.zooting.api.domain.dm.dto.ChatRoom;
