@@ -37,7 +37,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void updateMemberInfo(MemberReq memberReq) throws ParseException {
+    public void updateMemberInfo(MemberReq memberReq) throws ParseException, BaseExceptionHandler {
         Member member = memberRepository.findMemberByEmail(memberReq.email()).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         if (existNickname(memberReq.nickname())) {
@@ -90,7 +90,7 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<MemberRes> findMemberList(String email, String nickname) {
         Member member = memberRepository.findMemberByEmail(email)
@@ -153,6 +153,7 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
+    @Transactional
     @Override
     public void deleteBlock(BlockReq blockReq) {
         // 차단한 사람
@@ -165,6 +166,7 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
+    @Transactional
     @Override
     public void insertReport(ReportReq reportReq) {
         Member reportedMember = memberRepository.findMemberByEmail(reportReq.email())
@@ -186,5 +188,18 @@ public class MemberServiceImpl implements MemberService {
         return pointRes;
     }
 
-
+    @Transactional
+    @Override
+    public Boolean deductPoints(String email, Long price) {
+        Member member = memberRepository.findMemberByEmail(email)
+                .orElseThrow(()-> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        Long memberPoints = member.getPoint();
+        if (memberPoints < price) {
+            return false ;
+        }else {
+            member.setPoint(memberPoints - price);
+            memberRepository.save(member);
+            return true;
+        }
+    }
 }

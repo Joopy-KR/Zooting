@@ -108,4 +108,24 @@ public class MemberController {
                 result
         );
     }
+
+    @PostMapping("/animal")
+    public ResponseEntity<BaseResponse<String>> buyAnimalChangeItem(@RequestBody IntroduceReq introduceReq) {
+        Long price = 300L; // 동물상 변경권 가격
+        System.out.println("=================================");
+        System.out.println(introduceReq.email());
+        boolean isDeducted = memberService.deductPoints(introduceReq.email(), price);
+        if (isDeducted) {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    String.format("변경 허용")
+            );
+        }else {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    String.format("변경 불가")
+            );
+        }
+
+    }
 }
