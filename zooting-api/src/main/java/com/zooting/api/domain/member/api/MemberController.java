@@ -1,14 +1,15 @@
 package com.zooting.api.domain.member.api;
 
+import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.member.application.MemberService;
-import com.zooting.api.domain.member.dto.request.InterestsReq;
-import com.zooting.api.domain.member.dto.request.IntroduceReq;
-import com.zooting.api.domain.member.dto.request.MemberReq;
-import com.zooting.api.domain.member.dto.request.PersonalityReq;
+import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MemberRes;
+import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +36,7 @@ public class MemberController {
         memberService.updateMemberInfo(memberReq);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
-                String.format("추가 정보 저장 성공")
+                "추가 정보 저장 성공"
         );
     }
 
@@ -44,7 +45,7 @@ public class MemberController {
         memberService.updateInterestsandIdeal(interestsReq);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
-                String.format("관심사, 이상형 수정 완료")
+                "관심사, 이상형 수정 완료"
         );
     }
 
@@ -53,7 +54,7 @@ public class MemberController {
         memberService.updateIntroduce(introduceReq);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
-                String.format("자기소개 수정 완료")
+                "자기소개 수정 완료"
         );
     }
 
@@ -71,7 +72,83 @@ public class MemberController {
         memberService.updatePersonality(personalityReq);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
-                String.format("성격 수정 완료")
+                "성격 수정 완료"
         );
+    }
+
+    @PostMapping("/block")
+    public ResponseEntity<BaseResponse<String>> saveBlockMember(@RequestBody BlockReq blockReq) {
+        memberService.insertBlockList(blockReq);
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                "멤버 차단 완료"
+        );
+    }
+    @DeleteMapping("/block")
+    public ResponseEntity<BaseResponse<String>> deleteBlockMember(@RequestBody BlockReq blockReq) {
+        memberService.deleteBlock(blockReq);
+        return BaseResponse.success(
+                SuccessCode.DELETE_SUCCESS,
+                "멤버 차단 해제 완료"
+        );
+    }
+
+    @PostMapping("/reports")
+    public ResponseEntity<BaseResponse<String>> insertReport(@RequestBody ReportReq reportReq) {
+        memberService.insertReport(reportReq);
+        return BaseResponse.success(
+                SuccessCode.INSERT_SUCCESS,
+                reportReq.email() + "에 대한 신고 완료"
+        );
+    }
+    @GetMapping("/points")
+    public ResponseEntity<BaseResponse<PointRes>> findPoints(@RequestParam(name="nickname") String nickname){
+        PointRes result = memberService.findPoints(nickname);
+        return BaseResponse.success(
+                SuccessCode.CHECK_SUCCESS,
+                result
+        );
+    }
+
+    @PostMapping("/animal")
+    public ResponseEntity<BaseResponse<String>> buyAnimalChangeItem(@RequestBody PointReq pointReq) {
+        Long price = 300L; // 동물상 변경권 가격
+        boolean isDeducted = memberService.deductPoints(pointReq.email(), price);
+        if (isDeducted) {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    "변경 허용"
+            );
+        }else {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    "변경 불가"
+            );
+        }
+
+    }
+    @PostMapping("/nickname")
+    public ResponseEntity<BaseResponse<String>> buyNicknameChangeItem(@RequestBody PointReq pointReq) {
+        Long price = 600L; // 닉네임 변경권 가격
+        boolean isDeducted = memberService.deductPoints(pointReq.email(), price);
+        if (isDeducted) {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    "변경 허용"
+            );
+        }else {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    "변경 불가"
+            );
+        }
+    }
+    @GetMapping("/")
+    public ResponseEntity<Member> getMemberByEmail(@RequestParam String email){
+        return ResponseEntity.ok(memberService.getMemberByEmail(email));
+    }
+    @PostMapping("/register/email")
+    public ResponseEntity<Member> initialMemberRegister(@RequestBody String email){
+        return ResponseEntity.ok(memberService.initialMemberRegister(email));
     }
 }
