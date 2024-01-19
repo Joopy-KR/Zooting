@@ -46,6 +46,7 @@ public class OAuth2Attributes {
                 .build();
     }
 
+    @Deprecated
     public Member toEntity(OAuth2UserInfo oAuth2UserInfo){
         Member member = Member
                 .builder()

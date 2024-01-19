@@ -71,7 +71,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private Member saveMember(OAuth2Attributes oAuth2Attributes){
-        String userEmail = oAuth2Attributes.getOAuth2UserInfo().getEmail();
-        return memberService.initialMemberRegister(userEmail);
+        return memberService.initialMemberRegister(
+                oAuth2Attributes.getOAuth2UserInfo().getEmail()
+        );
     }
 }
