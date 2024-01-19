@@ -3,10 +3,12 @@ package com.zooting.api.domain.member.application;
 import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberService {
     boolean existNickname(String nickname);
@@ -20,5 +22,8 @@ public interface MemberService {
     void insertReport(ReportReq report);
     PointRes findPoints(String nickname);
     Boolean deductPoints(String email, Long price);
+    Member getMemberByEmail(String email);
+    Member initialMemberRegister(String email);
+    Optional<Member> checkRegisteredMember (String email);
 
 }
