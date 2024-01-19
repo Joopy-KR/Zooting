@@ -10,6 +10,7 @@ import InfoInput from '../components/signup/InfoInput.vue'
 
 <style scoped>
 .signup-container {
-    @apply flex flex-col h-screen p-8 bg-slate-100;
+    @apply flex flex-col md:h-screen p-6 bg-slate-100;
+    overflow-y: auto;
 }
 </style>
