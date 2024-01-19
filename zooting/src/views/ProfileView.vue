@@ -1,13 +1,9 @@
+<script setup lang="ts"></script>
+
 <template>
-    <div>
-        <h1>Profile</h1>
-    </div>
+  <div>
+    <h1>Profile</h1>
+  </div>
 </template>
 
-<script setup lang="ts">
-
-</script>
-
-<style scoped>
-
-</style>
+<style scoped></style>
