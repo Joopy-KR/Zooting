@@ -35,7 +35,7 @@ public class MemberController {
         memberService.updateMemberInfo(memberReq);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
-                String.format("추가 정보 저장 성공")
+                "추가 정보 저장 성공"
         );
     }
 
@@ -44,7 +44,7 @@ public class MemberController {
         memberService.updateInterestsandIdeal(interestsReq);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
-                String.format("관심사, 이상형 수정 완료")
+                "관심사, 이상형 수정 완료"
         );
     }
 
@@ -53,7 +53,7 @@ public class MemberController {
         memberService.updateIntroduce(introduceReq);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
-                String.format("자기소개 수정 완료")
+                "자기소개 수정 완료"
         );
     }
 
@@ -71,7 +71,7 @@ public class MemberController {
         memberService.updatePersonality(personalityReq);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
-                String.format("성격 수정 완료")
+                "성격 수정 완료"
         );
     }
 
@@ -80,7 +80,7 @@ public class MemberController {
         memberService.insertBlockList(blockReq);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
-                String.format("멤버 차단 완료")
+                "멤버 차단 완료"
         );
     }
     @DeleteMapping("/block")
@@ -88,7 +88,7 @@ public class MemberController {
         memberService.deleteBlock(blockReq);
         return BaseResponse.success(
                 SuccessCode.DELETE_SUCCESS,
-                String.format("멤버 차단 해제 완료")
+                "멤버 차단 해제 완료"
         );
     }
 
@@ -97,7 +97,7 @@ public class MemberController {
         memberService.insertReport(reportReq);
         return BaseResponse.success(
                 SuccessCode.INSERT_SUCCESS,
-                String.format(reportReq.email() + "에 대한 신고 완료")
+                reportReq.email() + "에 대한 신고 완료"
         );
     }
     @GetMapping("/points")
@@ -110,22 +110,36 @@ public class MemberController {
     }
 
     @PostMapping("/animal")
-    public ResponseEntity<BaseResponse<String>> buyAnimalChangeItem(@RequestBody IntroduceReq introduceReq) {
+    public ResponseEntity<BaseResponse<String>> buyAnimalChangeItem(@RequestBody PointReq pointReq) {
         Long price = 300L; // 동물상 변경권 가격
-        System.out.println("=================================");
-        System.out.println(introduceReq.email());
-        boolean isDeducted = memberService.deductPoints(introduceReq.email(), price);
+        boolean isDeducted = memberService.deductPoints(pointReq.email(), price);
         if (isDeducted) {
             return BaseResponse.success(
                     SuccessCode.UPDATE_SUCCESS,
-                    String.format("변경 허용")
+                    "변경 허용"
             );
         }else {
             return BaseResponse.success(
                     SuccessCode.UPDATE_SUCCESS,
-                    String.format("변경 불가")
+                    "변경 불가"
             );
         }
 
+    }
+    @PostMapping("/nickname")
+    public ResponseEntity<BaseResponse<String>> buyNicknameChangeItem(@RequestBody PointReq pointReq) {
+        Long price = 600L; // 닉네임 변경권 가격
+        boolean isDeducted = memberService.deductPoints(pointReq.email(), price);
+        if (isDeducted) {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    "변경 허용"
+            );
+        }else {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    "변경 불가"
+            );
+        }
     }
 }
