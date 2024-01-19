@@ -2,39 +2,28 @@ package com.zooting.api.domain.member.controller;
 
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.service.MemberService;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/members")
+@RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-    MemberController(MemberService memberService){
-        this.memberService = memberService;
-    }
-
-    @GetMapping("/email")
+    @GetMapping("/")
     public ResponseEntity<Member> getMemberByEmail(@RequestParam String email){
-        Optional<Member> member = memberService.getMemberByEmail(email);
-        return member.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(memberService.getMemberByEmail(email));
+    }
+    @PostMapping("/register/email")
+    public ResponseEntity<Member> initialMemberRegister(@RequestBody String email){
+        return ResponseEntity.ok(memberService.initialMemberRegister(email));
     }
 
-    @PostMapping("/email")
-    public ResponseEntity<Member> registerMember(@RequestBody Member member){
-        return ResponseEntity.ok(memberService.registerMember(member));
-    }
-
-    @GetMapping("/hello")
-    public String helloTest(){
-        return "로그인 잘 했네";
-    }
 
 }

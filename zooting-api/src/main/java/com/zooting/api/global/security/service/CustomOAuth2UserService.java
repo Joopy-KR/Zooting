@@ -63,12 +63,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private Member getMember(OAuth2Attributes oAuth2Attributes){
-        Optional<Member> member = memberService.getMemberByEmail(oAuth2Attributes.getOAuth2UserInfo().getEmail());
+        Optional<Member> member = memberService.
+                checkRegisteredMember(oAuth2Attributes.getOAuth2UserInfo().getEmail());
         return member.orElseGet(() -> saveMember(oAuth2Attributes));
     }
 
     private Member saveMember(OAuth2Attributes oAuth2Attributes){
-        Member member = oAuth2Attributes.toEntity(oAuth2Attributes.getOAuth2UserInfo());
-        return memberService.registerMember(member);
+        String userEmail = oAuth2Attributes.getOAuth2UserInfo().getEmail();
+        return memberService.initialMemberRegister(userEmail);
     }
 }

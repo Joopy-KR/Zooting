@@ -55,8 +55,14 @@ public class JwtService {
     public Authentication getAuthentication(String token){
         return new UsernamePasswordAuthenticationToken(
                 getUserEmail(token),
-                "",
-                AuthorityUtils.createAuthorityList(getPrivileges(token)));
+                null,
+                AuthorityUtils
+                        .createAuthorityList(
+                                getPrivileges(token).stream()
+                                        .map(privilege -> "ROLE_" + privilege)
+                                        .toList()
+                        )
+        );
     }
 
     public String getUserEmail(String token){
