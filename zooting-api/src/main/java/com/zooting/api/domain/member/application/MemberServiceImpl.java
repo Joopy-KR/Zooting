@@ -41,7 +41,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByEmail(memberReq.email()).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         if (existNickname(memberReq.nickname())) {
-            throw new BaseExceptionHandler(ErrorCode.NOT_VALID_ERROR); // TODO
+            throw new BaseExceptionHandler(ErrorCode.NOT_VALID_ERROR);
         }
         member.setNickname(memberReq.nickname());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -139,6 +139,7 @@ public class MemberServiceImpl implements MemberService {
         for (var friend : member.getFriendList()) {
             if (friend.getFollowing().equals(blockMember)) {
                 flag = true;
+                break;
             }
         }
         if (flag){
