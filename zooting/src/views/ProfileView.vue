@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import InfoSideBar from "@/components/profile/InfoSideBar.vue";
 import InfoMain from "@/components/profile/InfoMain.vue";
+import InfoPersonal from "@/components/profile/InfoPersonal.vue";
 import { ref } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+console.log(route.params.nickname);
 
 const profile = ref({
   nickname: "",
