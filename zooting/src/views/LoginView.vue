@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { storeToRefs } from "pinia";
 import { useAccessTokenStore } from "@/stores/store";
 
+const router = useRouter();
 const store = useAccessTokenStore();
 
 const handleSocialLoginRedirect = async () => {
@@ -11,11 +11,11 @@ const handleSocialLoginRedirect = async () => {
     const accessToken = await getAccessTokenFromRedirectURL();
     if (accessToken) {
       await store.setAccessToken(accessToken);
-      useRouter().push({ name: "home" });
+      router.push({ name: "home" });
     }
   } catch (error) {
     console.error("소셜 로그인 실패: ", error);
-    useRouter().push({ name: "home" });
+    router.push({ name: "home" });
   }
 };
 
