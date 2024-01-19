@@ -9,11 +9,10 @@ import com.zooting.api.domain.member.entity.Member;
 import java.util.List;
 
 public interface DMService {
-    DMRoom getDMRoom(String sender, String receiver);
-    DMRoom    createDMRoom(String sender, String receiver);
-    List<DM> getDMList(DMRoom dmRoom);
-    List<File> getDmFiles(Long id);
-
-    void saveDM(DMRoom dmRoom, DMDto dmDto);
+    DMRoom      getDMRoom(String sender, String receiver);
+    DMRoom      createDMRoom(String sender, String receiver);
+    List<DM>    getDMList(DMRoom dmRoom);
+    List<File>  getDmFiles(Long id);
+    void        saveDM(DMDto dmDto);
 
 }

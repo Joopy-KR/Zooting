@@ -11,15 +11,24 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker // STOMP를 사용할 수 있게 해주는 어노테이션
 public class DMWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    /**
+     * 소켓 연결을 위해 사용할 엔드포인트 등록과 cors 오류 방지를 위해 허용할 Origin을 등록해둔다.
+     * 엔드포인트: /ws/dm
+     * SockJS 사용
+     */
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry endpointRegistry) { // 소켓 연결을 위해 사용할 엔드포인트 등록과 cors 오류 방지를 위해 허용할 Origin을 등록해둔다.
+    public void registerStompEndpoints(StompEndpointRegistry endpointRegistry) {
         endpointRegistry.addEndpoint("/ws/dm")
-                .setAllowedOriginPatterns("*")// 연결될 엔드포인트
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
+    /**
+     *  /sub 엔드포인트를 활용하여 구독 ex) /sub/dm/{receiver}
+     *  /pub 엔드포인트를 활용하여 전송 ex) /pub/chat/message
+     */
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) { //구독과 발행 시 사용할 prefix를 정해준다.
+    public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) {
         brokerRegistry.enableSimpleBroker("/sub");
         brokerRegistry.setApplicationDestinationPrefixes("/pub");
     }

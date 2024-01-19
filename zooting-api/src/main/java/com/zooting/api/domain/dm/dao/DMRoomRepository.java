@@ -11,10 +11,12 @@ import java.util.List;
 
 @Repository
 public interface DMRoomRepository extends JpaRepository<DMRoom, Long> {
-
-    @Query("SELECT dr FROM DMRoom dr " +
-            "WHERE (dr.sender = :sender AND dr.receiver = :receiver) OR " +
-            "(dr.sender = :receiver AND dr.receiver = :sender)") // sender, receiver 역방향도 검색
+    @Query("""
+            SELECT dr FROM DMRoom dr
+            WHERE (dr.sender = :sender AND dr.receiver = :receiver) OR
+            (dr.sender = :receiver AND dr.receiver = :sender)
+            """
+            ) // sender, receiver 역방향도 검색
     DMRoom findBySenderAndReceiver(Member sender, Member receiver);
     @Query("SELECT d.dms FROM DMRoom d WHERE d.id = :id")
     List<DM> findDmsById(Long id);

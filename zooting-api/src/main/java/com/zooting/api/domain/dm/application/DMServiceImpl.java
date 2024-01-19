@@ -22,8 +22,6 @@ import java.util.Objects;
 public class DMServiceImpl implements DMService{
     private final DMRepository dmRepository;
     private final DMRoomRepository dmRoomRepository;
-
-
     @Override
     public DMRoom getDMRoom(String sender, String receiver) {
         //ToDO : 입력받은 값에 대해 검증
@@ -35,7 +33,6 @@ public class DMServiceImpl implements DMService{
         newReceiver.setEmail(receiver);
         log.info("newReceiver {}", newReceiver.getEmail());
         DMRoom dmRoom = dmRoomRepository.findBySenderAndReceiver(newSender, newReceiver);
-        dmRoom.setDms(getDMList(dmRoom));
 //        for(DM dm : dmRoom.getDms()){
 //            log.info("{}", dm.getMessage());
 //        }
@@ -69,12 +66,12 @@ public class DMServiceImpl implements DMService{
     @Override
     @Async
     @Transactional
-    public void saveDM(DMRoom dmRoom, DMDto dmDto) {
+    public void saveDM(DMDto dmDto) {
+        DMRoom dmRoom = getDMRoom(dmDto.sender(), dmDto.receiver());
         DM dm = new DM();
         dm.setDmRoom(dmRoom);
         dm.setMessage(dmDto.message());
         dm.setSender(dmDto.sender());
         dmRepository.save(dm);
     }
-
 }

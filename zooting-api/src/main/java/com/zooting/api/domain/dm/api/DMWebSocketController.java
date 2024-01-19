@@ -26,9 +26,8 @@ public class DMWebSocketController {
     @MessageMapping("/chat/message")
     public void receiveAndSendMessage(DMDto dmDto, SimpMessageHeaderAccessor headerAccessor) {
         log.info("SEND_CHAT_SUCCESS (201 CREATED) ::");
-        //ToDo : dmRoom Id 찾아오는 로직 변경 필요 채팅 칠때마다 쿼리날리는중,,
-        DMRoom dmRoom = dmService.getDMRoom(dmDto.sender(), dmDto.receiver());
-        dmService.saveDM(dmRoom, dmDto); // 만약 save 가 실패하면?
+        //ToDo : dmRoom Id 찾아오는 로직 변경 필요 채팅 칠때마다 쿼리날리는중,, -> 메세지를 전송 할때 dmRoomId를 미리 알려주면 최적화 가능
+        dmService.saveDM(dmDto);
         template.convertAndSend("/sub/dm/"+dmDto.receiver(), dmDto);
     }
 }
