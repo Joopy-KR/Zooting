@@ -1,4 +1,4 @@
-package com.zooting.api.global.security;
+package com.zooting.api.global.security.user;
 
 import java.util.Collection;
 import java.util.Map;

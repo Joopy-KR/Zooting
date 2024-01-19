@@ -5,7 +5,7 @@
  * description :
  */
 
-package com.zooting.api.global.configuration;
+package com.zooting.api.global.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

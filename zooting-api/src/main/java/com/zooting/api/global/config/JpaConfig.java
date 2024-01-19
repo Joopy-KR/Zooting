@@ -1,4 +1,4 @@
-package com.zooting.api.global.configuration;
+package com.zooting.api.global.config;
 
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 

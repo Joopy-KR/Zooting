@@ -1,4 +1,4 @@
-package com.zooting.api.global.security;
+package com.zooting.api.global.security.user;
 
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.entity.Privilege;

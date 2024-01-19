@@ -1,7 +1,8 @@
-package com.zooting.api.global.configuration;
-import com.zooting.api.global.jwt.JwtFilter;
+package com.zooting.api.global.config;
+
+import com.zooting.api.global.jwt.JwtAuthenticateFilter;
 import com.zooting.api.global.jwt.JwtService;
-import com.zooting.api.global.security.CustomOAuth2SuccessHandler;
+import com.zooting.api.global.security.handler.CustomOAuth2SuccessHandler;
 import com.zooting.api.global.security.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
@@ -20,11 +22,12 @@ public class WebSecurityConfig {
 
     WebSecurityConfig(
             CustomOAuth2UserService customOAuth2UserService,
-            CustomOAuth2SuccessHandler customOAuth2SuccessHandler, JwtService jwtService){
+            CustomOAuth2SuccessHandler customOAuth2SuccessHandler, JwtService jwtService) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.customOAuth2SuccessHandler = customOAuth2SuccessHandler;
         this.jwtService = jwtService;
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -43,13 +46,14 @@ public class WebSecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService))
-                                .successHandler(customOAuth2SuccessHandler)
-                        )
-                .addFilterBefore(getJwtFilter(), UsernamePasswordAuthenticationFilter.class);
+                        .successHandler(customOAuth2SuccessHandler)
+                )
+                .addFilterBefore(jwtAuthenticateFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
     @Bean
-    public JwtFilter getJwtFilter() {
-        return new JwtFilter(jwtService);
+    public JwtAuthenticateFilter jwtAuthenticateFilter() {
+        return new JwtAuthenticateFilter(jwtService);
     }
 }

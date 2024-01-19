@@ -1,9 +1,9 @@
 package com.zooting.api.global.security.service;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.service.MemberService;
-import com.zooting.api.global.security.CustomOAuth2User;
-import com.zooting.api.global.security.OAuth2Attributes;
-import com.zooting.api.global.security.SocialType;
+import com.zooting.api.global.security.user.CustomOAuth2User;
+import com.zooting.api.global.security.user.OAuth2Attributes;
+import com.zooting.api.global.security.user.SocialType;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;

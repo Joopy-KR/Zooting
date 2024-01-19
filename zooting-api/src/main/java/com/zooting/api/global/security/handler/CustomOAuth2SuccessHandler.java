@@ -1,7 +1,8 @@
-package com.zooting.api.global.security;
+package com.zooting.api.global.security.handler;
 
 import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.jwt.JwtService;
+import com.zooting.api.global.security.user.CustomOAuth2User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
