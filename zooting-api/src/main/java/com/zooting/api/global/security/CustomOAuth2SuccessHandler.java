@@ -39,7 +39,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), userPrivileges);
 
             log.info("OAuth2SuccessHandler에서 액세스 토큰 발급: " + accessToken);
-            UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("/login")
+            UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString("http://localhost:5173/login")
                             .queryParam("access-token", accessToken);
 
             String redirectURI = uriComponentsBuilder.toUriString();
