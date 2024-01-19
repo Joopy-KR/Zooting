@@ -5,7 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import lombok.NonNull;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
@@ -13,7 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 @Log4j2
 @RequiredArgsConstructor
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtAuthenticateFilter extends OncePerRequestFilter {
     private final static String HEADER_AUTHORIZATION = "Authorization";
     private final static String TOKEN_PREFIX = "Bearer ";
     private final JwtService jwtService;

@@ -1,10 +1,11 @@
-package com.zooting.api.global.security;
+package com.zooting.api.global.security.user;
 
-import java.util.Collection;
-import java.util.Map;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+
+import java.util.Collection;
+import java.util.Map;
 
 @Getter
 public class CustomOAuth2User extends DefaultOAuth2User {

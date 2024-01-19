@@ -5,6 +5,7 @@ import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import lombok.RequiredArgsConstructor;
@@ -141,5 +142,13 @@ public class MemberController {
                     "변경 불가"
             );
         }
+    }
+    @GetMapping("/")
+    public ResponseEntity<Member> getMemberByEmail(@RequestParam String email){
+        return ResponseEntity.ok(memberService.getMemberByEmail(email));
+    }
+    @PostMapping("/register/email")
+    public ResponseEntity<Member> initialMemberRegister(@RequestBody String email){
+        return ResponseEntity.ok(memberService.initialMemberRegister(email));
     }
 }

@@ -1,12 +1,10 @@
 package com.zooting.api.global.security.service;
+
+import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.entity.Member;
-import com.zooting.api.domain.member.service.MemberService;
-import com.zooting.api.global.security.CustomOAuth2User;
-import com.zooting.api.global.security.OAuth2Attributes;
-import com.zooting.api.global.security.SocialType;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.zooting.api.global.security.user.CustomOAuth2User;
+import com.zooting.api.global.security.user.OAuth2Attributes;
+import com.zooting.api.global.security.user.SocialType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -15,6 +13,10 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
