@@ -10,6 +10,7 @@ import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
 import com.zooting.api.domain.member.entity.Member;
+import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.domain.report.dao.ReportRepository;
 import com.zooting.api.domain.report.entity.ReportList;
 import com.zooting.api.global.common.code.ErrorCode;
@@ -215,6 +216,7 @@ public class MemberServiceImpl implements MemberService {
     public Member initialMemberRegister(String email) {
         return memberRepository.save(Member
                 .builder()
+                .role(List.of(Privilege.ANONYMOUS))
                 .email(email)
                 .build());
     }

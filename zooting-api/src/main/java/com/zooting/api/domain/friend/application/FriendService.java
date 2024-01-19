@@ -1,10 +1,14 @@
 package com.zooting.api.domain.friend.application;
 
-import com.zooting.api.domain.member.entity.Member;
+import com.zooting.api.domain.friend.dto.request.FriendReq;
+import com.zooting.api.domain.friend.dto.response.FriendRes;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
 public interface FriendService {
-    List<Member> getFriends(String follower);
+    List<FriendRes> getFriends(String follower);
+    void            acceptFriend(FriendReq friendReq, Authentication authentication);
+
 
 }

@@ -40,7 +40,8 @@ public class WebSecurityConfig {
 //                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/error", "/login").permitAll()
+                        .requestMatchers("/", "/error", "/login",
+                                "/swagger-ui/**", "/api-docs/**").permitAll()
                         .anyRequest().authenticated())
 
                 .oauth2Login(oauth2 -> oauth2

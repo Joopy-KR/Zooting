@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 @Log4j2
 @RequiredArgsConstructor
 public class JwtAuthenticateFilter extends OncePerRequestFilter {
@@ -24,7 +26,12 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        if("/login".equals(request.getRequestURI())) {
+        if (!request.getRequestURI().startsWith("/api/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (!request.getRequestURI().startsWith("/")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -40,6 +47,7 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
             log.debug("요청에 유효한 토큰이 없다.");
         }
     }
+
     public String tokenProcessor(HttpServletRequest request) {
         String token = request.getHeader(HEADER_AUTHORIZATION);
         if (token != null && token.startsWith(TOKEN_PREFIX)) {
