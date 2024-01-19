@@ -30,7 +30,7 @@ public class Member {
     private Long point;
     private Boolean status;
 
-    @OneToOne(mappedBy = "member")
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
     private AdditionalInfo additionalInfo;
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
@@ -40,8 +40,12 @@ public class Member {
     private List<Privilege> role;
     @OneToOne(mappedBy = "member")
     private AnimalFace animalFace;
-    @OneToMany(mappedBy = "from")
-    private List<Block> blockList;  // 내가 차단한 리스트
+    @OneToMany(mappedBy = "from", cascade = CascadeType.ALL)
+    private List<Block> blockFromList;  // 내가 차단한 리스트
+    @OneToMany(mappedBy = "to", cascade = CascadeType.ALL)
+    private List<Block> blockToList;  // 나를 차단한 리스트
+
+
     @OneToMany(mappedBy = "follower")
     private List<Friend> friendList;    // 내 친구 목록
     @OneToMany(mappedBy = "from")

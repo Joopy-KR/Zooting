@@ -3,6 +3,9 @@ package com.zooting.api.domain.member.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+import java.util.Objects;
+
 @Getter
 @Setter
 @Entity
@@ -19,6 +22,7 @@ public class AdditionalInfo {
     private Member member;
     private String personality;
     private String animal;
+    private String introduce;
     private String interest;
     @Column(name = "ideal_animal")
     private String idealAnimal;
@@ -27,14 +31,23 @@ public class AdditionalInfo {
     private Long backgroundId;
 
     @Builder
-
-    public AdditionalInfo(Member member, String personality, String animal, String interest, String idealAnimal, Long maskId, Long backgroundId) {
+    public AdditionalInfo(Member member, String personality, String animal, String introduce, String interest, String idealAnimal, Long maskId, Long backgroundId) {
         this.member = member;
         this.personality = personality;
         this.animal = animal;
+        this.introduce = introduce;
         this.interest = interest;
         this.idealAnimal = idealAnimal;
         this.maskId = maskId;
         this.backgroundId = backgroundId;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+
+        if (Objects.isNull(member.getAdditionalInfo()) ||
+                member.getAdditionalInfo() != this) {
+            member.setAdditionalInfo(this);
+        }
     }
 }
