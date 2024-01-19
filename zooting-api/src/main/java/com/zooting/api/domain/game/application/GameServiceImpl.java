@@ -41,7 +41,7 @@ public class GameServiceImpl implements GameService{
     @Override
     public LiarGameRes findLiarGameTopicAndWord() {
         String liarGameTopic = liarGameRepository.findTopic().orElseThrow(()->
-                new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR)).getTopic();
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
         List<String> liarGameWordList = liarGameRepository.findWord(liarGameTopic).orElseThrow(()->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR)).stream().map(game -> game.getWord()).toList();
         LiarGameRes liarGameRes = new LiarGameRes(liarGameTopic, liarGameWordList.get(0), liarGameWordList.get(1));

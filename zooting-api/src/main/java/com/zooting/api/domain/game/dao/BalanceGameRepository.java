@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface BalanceGameRepository extends JpaRepository<BalanceGame, Long> {
-    @Query(value = "SELECT * FROM balance_game ORDER BY RAND() limit 1", nativeQuery = true)
+    @Query(value = "SELECT sentence1, sentence2 FROM balance_game ORDER BY RAND() limit 1", nativeQuery = true)
     Optional<BalanceGame> find();
 }
