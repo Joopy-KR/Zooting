@@ -2,9 +2,10 @@ package com.zooting.api.global.security.user;
 
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.entity.Privilege;
-import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.Map;
 
 @Getter
 public class OAuth2Attributes {
