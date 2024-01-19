@@ -5,7 +5,6 @@ import java.util.List;
 
 
 public record MemberReq(
-       String email,
        String nickname,
        String birth,
        String address,

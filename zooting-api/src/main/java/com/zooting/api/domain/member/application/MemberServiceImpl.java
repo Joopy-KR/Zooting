@@ -38,8 +38,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void updateMemberInfo(MemberReq memberReq) throws ParseException, BaseExceptionHandler {
-        Member member = memberRepository.findMemberByEmail(memberReq.email()).orElseThrow(() ->
+    public void updateMemberInfo(String memberId, MemberReq memberReq) throws ParseException, BaseExceptionHandler {
+        Member member = memberRepository.findMemberByEmail(memberId).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         if (existNickname(memberReq.nickname())) {
             throw new BaseExceptionHandler(ErrorCode.NOT_VALID_ERROR);
@@ -63,8 +63,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void updateInterestsandIdeal(InterestsReq additionalReq) {
-        Member member = memberRepository.findMemberByEmail(additionalReq.email())
+    public void updateInterestsandIdeal(String memberId, InterestsReq additionalReq) {
+        Member member = memberRepository.findMemberByEmail(memberId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
         if (Objects.isNull(additionalInfo)) {
@@ -80,8 +80,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void updateIntroduce(IntroduceReq introduceReq) {
-        Member member = memberRepository.findMemberByEmail(introduceReq.email())
+    public void updateIntroduce(String memberId, IntroduceReq introduceReq) {
+        Member member = memberRepository.findMemberByEmail(memberId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
         if (Objects.isNull(additionalInfo)) {
@@ -94,8 +94,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<MemberRes> findMemberList(String email, String nickname) {
-        Member member = memberRepository.findMemberByEmail(email)
+    public List<MemberRes> findMemberList(String userId, String nickname) {
+        Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
         // 나를 차단한 유저 리스트 추출
@@ -115,8 +115,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void updatePersonality(PersonalityReq personalityReq) {
-        Member member = memberRepository.findMemberByEmail(personalityReq.email())
+    public void updatePersonality(String userId, PersonalityReq personalityReq) {
+        Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
         if (Objects.isNull(additionalInfo)) {
@@ -129,8 +129,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void insertBlockList(BlockReq blockReq) {
-        Member member = memberRepository.findMemberByEmail(blockReq.email())
+    public void insertBlockList(String userId, BlockReq blockReq) {
+        Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
         // 차단할 사람
         Member blockMember = memberRepository.findMemberByNickname(blockReq.nickname())
@@ -158,9 +158,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void deleteBlock(BlockReq blockReq) {
+    public void deleteBlock(String userId, BlockReq blockReq) {
         // 차단한 사람
-        Member member = memberRepository.findMemberByEmail(blockReq.email())
+        Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
         // 차단 당한 사람
         Member blockedMember = memberRepository.findMemberByNickname(blockReq.nickname())
@@ -171,8 +171,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void insertReport(ReportReq reportReq) {
-        Member reportedMember = memberRepository.findMemberByEmail(reportReq.email())
+    public void insertReport(String userId, ReportReq reportReq) {
+        Member reportedMember = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
         ReportList reportList = new ReportList();
         reportList.setReason(reportReq.reason());
@@ -183,8 +183,8 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public PointRes findPoints(String nickname) {
-        Member member = memberRepository.findMemberByNickname(nickname)
+    public PointRes findPoints(String userId) {
+        Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
         PointRes pointRes = new PointRes(member.getEmail(), member.getPoint());
 
@@ -193,8 +193,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public Boolean deductPoints(String email, Long price) {
-        Member member = memberRepository.findMemberByEmail(email)
+    public Boolean deductPoints(String userId, Long price) {
+        Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         Long memberPoints = member.getPoint();
         if (memberPoints < price) {
