@@ -57,7 +57,7 @@ public class Member {
 
     @Builder
     public Member(String email, String gender, String nickname, Date birth, String address, Long point,
-                  List<BackgroundInventory> myBackgrounds, List<MaskInventory> myMasks) {
+                  List<BackgroundInventory> myBackgrounds, List<MaskInventory> myMasks, List<Privilege> role) {
         this.email = email;
         this.gender = gender;
         this.nickname = nickname;
@@ -65,8 +65,8 @@ public class Member {
         this.address = address;
         this.point = point;
         this.status = true; // 회원 가입 시 회원 상태 true 고정
-
         this.myBackgrounds = Objects.nonNull(myBackgrounds) ? myBackgrounds : new ArrayList<>();
         this.myMasks = Objects.nonNull(myMasks) ? myMasks : new ArrayList<>();
+        this.role = Objects.nonNull(role) ? role : new ArrayList<>();
     }
 }
