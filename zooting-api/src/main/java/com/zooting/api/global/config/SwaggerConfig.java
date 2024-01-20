@@ -23,7 +23,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         Info info = new Info()
-                .title("Learn Spring")
+                .title("Zooting API")
                 .description("""
                         <h2>Zooting Swagger doc API</h1>
                         <p style="text-align: right">by A702</p>
