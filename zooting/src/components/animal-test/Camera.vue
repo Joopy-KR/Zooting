@@ -8,7 +8,9 @@
 
       
       <div class="flex flex-col items-center justify-center ml-10">
-        <p class="text-xl font-semibold mb-7">사진은 저장되지 않아요</p>
+        <p class="text-2xl font-bold mb-7">사진은 저장되지 않아요</p>
+        <p class="mb-3 text-xl font-semibold">얼굴을 카메라에 맞춘 후</p> 
+        <p class="text-xl font-semibold mb-7">맨 아래 촬영버튼을 눌러주세요</p>
         <p class="text-xl font-semibold mb-7">카메라에 얼굴을 가까이 가져와 주세요</p>
         <p class="text-xl font-semibold mb-7">카메라에 두명 이상 있으면 촬영되지 않아요</p>
         
@@ -26,8 +28,8 @@
       </div>
     </div>
 
-
-
+    
+    
     <div class="flex flex-col items-center justify-center" v-show="!is_started">
       <p class="mb-8 text-5xl font-bold">카메라 준비 중</p>
       <h3 class="mb-5">잠시만 기다려 주세요</h3>
@@ -48,6 +50,9 @@ import { ref, onMounted, nextTick, defineEmits } from 'vue'
 import { FaceDetector, FilesetResolver, Detection } from "@mediapipe/tasks-vision"
 
 const emit = defineEmits(['workFinished']);
+
+// 성별 정보
+const gender = ref('male')
 
 // 얼굴인식 변수
 let faceDetector: FaceDetector
@@ -173,8 +178,6 @@ const displayVideoDetections = async (detections: Detection[]) => {
 let model, webcam
 
 
-// 성별 정보
-const gender = ref('male')
 
 // 남자는 강아지, 고양이, 토끼, 곰, 공룡
 // 여자는 강아지, 고양이, 토끼, 사슴, 꼬북이
@@ -237,17 +240,22 @@ const loop = async () => {
 const predict = async () => {
   // 촬영시까지 동작함
   const prediction = await model.predict(webcam.canvas)
+  console.log("강" + prediction[0].probability.toFixed(2))
+  console.log("고" + prediction[1].probability.toFixed(2))
+  console.log("곰" + prediction[2].probability.toFixed(2))
+  console.log("공" + prediction[3].probability.toFixed(2))
+  console.log("토" + prediction[4].probability.toFixed(2))
 
   // 촬영시 동물 변수에 값을 담음
   if (is_working === false) {
-      // 남자는 강아지, 고양이, 토끼, 곰, 공룡
+      // 남자는 강아지, 고양이, 곰, 공룡, 토끼
       if (gender.value == 'male') {
         dog.value = prediction[0].probability.toFixed(2)
         cat.value = prediction[1].probability.toFixed(2)
-        rabbit.value = prediction[2].probability.toFixed(2)
-        bear.value = prediction[3].probability.toFixed(2)
-        dino.value = prediction[4].probability.toFixed(2)
-        emit('workFinished', gender.value, dog.value, cat.value, rabbit.value, bear.value, dino.value) 
+        bear.value = prediction[2].probability.toFixed(2)
+        dino.value = prediction[3].probability.toFixed(2)
+        rabbit.value = prediction[4].probability.toFixed(2)
+        emit('workFinished', gender.value, dog.value, cat.value, bear.value, dino.value, rabbit.value) 
       } else if (gender.value == 'female') {
       // 여자는 강아지, 고양이, 토끼, 사슴, 꼬북이
         dog.value = prediction[0].probability.toFixed(2)

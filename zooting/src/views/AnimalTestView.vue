@@ -69,11 +69,11 @@
       } else if (maxIdx.value === 2) {
           resultAnimal.value = '고양이'
       } else if (maxIdx.value === 3) {
-          resultAnimal.value = '토끼'
-      } else if (maxIdx.value === 4) {
           resultAnimal.value = '곰'
-      } else if (maxIdx.value === 5) {
+      } else if (maxIdx.value === 4) {
           resultAnimal.value = '공룡'
+      } else if (maxIdx.value === 5) {
+          resultAnimal.value = '토끼'
       }
     } else if (gender.value === 'female') {
       if (maxIdx.value === 1) {
