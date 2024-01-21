@@ -2,71 +2,80 @@
     <div>
         <nav class="side-bar">
             <div class="logo">
-                <RouterLink :to="getHomeLink()">
-                    ZT
+                <RouterLink :to="getHomeLink()" @click="closeTab">
+                    <img src="/images/logo_sm.png" alt="">
                 </RouterLink>
             </div>
             <div class="side-bar__item">
                 <!-- Messages button -->
                 <button @click="toggleMessagesTab" v-if="isLoggedIn">
-                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 5h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-2v3l-4-3H8m4-13H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2v3l4-3h4a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z"/>
+                    <svg :class="[isActiveMessageTab() ? 'text-violet-800' : 'text-gray-400', 'w-5 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20" transform="rotate(45)">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 17 8 2L9 1 1 19l8-2Zm0 0V9"/>
                     </svg>
                 </button>
 
                 <!-- Notifications button -->
                 <button @click="toggleNotificationsTab">
-                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 21">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 3.464V1.1m0 2.365a5.338 5.338 0 0 1 5.133 5.368v1.8c0 2.386 1.867 2.982 1.867 4.175C15 15.4 15 16 14.462 16H1.538C1 16 1 15.4 1 14.807c0-1.193 1.867-1.789 1.867-4.175v-1.8A5.338 5.338 0 0 1 8 3.464ZM4.54 16a3.48 3.48 0 0 0 6.92 0H4.54Z"/>
+                    <svg :class="[isActivenotificationsTab() ? 'text-violet-800' : 'text-gray-400', 'w-6 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="20" fill="none" viewBox="0 0 14 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7a3 3 0 0 1 3-3M5 19h4m0-3c0-4.1 4-4.9 4-9A6 6 0 1 0 1 7c0 4 4 5 4 9h4Z"/>
                     </svg>
                 </button>
             </div>
             
             <!-- signout -->
-            <div>
+            <div class="signout">
+                <button @click="logout" v-if="isLoggedIn">
+                    <svg class="w-5 h-6 m-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16" transform="rotate(180)">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h11m0 0-4-4m4 4-4 4m-5 3H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3"/>
+                    </svg>
+                </button>
             </div>
 
             <!-- User profile -->
             <div class="user-profile">
-                <button v-if="isLoggedIn">
-                    <!-- <RouterLink :to="getProfileLink()"> -->
-                    <img class="user-profile__img" src="" alt="user-profile"/>
-                    <!-- </RouterLink> -->
-                </button>
+                <RouterLink :to="getProfileLink()" v-if="isLoggedIn" @click="closeTab">
+                <img class="user-profile__img" src="" alt="user-profile"/>
+                </RouterLink>
             </div>
         </nav>
 
         <!-- Side tab -->
-        <div class="side-tab" v-show="isSideTabOpen">
-            <section v-show="currentSideTab == 'messagesTab'">
-            <h1>Messages</h1>
-            <div class="side-tab__content">
-                <DM />
-            </div>
-            </section>
+        <transition name="side-tab-transition">
+            <div class="side-tab" v-show="isSideTabOpen" v-if="isLoggedIn">
+                <section v-show="currentSideTab == 'messagesTab'">
+                <div class="side-tab__content">
+                    <DM />
+                </div>
+                </section>
 
-            <section v-show="currentSideTab == 'notificationsTab'">
-              <h1>Notifications</h1>
-              <div class="side-tab__content">
-                <h1>공지사항</h1>
-              </div>
-            </section>
-        </div>
+                <section v-show="currentSideTab == 'notificationsTab'">
+                <div class="side-tab__content">
+                    <Notifications />
+                </div>
+                </section>
+            </div>
+        </transition>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { ref, watch } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import { useAccessTokenStore } from "../stores/store"
 import DM from './DM.vue'
+import Notifications from './Notifications.vue'
 
-const isLoggedIn = ref(true)
+const store = useAccessTokenStore()
+const router = useRouter()
+
 // const isLoggedIn = computed(() => store.isLogin)
+const isLoggedIn = ref(true)
+
 const isSideTabOpen = ref(false)
 const currentSideTab = ref<string | null>(null)
 
 const getHomeLink = () => {
-    return isLoggedIn ? '/' : '/signin'
+    return isLoggedIn.value ? '/' : '/signin'
 }
 
 const toggleMessagesTab = () => {
@@ -81,7 +90,7 @@ const toggleMessagesTab = () => {
 
 const toggleNotificationsTab = () => {
     if (isSideTabOpen.value === true && currentSideTab.value === 'notificationsTab') {
-        isSideTabOpen.value = !isSideTabOpen.value
+        isSideTabOpen.value = false
     }
     else if (isSideTabOpen.value === false) {
         isSideTabOpen.value = true
@@ -89,41 +98,79 @@ const toggleNotificationsTab = () => {
     currentSideTab.value = 'notificationsTab'
 }
 
-// const getProfileLink = () => {
-//     return `/profile/${/*request user nickname*/}`
-// }
+const isActiveMessageTab = () => {
+    if (isSideTabOpen.value === true && currentSideTab.value === 'messagesTab') {
+        return true
+    } else {
+        return false
+    }
+} 
+
+const isActivenotificationsTab = () => {
+    if (isSideTabOpen.value === true && currentSideTab.value === 'notificationsTab') {
+        return true
+    } else {
+        return false
+    }
+}
+
+const nickname = 'nickname'
+const getProfileLink = () => {
+    return `/profile/${nickname}`
+}
+
+const closeTab = () => {
+    isSideTabOpen.value = false
+}
+
+const logout = () => {
+    // store.signOut()
+    isSideTabOpen.value = false
+    router.push({ name: 'signin' })
+}
 </script>
 
 <style scoped>
 .side-bar {
-    @apply flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-indigo-100 shadow-emerald-600 rounded-tr-3xl rounded-br-3xl;
+    @apply absolute flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-10;
 }
-
 .logo {
     @apply flex-shrink-0 py-4;
 }
-
 .side-bar__item {
-    @apply flex flex-col items-center flex-1 p-2 space-y-6;
+    @apply flex flex-col items-center flex-1 p-4 space-y-8;
 }
-
 .user-profile {
-    @apply relative flex items-center flex-shrink-0 p-2;
+    @apply relative flex items-center flex-shrink-0 my-3;
 }
-
 .user-profile__img {
     @apply w-10 h-10 rounded-full shadow-md;
 }
-
 .side-tab {
-    @apply fixed inset-y-0 z-10 flex-shrink-0 w-1/4 transition-transform duration-300 transform bg-white border-r-2 border-indigo-100 shadow-lg left-14 rounded-tr-3xl rounded-br-3xl;
+    @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 rounded-tr-3xl rounded-br-3xl;
+    width: 500px;
 }
-
 .side-tab__content {
-    @apply h-screen;
 }
 
 section {
     @apply px-4 py-6;
+}
+.side-tab-transition-enter-active,
+.side-tab-transition-leave-active {
+  transition: transform 0.5s;
+}
+
+.side-tab-transition-enter-from,
+.side-tab-transition-leave-to {
+    @apply -translate-x-full;
+}
+
+.side-tab-transition-enter-to,
+.side-tab-transition-leave-from {
+    @apply translate-x-0;
+}
+svg {
+    @apply hover:text-gray-500;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="flex">
     <TheSideBar></TheSideBar>
-    <RouterView/>
+    <RouterView class="ms-14"/>
   </div>
 </template>
 
@@ -11,5 +11,4 @@ import TheSideBar from '@/components/TheSideBar.vue'
 </script>
 
 <style scoped>
-
 </style>

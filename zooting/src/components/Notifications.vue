@@ -1,6 +1,6 @@
 <template>
-  <div class="dm__container">
-    <h1>대화 목록</h1>
+  <div class="notifications__container">
+    <h1>공지사항</h1>
   </div>
 </template>
 
@@ -9,7 +9,7 @@
 </script>
 
 <style scoped>
-.dm__container {
+.notifications__container {
   width: 100%;
   height: 100%;
 }
