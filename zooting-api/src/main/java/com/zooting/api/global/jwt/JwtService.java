@@ -4,6 +4,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 import javax.crypto.SecretKey;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Log4j2
@@ -52,17 +55,16 @@ public class JwtService {
                 .after(new Date());
     }
 
-    public Authentication getAuthentication(String token){
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = User.builder()
+                .username(getUserEmail(token))
+                .password(UUID.randomUUID().toString())
+                .roles(getPrivileges(token).toArray(new String[0]))
+                .build();
         return new UsernamePasswordAuthenticationToken(
-                getUserEmail(token),
-                null,
-                AuthorityUtils
-                        .createAuthorityList(
-                                getPrivileges(token).stream()
-                                        .map(privilege -> "ROLE_" + privilege)
-                                        .toList()
-                        )
-        );
+                userDetails,
+                userDetails.getPassword(),
+                userDetails.getAuthorities());
     }
 
     public String getUserEmail(String token){
