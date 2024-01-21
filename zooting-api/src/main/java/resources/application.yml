@@ -1,0 +1,74 @@
+server:
+  port: 8080
+
+spring:
+  h2:
+    console:
+      enabled: false
+      path: /h2-console
+  datasource:
+    url: jdbc:mysql://zooting-rdbms.cp4iek82cj5e.ap-northeast-2.rds.amazonaws.com/test?serverTimezone=UTC&useUniCode=yes&characterEncoding=UTF-8
+#    url: jdbc:mysql://zooting-rdbms.cp4iek82cj5e.ap-northeast-2.rds.amazonaws.com/zooting?serverTimezone=UTC&useUniCode=yes&characterEncoding=UTF-8
+    username: root
+    password: zooting123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
+    generate-ddl: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  profiles:
+    include:
+      - oauth
+
+#JWT
+jwt:
+  secretKey: KhUf1irLMG9EiLm3vcCLXiLhVWiMosSB2F8Ci4ho9glHrcV1THz2C8SToXEpOrpq
+  expiration-time: 180000000
+  issuer: "Zooting"
+#    access-token:
+#    refresh-token:
+
+
+logging:
+  level:
+    root: info
+
+
+springdoc:
+  api-docs:
+    path: /api-docs
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    groups-order: asc
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+    doc-expansion: none
+  cache:
+    disabled: true
+  override-with-generic-response: false
+  model-and-view-allowed: false
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  group-configs:
+    - group: all-api
+      paths-to-match:
+        - /**
+      paths-to-exclude:
+        - /favicon.ico
+        - /health
+    - group: jwt-api
+      paths-to-match:
+        - /api/**
+  show-actuator: true

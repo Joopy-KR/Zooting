@@ -5,6 +5,7 @@ import com.zooting.api.domain.friend.dto.request.FriendReq;
 import com.zooting.api.domain.friend.dto.response.FriendRes;
 import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.member.dao.MemberRepository;
+import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
@@ -14,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Log4j2
 @Service
@@ -53,4 +53,14 @@ public class FriendServiceImpl implements FriendService{
         friendRepository.save(friend2);
     }
 
+    @Override
+    public List<MemberRes> searchFriend(String nickname) {
+        //search friend contating nickname
+        List<Member> memberList = memberRepository.findMemberByNicknameContaining(nickname);
+        List<MemberRes> memberResList = memberList
+                .stream()
+                .map(member -> new MemberRes(member.getEmail(), member.getNickname()))
+                .toList();
+        return memberResList;
+    }
 }

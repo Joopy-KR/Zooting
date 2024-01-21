@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
 
+    //delete request
+    void deleteFriendRequestByFromAndTo(Member from, Member to);
+
     @Query("""
         SELECT fr FROM FriendRequest fr
         WHERE fr.to = :to

@@ -3,6 +3,7 @@ package com.zooting.api.domain.friend.api;
 import com.zooting.api.domain.friend.application.FriendService;
 import com.zooting.api.domain.friend.dto.request.FriendReq;
 import com.zooting.api.domain.friend.dto.response.FriendRes;
+import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
@@ -46,4 +47,6 @@ public class FriendController {
                 "친구 수락 성공"
         );
     }
+
+
 }

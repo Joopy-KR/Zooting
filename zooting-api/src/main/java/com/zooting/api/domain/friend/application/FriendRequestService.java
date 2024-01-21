@@ -7,5 +7,5 @@ import java.util.List;
 public interface FriendRequestService {
     List<FriendRes> getReceivedFriendRequests(String requestTo);
     List<FriendRes> getSentFriendRequests(String requestFrom);
-
+    void sendFriendRequest(String requestFrom, String requestTo);
 }

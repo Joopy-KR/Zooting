@@ -2,6 +2,7 @@ package com.zooting.api.domain.friend.api;
 
 import com.zooting.api.domain.friend.application.FriendRequestService;
 import com.zooting.api.domain.friend.application.FriendService;
+import com.zooting.api.domain.friend.dto.request.FriendReq;
 import com.zooting.api.domain.friend.dto.response.FriendRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
@@ -11,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,7 +36,6 @@ public class FriendRequestController {
                 friendResList
         );
     }
-
     @GetMapping("/to")
     public ResponseEntity<BaseResponse<List<FriendRes>>> getSentFriendRequests(@AuthenticationPrincipal Authentication authentication){
         List<FriendRes> friendResList = friendRequestService.getSentFriendRequests(authentication.getName());
@@ -48,4 +45,13 @@ public class FriendRequestController {
         );
     }
 
+    //친구 요청 보내기
+    @PostMapping("")
+    public ResponseEntity<BaseResponse<String>> sendFriendRequest(@RequestParam FriendReq friendReq, @AuthenticationPrincipal Authentication authentication){
+        friendRequestService.sendFriendRequest(authentication.getName(), friendReq.nickname());
+        return BaseResponse.success(
+                SuccessCode.CHECK_SUCCESS,
+                "친구 요청 성공"
+        );
+    }
 }
