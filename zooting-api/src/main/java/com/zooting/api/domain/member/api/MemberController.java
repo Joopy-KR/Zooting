@@ -1,6 +1,5 @@
 package com.zooting.api.domain.member.api;
 
-import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MemberRes;
@@ -9,8 +8,10 @@ import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -49,9 +50,13 @@ public class MemberController {
         );
     }
 
+    @PostAuthorize("hasAnyRole('USER')")
     @PutMapping("/introduce")
-    public ResponseEntity<BaseResponse<String>> updateIntroduce(@RequestBody IntroduceReq introduceReq) {
-        memberService.updateIntroduce(introduceReq);
+    public ResponseEntity<BaseResponse<String>> updateIntroduce(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody IntroduceReq introduceReq
+    ) {
+        memberService.updateIntroduce(userDetails, introduceReq);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
                 "자기소개 수정 완료"

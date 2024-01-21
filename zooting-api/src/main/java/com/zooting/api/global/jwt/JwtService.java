@@ -62,7 +62,7 @@ public class JwtService {
                 .roles(getPrivileges(token).toArray(new String[0]))
                 .build();
         return new UsernamePasswordAuthenticationToken(
-                userDetails.getUsername(),
+                userDetails,
                 userDetails.getPassword(),
                 userDetails.getAuthorities());
     }

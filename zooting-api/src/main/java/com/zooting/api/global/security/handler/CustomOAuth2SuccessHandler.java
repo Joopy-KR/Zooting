@@ -51,6 +51,9 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
     protected boolean isAnonymousUser(Collection<String> userPrivileges){
         log.info("추가 정보 기입 여부 검증중");
+        if (userPrivileges.size() == 0) {
+            return false;
+        }
         for(String privilege : userPrivileges){
             if(Privilege.ANONYMOUS.name().equals(privilege)){
                 return true;
