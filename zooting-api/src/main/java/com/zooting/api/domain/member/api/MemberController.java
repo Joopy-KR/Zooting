@@ -11,6 +11,7 @@ import com.zooting.api.global.common.code.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -138,7 +139,8 @@ public class MemberController {
                 result
         );
     }
-    @PreAuthorize("hasAnyRole('USER')")
+    @PostAuthorize("hasAnyRole('USER')")
+//    @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/animal")
     public ResponseEntity<BaseResponse<String>> buyAnimalChangeItem(
             @AuthenticationPrincipal UserDetails userDetails) {
