@@ -1,19 +1,24 @@
-import { createApp } from "vue";
-import { createPinia } from "pinia";
-import piniaPersist from "pinia-plugin-persistedstate";
+import { createApp } from "vue"
+import { createPinia } from "pinia"
+import piniaPersist from "pinia-plugin-persistedstate"
+import App from './App.vue'
+import router from './router'
+import axios from "axios"
+import './index.css'
 
-import App from "./App.vue";
-import router from "./router";
-import axios from "axios";
-import "./index.css";
+const app = createApp(App)
+const pinia = createPinia()
+pinia.use(piniaPersist)
 
-const app = createApp(App);
+// fontawesome import
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+library.add(fas)
+app.component('font-awesome-icon', FontAwesomeIcon)
 
-const pinia = createPinia();
-pinia.use(piniaPersist);
+app.config.globalProperties.$axios = axios
+app.use(router)
+app.use(pinia)
 
-app.use(pinia);
-app.use(router);
-app.config.globalProperties.$axios = axios;
-
-app.mount("#app");
+app.mount("#app")

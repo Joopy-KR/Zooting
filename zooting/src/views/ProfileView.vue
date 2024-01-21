@@ -2,6 +2,7 @@
 import InfoSideBar from "@/components/profile/InfoSideBar.vue";
 import InfoMain from "@/components/profile/InfoMain.vue";
 import InfoPersonal from "@/components/profile/InfoPersonal.vue";
+import EditMaskList from "@/components/profile/EditMaskList.vue";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 
@@ -21,8 +22,11 @@ const profile = ref({
     <div class="w-1/3 h-full">
       <InfoSideBar />
     </div>
-    <div class="w-2/3 h-full">
+    <!-- <div class="w-2/3 h-full">
       <InfoMain />
+    </div> -->
+    <div class="w-2/3 h-full">
+      <EditMaskList />
     </div>
   </div>
 </template>
