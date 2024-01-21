@@ -12,12 +12,18 @@
   },
   "dependencies": {
     "axios": "^1.6.5",
-    "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
+    "@headlessui/vue": "^1.7.17",
+    "flowbite": "^2.2.1",
+    "flowbite-datepicker": "^1.2.6",
+    "pinia": "^2.1.7",
+    "tw-elements": "^1.1.0",
     "vue": "^3.3.11",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vue-tailwind-datepicker": "^1.6.1"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
     "@tsconfig/node18": "^18.2.2",
     "@types/node": "^18.19.3",
     "@vitejs/plugin-vue": "^4.5.2",
