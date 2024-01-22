@@ -12,6 +12,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "balance_game")
 public class BalanceGame  extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

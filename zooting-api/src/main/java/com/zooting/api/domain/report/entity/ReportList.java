@@ -11,6 +11,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "report_list")
 public class ReportList extends BaseEntity {
 
     @Id

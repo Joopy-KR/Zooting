@@ -18,7 +18,7 @@ build: # JOB 이름
   artifacts:
     # 보관이 이루어질 경로 설정
     paths:
-      - build/libs/*.jar
+      - build/libs/zooting-api-0.0.1-SNAPSHOT.jar
     # 유효기간 설정
     expire_in: 1 days
   # JOB이 수행될 branch 설정 (설정된 branch에 push가 발생될 시 JOB 수행)
@@ -49,8 +49,8 @@ package:
     - docker logout   # GitLab Container Registry 로그아웃
   # JOB이 수행될 branch 설정 (설정된 branch에 push가 발생될 시 JOB 수행)
   only:
+    - release
     - master
-    - dev
 
 deploy: # JOB 이름
   image: docker:latest
@@ -61,7 +61,7 @@ deploy: # JOB 이름
   # script가 실행 전 수행 될 script
   before_script:
     - echo [INFO] docker deploy start!
-    - docker login $CI_REGISTRY -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD   # GitLab Container Registry에 로그인
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD   # GitLab Container Registry에 로그인
   # 실행될 script 설정
   script:
     - docker volume prune -f # 사용되지 않는 컨테이너, 이미지 삭제 및 볼륨 정리
@@ -75,5 +75,5 @@ deploy: # JOB 이름
     - echo [INFO] docker deploy end!
   # JOB이 수행될 branch 설정 (설정된 branch에 push가 발생될 시 JOB 수행)
   only:
+    - release
     - master
-    - dev

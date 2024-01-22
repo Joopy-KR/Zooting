@@ -1,17 +1,16 @@
 package com.zooting.api.domain.member.application;
 
-import com.zooting.api.domain.block.dao.BlockRepository;
 import com.zooting.api.domain.block.entity.Block;
-import com.zooting.api.domain.friend.dao.FriendRepository;
-import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.member.dao.MemberRepository;
-import com.zooting.api.domain.member.dto.request.*;
+import com.zooting.api.domain.member.dto.request.InterestsReq;
+import com.zooting.api.domain.member.dto.request.IntroduceReq;
+import com.zooting.api.domain.member.dto.request.MemberReq;
+import com.zooting.api.domain.member.dto.request.PersonalityReq;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
 import com.zooting.api.domain.member.entity.Member;
-import com.zooting.api.domain.report.dao.ReportRepository;
-import com.zooting.api.domain.report.entity.ReportList;
+import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 
 @Service
@@ -81,8 +82,6 @@ public class MemberServiceImpl implements MemberService {
         additionalInfo.setIdealAnimal(additionalReq.idealAnimal().toString());
         additionalInfo.setMember(member);
         memberRepository.save(member);
-
-
     }
 
     @Transactional
@@ -166,6 +165,7 @@ public class MemberServiceImpl implements MemberService {
     public Member initialMemberRegister(String email) {
         return memberRepository.save(Member
                 .builder()
+                .role(List.of(Privilege.ANONYMOUS))
                 .email(email)
                 .build());
     }

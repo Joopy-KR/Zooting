@@ -12,6 +12,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @NoArgsConstructor
+@Table(name = "friend_request")
 public class FriendRequest  extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
