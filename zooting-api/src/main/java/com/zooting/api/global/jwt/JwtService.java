@@ -78,7 +78,6 @@ public class JwtService {
                 userDetails.getAuthorities());
     }
 
-
     public String getUserEmail(String token){
         return Jwts.parser()
                 .verifyWith(secretKey)

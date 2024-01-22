@@ -20,28 +20,34 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final JwtService jwtService;
+
+    /**
+     *
+     * @param request 유저의 Request
+     * @param response 서버의 Response
+     * @param authentication
+     * @throws IOException
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException {
-        log.info("OAuth2 로그인 성공, onAuthenticationSuccess 호출");
-        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
+        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         String userEmail = oAuth2User.getEmail();
         Collection<String> userPrivileges = oAuth2User.getAuthorities().stream().map(Object::toString).toList();
 
-        String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), userPrivileges);
+        String accessToken = jwtService.createAccessToken(userEmail, userPrivileges);
         log.info("OAuth2SuccessHandler에서 액세스 토큰 발급: " + accessToken);
 
         UriComponentsBuilder uriComponentsBuilder;
         // 토큰 분기처리
         if(isAnonymousUser(userPrivileges)){
-            log.info(userEmail + "는 추가 정보가 없는 유저");
-            //TODO 추가 정보 기입 페이지 Redirect
-            uriComponentsBuilder = UriComponentsBuilder.fromUriString("http://localhost:5173/login")
+            // TODO
+            //  1. 링크 나올 시 추가 정보 기입 페이지 Redirect
+            uriComponentsBuilder = UriComponentsBuilder.fromUriString("http://localhost:5173/addtionalInformation")
                             .queryParam("access-token", accessToken);
 
         } else {
-            log.info(userEmail + "는 추가 정보가 있는 유저");
             uriComponentsBuilder = UriComponentsBuilder.fromUriString("http://localhost:5173/login")
                     .queryParam("access-token", accessToken);
         }
@@ -50,7 +56,6 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
     }
 
     protected boolean isAnonymousUser(Collection<String> userPrivileges){
-        log.info("추가 정보 기입 여부 검증중");
         for(String privilege : userPrivileges){
             if(Privilege.ANONYMOUS.name().equals(privilege)){
                 return true;
