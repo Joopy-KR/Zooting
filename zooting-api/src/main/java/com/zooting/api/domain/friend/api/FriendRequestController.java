@@ -1,7 +1,6 @@
 package com.zooting.api.domain.friend.api;
 
 import com.zooting.api.domain.friend.application.FriendRequestService;
-import com.zooting.api.domain.friend.application.FriendService;
 import com.zooting.api.domain.friend.dto.request.FriendReq;
 import com.zooting.api.domain.friend.dto.response.FriendRes;
 import com.zooting.api.global.common.BaseResponse;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;

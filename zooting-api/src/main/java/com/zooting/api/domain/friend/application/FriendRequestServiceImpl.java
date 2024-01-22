@@ -1,15 +1,9 @@
 package com.zooting.api.domain.friend.application;
 
-import com.zooting.api.domain.friend.dao.FriendRepository;
 import com.zooting.api.domain.friend.dao.FriendRequestRepository;
-import com.zooting.api.domain.friend.dto.request.FriendReq;
 import com.zooting.api.domain.friend.dto.response.FriendRes;
-import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.friend.entity.FriendRequest;
-import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
-import com.zooting.api.global.common.code.ErrorCode;
-import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

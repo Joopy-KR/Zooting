@@ -1,11 +1,11 @@
 package com.zooting.api.domain.friend.application;
 
+import com.zooting.api.application.usecase.AcceptFriendUsecase;
+import com.zooting.api.application.usecase.SendFriendUsecase;
 import com.zooting.api.domain.friend.dao.FriendRepository;
 import com.zooting.api.domain.friend.dto.request.FriendReq;
 import com.zooting.api.domain.friend.dto.response.FriendRes;
 import com.zooting.api.domain.friend.entity.Friend;
-import com.zooting.api.application.usecase.AcceptFriendUsecase;
-import com.zooting.api.application.usecase.SendFriendUsecase;
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
@@ -27,7 +27,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Log4j2
 @SpringBootTest

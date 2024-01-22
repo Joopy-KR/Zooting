@@ -9,10 +9,8 @@ import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 

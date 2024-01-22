@@ -1,6 +1,5 @@
 package com.zooting.api.application.usecase;
 
-import com.zooting.api.domain.friend.dao.FriendRepository;
 import com.zooting.api.domain.friend.dao.FriendRequestRepository;
 import com.zooting.api.domain.friend.entity.FriendRequest;
 import com.zooting.api.domain.member.dao.MemberRepository;

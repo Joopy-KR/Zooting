@@ -1,4 +1,5 @@
 package com.zooting.api.domain.block.entity;
+
 import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
@@ -6,8 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Objects;
 
 
 @Getter

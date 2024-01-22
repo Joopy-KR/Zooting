@@ -1,18 +1,17 @@
 package com.zooting.api.domain.friend.application;
 
-import com.zooting.api.domain.friend.dao.FriendRequestRepository;
 import com.zooting.api.application.usecase.SendFriendUsecase;
+import com.zooting.api.domain.friend.dao.FriendRequestRepository;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.transaction.Transactional;
-import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 @Log4j2
 @SpringBootTest
 class FriendRequestServiceTest {

@@ -1,26 +1,23 @@
 package com.zooting.api.domain.friend.dao;
 
 import com.zooting.api.domain.friend.entity.Friend;
-import com.zooting.api.domain.friend.entity.FriendRequest;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @Log4j2
 @SpringBootTest
-@RequiredArgsConstructor
 class FriendRepositoryTest {
 
     @Autowired

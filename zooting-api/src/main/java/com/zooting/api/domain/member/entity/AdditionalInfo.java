@@ -4,7 +4,6 @@ import com.zooting.api.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 import java.util.Objects;
 
 @Getter
