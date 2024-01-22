@@ -45,6 +45,7 @@ package:
   # 실행될 script 설정
   script:
     - cd ./zooting-api
+    - echo /var/lib/docker/tmp/buildkit-mount3219071584/zooting-api/build/libs
     - echo [INFO] Start package stage
     - echo [INFO] SPRING_IMAGE_NAME      $SPRING_IMAGE_NAME
     - echo [INFO] NGINX_IMAGE_NAME       $NGINX_IMAGE_NAME
