@@ -17,9 +17,7 @@ public interface MemberService {
     void updateIntroduce(String memberId, IntroduceReq introduceReq);
     List<MemberRes> findMemberList(String userId, String nickname);
     void updatePersonality(String userId, PersonalityReq personalityReq);
-    void insertBlockList(String userId, BlockReq blockReq);
-    void deleteBlock(String userId, BlockReq blockReq);
-    void insertReport(String userId, ReportReq report);
+//    void insertReport(String userId, ReportReq report);
     PointRes findPoints(String userId);
     Boolean deductPoints(String userId, Long price);
     Member getMemberByEmail(String email);

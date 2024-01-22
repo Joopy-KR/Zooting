@@ -94,40 +94,8 @@ public class MemberController {
                 "성격 수정 완료"
         );
     }
-    @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/block")
-    public ResponseEntity<BaseResponse<String>> saveBlockMember(
-            @RequestBody BlockReq blockReq,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        memberService.insertBlockList(userDetails.getUsername(), blockReq);
-        return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
-                "멤버 차단 완료"
-        );
-    }
-    @PreAuthorize("hasAnyRole('USER')")
-    @DeleteMapping("/block")
-    public ResponseEntity<BaseResponse<String>> deleteBlockMember(
-            @RequestBody BlockReq blockReq,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        memberService.deleteBlock(userDetails.getUsername(), blockReq);
-        return BaseResponse.success(
-                SuccessCode.DELETE_SUCCESS,
-                "멤버 차단 해제 완료"
-        );
-    }
 
-    @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/reports")
-    public ResponseEntity<BaseResponse<String>> insertReport(
-            @RequestBody ReportReq reportReq,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        memberService.insertReport(userDetails.getUsername(), reportReq);
-        return BaseResponse.success(
-                SuccessCode.INSERT_SUCCESS,
-                reportReq.email() + "에 대한 신고 완료"
-        );
-    }
+
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping("/points")
     public ResponseEntity<BaseResponse<PointRes>> findPoints(
@@ -139,8 +107,7 @@ public class MemberController {
                 result
         );
     }
-    @PostAuthorize("hasAnyRole('USER')")
-//    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/animal")
     public ResponseEntity<BaseResponse<String>> buyAnimalChangeItem(
             @AuthenticationPrincipal UserDetails userDetails) {

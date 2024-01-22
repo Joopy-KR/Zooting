@@ -27,9 +27,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
-    private final FriendRepository friendRepository;
-    private final BlockRepository blockRepository;
-    private final ReportRepository reportRepository;
 
     @Override
     public boolean existNickname(String nickname) {
@@ -127,60 +124,7 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
-    @Transactional
-    @Override
-    public void insertBlockList(String userId, BlockReq blockReq) {
-        Member member = memberRepository.findMemberByEmail(userId)
-                .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
-        // 차단할 사람
-        Member blockMember = memberRepository.findMemberByNickname(blockReq.nickname())
-                .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
 
-        // 친구인지 확인
-        boolean flag = false;
-        for (var friend : member.getFriendList()) {
-            if (friend.getFollowing().equals(blockMember)) {
-                flag = true;
-                break;
-            }
-        }
-        if (flag) {
-            friendRepository.deleteFriendByFollowerAndFollowing(member, blockMember);
-            friendRepository.deleteFriendByFollowerAndFollowing(blockMember, member);
-        }
-        //차단 목록 등록
-        Block block = new Block();
-        block.setFrom(member);
-        block.setTo(blockMember);
-        blockRepository.save(block);
-
-    }
-
-    @Transactional
-    @Override
-    public void deleteBlock(String userId, BlockReq blockReq) {
-        // 차단한 사람
-        Member member = memberRepository.findMemberByEmail(userId)
-                .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
-        // 차단 당한 사람
-        Member blockedMember = memberRepository.findMemberByNickname(blockReq.nickname())
-                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        blockRepository.deleteBlockByFromAndTo(member, blockedMember);
-
-    }
-
-    @Transactional
-    @Override
-    public void insertReport(String userId, ReportReq reportReq) {
-        Member reportedMember = memberRepository.findMemberByEmail(userId)
-                .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
-        ReportList reportList = new ReportList();
-        reportList.setReason(reportReq.reason());
-        reportList.setDate(reportReq.date());
-        reportList.setMember(reportedMember);
-
-        reportRepository.save(reportList);
-    }
 
     @Override
     public PointRes findPoints(String userId) {
