@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface FriendService {
     List<FriendRes> getFriends(String follower);
-    void            acceptFriend(FriendReq friendReq, Authentication authentication);
-    List<MemberRes> searchFriend(String nickname);
-
+    List<FriendRes> searchFriend(String nickname, String loginEmail);
 
 }

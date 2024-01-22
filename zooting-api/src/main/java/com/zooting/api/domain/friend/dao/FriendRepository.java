@@ -4,6 +4,7 @@ import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -12,8 +13,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 
     @Query("""
         SELECT fr FROM Friend fr
-        WHERE fr.follower = :follower
+        WHERE fr.follower.email = :follower
     """)
-    List<Friend> findFriendByFollower(String follower);
+    List<Friend> findFriendByFollower(@Param("follower") String follower);
 }
-

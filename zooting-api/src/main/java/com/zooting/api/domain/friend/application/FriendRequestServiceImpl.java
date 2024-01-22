@@ -20,7 +20,6 @@ import java.util.List;
 public class FriendRequestServiceImpl implements FriendRequestService{
 
     private final FriendRequestRepository friendRequestRepository;
-    private final MemberRepository memberRepository;
 
     @Override
     public List<FriendRes> getReceivedFriendRequests(String requestTo) {
@@ -43,12 +42,17 @@ public class FriendRequestServiceImpl implements FriendRequestService{
 
     @Override
     public void sendFriendRequest(String requestFrom, String requestTo) {
-        Member member1 = memberRepository.findByEmail(requestFrom)
-                .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        Member member2 = memberRepository.findByEmail(requestTo)
-                .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        FriendRequest friendRequest = new FriendRequest(member1, member2);
+        Member fromMember = Member.builder().email(requestFrom).build();
+        Member toMember = Member.builder().email(requestTo).build();
+        FriendRequest friendRequest = new FriendRequest(fromMember, toMember);
         friendRequestRepository.save(friendRequest);
+    }
+
+    @Override
+    public void rejectFriendRequest(String requestFrom, String requestTo) {
+        Member from = Member.builder().email(requestFrom).build(); // x
+        Member to = Member.builder().email(requestTo).build(); // y
+        friendRequestRepository.deleteFriendRequestByFromAndTo(to, from);
     }
 
 }

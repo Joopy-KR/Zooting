@@ -8,4 +8,5 @@ public interface FriendRequestService {
     List<FriendRes> getReceivedFriendRequests(String requestTo);
     List<FriendRes> getSentFriendRequests(String requestFrom);
     void sendFriendRequest(String requestFrom, String requestTo);
+    void rejectFriendRequest(String requestFrom, String requestTo);
 }

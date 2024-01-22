@@ -1,11 +1,11 @@
 package com.zooting.api.domain.friend.application;
 
 import com.zooting.api.domain.friend.dao.FriendRepository;
+import com.zooting.api.domain.friend.dao.FriendRequestRepository;
 import com.zooting.api.domain.friend.dto.request.FriendReq;
 import com.zooting.api.domain.friend.dto.response.FriendRes;
 import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.member.dao.MemberRepository;
-import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
@@ -22,45 +22,26 @@ import java.util.List;
 public class FriendServiceImpl implements FriendService{
 
     private final FriendRepository friendRepository;
-    private final MemberRepository memberRepository;
     @Override
     public List<FriendRes> getFriends(String follower) {
         List<Friend> friendList = friendRepository.findFriendByFollower(follower);
-        log.info(friendList);
         List<FriendRes> friendResList = friendList
                 .stream()
                 .map(friend -> new FriendRes(friend.getFollowing().getEmail(), friend.getFollowing().getNickname()))
                 .toList();
-        friendList.stream().map(friend -> friend.getFollowing().getEmail()).forEach(log::info);
         return friendResList;
     }
 
     @Override
-    public void acceptFriend(FriendReq friendReq, Authentication authentication) {
-        //양방향 저장
-        Member member1 = memberRepository.findByEmail(authentication.getName())
-                .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        Member member2 = memberRepository.findByEmail(friendReq.email())
-                .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-
-        Friend friend1 = new Friend();
-        friend1.setFollower(member1);
-        friend1.setFollowing(member2);
-        Friend friend2 = new Friend();
-        friend2.setFollower(member2);
-        friend2.setFollowing(member1);
-        friendRepository.save(friend1);
-        friendRepository.save(friend2);
-    }
-
-    @Override
-    public List<MemberRes> searchFriend(String nickname) {
+    public List<FriendRes> searchFriend(String nickname, String loginEmail){
         //search friend contating nickname
-        List<Member> memberList = memberRepository.findMemberByNicknameContaining(nickname);
-        List<MemberRes> memberResList = memberList
+        List<FriendRes> friendList = getFriends(loginEmail); // 친구 목록 가져오기
+        List<FriendRes> searchList = friendList
                 .stream()
-                .map(member -> new MemberRes(member.getEmail(), member.getNickname()))
-                .toList();
-        return memberResList;
+                .filter(friend -> friend.nickname().contains(nickname))
+                .map(friend ->  new FriendRes(friend.email(), friend.nickname()))
+                .toList(); // 친구 목록 중에서 닉네임이 nickname을 포함하는 친구 찾기
+
+        return searchList;
     }
 }
