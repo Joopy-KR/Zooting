@@ -50,28 +50,6 @@ const profile = ref({
       <div class="flex justify-center mx-4 my-8 text-5xl font-bold tracking-tight">
         <p class="">겨울의 눈송이 개</p>
       </div>
-      <!-- <div class="flex p-4 justify-items-center">
-          <div class="flex flex-wrap p-4 rounded-lg">
-            <div class="px-6 py-4 mx-4 my-2 border-2 rounded-lg">
-              <p class="text-xl text-center"># 등산</p>
-            </div>
-            <div class="px-6 py-4 mx-4 my-2 border-2 rounded-lg">
-              <p class="text-xl text-center"># 수영</p>
-            </div>
-            <div class="px-6 py-4 mx-4 my-2 border-2 rounded-lg">
-              <p class="text-xl text-center"># 여행</p>
-            </div>
-            <div class="px-6 py-4 mx-4 my-2 border-2 rounded-lg">
-              <p class="text-xl text-center"># 캠핑</p>
-            </div>
-            <div class="px-6 py-4 mx-4 my-2 border-2 rounded-lg">
-              <p class="text-xl text-center"># 게임</p>
-            </div>
-            <div class="px-6 py-4 mx-4 my-2 border-2 rounded-lg">
-              <p class="text-xl text-center"># 노래</p>
-            </div>
-          </div>
-        </div> -->
       <div class="flex items-end justify-center min-w-max">
         <div class="w-2/3 m-4 border-t-4 shadow-inner rounded-3xl">
           <div class="grid grid-cols-1 gap-6 p-8 sm:grid-cols-2">

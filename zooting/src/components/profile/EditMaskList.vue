@@ -8,49 +8,59 @@ interface Mask {
   imageUrl: string;
   price: Number;
   title: string;
+  status: boolean;
+  isSelected: boolean;
 }
 
 const masks: Mask[] = [
   {
     id: 1,
     title: "개구쟁이 시바",
-    imageUrl: "@/assets/images/mask/dog1.png",
+    imageUrl: "/src/assets/images/mask/dog1.png",
     price: 30,
+    status: true,
+    isSelected: false,
   },
   {
     id: 2,
     title: "멍뭉이",
-    imageUrl: "@/assets/images/mask/dog2.png",
+    imageUrl: "/src/assets/images/mask/dog2.png",
     price: 30,
+    status: true,
+    isSelected: false,
   },
   {
     id: 3,
     title: "퇴근 시바",
-    imageUrl: "@/assets/images/mask/dog3.png",
+    imageUrl: "/src/assets/images/mask/dog3.png",
     price: 30,
+    status: false,
+    isSelected: false,
   },
   {
     id: 4,
     title: "순댕이",
-    imageUrl: "@/assets/images/mask/dog4.png",
+    imageUrl: "/src/assets/images/mask/dog4.png",
     price: 30,
+    status: false,
+    isSelected: false,
   },
   {
     id: 5,
     title: "금쪽이",
-    imageUrl: "@/assets/images/mask/dog5.png",
+    imageUrl: "/src/assets/images/mask/dog5.png",
     price: 30,
+    status: true,
+    isSelected: true,
   },
 ];
 </script>
 
 <template>
   <div class="flex flex-col">
+    <p class="p-12 m-4 text-5xl font-bold tracking-tighter text-center">아바타 동물상 선택</p>
     <div>
-      <p class="p-12 m-4 text-5xl font-bold tracking-tighter text-center">아바타 동물상 선택</p>
-    </div>
-    <div>
-      <div class="flex flex-row justify-between px-12 m-4">
+      <div class="flex flex-row justify-between px-12 mr-4">
         <IconMaskDropDown />
         <span
           class="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-11"
@@ -61,14 +71,42 @@ const masks: Mask[] = [
         </span>
       </div>
     </div>
-    <div>
+    <div class="flex items-center content-center justify-center w-2/3 mx-auto">
       <div class="grid grid-cols-3 gap-3 px-12 py-8 m-4">
         <div v-for="mask in masks" :key="mask.id">
-          <div class="rounded-lg">
-            <img :src="mask.imageUrl" :alt="mask.title" class="object-cover w-full h-full" />
+          <div
+            class="flex items-center justify-center overflow-hidden border-2 border-spacing-2 rounded-3xl border-red-500/20"
+            :class="{ 'bg-gray-400': !mask.status }"
+          >
+            <div class="relative">
+              <img
+                v-if="mask.isSelected"
+                class="absolute top-0 left-0 z-10 w-16"
+                src="/src/assets/images/mask/check_icon.png"
+              />
+              <img
+                v-if="!mask.status"
+                class="absolute bottom-0 right-0 z-10 w-16"
+                src="/src/assets/images/mask/lock_icon.png"
+              />
+              <img
+                :src="mask.imageUrl"
+                :alt="mask.title"
+                class="z-0 object-contain w-full h-full p-2"
+                :style="{ filter: mask.status ? 'none' : 'brightness(60%)' }"
+              />
+            </div>
           </div>
         </div>
       </div>
+    </div>
+    <div class="flex justify-center">
+      <button
+        type="button"
+        class="rounded-full bg-indigo-600 px-4 py-2.5 w-1/2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+      >
+        동물상 다시 검사하기
+      </button>
     </div>
   </div>
 </template>
