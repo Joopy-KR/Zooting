@@ -1,7 +1,7 @@
-package com.zooting.api.application.usecase;
+package application.usecase;
 
-import com.zooting.api.application.dto.request.MemberAndBackgroundReq;
-import com.zooting.api.application.dto.response.MemberAndBackgroundRes;
+import application.dto.request.MemberAndBackgroundReq;
+import application.dto.response.MemberAndBackgroundRes;
 import com.zooting.api.domain.background.dao.BackgroundInventoryRepository;
 import com.zooting.api.domain.background.dao.BackgroundRepository;
 import com.zooting.api.domain.background.entity.Background;
@@ -29,27 +29,22 @@ public class MemberAndBackgroundUsecase {
         Background background = backgroundRepository.findById(backgroundReq.backgroundId())
                 .orElseThrow(()-> new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
 
-        // 이미 샀던거면 return false
-        List<BackgroundInventory> backgroundInventories = member.getMyBackgrounds();
-        for(var bgImg : backgroundInventories) {
-            if (bgImg.getBackground().getId() == backgroundReq.backgroundId()) {
-                return false;
-            }
-        }
-        // 가격보다 포인트가 적으면 return false
-        if (memberPoints < background.getPrice()) {
+        // 이미 샀거나 가격보다 포인트가 적으면 return false
+        Boolean isInBackgroundInventory = backgroundInventoryRepository.existsByBackgroundIdAndMember(background.getId(), member);
+        if (isInBackgroundInventory || memberPoints < background.getPrice()) {
             return false;
-        }else {
-            // 포인트 차감
-            member.setPoint(memberPoints - background.getPrice());
-            memberRepository.save(member);
-            // 인벤토리 추가
-            BackgroundInventory bgInventory = new BackgroundInventory();
-            bgInventory.setBackground(background);
-            bgInventory.setMember(member);
-            backgroundInventoryRepository.save(bgInventory);
-            return true;
         }
+
+        // 포인트 차감
+        member.setPoint(memberPoints - background.getPrice());
+        memberRepository.save(member);
+        // 인벤토리 추가
+        BackgroundInventory bgInventory = new BackgroundInventory();
+        bgInventory.setBackground(background);
+        bgInventory.setMember(member);
+        backgroundInventoryRepository.save(bgInventory);
+        return true;
+
 
     }
     public List<MemberAndBackgroundRes> findAllBackgroundInventory(String userId) {

@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface MaskInventoryRepository extends JpaRepository<MaskInventory, Long> {
     List<MaskInventory> findAllByMember(Member member);
+    Boolean existsByMaskIdAndMember(Long maskId, Member member);
 }

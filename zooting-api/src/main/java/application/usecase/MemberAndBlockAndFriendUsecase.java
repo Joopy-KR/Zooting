@@ -1,6 +1,6 @@
-package com.zooting.api.application.usecase;
+package application.usecase;
 
-import com.zooting.api.application.dto.request.MemberAndBlockReq;
+import application.dto.request.MemberAndBlockReq;
 import com.zooting.api.domain.block.dao.BlockRepository;
 import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.friend.dao.FriendRepository;
@@ -20,40 +20,31 @@ public class MemberAndBlockAndFriendUsecase {
     private final BlockRepository blockRepository;
     @Transactional
     public void insertBlockList(String userId, MemberAndBlockReq insertBlockListReq) {
-        Member member = memberRepository.findMemberByEmail(userId)
-                .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
+        Member me = new Member();
+        me.setEmail(userId);
         // 차단할 사람
         Member blockMember = memberRepository.findMemberByNickname(insertBlockListReq.nickname())
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
 
-        // 친구인지 확인
-        boolean flag = false;
-        for (var friend : member.getFriendList()) {
-            if (friend.getFollowing().equals(blockMember)) {
-                flag = true;
-                break;
-            }
-        }
-        if (flag) {
-            friendRepository.deleteFriendByFollowerAndFollowing(member, blockMember);
-            friendRepository.deleteFriendByFollowerAndFollowing(blockMember, member);
+        // 친구인 경우 친구 관계 삭제
+        if (friendRepository.existsByFollowerAndFollowing(me, blockMember)) {   
+            friendRepository.deleteFriendByFollowerAndFollowingOrFollowingAndFollower(me, blockMember, me, blockMember);
         }
         //차단 목록 등록
         Block block = new Block();
-        block.setFrom(member);
+        block.setFrom(me);
         block.setTo(blockMember);
         blockRepository.save(block);
 
     }
     @Transactional
     public void deleteBlock(String userId, MemberAndBlockReq blockReq) {
-        // 차단한 사람
-        Member member = memberRepository.findMemberByEmail(userId)
-                .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
+        Member me = new Member();
+        me.setEmail(userId);
         // 차단 당한 사람
         Member blockedMember = memberRepository.findMemberByNickname(blockReq.nickname())
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        blockRepository.deleteBlockByFromAndTo(member, blockedMember);
+        blockRepository.deleteBlockByFromAndTo(me, blockedMember);
 
     }
 

@@ -1,11 +1,12 @@
-package com.zooting.api.application.api;
+package application.api;
 
-import com.zooting.api.application.dto.request.MemberAndBlockReq;
-import com.zooting.api.application.usecase.MemberAndBlockAndFriendUsecase;
+import application.dto.request.MemberAndBlockReq;
+import application.usecase.MemberAndBlockAndFriendUsecase;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +28,7 @@ public class MemberAndBlockAndFriendController {
             description = "차단 멤버 추가시 친구 관계 삭제"
     )
     public ResponseEntity<BaseResponse<String>> saveBlockMember(
-            @RequestBody MemberAndBlockReq blockReq,
+            @Valid @RequestBody MemberAndBlockReq blockReq,
             @AuthenticationPrincipal UserDetails userDetails) {
         memberAndBlockAndFriendUsecase.insertBlockList(userDetails.getUsername(), blockReq);
         return BaseResponse.success(
@@ -39,7 +40,7 @@ public class MemberAndBlockAndFriendController {
     @DeleteMapping
     @Operation(summary = "차단 해제")
     public ResponseEntity<BaseResponse<String>> deleteBlockMember(
-            @RequestBody MemberAndBlockReq blockReq,
+            @Valid @RequestBody MemberAndBlockReq blockReq,
             @AuthenticationPrincipal UserDetails userDetails) {
         memberAndBlockAndFriendUsecase.deleteBlock(userDetails.getUsername(), blockReq);
         return BaseResponse.success(

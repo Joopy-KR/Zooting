@@ -10,6 +10,7 @@ import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,7 @@ public class MemberController {
     @PreAuthorize("hasAnyRole('ANONYMOUS')")
     @PutMapping
     public ResponseEntity<BaseResponse<String>> saveAdditionalInfo(
-            @RequestBody MemberReq memberReq,
+            @Valid @RequestBody MemberReq memberReq,
             @AuthenticationPrincipal UserDetails userDetails
     ) throws ParseException {
         memberService.updateMemberInfo(userDetails.getUsername(), memberReq);
@@ -74,7 +75,7 @@ public class MemberController {
     @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
     @PutMapping("/interests")
     public ResponseEntity<BaseResponse<String>> updateInterests(
-            @RequestBody InterestsReq interestsReq,
+            @Valid @RequestBody InterestsReq interestsReq,
             @AuthenticationPrincipal UserDetails userDetails) {
         memberService.updateInterestsandIdeal(userDetails.getUsername(), interestsReq);
         return BaseResponse.success(
@@ -87,7 +88,7 @@ public class MemberController {
     @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
     @PutMapping("/introduce")
     public ResponseEntity<BaseResponse<String>> updateIntroduce(
-            @RequestBody IntroduceReq introduceReq,
+            @Valid @RequestBody IntroduceReq introduceReq,
             @AuthenticationPrincipal UserDetails userDetails) {
         memberService.updateIntroduce(userDetails.getUsername(), introduceReq);
         return BaseResponse.success(
@@ -100,7 +101,7 @@ public class MemberController {
             description = "검색한 키워드에 해당하는 멤버 중 나를 차단한 사람 제외하고 리스트로 반환"
     )
     @PreAuthorize("hasAnyRole('USER')")
-    @GetMapping
+    @GetMapping("/members")
     public ResponseEntity<BaseResponse<List<MemberRes>>> findMemberList(
             @RequestParam(name = "nickname") String nickname,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -114,7 +115,7 @@ public class MemberController {
     @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
     @PutMapping("/characters")
     public ResponseEntity<BaseResponse<String>> updatePersonality(
-            @RequestBody PersonalityReq personalityReq,
+            @Valid @RequestBody PersonalityReq personalityReq,
             @AuthenticationPrincipal UserDetails userDetails) {
         memberService.updatePersonality(userDetails.getUsername(), personalityReq);
         return BaseResponse.success(
@@ -150,12 +151,12 @@ public class MemberController {
                     SuccessCode.UPDATE_SUCCESS,
                     "변경 허용"
             );
-        } else {
-            return BaseResponse.success(
-                    SuccessCode.UPDATE_SUCCESS,
-                    "변경 불가"
-            );
         }
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                "변경 불가"
+        );
+
 
     }
     @Operation(
@@ -173,16 +174,16 @@ public class MemberController {
                     SuccessCode.UPDATE_SUCCESS,
                     "변경 허용"
             );
-        } else {
-            return BaseResponse.success(
-                    SuccessCode.UPDATE_SUCCESS,
-                    "변경 불가"
-            );
         }
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                "변경 불가"
+        );
+
     }
 
     @Operation(summary = "내 이메일 조회")
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<Member> getMemberByEmail(@RequestParam String email) {
         return ResponseEntity.ok(memberService.getMemberByEmail(email));
     }

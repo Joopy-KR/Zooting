@@ -1,6 +1,6 @@
-package com.zooting.api.application.usecase;
+package application.usecase;
 
-import com.zooting.api.application.dto.request.MemberAndReportReq;
+import application.dto.request.MemberAndReportReq;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.report.dao.ReportRepository;
@@ -22,7 +22,6 @@ public class MemberAndReportUsecase {
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
         ReportList reportList = new ReportList();
         reportList.setReason(reportReq.reason());
-        reportList.setDate(reportReq.date());
         reportList.setMember(reportedMember);
 
         reportRepository.save(reportList);

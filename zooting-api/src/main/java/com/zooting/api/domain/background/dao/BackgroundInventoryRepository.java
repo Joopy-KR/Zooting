@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface BackgroundInventoryRepository extends JpaRepository<BackgroundInventory, Long> {
     List<BackgroundInventory> findAllByMember(Member member);
+    Boolean existsByBackgroundIdAndMember(Long backgroundId, Member member);
 }

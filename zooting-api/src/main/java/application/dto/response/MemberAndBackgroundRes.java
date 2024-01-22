@@ -1,4 +1,4 @@
-package com.zooting.api.application.dto.response;
+package application.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

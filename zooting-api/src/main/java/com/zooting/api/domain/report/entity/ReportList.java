@@ -1,5 +1,6 @@
 package com.zooting.api.domain.report.entity;
 
+import com.zooting.api.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReportList {
+public class ReportList extends BaseEntity {
 
     @Id
     @Column(name = "report_list_id")

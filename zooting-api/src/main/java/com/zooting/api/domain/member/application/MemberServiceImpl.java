@@ -37,12 +37,10 @@ public class MemberServiceImpl implements MemberService {
     public boolean checkAdditionalInfo(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        System.out.println("======================" + member.getNickname());
         if (member.getNickname().isBlank()) {
             return false;
-        }else {
-            return true;
         }
+        return true;
     }
 
     @Transactional
@@ -114,10 +112,8 @@ public class MemberServiceImpl implements MemberService {
         if (!blockList.isEmpty()) {
             List<String> blockMemberNicknames = blockList.stream().map(block -> block.getFrom().getNickname()).toList();
             findMembers = memberRepository.findByNicknameContainingAndNicknameNotIn(nickname, blockMemberNicknames);
-        } else {
-            findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         }
-
+        findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         List<MemberRes> resultList = findMembers.stream().map(mem -> new MemberRes(mem.getNickname(), mem.getEmail())).toList();
         return resultList;
     }
@@ -143,7 +139,6 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
         PointRes pointRes = new PointRes(member.getPoint());
-
         return pointRes;
     }
 
@@ -155,11 +150,10 @@ public class MemberServiceImpl implements MemberService {
         Long memberPoints = member.getPoint();
         if (memberPoints < price) {
             return false;
-        } else {
-            member.setPoint(memberPoints - price);
-            memberRepository.save(member);
-            return true;
         }
+        member.setPoint(memberPoints - price);
+        memberRepository.save(member);
+        return true;
     }
 
     @Override

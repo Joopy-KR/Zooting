@@ -26,7 +26,7 @@ public class MaskController {
 
     @Operation(summary = "모든 마스크 조회")
     @PreAuthorize("hasAnyRole('USER')")
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<BaseResponse<List<MaskRes>>> findAllMasks()  {
         List<MaskRes> result = maskService.findAllMask();
         return BaseResponse.success(

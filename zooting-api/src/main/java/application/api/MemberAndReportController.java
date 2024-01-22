@@ -1,11 +1,12 @@
-package com.zooting.api.application.api;
+package application.api;
 
-import com.zooting.api.application.dto.request.MemberAndReportReq;
-import com.zooting.api.application.usecase.MemberAndReportUsecase;
+import application.dto.request.MemberAndReportReq;
+import application.usecase.MemberAndReportUsecase;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/reports")
+@RequestMapping("/api/reports/test")
 @RequiredArgsConstructor
 @Tag(name="멤버와 신고", description = "멤버와 신고 관련 API")
 public class MemberAndReportController {
@@ -27,7 +28,7 @@ public class MemberAndReportController {
     @PostMapping
     @Operation(summary = "멤버 신고")
     public ResponseEntity<BaseResponse<String>> insertReport(
-            @RequestBody MemberAndReportReq reportReq,
+            @Valid @RequestBody MemberAndReportReq reportReq,
             @AuthenticationPrincipal UserDetails userDetails) {
         memberAndReportUsecase.insertReport(userDetails.getUsername(), reportReq);
         return BaseResponse.success(

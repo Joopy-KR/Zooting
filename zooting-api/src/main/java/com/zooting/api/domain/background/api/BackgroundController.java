@@ -9,8 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +21,7 @@ public class BackgroundController {
     final private BackgroundService backgroundService;
     @Operation(summary = "전체 배경 이미지 조회")
     @PreAuthorize("hasAnyRole('USER')")
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<BaseResponse<List<BackgroundRes>>> findAllBackgroundImg() {
         List<BackgroundRes> result = backgroundService.findAllBackgroundImg();
         return BaseResponse.success(

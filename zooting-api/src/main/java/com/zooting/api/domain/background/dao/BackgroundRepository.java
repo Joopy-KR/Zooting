@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface BackgroundRepository extends JpaRepository<Background, Long> {
     List<Background> findAll();
     Optional<Background> findById(Long backgroundId);
+
 }

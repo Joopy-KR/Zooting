@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface FriendRepository extends JpaRepository<Friend, Long> {
-    void deleteFriendByFollowerAndFollowing(Member follower, Member following);
+    void deleteFriendByFollowerAndFollowingOrFollowingAndFollower(Member follower1, Member following1, Member following2, Member follower2);
+    Boolean existsByFollowerAndFollowing(Member follower, Member following);
 }
