@@ -10,16 +10,16 @@
     </div>
     
     <div class="result__content">
-      <div v-for="(content, index) in personality.content" :key="index">
+      <li v-for="(content, index) in personality.content" :key="index">
         {{ content }}
-      </div>
-      <span :class="getColorClass(personality.match)">
+      </li>
+      <li><span :class="getColorClass(personality.match)">
         {{ personality.match }}
-      </span> 유형과 궁합이 맞아요.
+      </span> 유형과 궁합이 맞아요.</li>
     </div>
-
     <!-- click => axios & Home으로 라우팅 -->
     <button class="test-completed">미팅 하러 가기</button>
+
   </div>
 </template>
 
@@ -51,10 +51,11 @@ const getColorClass = (value: string) => {
 
 <style scoped>
 .result__container {
-  @apply h-screen flex flex-col justify-center;
+  @apply h-full w-full flex flex-col justify-center bg-white border border-gray-200 shadow p-3 items-center;
+
 }
 .result__title {
-  @apply text-2xl font-black my-3;
+  @apply text-2xl font-black my-5;
 }
 
 .summer-text {
@@ -74,12 +75,12 @@ const getColorClass = (value: string) => {
 }
 
 .result__content {
-  @apply bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-3xl py-3 px-5;
+  @apply bg-white border border-gray-200 rounded-lg shadow py-5 px-5 text-left;
 }
 .result__content span {
   @apply font-black;
 }
 .test-completed {
-  @apply text-gray-900 bg-gradient-to-r from-red-200 via-red-300 to-yellow-200 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-red-100 dark:focus:ring-red-400 font-medium rounded-lg text-lg px-5 py-2.5 text-center mx-3 my-5;
+  @apply text-gray-900 bg-gradient-to-r from-red-200 via-red-300 to-yellow-200 hover:bg-gradient-to-bl focus:outline-none focus:ring-red-100 font-medium rounded-lg text-lg px-5 py-2.5 text-center mx-3 my-7 w-80;
 }
 </style>

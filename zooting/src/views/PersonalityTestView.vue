@@ -1,29 +1,23 @@
 <template>
   <div class="personality-test__container">
     <!-- Description -->
-    <div>
-      <Description 
-        v-show="!istestStart"
-        @test-start="testStart"
-      />
-    </div>
+    <Description 
+      v-show="!istestStart"
+      @test-start="testStart"
+    />
 
     <!-- Qusetion -->
-    <div>
-      <Question 
-        v-show="istestStart && !istestComplete"
-        :test="currentTest"
-        @select-answer="handleAnswerSelected"
-      />
-    </div>
+    <Question 
+      v-show="istestStart && !istestComplete"
+      :test="currentTest"
+      @select-answer="handleAnswerSelected"
+    />
 
     <!-- Result -->
-    <div>
-      <Result 
-        v-if="istestComplete"
-        :test-result="testResult"
-      />
-    </div>
+    <Result 
+      v-if="istestComplete"
+      :test-result="testResult"
+    />
   </div>
 </template>
 
@@ -101,6 +95,6 @@ const test: Test[] = [
 
 <style scoped>
 .personality-test__container {
-  @apply flex flex-col justify-center items-center text-center;
+  @apply flex flex-col justify-center items-center text-center p-6 bg-slate-100 w-screen h-screen;
 }
 </style>

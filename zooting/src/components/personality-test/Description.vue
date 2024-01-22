@@ -17,7 +17,7 @@ const testStart = () => {
 
 <style scoped>
 .description__container {
- @apply flex flex-col items-center justify-center w-screen h-screen text-center;
+ @apply flex flex-col items-center justify-center w-full h-full text-center bg-white border border-gray-200; 
 }
 .description__container p {
   @apply text-xl font-black

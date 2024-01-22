@@ -39,13 +39,13 @@ const getImageUrl = () => `images/season${props.test.id}.png`
 
 <style scoped>
 .test__container {
-  @apply h-screen flex flex-col justify-center items-center;
+  @apply h-full w-full flex flex-col justify-center items-center bg-white border border-gray-200 shadow p-3;
 }
 .test__select-button {
-  @apply flex flex-col w-full;
+  @apply flex flex-col lg:w-1/2;
 }
 .test__select-button button {
-  @apply rounded-md bg-indigo-50 px-3.5 py-2.5 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 m-2;
+  @apply rounded-md bg-violet-50 px-3.5 py-2.5 text-sm font-semibold text-violet-600 shadow-sm hover:bg-violet-100 m-2;
 }
 .test__image {
   @apply flex mt-3;
