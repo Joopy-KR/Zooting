@@ -12,6 +12,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "catch_mind")
 public class CatchMind  extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

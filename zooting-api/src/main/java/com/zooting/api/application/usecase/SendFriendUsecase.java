@@ -1,4 +1,4 @@
-package com.zooting.api.domain.friend.usecase;
+package com.zooting.api.application.usecase;
 
 import com.zooting.api.domain.friend.dao.FriendRepository;
 import com.zooting.api.domain.friend.dao.FriendRequestRepository;

@@ -18,7 +18,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FriendRequestServiceImpl implements FriendRequestService{
-
     private final FriendRequestRepository friendRequestRepository;
 
     @Override

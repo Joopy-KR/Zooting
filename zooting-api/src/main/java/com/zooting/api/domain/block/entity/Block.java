@@ -14,7 +14,7 @@ import java.util.Objects;
 @Setter
 @Entity
 @NoArgsConstructor
-//Tag(description = "차단된 유저")
+@Table(name = "block")
 public class Block extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

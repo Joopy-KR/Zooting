@@ -82,8 +82,6 @@ public class MemberServiceImpl implements MemberService {
         additionalInfo.setIdealAnimal(additionalReq.idealAnimal().toString());
         additionalInfo.setMember(member);
         memberRepository.save(member);
-
-
     }
 
     @Transactional

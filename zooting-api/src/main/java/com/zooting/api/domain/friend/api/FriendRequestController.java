@@ -28,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name="친구 요청", description = "친구 요청 관련 API")
 public class FriendRequestController {
-    private FriendRequestService friendRequestService;
+    private final FriendRequestService friendRequestService;
     @Operation(summary = "친구 요청 받은 리스트", description = "로그인 한 사람 기준 친구 요청 리스트 반환")
     @GetMapping("/from")
     public ResponseEntity<BaseResponse<List<FriendRes>>> getReceivedFriendRequests(@AuthenticationPrincipal UserDetails userDetails){
@@ -47,8 +47,6 @@ public class FriendRequestController {
                 friendResList
         );
     }
-
-
 
     //받은 친구요청 거절
     @Operation(summary = "친구 요청 거절", description = "로그인 한 사람이 친구 요청 거절")

@@ -3,6 +3,7 @@ package com.zooting.api.domain.background.dao;
 import com.zooting.api.domain.background.entity.BackgroundInventory;
 import com.zooting.api.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.RepositoryDefinition;
 
 import java.util.List;
 

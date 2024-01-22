@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @NoArgsConstructor
-// @Tag(description = "닮은 동물상 비율")
+@Table(name = "animal_face")
 public class AnimalFace extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

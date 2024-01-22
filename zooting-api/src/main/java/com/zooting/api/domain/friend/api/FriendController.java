@@ -30,7 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name="친구", description = "친구 관련 API")
 public class FriendController {
-    private FriendService friendService;
+    private final FriendService friendService;
     @Operation(summary = "친구 리스트", description = "로그인 한 사람 기준 친구리스트 반환")
     @GetMapping("")
     public ResponseEntity<BaseResponse<List<FriendRes>>> findFriendList(@AuthenticationPrincipal UserDetails userDetails){

@@ -10,6 +10,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "file")
 public class File extends BaseEntity {
     @Id
     @Column(name = "file_id")

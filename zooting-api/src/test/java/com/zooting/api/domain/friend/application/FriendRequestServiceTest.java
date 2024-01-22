@@ -1,7 +1,7 @@
 package com.zooting.api.domain.friend.application;
 
 import com.zooting.api.domain.friend.dao.FriendRequestRepository;
-import com.zooting.api.domain.friend.usecase.SendFriendUsecase;
+import com.zooting.api.application.usecase.SendFriendUsecase;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.transaction.Transactional;

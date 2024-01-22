@@ -2,6 +2,7 @@ package com.zooting.api.domain.background.dao;
 
 import com.zooting.api.domain.background.entity.Background;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.swing.text.html.Option;
 import java.util.List;

@@ -12,6 +12,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "liar_game")
 public class LiarGame  extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

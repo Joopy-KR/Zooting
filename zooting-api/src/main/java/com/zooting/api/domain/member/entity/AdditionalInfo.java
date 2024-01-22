@@ -12,6 +12,7 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "additional_info")
 public class AdditionalInfo extends BaseEntity {
     @Id
     @Column(name = "additional_info_id")

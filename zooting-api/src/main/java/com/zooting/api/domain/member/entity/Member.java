@@ -20,6 +20,7 @@ import java.util.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "member")
 public class Member extends BaseEntity {
     @Id
     private String email;
