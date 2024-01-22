@@ -55,8 +55,8 @@ public class MemberServiceImpl implements MemberService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         member.setBirth(sdf.parse(memberReq.birth()));
         member.setAddress(memberReq.address());
+        member.setGender(memberReq.gender());
         member.setPoint(0L); // 추가 정보 저장 시 포인트 0으로 저장
-
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
         if (Objects.isNull(additionalInfo)) {
             additionalInfo = new AdditionalInfo();
