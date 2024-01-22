@@ -11,7 +11,7 @@
       v-if="resultAnimal === '곰'">
       <img src="@/assets/animal_illustration/dino_illust.png" alt="공룡 사진" style="height: 300;"
       v-if="resultAnimal === '공룡'">
-      <img src="@/assets/animal_illustration/rabbit_illust.png" alt="토끼 사진" style="height: 300;"
+      <img src="@/assets/animal_illustration/rabbit_illust.png" alt="토끼 사진"
       v-if="resultAnimal === '토끼'">
       <img src="@/assets/animal_illustration/turtle_illust.png" alt="꼬부기 사진" style="height: 300;"
       v-if="resultAnimal === '꼬부기'">
