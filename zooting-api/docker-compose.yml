@@ -10,7 +10,7 @@ services:
     restart: "always"
 
   nginx:
-    image: duckbill413/zooting-docker-nginx:lastet
+    image: duckbill413/zooting-docker-nginx:latest
     container_name: zooting-nginx
     ports:
       - "80:80"
