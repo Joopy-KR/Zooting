@@ -1,0 +1,25 @@
+version: "4"
+services:
+  springboot:
+    image: duckbill413/zooting-docker-api:latest # ex) duckbill413/test-spring:latest
+    container_name: zooting-api # ex) test-spring
+    ports:
+      - "8080:8080"
+    networks:
+      - zooting_net # ex) test_net
+    restart: "always"
+
+  nginx:
+    image: duckbill413/zooting-docker-nginx:lastet
+    container_name: zooting-nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - springboot
+    networks:
+      - zooting_net
+    restart: "always"
+
+networks:
+    zooting_net:
+      driver: bridge

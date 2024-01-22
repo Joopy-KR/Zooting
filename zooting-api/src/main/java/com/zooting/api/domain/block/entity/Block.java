@@ -1,4 +1,5 @@
 package com.zooting.api.domain.block.entity;
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor
 //Tag(description = "차단된 유저")
-public class Block {
+public class Block extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="block_id")

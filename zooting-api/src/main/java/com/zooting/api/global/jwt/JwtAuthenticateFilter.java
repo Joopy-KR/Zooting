@@ -4,14 +4,16 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
     private final static String HEADER_AUTHORIZATION = "Authorization";
     private final static String TOKEN_PREFIX = "Bearer ";
     private final JwtService jwtService;
+    private final String[] URL_WHITE_LIST;
 
     @Override
     protected void doFilterInternal(
@@ -26,12 +29,7 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        if (!request.getRequestURI().startsWith("/api/")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (!request.getRequestURI().startsWith("/")) {
+        if (PatternMatchUtils.simpleMatch(URL_WHITE_LIST, request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }

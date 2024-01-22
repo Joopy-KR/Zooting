@@ -1,5 +1,6 @@
 package com.zooting.api.domain.background.entity;
 
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.file.entity.File;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,9 +10,10 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Background {
+public class Background extends BaseEntity {
     @Id
     @Column(name = "background_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
     @JoinColumn(name = "file_id")
