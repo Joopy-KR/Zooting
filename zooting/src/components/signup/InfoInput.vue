@@ -159,8 +159,8 @@ const saveUserInfo = () => {
     idealAnimal: Array.from(idealAnimalSet.value),
   }
   console.log(payload)
-  router.push({ name: 'animal_test' })
-  // store.modifyUserInfo(payload)
+  store.saveAdditionalInfo(payload)
+  // router.push({ name: 'animal_test' })
 }
 
 interface Payload {

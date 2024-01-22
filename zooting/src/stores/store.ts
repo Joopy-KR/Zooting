@@ -77,39 +77,39 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     })
   }
   
-  // const modifyUserInfo = function (
-  //   payload : {
-  //   nickname: string
-  //   gender: string
-  //   birth: string
-  //   address: string
-  //   interest:string[]
-  //   idealAnimal: string[]
-  //   }) {
-  //   const { nickname, gender, birth, address, interest, idealAnimal } = payload
+  const saveAdditionalInfo = function (
+    payload : {
+    nickname: string
+    gender: string
+    birth: string
+    address: string
+    interest:string[]
+    idealAnimal: string[]
+    }) {
+    const { nickname, gender, birth, address, interest, idealAnimal } = payload
 
-  //   axios({
-  //     method: 'patch',
-  //     // url: `${API_URL}/`,
-  //     data: {
-  //       nickname,
-  //       gender,
-  //       birth,
-  //       address,
-  //       interest,
-  //       idealAnimal
-  //     },
-  //     headers: {
-  //       Authorization: `Token ${state.value.accessToken}`
-  //     }
-  //   })
-  //   .then(res => {
-  //     console.log(res)
-  //   })
-  //   .catch(err => {
-  //     console.log(err)
-  //   })
-  // }
+    axios({
+      method: 'put',
+      url: `${API_URL}/api/members`,
+      data: {
+        nickname,
+        gender,
+        birth,
+        address,
+        interest,
+        idealAnimal
+      },
+      headers: {
+        Authorization: `Token ${state.value.accessToken}`
+      }
+    })
+    .then(res => {
+      console.log(res)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
 
   return {
     setAccessToken,
@@ -118,7 +118,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     signOut,
     userInfo,
     getUserInfo,
-    // modifyUserInfo,
+    saveAdditionalInfo,
   }
 }, { persist: true })
 
