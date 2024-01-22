@@ -174,7 +174,7 @@ const pushInterest = (value:string) => {
   @apply border rounded-md text-center;
 }
 .ideal-type__item--checked {
-  @apply bg-violet-600 hover:bg-violet-500;
+  @apply bg-violet-600 hover:bg-violet-500 text-white;
 }
 .ideal-type__item--no-checked {
   @apply border-gray-300 hover:bg-gray-50;
@@ -189,7 +189,7 @@ const pushInterest = (value:string) => {
   height: 50px;
 }
 .interest__item--checked {
-  @apply bg-violet-600 hover:bg-violet-500;
+  @apply bg-violet-600 hover:bg-violet-500 text-white;
 }
 .interest__item--no-checked {
   @apply border-gray-300 hover:bg-gray-50;
