@@ -1,5 +1,6 @@
 package com.zooting.api.domain.mask.entity;
 
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MaskInventory {
+public class MaskInventory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mask_inventory_id")

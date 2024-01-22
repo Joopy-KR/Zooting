@@ -1,4 +1,5 @@
 package com.zooting.api.domain.meeting.entity;
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 
 import jakarta.persistence.*;
@@ -12,7 +13,7 @@ import java.util.List;
 @Setter
 @Entity
 @NoArgsConstructor
-public class MeetingLog {
+public class MeetingLog extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="meeting_log_id")

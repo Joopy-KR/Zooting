@@ -1,5 +1,6 @@
 package com.zooting.api.domain.member.entity;
 
+import com.zooting.api.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +12,7 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdditionalInfo {
+public class AdditionalInfo extends BaseEntity {
     @Id
     @Column(name = "additional_info_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
