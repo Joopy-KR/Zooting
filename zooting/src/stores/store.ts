@@ -1,6 +1,92 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
+import axios from 'axios'
+import { ref, computed } from "vue"
+import { defineStore } from "pinia"
+import { useRouter } from 'vue-router'
 
-export const useStore = defineStore('store', () => {
-  return {  }
-})
+const router = useRouter()
+
+
+export const useStore = defineStore("store", () => {
+  return {}
+}, { persist: true })
+
+export const useAccessTokenStore = defineStore ( "access-token", () => {
+  const state = ref<AccessTokenState>({
+    accessToken: localStorage.getItem("accessToken") || null,
+  })
+
+  const setAccessToken = function (token: string | null) {
+    if (token) {
+      localStorage.setItem("accessToken", token)
+    } else {
+      localStorage.removeItem("accessToken")
+    }
+    state.value.accessToken = token
+  }
+
+  const getAccessToken = function () {
+    if (state.value.accessToken) {
+      return state.value.accessToken
+    } else {
+      const accessToken = localStorage.getItem("accessToken")
+      if (accessToken) {
+        state.value.accessToken = accessToken
+        return accessToken
+      } else {
+        router.push({ name: 'signin' })
+        alert("Access token not found")
+      }
+    }
+  }
+
+  const isLogin = computed(() => {
+    if (state.value.accessToken) {
+      return true 
+    } else {
+      return false
+    }
+  })
+
+  const signOut = function () {
+      window.localStorage.clear()
+      state.value.accessToken = null
+  }
+
+  const userInfo = ref(null)
+
+  const getUserInfo = function () {
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'get',
+        url: 'http://i10a702.p.ssafy.io/api/members/',
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${state.value.accessToken}`
+        }
+      })
+      .then(res => {
+        console.log(res)
+        userInfo.value = res.data
+        console.log(userInfo.value)
+        resolve(res.data)
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+    })
+  }
+  
+  return {
+    setAccessToken,
+    getAccessToken,
+    isLogin,
+    signOut,
+    userInfo,
+    getUserInfo,
+  }
+}, { persist: true })
+
+interface AccessTokenState {
+  accessToken: string | null
+}

@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/java,intellij+all,windows,macos,eclipse,gradle,maven
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,intellij+all,windows,macos,eclipse,gradle,maven
 
+
+
+
 ### Eclipse ###
 .metadata
 bin/
@@ -286,5 +289,6 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij+all,windows,macos,eclipse,gradle,maven
 /src/main/resources/application.yml
+/src/main/resources/application-security.yml
 /src/main/resources/application-aws.yml
 /src/main/resources/application-oauth.yml
