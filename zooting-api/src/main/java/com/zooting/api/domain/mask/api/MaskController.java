@@ -5,6 +5,8 @@ import com.zooting.api.domain.mask.application.MaskService;
 import com.zooting.api.domain.mask.dto.response.MaskRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -18,9 +20,11 @@ import java.util.List;
 @RestController
 @RequestMapping("api/items/mask")
 @RequiredArgsConstructor
+@Tag(name="마스크", description = "마스크 관련 API")
 public class MaskController {
     final private MaskService maskService;
 
+    @Operation(summary = "모든 마스크 조회")
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping("/")
     public ResponseEntity<BaseResponse<List<MaskRes>>> findAllMasks()  {

@@ -1,15 +1,7 @@
 package com.zooting.api.domain.background.application;
 
-import com.zooting.api.domain.background.dao.BackgroundInventoryRepository;
 import com.zooting.api.domain.background.dao.BackgroundRepository;
-import com.zooting.api.domain.background.dto.request.BackgroundReq;
 import com.zooting.api.domain.background.dto.response.BackgroundRes;
-import com.zooting.api.domain.background.entity.Background;
-import com.zooting.api.domain.background.entity.BackgroundInventory;
-import com.zooting.api.domain.member.dao.MemberRepository;
-import com.zooting.api.domain.member.entity.Member;
-import com.zooting.api.global.common.code.ErrorCode;
-import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

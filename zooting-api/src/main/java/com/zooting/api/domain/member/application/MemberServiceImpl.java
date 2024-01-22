@@ -33,6 +33,18 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.existsByNickname(nickname);
     }
 
+    @Override
+    public boolean checkAdditionalInfo(String userId) {
+        Member member = memberRepository.findMemberByEmail(userId)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        System.out.println("======================" + member.getNickname());
+        if (member.getNickname().isBlank()) {
+            return false;
+        }else {
+            return true;
+        }
+    }
+
     @Transactional
     @Override
     public void updateMemberInfo(String memberId, MemberReq memberReq) throws ParseException, BaseExceptionHandler {
@@ -130,7 +142,7 @@ public class MemberServiceImpl implements MemberService {
     public PointRes findPoints(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
-        PointRes pointRes = new PointRes(member.getEmail(), member.getPoint());
+        PointRes pointRes = new PointRes(member.getPoint());
 
         return pointRes;
     }

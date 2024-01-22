@@ -12,12 +12,13 @@ import java.util.Optional;
 
 public interface MemberService {
     boolean existNickname(String nickname);
+    boolean checkAdditionalInfo(String userId);
     void updateMemberInfo(String memberId, MemberReq memberReq) throws ParseException, BaseExceptionHandler;
     void updateInterestsandIdeal(String memberId, InterestsReq additionalReq);
     void updateIntroduce(String memberId, IntroduceReq introduceReq);
     List<MemberRes> findMemberList(String userId, String nickname);
     void updatePersonality(String userId, PersonalityReq personalityReq);
-//    void insertReport(String userId, ReportReq report);
+
     PointRes findPoints(String userId);
     Boolean deductPoints(String userId, Long price);
     Member getMemberByEmail(String email);
