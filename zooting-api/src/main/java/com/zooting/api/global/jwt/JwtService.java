@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -34,14 +35,14 @@ public class JwtService {
         this. refreshTokenExpirationTime = refreshTokenExpirationTime;
     }
 
-    public String createAccessToken(String userEmail, Collection<String> privileges){
-        return createToken(userEmail, privileges, accessTokenExpirationTime);
+    public String createAccessToken(UserDetails userDetails){
+        return createToken(userDetails, accessTokenExpirationTime);
     }
-    public String createRefreshToken(String userEmail, Collection<String> privileges){
-        return createToken(userEmail, privileges, refreshTokenExpirationTime);
+    public String createRefreshToken(UserDetails userDetails){
+        return createToken(userDetails, refreshTokenExpirationTime);
     }
 
-    public String createToken(String userEmail, Collection<String> privileges, long expirationTime){
+    public String createToken(UserDetails userDetails, long expirationTime){
         Date date = new Date();
         Date expirationDate = new Date(date.getTime() + expirationTime);
 
@@ -49,8 +50,10 @@ public class JwtService {
         return Jwts.builder()
                 .issuer(issuer)
                 .expiration(expirationDate)
-                .subject(userEmail)
-                .claim("Privilege", privileges)
+                .subject(userDetails.getUsername())
+                .claim("Privilege",
+                        userDetails.getAuthorities().stream()
+                                .map(GrantedAuthority::getAuthority).toList())
                 .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
     }
