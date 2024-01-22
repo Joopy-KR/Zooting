@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex items-center justify-center" v-show="is_started">
+    <div class="grid items-center justify-center grid-cols-1 md:flex" v-show="is_started">
       <div id="webcam-container">
         <video id="webcam" ref="videoRef" autoplay playsinline></video>
         <!-- <img src="@/assets/tempGuide.png" alt="" class="guide"> -->
@@ -12,8 +12,8 @@
           <Popover class="relative flex items-center justify-center">
               <span class="mr-2">촬영이 되지 않나요?</span>
               <PopoverButton class="inline-flex items-center text-sm font-semibold leading-6 text-gray-900 gap-x-1">
-                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M7.529 7.988a2.502 2.502 0 0 1 5 .191A2.441 2.441 0 0 1 10 10.582V12m-.01 3.008H10M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
                 </svg>
               </PopoverButton>
               <transition enter-active-class="transition duration-200 ease-out" enter-from-class="translate-y-1 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-1 opacity-0">
@@ -29,8 +29,8 @@
                         <p>카메라는 얼굴을 인식해요</p>
                         <p>위처럼 촬영버튼이 회색이면 촬영되지 않아요</p>
                         <br>
-                        <p>1. 카메라에 얼굴을 가까이 가져와 주세요</p>
-                        <p>2. 카메라에 두명 이상 있으면 촬영되지 않아요</p>
+                        <p>1. 카메라에 얼굴을 <span class="text-violet-500">가까이</span> 가져와 주세요</p>
+                        <p>2. 카메라에 두명 이상 있으면 촬영되지 <span class="text-violet-500">않아요</span></p>
                       </div>
                     </div>
                   </div>
@@ -39,13 +39,13 @@
             </Popover>
         </div>
 
-        <div class="mt-48 show-button" v-show="showButton">
+        <div class="mt-14 md:mt-48 show-button" v-show="showButton">
           <a href="javascript:void(0)" class="rounded" @click="stop">
             <svg version="1.1" x="0px" y="0px" width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path id="instagram-icon" d="M341.205,197.143H460.93v183.795c0,44.77-36.292,81.062-81.062,81.062H132.133c-44.769,0-81.062-36.293-81.062-81.062V197.143H170.26c-12.2,17.141-19.399,38.087-19.399,60.729c0,57.919,46.953,104.872,104.873,104.872c57.919,0,104.872-46.953,104.872-104.872C360.605,235.229,353.405,214.283,341.205,197.143z M460.93,131.062v53.239H330.447c-19.022-19.315-45.465-31.302-74.714-31.302c-29.251,0-55.693,11.986-74.714,31.302H51.07v-53.239c0-27.322,13.532-51.469,34.245-66.154v87.289h16.62v-96.36c3.77-1.516,7.679-2.752,11.704-3.691v100.052h16.621V50.047c0.625-0.015,1.245-0.047,1.873-0.047h9.598v102.196h16.62V50h221.517C424.638,50,460.93,86.292,460.93,131.062z M423.879,96.897c0-7.181-5.822-13.002-13.003-13.002h-43.821c-7.183,0-13.003,5.821-13.003,13.002v44.785c0,7.181,5.82,13.002,13.003,13.002h43.821c7.181,0,13.003-5.821,13.003-13.002V96.897z M174.938,257.872c0-24.188,10.698-45.909,27.593-60.729c5.926-5.197,12.613-9.539,19.875-12.842c10.169-4.625,21.447-7.224,33.327-7.224c11.881,0,23.157,2.599,33.326,7.224c7.263,3.303,13.95,7.645,19.876,12.842c16.895,14.82,27.592,36.542,27.592,60.729c0,44.55-36.243,80.794-80.794,80.794C211.183,338.666,174.938,302.422,174.938,257.872z M196.286,257.872c0,32.979,26.735,59.712,59.714,59.712c32.979,0,59.713-26.733,59.713-59.712c0-32.98-26.733-59.713-59.713-59.713C223.021,198.159,196.286,224.892,196.286,257.872z"/></svg>
           </a>
         </div>
         
-        <div class="mt-48 hide-button" v-show="!showButton">
+        <div class="mt-14 md:mt-48 hide-button" v-show="!showButton">
           <div href="#" class="rounded">
             <svg version="1.1" x="0px" y="0px" width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path id="instagram-icon" d="M341.205,197.143H460.93v183.795c0,44.77-36.292,81.062-81.062,81.062H132.133c-44.769,0-81.062-36.293-81.062-81.062V197.143H170.26c-12.2,17.141-19.399,38.087-19.399,60.729c0,57.919,46.953,104.872,104.873,104.872c57.919,0,104.872-46.953,104.872-104.872C360.605,235.229,353.405,214.283,341.205,197.143z M460.93,131.062v53.239H330.447c-19.022-19.315-45.465-31.302-74.714-31.302c-29.251,0-55.693,11.986-74.714,31.302H51.07v-53.239c0-27.322,13.532-51.469,34.245-66.154v87.289h16.62v-96.36c3.77-1.516,7.679-2.752,11.704-3.691v100.052h16.621V50.047c0.625-0.015,1.245-0.047,1.873-0.047h9.598v102.196h16.62V50h221.517C424.638,50,460.93,86.292,460.93,131.062z M423.879,96.897c0-7.181-5.822-13.002-13.003-13.002h-43.821c-7.183,0-13.003,5.821-13.003,13.002v44.785c0,7.181,5.82,13.002,13.003,13.002h43.821c7.181,0,13.003-5.821,13.003-13.002V96.897z M174.938,257.872c0-24.188,10.698-45.909,27.593-60.729c5.926-5.197,12.613-9.539,19.875-12.842c10.169-4.625,21.447-7.224,33.327-7.224c11.881,0,23.157,2.599,33.326,7.224c7.263,3.303,13.95,7.645,19.876,12.842c16.895,14.82,27.592,36.542,27.592,60.729c0,44.55-36.243,80.794-80.794,80.794C211.183,338.666,174.938,302.422,174.938,257.872z M196.286,257.872c0,32.979,26.735,59.712,59.714,59.712c32.979,0,59.713-26.733,59.713-59.712c0-32.98-26.733-59.713-59.713-59.713C223.021,198.159,196.286,224.892,196.286,257.872z"/></svg>
           </div>
@@ -70,30 +70,6 @@
 <script setup type="text/javascript" lang="ts">
 
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
-import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/vue/20/solid'
-import {
-  ArrowPathIcon,
-  ChartPieIcon,
-  CursorArrowRaysIcon,
-  FingerPrintIcon,
-  SquaresPlusIcon,
-} from '@heroicons/vue/24/outline'
-
-const solutions = [
-  { name: 'Analytics', description: 'Get a better understanding of your traffic', href: '#', icon: ChartPieIcon },
-  { name: 'Engagement', description: 'Speak directly to your customers', href: '#', icon: CursorArrowRaysIcon },
-  { name: 'Security', description: "Your customers' data will be safe and secure", href: '#', icon: FingerPrintIcon },
-  { name: 'Integrations', description: 'Connect with third-party tools', href: '#', icon: SquaresPlusIcon },
-  { name: 'Automations', description: 'Build strategic funnels that will convert', href: '#', icon: ArrowPathIcon },
-]
-const callsToAction = [
-  { name: 'Watch demo', href: '#', icon: PlayCircleIcon },
-  { name: 'Contact sales', href: '#', icon: PhoneIcon },
-]
-
-
-
-
 import { ref, onMounted, nextTick, defineEmits } from 'vue'
 import { FaceDetector, FilesetResolver, Detection } from "@mediapipe/tasks-vision"
 
