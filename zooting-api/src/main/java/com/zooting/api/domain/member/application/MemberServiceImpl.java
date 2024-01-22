@@ -3,7 +3,6 @@ package com.zooting.api.domain.member.application;
 import com.zooting.api.domain.block.dao.BlockRepository;
 import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.friend.dao.FriendRepository;
-import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MemberRes;
@@ -15,12 +14,15 @@ import com.zooting.api.domain.report.entity.ReportList;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 
 @Service
@@ -80,8 +82,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void updateIntroduce(IntroduceReq introduceReq) {
-        Member member = memberRepository.findMemberByEmail(introduceReq.email())
+    public void updateIntroduce(UserDetails userDetails, IntroduceReq introduceReq) {
+        Member member = memberRepository.findMemberByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
         if (Objects.isNull(additionalInfo)) {

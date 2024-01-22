@@ -5,6 +5,7 @@ import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.exception.BaseExceptionHandler;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.text.ParseException;
 import java.util.List;
@@ -14,7 +15,7 @@ public interface MemberService {
     boolean existNickname(String nickname);
     void updateMemberInfo(MemberReq memberReq) throws ParseException, BaseExceptionHandler;
     void updateInterestsandIdeal(InterestsReq additionalReq);
-    void updateIntroduce(IntroduceReq introduceReq);
+    void updateIntroduce(UserDetails userDetails, IntroduceReq introduceReq);
     List<MemberRes> findMemberList(String email, String nickname);
     void updatePersonality(PersonalityReq personalityReq);
     void insertBlockList(BlockReq blockReq);
