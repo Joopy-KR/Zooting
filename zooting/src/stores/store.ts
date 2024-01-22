@@ -100,7 +100,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
         idealAnimal
       },
       headers: {
-        Authorization: `Token ${state.value.accessToken}`
+        Authorization: `Bearer ${state.value.accessToken}`
       }
     })
     .then(res => {

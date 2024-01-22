@@ -3,13 +3,14 @@
     <!-- 기본 정보 (닉네임, 생년월일, 성별, 지역)-->
     <div class="input__section">
       <div class="input__title">
-        <p>회원님을</p>
-        <p>소개해 주세요</p>
+      <p>회원님을</p>
+      <p>소개해 주세요</p>
       </div>
-
+    
       <div class="input__div">
         <label for="nickname" class="input__label nickname__label">닉네임</label>
-        <input 
+        <div class="nickname__duplication-check">
+          <input 
           id="nickname" 
           v-model="nickname" 
           data-popover-target="popover-nickname" 
@@ -18,9 +19,11 @@
           maxlength="16" 
           @blur="validateNickname"
           required
-        >
+          >
+          <button>중복 검사</button>
+        </div>
       </div>
-
+    
       <div class="input__div">
         <label for="gender" class="input__label">성별</label>
         <RadioGroup v-model="gender">
@@ -33,12 +36,12 @@
           </div>
         </RadioGroup>
       </div>
-
+    
       <div class="input__div">
         <label for="birth" class="input__label">생년월일</label>
         <VueTailwindDatepicker id="birth" v-model="birth" as-single :formatter="formatter" weekdays-size="min" class="birth__datepicker"/>
       </div>
-      
+    
       <div class="input__div">          
         <label for="address" class="input__label">지역</label>
         <select id="address" v-model="address">
@@ -47,7 +50,7 @@
         </select>
       </div>
     </div>
-    
+  
     <!-- 추가 정보 (관심사, 이상형) -->
     <div class="input__section">
       <label for="ideal-type" class="input__label">이상형</label>
@@ -61,7 +64,7 @@
         {{ value }}
         </div>
       </div>
-      
+  
       <label for="" class="input__label">관심사 (최대 6개 선택)</label>
       <div class="interest__div">
         <div 
@@ -70,12 +73,11 @@
         @click="pushInterest(interest)"
         :class="{ 'interest__item--checked': interestSet.has(interest), 'interest__item--no-checked': !interestSet.has(interest) }"
         >
-          {{ interest }}
+        {{ interest }}
         </div>
       </div>
-      <button class="submit-button" type="submit" @click="saveUserInfo">Submit</button>
+      <button class="submit-button" type="button" @click="saveUserInfo">Submit</button>
     </div>
-    
   </div>
 </template>
 
@@ -199,7 +201,7 @@ interface Payload {
   @apply border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full h-10;
 }
 .submit-button {
-  @apply text-white bg-violet-600 hover:bg-violet-800 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full px-5 py-2 my-2 text-center;
+  @apply text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2 text-center me-2 my-2 w-full;
 }
 .gender {
   @apply grid grid-cols-2 gap-3;
@@ -208,7 +210,7 @@ interface Payload {
   @apply flex items-center justify-center rounded-lg p-2 text-sm uppercase md:flex-1;
 }
 .gender__option--checked {
-  @apply bg-violet-600 text-white hover:bg-violet-500;
+  @apply text-violet-600 ring-2 ring-inset ring-violet-600 font-bold hover:bg-gray-50;
 }
 .gender__option--no-checked {
   @apply ring-1 ring-inset ring-gray-300  text-gray-900 hover:bg-gray-50;
@@ -218,10 +220,10 @@ interface Payload {
   height: 80px;
 }
 .ideal-type__item {
-  @apply border rounded-md text-center;
+  @apply flex border rounded-md justify-center items-center;
 }
 .ideal-type__item--checked {
-  @apply bg-violet-600 hover:bg-violet-500 text-white;
+  @apply text-violet-600 ring-2 ring-inset ring-violet-600 font-bold hover:bg-gray-50;
 }
 .ideal-type__item--no-checked {
   @apply border-gray-300 hover:bg-gray-50;
@@ -230,15 +232,41 @@ interface Payload {
   @apply mb-6 border border-gray-300 rounded-md grid grid-cols-4 gap-4 p-3;
   height: 205px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.interest__div::-webkit-scrollbar {
+  width: 7px;
+}
+.interest__div::-webkit-scrollbar-thumb {
+  background-color: #d6d6d6;
+  border-radius: 4px;
+}
+
+.interest__div::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 .interest__item {
-  @apply bg-white hover:bg-gray-50 border border-gray-300 rounded-md text-center;
+  @apply flex justify-center items-center bg-white hover:bg-gray-50 border border-gray-300 rounded-md;
   height: 50px;
 }
 .interest__item--checked {
-  @apply bg-violet-600 hover:bg-violet-500 text-white;
+  @apply text-violet-600 ring-2 ring-inset ring-violet-600 font-bold hover:bg-gray-50;
 }
 .interest__item--no-checked {
   @apply border-gray-300 hover:bg-gray-50;
+}
+.nickname__duplication-check {
+  position: relative;
+}
+.nickname__duplication-check button {
+  @apply bg-violet-600 rounded-md text-white text-sm hover:bg-violet-700;
+  position: absolute;
+  width: 80px;
+  height: 30px;
+  top: 0;
+  bottom: 0;
+  right: 5px;
+  margin: auto 2px;
 }
 </style>
