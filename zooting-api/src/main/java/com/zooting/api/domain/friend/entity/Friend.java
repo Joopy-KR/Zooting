@@ -1,4 +1,5 @@
 package com.zooting.api.domain.friend.entity;
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 
 import jakarta.persistence.*;
@@ -9,7 +10,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @ToString
-public class Friend {
+public class Friend extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="friend_id")
