@@ -2,6 +2,10 @@ import axios from 'axios'
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import { useRouter } from 'vue-router'
+// import { resolve } from 'path'
+
+const router = useRouter()
+const API_URL:string = 'http://i10a702.p.ssafy.io'
 
 export const useStore = defineStore('store', () => {
   const personality: Personality = {
@@ -24,13 +28,6 @@ export const useStore = defineStore('store', () => {
   }
   return { personality }
 })
-
-
-const router = useRouter()
-
-export const useStore = defineStore("store", () => {
-  return {}
-}, { persist: true })
 
 export const useAccessTokenStore = defineStore ( "access-token", () => {
   const state = ref<AccessTokenState>({
@@ -80,7 +77,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     return new Promise((resolve, reject) => {
       axios({
         method: 'get',
-        url: 'http://i10a702.p.ssafy.io/api/members/',
+        url: '',
         headers: {
           accept: 'application/json',
           Authorization: `Bearer ${state.value.accessToken}`
@@ -99,6 +96,31 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     })
   }
   
+  const setPersonality = function (payload:string) {
+    const personality = payload
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'put',
+        url: `${API_URL}/api/members/characters`,
+        data: {
+          personality
+        },
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${state.value.accessToken}`
+        }
+      })
+      .then (res => {
+        console.log(res)
+        resolve(res.data)
+      })
+      .catch (err => {
+        console.log(err)
+        reject(err)
+      })
+    })
+  }
+
   return {
     setAccessToken,
     getAccessToken,
@@ -106,6 +128,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     signOut,
     userInfo,
     getUserInfo,
+    setPersonality,
   }
 }, { persist: true })
 

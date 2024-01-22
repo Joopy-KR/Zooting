@@ -18,20 +18,24 @@
       </span> 유형과 궁합이 맞아요.</li>
     </div>
     <!-- click => axios & Home으로 라우팅 -->
-    <button class="test-completed">미팅 하러 가기</button>
+    <button class="test-completed" @click="complateTest">미팅 하러 가기</button>
 
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useStore } from '@/stores/store.ts'
+import { useStore, useAccessTokenStore } from '@/stores/store.ts'
+import { useRouter } from 'vue-router'
 
 const props = defineProps<{
   testResult: string
 }>()
 
 const store = useStore()
+const accessTokenStore = useAccessTokenStore()
+const router = useRouter()
+
 const personality = store.personality[props.testResult]
 
 const nickname = ref<string>('nickname')
@@ -46,6 +50,12 @@ const getColorClass = (value: string) => {
   } else if (value.includes('가을')) {
     return 'autumn-text'
   }
+}
+
+const complateTest = () => {
+  const payload:string = props.testResult
+  accessTokenStore.setPersonality(payload)
+  router.push({ name: 'home' })
 }
 </script>
 
