@@ -1,65 +1,65 @@
 <template>
-    <div>
-        <nav class="side-bar">
-            <div class="logo">
-                <RouterLink :to="getHomeLink()" @click="closeTab">
-                    <img src="/images/logo_sm.png" alt="">
-                </RouterLink>
-            </div>
-            <div class="side-bar__item">
-                <!-- Messages button -->
-                <button @click="toggleMessagesTab" v-if="isLoggedIn">
-                    <svg :class="[isActiveMessageTab() ? 'text-violet-800' : 'text-gray-400', 'w-5 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20" transform="rotate(45)">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 17 8 2L9 1 1 19l8-2Zm0 0V9"/>
-                    </svg>
-                </button>
+  <div>
+    <nav class="side-bar">
+      <div class="logo">
+          <RouterLink :to="getHomeLink()" @click="closeTab">
+            <img src="/images/logo_sm.png" alt="" class="w-10">
+          </RouterLink>
+      </div>
+      <div class="side-bar__item">
+        <!-- Messages button -->
+        <button @click="toggleMessagesTab" v-if="isLoggedIn">
+          <svg :class="[isActiveMessageTab() ? 'text-violet-800' : 'text-gray-400', 'w-5 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20" transform="rotate(45)">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m9 17 8 2L9 1 1 19l8-2Zm0 0V9"/>
+          </svg>
+        </button>
 
-                <!-- Notifications button -->
-                <button @click="toggleNotificationsTab">
-                    <svg :class="[isActivenotificationsTab() ? 'text-violet-800' : 'text-gray-400', 'w-6 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="20" fill="none" viewBox="0 0 14 20">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7a3 3 0 0 1 3-3M5 19h4m0-3c0-4.1 4-4.9 4-9A6 6 0 1 0 1 7c0 4 4 5 4 9h4Z"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <!-- signout -->
-            <div class="signout">
-                <button @click="logout" v-if="isLoggedIn">
-                    <svg class="w-5 h-6 m-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16" transform="rotate(180)">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h11m0 0-4-4m4 4-4 4m-5 3H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3"/>
-                    </svg>
-                </button>
-            </div>
+        <!-- Notifications button -->
+        <button @click="toggleNotificationsTab">
+          <svg :class="[isActivenotificationsTab() ? 'text-violet-800' : 'text-gray-400', 'w-6 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="20" fill="none" viewBox="0 0 14 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7a3 3 0 0 1 3-3M5 19h4m0-3c0-4.1 4-4.9 4-9A6 6 0 1 0 1 7c0 4 4 5 4 9h4Z"/>
+          </svg>
+        </button>
+      </div>
+        
+      <!-- signout -->
+      <div class="signout">
+        <button @click="logout" v-if="isLoggedIn">
+          <svg class="w-5 h-6 m-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16" transform="rotate(180)">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8h11m0 0-4-4m4 4-4 4m-5 3H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3"/>
+          </svg>
+        </button>
+      </div>
 
-            <!-- User profile -->
-            <div class="user-profile">
-                <RouterLink :to="getProfileLink()" v-if="isLoggedIn" @click="closeTab">
-                <img class="user-profile__img" src="" alt="user-profile"/>
-                </RouterLink>
-            </div>
-        </nav>
+      <!-- User profile -->
+      <div class="user-profile">
+        <RouterLink :to="getProfileLink()" v-if="isLoggedIn" @click="closeTab">
+          <img class="user-profile__img" src="" alt="user-profile"/>
+        </RouterLink>
+      </div>
+    </nav>
 
-        <!-- Side tab -->
-        <transition name="side-tab-transition">
-            <div class="side-tab" v-show="isSideTabOpen" v-if="isLoggedIn">
-                <section v-show="currentSideTab == 'messagesTab'">
-                <div class="side-tab__content">
-                    <DM />
-                </div>
-                </section>
+    <!-- Side tab -->
+    <transition name="side-tab-transition">
+      <div class="side-tab" v-show="isSideTabOpen">
+        <section v-show="currentSideTab == 'messagesTab'">
+          <div class="side-tab__content">
+            <DM />
+          </div>
+        </section>
 
-                <section v-show="currentSideTab == 'notificationsTab'">
-                <div class="side-tab__content">
-                    <Notifications />
-                </div>
-                </section>
-            </div>
-        </transition>
-    </div>
+        <section v-show="currentSideTab == 'notificationsTab'">
+          <div class="side-tab__content">
+            <Notifications />
+          </div>
+        </section>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAccessTokenStore } from "../stores/store"
 import DM from './DM.vue'
@@ -68,65 +68,64 @@ import Notifications from './Notifications.vue'
 const store = useAccessTokenStore()
 const router = useRouter()
 
-// const isLoggedIn = computed(() => store.isLogin)
-const isLoggedIn = ref(true)
+const isLoggedIn = computed(() => store.isLogin)
 
 const isSideTabOpen = ref(false)
 const currentSideTab = ref<string | null>(null)
 
 const getHomeLink = () => {
-    return isLoggedIn.value ? '/' : '/signin'
+  return isLoggedIn.value ? '/' : '/signin'
 }
 
 const toggleMessagesTab = () => {
-    if (isSideTabOpen.value === true && currentSideTab.value === 'messagesTab') {
-        isSideTabOpen.value = false
-    }
-    else if (isSideTabOpen.value === false) {
-        isSideTabOpen.value = true
-    }
-    currentSideTab.value = 'messagesTab'
+  if (isSideTabOpen.value === true && currentSideTab.value === 'messagesTab') {
+    isSideTabOpen.value = false
+  }
+  else if (isSideTabOpen.value === false) {
+    isSideTabOpen.value = true
+  }
+  currentSideTab.value = 'messagesTab'
 }
 
 const toggleNotificationsTab = () => {
-    if (isSideTabOpen.value === true && currentSideTab.value === 'notificationsTab') {
-        isSideTabOpen.value = false
-    }
-    else if (isSideTabOpen.value === false) {
-        isSideTabOpen.value = true
-    }
-    currentSideTab.value = 'notificationsTab'
+  if (isSideTabOpen.value === true && currentSideTab.value === 'notificationsTab') {
+    isSideTabOpen.value = false
+  }
+  else if (isSideTabOpen.value === false) {
+    isSideTabOpen.value = true
+  }
+  currentSideTab.value = 'notificationsTab'
 }
 
 const isActiveMessageTab = () => {
-    if (isSideTabOpen.value === true && currentSideTab.value === 'messagesTab') {
-        return true
-    } else {
-        return false
-    }
+  if (isSideTabOpen.value === true && currentSideTab.value === 'messagesTab') {
+    return true
+  } else {
+    return false
+  }
 } 
 
 const isActivenotificationsTab = () => {
-    if (isSideTabOpen.value === true && currentSideTab.value === 'notificationsTab') {
-        return true
-    } else {
-        return false
-    }
+  if (isSideTabOpen.value === true && currentSideTab.value === 'notificationsTab') {
+    return true
+  } else {
+    return false
+  }
 }
 
 const nickname = 'nickname'
 const getProfileLink = () => {
-    return `/profile/${nickname}`
+  return `/profile/${nickname}`
 }
 
 const closeTab = () => {
-    isSideTabOpen.value = false
+  isSideTabOpen.value = false
 }
 
 const logout = () => {
-    // store.signOut()
-    isSideTabOpen.value = false
-    router.push({ name: 'signin' })
+  isSideTabOpen.value = false
+  store.signOut()
+  router.push({ name: 'signin' })
 }
 </script>
 
@@ -148,7 +147,7 @@ const logout = () => {
 }
 .side-tab {
     @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 rounded-tr-3xl rounded-br-3xl;
-    width: 500px;
+    width: 450px;
 }
 .side-tab__content {
 }

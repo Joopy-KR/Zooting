@@ -21,6 +21,6 @@ import VideoComp from "@/components/signin/Video.vue"
 
 <style scoped>
 .signin-button {
-  width: 400px;
+  width: 300px;
 }
 </style>

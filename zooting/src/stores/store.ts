@@ -5,13 +5,14 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
+
 export const useStore = defineStore("store", () => {
   return {}
 }, { persist: true })
 
 export const useAccessTokenStore = defineStore ( "access-token", () => {
   const state = ref<AccessTokenState>({
-    accessToken: null,
+    accessToken: localStorage.getItem("accessToken") || null,
   })
 
   const setAccessToken = function (token: string | null) {
@@ -32,7 +33,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
         state.value.accessToken = accessToken
         return accessToken
       } else {
-        // TODO: go to home page
+        router.push({ name: 'signin' })
         alert("Access token not found")
       }
     }
@@ -46,30 +47,43 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     }
   })
 
-  // const signOut = function () {
-  //   axios({
-  //     method: 'post',
-  //     url: ``,
-  //     headers: {
-  //       Authorization: `Bearer ${state.value.accessToken}`
-  //     }
-  //   })
-  //   .then((res)=>{
-  //     console.log(res)
-  //     window.localStorage.clear()
-  //     state.value.accessToken = null
-  //     router.push({ name: 'signin' })
-  //   })
-  //   .catch((err)=> {
-  //     console.log(err)
-  //   })
-  // }
+  const signOut = function () {
+      window.localStorage.clear()
+      state.value.accessToken = null
+  }
 
+  const userInfo = ref(null)
+
+  const getUserInfo = function () {
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'get',
+        url: 'http://i10a702.p.ssafy.io/api/members/',
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${state.value.accessToken}`
+        }
+      })
+      .then(res => {
+        console.log(res)
+        userInfo.value = res.data
+        console.log(userInfo.value)
+        resolve(res.data)
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+    })
+  }
+  
   return {
     setAccessToken,
     getAccessToken,
     isLogin,
-    // signOut,
+    signOut,
+    userInfo,
+    getUserInfo,
   }
 }, { persist: true })
 
