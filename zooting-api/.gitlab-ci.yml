@@ -1,0 +1,79 @@
+# 실행될 stage 지정 (위에서 아래로 차례대로 실행)
+stages:
+  - build
+  - package
+  - deploy
+
+build: # JOB 이름
+  # 사용될 이미지 설정
+  image: gradle:8.5.0-jdk17
+  # stage 설정
+  stage: build
+  # 실행될 script 설정
+  script:
+    - chmod +x gradlew
+    - ./gradlew clean
+    - ./gradlew bootjar
+  # artifacts 설정 (bulld를 통해 생성된 파일을 job artifacts에 보관하여 다음에 수행되는 JOB에서 가져다 활용할 수 있게 도와줌)
+  artifacts:
+    # 보관이 이루어질 경로 설정
+    paths:
+      - build/libs/*.jar
+    # 유효기간 설정
+    expire_in: 1 days
+  # JOB이 수행될 branch 설정 (설정된 branch에 push가 발생될 시 JOB 수행)
+  only:
+    - release
+    - master
+
+package:
+  image: docker:latest
+  stage: package
+  # service 설정 (설정한 image가 작업이 이루어지는 동안 실행되는 docker 이미지)
+  services:
+    - docker:dind
+    # script가 실행 전 수행 될 script
+  before_script:
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD   # GitLab Container Registry에 로그인
+  # 실행될 script 설정
+  script:
+    - echo [INFO] Start package stage
+    - echo [INFO] CI_REGISTRY            $CI_REGISTRY
+    - echo [INFO] CI_REGISTRY_USER       $CI_REGISTRY_USER
+    - echo [INFO] IMAGE_NAME             $IMAGE_NAME
+    - echo [INFO] DOCKER_REGISTRY_USER   $DOCKER_REGISTRY_USER
+    - docker build -t $DOCKER_REGISTRY_USER/$IMAGE_NAME .   # Dockerfile로 build
+    - docker push $DOCKER_REGISTRY_USER/$IMAGE_NAME:latest   # Container Registry에 image push
+  # script가 실행된 후 수행 될 script
+  after_script:
+    - docker logout   # GitLab Container Registry 로그아웃
+  # JOB이 수행될 branch 설정 (설정된 branch에 push가 발생될 시 JOB 수행)
+  only:
+    - master
+    - dev
+
+deploy: # JOB 이름
+  image: docker:latest
+  # stage 설정
+  stage: deploy
+  services:
+    - docker:dind
+  # script가 실행 전 수행 될 script
+  before_script:
+    - echo [INFO] docker deploy start!
+    - docker login $CI_REGISTRY -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD   # GitLab Container Registry에 로그인
+  # 실행될 script 설정
+  script:
+    - docker volume prune -f # 사용되지 않는 컨테이너, 이미지 삭제 및 볼륨 정리
+    - docker-compose down # docker-compose 내리기
+    - docker-compose pull
+    - docker-compose build # docker-compose 빌드
+    - docker-compose up -d # docker-compose 백그라운드 실행
+  # script가 실행된 후 수행 될 script
+  after_script:
+    - docker logout   # GitLab Container Registry 로그아웃
+    - echo [INFO] docker deploy end!
+  # JOB이 수행될 branch 설정 (설정된 branch에 push가 발생될 시 JOB 수행)
+  only:
+    - master
+    - dev
