@@ -15,47 +15,51 @@ const toggleShowAllBadge = () => {
 </script>
 
 <template>
-  <div class="flex flex-row">
-    <div class="flex justify-center px-2">
-      <font-awesome-icon
-        :icon="['fas', 'arrow-down']"
-        size="3x"
-        @click="toggleShowAllBadge"
-        class="font-awesome-icon"
-      />
-    </div>
-    <div class="flex flex-col gap-2">
-      <span
-        v-if="showAllBadges || activeBadge === '강아지상'"
-        @click="() => toggleBadge('강아지상')"
-        class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full"
-      >
-        <p class="px-4 py-2 text-3xl font-medium">강아지상</p></span
-      >
-      <span
-        v-if="showAllBadges || activeBadge === '고양이상'"
-        @click="() => toggleBadge('고양이상')"
-        class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full"
-        ><p class="px-4 py-2 text-3xl font-medium">고양이상</p></span
-      >
-      <span
-        v-if="showAllBadges || activeBadge === '토끼상'"
-        @click="() => toggleBadge('토끼상')"
-        class="inline-flex items-center px-2 py-1 text-xs font-medium text-pink-700 bg-pink-100 rounded-full"
-        ><p class="px-4 py-2 text-3xl font-medium">토끼상</p></span
-      >
-      <span
-        v-if="showAllBadges || activeBadge === '곰상'"
-        @click="() => toggleBadge('곰상')"
-        class="inline-flex items-center px-2 py-1 text-xs font-medium text-purple-700 bg-purple-100 rounded-full"
-        ><p class="px-4 py-2 text-3xl font-medium">곰상</p></span
-      >
-      <span
-        v-if="showAllBadges || activeBadge === '공룡상'"
-        @click="() => toggleBadge('공룡상')"
-        class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full"
-        ><p class="px-4 py-2 text-3xl font-medium">공룡상</p></span
-      >
+  <div class="relative">
+    <div class="absolute top-0 left-3">
+      <div class="flex flex-row">
+        <div class="flex justify-center px-2">
+          <font-awesome-icon
+            :icon="['fas', 'arrow-down']"
+            size="3x"
+            @click="toggleShowAllBadge"
+            class="font-awesome-icon"
+          />
+        </div>
+        <div class="flex flex-col gap-2">
+          <span
+            v-if="showAllBadges || activeBadge === '강아지상'"
+            @click="() => toggleBadge('강아지상')"
+            class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full"
+          >
+            <p class="px-4 py-2 text-3xl font-medium w-44">강아지상</p></span
+          >
+          <span
+            v-if="showAllBadges || activeBadge === '고양이상'"
+            @click="() => toggleBadge('고양이상')"
+            class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full"
+            ><p class="px-4 py-2 text-3xl font-medium">고양이상</p></span
+          >
+          <span
+            v-if="showAllBadges || activeBadge === '토끼상'"
+            @click="() => toggleBadge('토끼상')"
+            class="inline-flex items-center px-2 py-1 text-xs font-medium text-pink-700 bg-pink-100 rounded-full"
+            ><p class="px-4 py-2 text-3xl font-medium">토끼상</p></span
+          >
+          <span
+            v-if="showAllBadges || activeBadge === '곰상'"
+            @click="() => toggleBadge('곰상')"
+            class="inline-flex items-center px-2 py-1 text-xs font-medium text-purple-700 bg-purple-100 rounded-full"
+            ><p class="px-4 py-2 text-3xl font-medium">곰상</p></span
+          >
+          <span
+            v-if="showAllBadges || activeBadge === '공룡상'"
+            @click="() => toggleBadge('공룡상')"
+            class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full"
+            ><p class="px-4 py-2 text-3xl font-medium">공룡상</p></span
+          >
+        </div>
+      </div>
     </div>
   </div>
 </template>
