@@ -8,8 +8,17 @@
       </div>
 
       <div class="input__div">
-        <label for="nickname" class="input__label">닉네임</label>
-        <input id="nickname" v-model="nickname" data-popover-target="popover-nickname" data-popover-placement="bottom" placeholder="2~16자 사이로 입력해 주세요." required>
+        <label for="nickname" class="input__label nickname__label">닉네임</label>
+        <input 
+          id="nickname" 
+          v-model="nickname" 
+          data-popover-target="popover-nickname" 
+          data-popover-placement="bottom" 
+          placeholder="2~16자 사이의 영어, 한글 또는 숫자를 입력해 주세요."
+          maxlength="16" 
+          @blur="validateNickname"
+          required
+        >
       </div>
 
       <div class="input__div">
@@ -46,9 +55,9 @@
         <!-- 선택한 성별에 따라 이상형 동물 목록 출력 -->
         <div 
         class="ideal-type__item" 
-        v-for="(value, index) in idealTypeList" :key="index" 
-        @click="pushIdealType(`animal${index+1}`)"
-        :class="{ 'ideal-type__item--checked': idealTypeSet.has(`animal${index+1}`), 'ideal-type__item--no-checked': !idealTypeSet.has(`animal${index+1}`) }">
+        v-for="(value, index) in idealAnimalList" :key="index" 
+        @click="pushidealAnimal(`animal${index+1}`)"
+        :class="{ 'ideal-type__item--checked': idealAnimalSet.has(`animal${index+1}`), 'ideal-type__item--no-checked': !idealAnimalSet.has(`animal${index+1}`) }">
         {{ value }}
         </div>
       </div>
@@ -64,7 +73,7 @@
           {{ interest }}
         </div>
       </div>
-      <button class="submit-button" type="submit">Submit</button>
+      <button class="submit-button" type="submit" @click="saveUserInfo">Submit</button>
     </div>
     
   </div>
@@ -74,13 +83,28 @@
 import { computed, ref } from 'vue'
 import VueTailwindDatepicker from 'vue-tailwind-datepicker'
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
+import { useAccessTokenStore } from '@/stores/store'
+import router from '@/router';
 
+const store = useAccessTokenStore()
 const nickname = ref<string>('')
 const gender = ref<string>('man')
 const birth = ref<string>('')
 const address = ref<string>('')
-const idealTypeSet = ref(new Set<string>())
+const idealAnimalSet = ref(new Set<string>())
 const interestSet = ref(new Set<string>())
+
+const nicknameError = ref<boolean>(false)
+
+const validateNickname = function () {
+  const regex = /^[a-zA-Z가-힣0-9]{2,16}$/
+  if (!regex.test(nickname.value)) {
+    nicknameError.value = true
+  } else {
+    nicknameError.value = false
+  }
+  // 닉네임 중복 검사
+}
 
 const getGenderLabel = (value: string) => {
   return value === 'man' ? '남자' : '여자'
@@ -93,21 +117,21 @@ const formatter = ref<{date: string, month: string}>({
 
 const areas:string[] = (['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기도', '강원도', '충청북도', '충청남도', '전라북도', '전라남도', '경상북도', '경상남도', '제주도', '해외'])
 
-const pushIdealType = (value:string) => {
-  if (idealTypeSet.value.has(value)) {
-    idealTypeSet.value.delete(value)
+const pushidealAnimal = (value:string) => {
+  if (idealAnimalSet.value.has(value)) {
+    idealAnimalSet.value.delete(value)
   } else {
-    idealTypeSet.value.add(value)
+    idealAnimalSet.value.add(value)
   }
-  console.log(idealTypeSet.value)
+  console.log(idealAnimalSet.value)
 }
 
-const idealTypeList = computed(() => {
+const idealAnimalList = computed(() => {
   if (gender.value === 'man') {
-    idealTypeSet.value = new Set<string>()
+    idealAnimalSet.value = new Set<string>()
     return ['강아지', '고양이', '토끼', '사슴', '꼬북이']
   } else if (gender.value === 'woman') {
-    idealTypeSet.value = new Set<string>()
+    idealAnimalSet.value = new Set<string>()
     return ['강아지', '고양이', '토끼', '곰', '공룡']
   }
 })
@@ -123,6 +147,29 @@ const pushInterest = (value:string) => {
     }
     console.log(interestSet.value)
   }
+}
+
+const saveUserInfo = () => {
+  const payload: Payload = {
+    nickname: nickname.value,
+    gender: gender.value,
+    birth: birth.value,
+    address: address.value,
+    interest: Array.from(interestSet.value),
+    idealAnimal: Array.from(idealAnimalSet.value),
+  }
+  console.log(payload)
+  router.push({ name: 'animal_test' })
+  // store.modifyUserInfo(payload)
+}
+
+interface Payload {
+  nickname: string
+  gender: string
+  birth: string
+  address: string
+  interest:string[]
+  idealAnimal: string[]
 }
 </script>
 

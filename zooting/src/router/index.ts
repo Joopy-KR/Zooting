@@ -52,13 +52,19 @@ const router = createRouter({
 router.beforeEach((to, from) => {
   const store = useAccessTokenStore()
 
-  if (to.name === 'home' && !store.isLogin) {
+  if ((to.name === 'home' || to.name === 'signup' || to.name === 'animal_test' || to.name === 
+  'personality_test') && !store.isLogin) {
     return { name: 'signin' }
   }
 
-  if ((to.name === 'signup' || to.name === 'signin') && store.isLogin) {
+  if (to.name === 'signin' && store.isLogin) {
     return { name: 'home' }
   }
+
+  // 로그인되어 있는 상태에서 home으로 갈 때
+  // nickname이 없으면 signup으로
+  // additionalInfo.animal이 없으면 animal_test로
+  // additionalInfo.personality가 없으면 personality_test로
 })
 
 export default router

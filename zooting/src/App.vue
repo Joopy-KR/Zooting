@@ -10,4 +10,5 @@ import { RouterView } from 'vue-router'
 import TheSideBar from '@/components/TheSideBar.vue'
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

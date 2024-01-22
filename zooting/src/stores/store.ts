@@ -4,7 +4,7 @@ import { defineStore } from "pinia"
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
+const API_URL = 'http://i10a702.p.ssafy.io'
 
 export const useStore = defineStore("store", () => {
   return {}
@@ -58,7 +58,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     return new Promise((resolve, reject) => {
       axios({
         method: 'get',
-        url: 'http://i10a702.p.ssafy.io/api/members/',
+        url: `${API_URL}/api/members/`,
         headers: {
           accept: 'application/json',
           Authorization: `Bearer ${state.value.accessToken}`
@@ -77,6 +77,40 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     })
   }
   
+  // const modifyUserInfo = function (
+  //   payload : {
+  //   nickname: string
+  //   gender: string
+  //   birth: string
+  //   address: string
+  //   interest:string[]
+  //   idealAnimal: string[]
+  //   }) {
+  //   const { nickname, gender, birth, address, interest, idealAnimal } = payload
+
+  //   axios({
+  //     method: 'patch',
+  //     // url: `${API_URL}/`,
+  //     data: {
+  //       nickname,
+  //       gender,
+  //       birth,
+  //       address,
+  //       interest,
+  //       idealAnimal
+  //     },
+  //     headers: {
+  //       Authorization: `Token ${state.value.accessToken}`
+  //     }
+  //   })
+  //   .then(res => {
+  //     console.log(res)
+  //   })
+  //   .catch(err => {
+  //     console.log(err)
+  //   })
+  // }
+
   return {
     setAccessToken,
     getAccessToken,
@@ -84,6 +118,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     signOut,
     userInfo,
     getUserInfo,
+    // modifyUserInfo,
   }
 }, { persist: true })
 
