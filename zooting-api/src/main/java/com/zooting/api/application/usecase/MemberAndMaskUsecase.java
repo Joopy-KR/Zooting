@@ -1,7 +1,7 @@
-package application.usecase;
+package com.zooting.api.application.usecase;
 
-import application.dto.request.MemberAndMaskReq;
-import application.dto.response.MemberAndMaskRes;
+import com.zooting.api.application.dto.request.MemberAndMaskReq;
+import com.zooting.api.application.dto.response.MemberAndMaskRes;
 import com.zooting.api.domain.mask.dao.MaskInventoryRepository;
 import com.zooting.api.domain.mask.dao.MaskRepository;
 import com.zooting.api.domain.mask.entity.Mask;

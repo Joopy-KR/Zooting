@@ -1,6 +1,6 @@
-package application.usecase;
+package com.zooting.api.application.usecase;
 
-import application.dto.request.MemberAndReportReq;
+import com.zooting.api.application.dto.request.MemberAndReportReq;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.report.dao.ReportRepository;

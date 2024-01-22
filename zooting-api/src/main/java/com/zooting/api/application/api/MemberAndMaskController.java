@@ -1,8 +1,8 @@
-package application.api;
+package com.zooting.api.application.api;
 
-import application.usecase.MemberAndMaskUsecase;
-import application.dto.request.MemberAndMaskReq;
-import application.dto.response.MemberAndMaskRes;
+import com.zooting.api.application.usecase.MemberAndMaskUsecase;
+import com.zooting.api.application.dto.request.MemberAndMaskReq;
+import com.zooting.api.application.dto.response.MemberAndMaskRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;

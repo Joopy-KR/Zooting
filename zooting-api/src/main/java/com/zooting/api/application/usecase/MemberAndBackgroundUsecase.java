@@ -1,7 +1,7 @@
-package application.usecase;
+package com.zooting.api.application.usecase;
 
-import application.dto.request.MemberAndBackgroundReq;
-import application.dto.response.MemberAndBackgroundRes;
+import com.zooting.api.application.dto.request.MemberAndBackgroundReq;
+import com.zooting.api.application.dto.response.MemberAndBackgroundRes;
 import com.zooting.api.domain.background.dao.BackgroundInventoryRepository;
 import com.zooting.api.domain.background.dao.BackgroundRepository;
 import com.zooting.api.domain.background.entity.Background;

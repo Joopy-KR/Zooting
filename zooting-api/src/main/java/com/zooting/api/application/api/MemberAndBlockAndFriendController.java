@@ -1,7 +1,7 @@
-package application.api;
+package com.zooting.api.application.api;
 
-import application.dto.request.MemberAndBlockReq;
-import application.usecase.MemberAndBlockAndFriendUsecase;
+import com.zooting.api.application.dto.request.MemberAndBlockReq;
+import com.zooting.api.application.usecase.MemberAndBlockAndFriendUsecase;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;

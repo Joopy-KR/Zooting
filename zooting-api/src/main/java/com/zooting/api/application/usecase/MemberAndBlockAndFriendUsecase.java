@@ -1,6 +1,6 @@
-package application.usecase;
+package com.zooting.api.application.usecase;
 
-import application.dto.request.MemberAndBlockReq;
+import com.zooting.api.application.dto.request.MemberAndBlockReq;
 import com.zooting.api.domain.block.dao.BlockRepository;
 import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.friend.dao.FriendRepository;
