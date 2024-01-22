@@ -1,5 +1,6 @@
 package com.zooting.api.global.security.handler;
 
+import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.jwt.JwtService;
 import com.zooting.api.global.security.user.CustomOAuth2User;
@@ -20,6 +21,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final JwtService jwtService;
+    private final MemberService memberService;
 
     /**
      *
@@ -32,9 +34,20 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException {
 
+        // OAuth2 필터에서 담겨져 온 유저 인증 정보 (Attributes = {Email, Provider, userNameAttributeName}
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-        String userEmail = oAuth2User.getEmail();
-        Collection<String> userPrivileges = oAuth2User.getAuthorities().stream().map(Object::toString).toList();
+
+        String userEmail = (String) oAuth2User.getAttributes().get("email");
+
+
+
+        // 여기서 우리 쪽 유저로 전환
+        // 1. 유저 정보가 없을 경우
+        // -> 이메일 등록 후 익명 유저로 전환
+        // 2. 유저 정보가 Anonymous일 경우
+        // 3. 아닐 경우
+
+
 
         String accessToken = jwtService.createAccessToken(userEmail, userPrivileges);
         log.info("OAuth2SuccessHandler에서 액세스 토큰 발급: " + accessToken);
