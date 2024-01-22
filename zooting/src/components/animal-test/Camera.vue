@@ -1,5 +1,5 @@
 <template>
-  <div class="main-div">
+  <div>
     <div class="flex items-center justify-center" v-show="is_started">
       <div id="webcam-container" style="position: relative;">
         <video id="webcam" ref="videoRef" autoplay playsinline></video>
@@ -52,7 +52,7 @@ import { FaceDetector, FilesetResolver, Detection } from "@mediapipe/tasks-visio
 const emit = defineEmits(['workFinished']);
 
 // 성별 정보
-const gender = ref('male')
+const gender = ref('female')
 
 // 얼굴인식 변수
 let faceDetector: FaceDetector
@@ -205,7 +205,6 @@ const init = async () => {
   
   const initializeAnimalModel = async () => {
     const modelURL = URL + "/model.json"
-    console.log(modelURL)
     const metadataURL = URL + "/metadata.json"
     
     // 모델 및 메타데이터 로드
@@ -240,11 +239,6 @@ const loop = async () => {
 const predict = async () => {
   // 촬영시까지 동작함
   const prediction = await model.predict(webcam.canvas)
-  console.log("강" + prediction[0].probability.toFixed(2))
-  console.log("고" + prediction[1].probability.toFixed(2))
-  console.log("곰" + prediction[2].probability.toFixed(2))
-  console.log("공" + prediction[3].probability.toFixed(2))
-  console.log("토" + prediction[4].probability.toFixed(2))
 
   // 촬영시 동물 변수에 값을 담음
   if (is_working === false) {
@@ -257,13 +251,13 @@ const predict = async () => {
         rabbit.value = prediction[4].probability.toFixed(2)
         emit('workFinished', gender.value, dog.value, cat.value, bear.value, dino.value, rabbit.value) 
       } else if (gender.value == 'female') {
-      // 여자는 강아지, 고양이, 토끼, 사슴, 꼬북이
+      // 여자는 강아지, 고양이, 꼬부기, 사슴, 토끼
         dog.value = prediction[0].probability.toFixed(2)
         cat.value = prediction[1].probability.toFixed(2)
-        rabbit.value = prediction[2].probability.toFixed(2)
+        turtle.value = prediction[2].probability.toFixed(2)
         deer.value = prediction[3].probability.toFixed(2)
-        turtle.value = prediction[4].probability.toFixed(2)
-        emit('workFinished', gender.value, dog.value, cat.value, rabbit.value, deer.value, turtle.value)
+        rabbit.value = prediction[4].probability.toFixed(2)
+        emit('workFinished', gender.value, dog.value, cat.value, turtle.value, deer.value, rabbit.value)
       }
   }
 }
@@ -278,10 +272,6 @@ const stop = function() {
 
 
 <style scoped>
-.main-div {
-  @apply flex items-center justify-center
-}
-
 video {
   clear: both;
   display: block;

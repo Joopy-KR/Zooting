@@ -1,30 +1,33 @@
 <template>
-    <div class="flex flex-col items-center justify-center h-screen">
-      <!-- 설명 출력 -->
-      <transition name="fade">
-          <p v-if="isDescription" class="text-4xl font-bold">가면으로 사용할 동물상을 분석할게요</p>
-      </transition>
+    <div class="outer-container">
+      <div class="inner-container">
+        <!-- 설명 출력 -->
+        <transition name="fade">
+            <p v-if="isDescription" class="text-4xl font-bold">가면으로 사용할 동물상을 분석할게요</p>
+        </transition>
+    
+        <!-- 동물상 테스트 출력 -->
+        <transition name="fade">
+            <Camera 
+            v-if="isAnimal"
+            @work-finished="isAnimalFinished"
+            />
+        </transition>
   
-      <!-- 동물상 테스트 출력 -->
-      <transition name="fade">
-          <Camera 
-          v-if="isAnimal"
-          @work-finished="isAnimalFinished"
-          />
-      </transition>
-
-    <!-- 설명 출력 -->
-      <transition name="fade">
-        <p v-if="isLoading" class="text-4xl font-bold">동물상을 분석하는 중이에요</p>
-      </transition>
-
-      <!-- 결과 출력 -->
-      <transition name="fade">
-        <Result
-        v-if="isResult"
-        :result-animal="resultAnimal"
-        />
-      </transition>
+      <!-- 설명 출력 -->
+        <transition name="fade">
+          <p v-if="isLoading" class="text-4xl font-bold">동물상을 분석하는 중이에요</p>
+        </transition>
+  
+        <!-- 결과 출력 -->
+        <transition name="fade">
+            <Result
+            v-if="isResult"
+            :result-animal="resultAnimal"
+            :all-animal="allAnimal"
+            />
+        </transition>
+      </div>
     </div>
   </template>
 
@@ -37,7 +40,9 @@
   // 닮은 동물상
   const resultAnimal = ref('')
 
-  
+  // 각각의 동물상이 몇 퍼센트 나왔는지 전달할 객체
+  const allAnimal = ref({})
+
   // 설명 화면
   const isDescription = ref(false)
   
@@ -63,7 +68,15 @@
         }
     })
 
+    // 남자는 강아지, 고양이, 곰, 공룡, 토끼
     if (gender.value === 'male') {
+      allAnimal.value["gender"] = 'male'
+      allAnimal.value["dog"] = (Number(args[1]) * 100).toFixed(0)
+      allAnimal.value["cat"] = (Number(args[2]) * 100).toFixed(0)
+      allAnimal.value["bear"] = (Number(args[3]) * 100).toFixed(0)
+      allAnimal.value["dino"] = (Number(args[4]) * 100).toFixed(0)
+      allAnimal.value["rabbit"] = (Number(args[5]) * 100).toFixed(0)
+
       if (maxIdx.value === 1) {
           resultAnimal.value = '강아지'
       } else if (maxIdx.value === 2) {
@@ -75,17 +88,25 @@
       } else if (maxIdx.value === 5) {
           resultAnimal.value = '토끼'
       }
+    // 여자는 강아지, 고양이, 꼬부기, 사슴, 토끼
     } else if (gender.value === 'female') {
+      allAnimal.value["gender"] = 'female'
+      allAnimal.value["dog"] = (Number(args[1]) * 100).toFixed(0)
+      allAnimal.value["cat"] = (Number(args[2]) * 100).toFixed(0)
+      allAnimal.value["turtle"] = (Number(args[3]) * 100).toFixed(0)
+      allAnimal.value["deer"] = (Number(args[4]) * 100).toFixed(0)
+      allAnimal.value["rabbit"] = (Number(args[5]) * 100).toFixed(0)
+
       if (maxIdx.value === 1) {
           resultAnimal.value = '강아지'
       } else if (maxIdx.value === 2) {
           resultAnimal.value = '고양이'
       } else if (maxIdx.value === 3) {
-          resultAnimal.value = '토끼'
+          resultAnimal.value = '꼬부기'
       } else if (maxIdx.value === 4) {
           resultAnimal.value = '사슴'
       } else if (maxIdx.value === 5) {
-          resultAnimal.value = '꼬부기'
+          resultAnimal.value = '토끼'
       }
     }
     // 다음 컴포넌트로 이동
@@ -128,6 +149,14 @@
 
 
 <style scoped>
+.outer-container {
+    @apply flex flex-col justify-center items-center p-6 bg-slate-100 w-screen h-screen;
+    overflow-y: auto;
+}
+
+.inner-container {
+  @apply flex flex-col items-center justify-center w-full h-full bg-white border border-gray-200 shadow;
+}
 
   .fade-enter-active,
   .fade-leave-active {
