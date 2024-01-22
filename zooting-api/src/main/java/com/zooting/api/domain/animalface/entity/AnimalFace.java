@@ -2,7 +2,6 @@ package com.zooting.api.domain.animalface.entity;
 
 import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
