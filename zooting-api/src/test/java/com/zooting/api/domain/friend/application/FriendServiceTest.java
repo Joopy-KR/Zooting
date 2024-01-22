@@ -6,6 +6,7 @@ import com.zooting.api.domain.friend.dto.response.FriendRes;
 import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.friend.entity.FriendRequest;
 import com.zooting.api.domain.friend.usecase.AcceptFriendUsecase;
+import com.zooting.api.domain.friend.usecase.SendFriendUsecase;
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.response.MemberRes;
@@ -16,10 +17,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,10 +46,13 @@ class FriendServiceTest {
     private MemberRepository memberRepository;
     @Autowired
     private AcceptFriendUsecase acceptUsecase;
+    @Autowired
+    private SendFriendUsecase sendFriendUsecase;
 
 
     @Test
     @DisplayName("친구 수락 테스트")
+    @WithMockUser(username = "x", roles = "USER")
     @Transactional
     void acceptFriendTest(){
         // Given
@@ -50,48 +60,45 @@ class FriendServiceTest {
         String toEmail = "y";
         memberService.initialMemberRegister(fromEmail);
         memberService.initialMemberRegister(toEmail);
-        friendRequestService.sendFriendRequest(fromEmail, toEmail);
+        sendFriendUsecase.sendFriendRequest(fromEmail, toEmail);
 
-        Authentication authentication = new Authentication() {
-            @Override
-            public String getName() {
-                return toEmail;
-            }
-
-            @Override
-            public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-
-            }
-
-            @Override
-            public boolean isAuthenticated() {
-                return false;
-            }
-
-            @Override
-            public Object getPrincipal() {
-                return null;
-            }
-
-            @Override
-            public Object getDetails() {
-                return null;
-            }
-
+        UserDetails userDetails = new UserDetails() {
             @Override
             public Collection<? extends GrantedAuthority> getAuthorities() {
-                return null;
+                return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
             }
-
             @Override
-            public Object getCredentials() {
-                return null;
+            public String getPassword() {
+                return "password"; // 실제 비밀번호로 교체해야 함
             }
-
+            @Override
+            public String getUsername() {
+                return fromEmail;
+            }
+            @Override
+            public boolean isAccountNonExpired() {
+                return true; // 계정 만료되지 않음
+            }
+            @Override
+            public boolean isAccountNonLocked() {
+                return true; // 계정 잠겨있지 않음
+            }
+            @Override
+            public boolean isCredentialsNonExpired() {
+                return true; // 자격 증명 만료되지 않음
+            }
+            @Override
+            public boolean isEnabled() {
+                return true; // 계정 활성화됨
+            }
         };
-        FriendReq friendReq = new FriendReq(fromEmail, fromEmail);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "password", userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        FriendReq friendReq = new FriendReq(toEmail, toEmail);
         // When
-        acceptUsecase.acceptFriend(friendReq, authentication);
+        acceptUsecase.acceptFriend(friendReq, userDetails);
 
         // Then
         List<Friend> friendList = friendRepository.findAll();

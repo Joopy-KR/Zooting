@@ -18,12 +18,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Log4j2
-@PreAuthorize("hasAnyRole('ANONYMOUS')")
+@PreAuthorize("hasAnyRole('USER')")
 @RestController
 @RequestMapping("/api/friends")
 @RequiredArgsConstructor
@@ -32,17 +33,17 @@ public class FriendController {
     private FriendService friendService;
     @Operation(summary = "친구 리스트", description = "로그인 한 사람 기준 친구리스트 반환")
     @GetMapping("")
-    public ResponseEntity<BaseResponse<List<FriendRes>>> findFriendList(@AuthenticationPrincipal Authentication authentication){
+    public ResponseEntity<BaseResponse<List<FriendRes>>> findFriendList(@AuthenticationPrincipal UserDetails userDetails){
         log.info("enter");
-        List<FriendRes> friendResList = friendService.getFriends(authentication.getName());
+        List<FriendRes> friendResList = friendService.getFriends(userDetails.getUsername());
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 friendResList
         );
     }
     @GetMapping("/search")
-    public ResponseEntity<BaseResponse<List<FriendRes>>> searchFriend(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal Authentication authentication){
-        List<FriendRes> friendSearchList = friendService.searchFriend(nickname, authentication.getName());
+    public ResponseEntity<BaseResponse<List<FriendRes>>> searchFriend(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails){
+        List<FriendRes> friendSearchList = friendService.searchFriend(nickname, userDetails.getUsername());
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 friendSearchList

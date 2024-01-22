@@ -1,5 +1,6 @@
 package com.zooting.api.domain.friend.dao;
 
+import com.zooting.api.domain.friend.dto.response.FriendRes;
 import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
         WHERE fr.follower.email = :follower
     """)
     List<Friend> findFriendByFollower(@Param("follower") String follower);
+
+    //searchFriend
+    List<Friend> findByFollower_EmailAndFollowing_NicknameContaining(String followerEmail, String nickname);
 }

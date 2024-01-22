@@ -35,13 +35,11 @@ public class FriendServiceImpl implements FriendService{
     @Override
     public List<FriendRes> searchFriend(String nickname, String loginEmail){
         //search friend contating nickname
-        List<FriendRes> friendList = getFriends(loginEmail); // 친구 목록 가져오기
-        List<FriendRes> searchList = friendList
+        List<FriendRes> searchList = friendRepository.findByFollower_EmailAndFollowing_NicknameContaining
+                        (loginEmail, nickname)
                 .stream()
-                .filter(friend -> friend.nickname().contains(nickname))
-                .map(friend ->  new FriendRes(friend.email(), friend.nickname()))
-                .toList(); // 친구 목록 중에서 닉네임이 nickname을 포함하는 친구 찾기
-
+                .map(friend -> new FriendRes(friend.getFollowing().getEmail(), friend.getFollowing().getNickname()))
+                .toList();
         return searchList;
     }
 }

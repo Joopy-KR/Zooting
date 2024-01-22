@@ -1,6 +1,7 @@
 package com.zooting.api.domain.friend.application;
 
 import com.zooting.api.domain.friend.dao.FriendRequestRepository;
+import com.zooting.api.domain.friend.usecase.SendFriendUsecase;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.transaction.Transactional;
@@ -9,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.junit.jupiter.api.Assertions.*;
 @Log4j2
@@ -22,7 +24,8 @@ class FriendRequestServiceTest {
     private FriendService friendService;
     @Autowired
     private MemberRepository memberRepository;
-
+    @Autowired
+    private SendFriendUsecase sendFriendUsecase;
 
     @Test
     void getReceivedFriendRequestsTest() {
@@ -38,10 +41,11 @@ class FriendRequestServiceTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "x", roles = "USER")
     void rejectFriendRequestTest() {
         Member loginMember = Member.builder().email("x").build();
         Member deleteMember = Member.builder().email("y").build();
-        friendRequestService.sendFriendRequest("y", "x");
+        sendFriendUsecase.sendFriendRequest("y", "x");
         friendRequestRepository.findAll().forEach(friendRequest -> log.info("{}, {}", friendRequest.getFrom().getEmail(), friendRequest.getTo().getEmail()));
         friendRequestService.rejectFriendRequest("x", "y");
         friendRequestRepository.findAll().forEach(friendRequest -> log.info("{}, {}", friendRequest.getFrom().getEmail(), friendRequest.getTo().getEmail()));
@@ -50,10 +54,11 @@ class FriendRequestServiceTest {
 
     @Test
     @Transactional
+    @WithMockUser(username = "x", roles = "USER")
     void cancelFriendRequestTest() {
         Member loginMember = Member.builder().email("x").build();
         Member deleteMember = Member.builder().email("y").build();
-        friendRequestService.sendFriendRequest("x", "y");
+        sendFriendUsecase.sendFriendRequest("x", "y");
         friendRequestRepository.findAll().forEach(friendRequest -> log.info("{}, {}", friendRequest.getFrom().getEmail(), friendRequest.getTo().getEmail()));
         friendRequestService.rejectFriendRequest("x", "y");
         friendRequestRepository.findAll().forEach(friendRequest -> log.info("{}, {}", friendRequest.getFrom().getEmail(), friendRequest.getTo().getEmail()));
