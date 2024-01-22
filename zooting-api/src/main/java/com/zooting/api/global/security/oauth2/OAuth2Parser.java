@@ -1,4 +1,4 @@
-package com.zooting.api.global.security.user;
+package com.zooting.api.global.security.oauth2;
 import java.util.Map;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.stereotype.Component;
@@ -38,7 +38,13 @@ public class OAuth2Parser {
     }
 
     private String getKakaoEmail(Map<String, Object> attributes){
-        Map<String, Object> accountInfo = (Map<String, Object>) attributes.get("kakao_account");
-        return accountInfo.get("email").toString();
+        Object accountInfo = attributes.get("kakao_account");
+        if(accountInfo instanceof Map<?, ?>){
+            Object email = ((Map<?, ?>) accountInfo).get("email");
+            if(email instanceof String){
+                return (String) email;
+            }
+        }
+        return null;
     }
 }

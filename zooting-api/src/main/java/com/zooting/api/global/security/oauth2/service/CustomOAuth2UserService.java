@@ -1,4 +1,4 @@
-package com.zooting.api.global.security.service;
+package com.zooting.api.global.security.oauth2.service;
 
 import com.zooting.api.global.security.oauth2.CustomOAuth2User;
 import com.zooting.api.global.security.oauth2.OAuth2Parser;

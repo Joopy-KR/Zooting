@@ -1,22 +1,14 @@
 package com.zooting.api.domain.member.api;
 
-import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
-import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
-import com.zooting.api.global.security.user.CustomOAuth2User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -155,15 +147,5 @@ public class MemberController {
                     "변경 불가"
             );
         }
-    }
-
-    @GetMapping("/email")
-    public ResponseEntity<Member> getMemberByEmail(@RequestParam(name = "email") String email) {
-        return ResponseEntity.ok(memberService.getMemberByEmail(email));
-    }
-
-    @PostMapping("/register/email")
-    public ResponseEntity<Member> initialMemberRegister(@RequestBody String email) {
-        return ResponseEntity.ok(memberService.initialMemberRegister(email));
     }
 }
