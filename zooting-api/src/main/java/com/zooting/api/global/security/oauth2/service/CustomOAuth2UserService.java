@@ -1,8 +1,8 @@
 package com.zooting.api.global.security.service;
 
-import com.zooting.api.global.security.user.CustomOAuth2User;
-import com.zooting.api.global.security.user.OAuth2Parser;
-import com.zooting.api.global.security.user.OAuth2Provider;
+import com.zooting.api.global.security.oauth2.CustomOAuth2User;
+import com.zooting.api.global.security.oauth2.OAuth2Parser;
+import com.zooting.api.global.security.oauth2.OAuth2Provider;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
