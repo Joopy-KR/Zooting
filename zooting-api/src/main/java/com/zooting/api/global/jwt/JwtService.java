@@ -11,7 +11,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -21,19 +20,30 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtService {
     private final SecretKey secretKey;
-    private final long validityInMilliseconds;
+    private final long accessTokenExpirationTime;
+    private final long refreshTokenExpirationTime;
+
 
     public JwtService(
             @Value("${jwt.secretKey}") String secretKey,
-            @Value("${jwt.expiration-time}") long validityInMilliseconds
+            @Value("${jwt.access-token-expiration}") long accessTokenExpirationTime,
+            @Value("${jwt.refresh-token-expiration}") long refreshTokenExpirationTime
     ) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
-        this.validityInMilliseconds = validityInMilliseconds;
+        this.accessTokenExpirationTime = accessTokenExpirationTime;
+        this. refreshTokenExpirationTime = refreshTokenExpirationTime;
     }
 
     public String createAccessToken(String userEmail, Collection<String> privileges){
+        return createToken(userEmail, privileges, accessTokenExpirationTime);
+    }
+    public String createRefreshToken(String userEmail, Collection<String> privileges){
+        return createToken(userEmail, privileges, refreshTokenExpirationTime);
+    }
+
+    public String createToken(String userEmail, Collection<String> privileges, long expirationTime){
         Date date = new Date();
-        Date expirationDate = new Date(date.getTime() + validityInMilliseconds);
+        Date expirationDate = new Date(date.getTime() + expirationTime);
 
         String issuer = "Zooting";
         return Jwts.builder()
@@ -44,6 +54,7 @@ public class JwtService {
                 .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
     }
+
     public boolean verifyToken(String token){
         log.debug("토큰 검증 시작: " + token);
         return Jwts.parser()
@@ -55,33 +66,18 @@ public class JwtService {
                 .after(new Date());
     }
 
-    public Authentication getAuthentication(String token){
+    public Authentication getAuthentication(String token) {
         UserDetails userDetails = User.builder()
                 .username(getUserEmail(token))
                 .password(UUID.randomUUID().toString())
-                .authorities(AuthorityUtils
-                        .createAuthorityList(
-                                getPrivileges(token).stream()
-                                        .map(privilege -> "ROLE_" + privilege)
-                                        .toList()
-                        ))
+                .roles(getPrivileges(token).toArray(new String[0]))
                 .build();
         return new UsernamePasswordAuthenticationToken(
                 userDetails,
-                null,
-                userDetails.getAuthorities()
-        );
-//        return new UsernamePasswordAuthenticationToken(
-//                getUserEmail(token),
-//                null,
-//                AuthorityUtils
-//                        .createAuthorityList(
-//                                getPrivileges(token).stream()
-//                                        .map(privilege -> "ROLE_" + privilege)
-//                                        .toList()
-//                        )
-//        );
+                userDetails.getPassword(),
+                userDetails.getAuthorities());
     }
+
 
     public String getUserEmail(String token){
         return Jwts.parser()

@@ -29,18 +29,6 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
-
-    @PostAuthorize("hasRole('ANONYMOUS')")
-    @GetMapping("/test")
-    public String test(@AuthenticationPrincipal CustomOAuth2User user,
-            @AuthenticationPrincipal UserDetails userDetails,
-            Authentication auth) {
-        log.info("CustomOAuth2User 출력: " + user + "\n");
-        log.info("UserDetails 출력: " + userDetails + "\n");
-        log.info("Auth 출력: " + auth + "\n");
-        return "TEST";
-    }
-
     @GetMapping("/nickname/check")
     public ResponseEntity<BaseResponse<Boolean>> checkNicknameDuplicate(
             @RequestParam(name = "nickname") String nickname) {
@@ -169,8 +157,8 @@ public class MemberController {
         }
     }
 
-    @GetMapping("/")
-    public ResponseEntity<Member> getMemberByEmail(@RequestParam String email) {
+    @GetMapping("/email")
+    public ResponseEntity<Member> getMemberByEmail(@RequestParam(name = "email") String email) {
         return ResponseEntity.ok(memberService.getMemberByEmail(email));
     }
 

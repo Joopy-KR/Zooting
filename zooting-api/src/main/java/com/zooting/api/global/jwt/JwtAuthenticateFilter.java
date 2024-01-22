@@ -12,46 +12,34 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Log4j2
 @RequiredArgsConstructor
 public class JwtAuthenticateFilter extends OncePerRequestFilter {
-    private final static String HEADER_AUTHORIZATION = "Authorization";
-    private final static String TOKEN_PREFIX = "Bearer ";
+    private static final String HEADER_AUTHORIZATION = "Authorization";
+    private static final String TOKEN_PREFIX = "Bearer ";
     private final JwtService jwtService;
+    private final String[] URL_WHITE_LIST;
 
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-
-
-        if (!request.getRequestURI().startsWith("api")) {
+        if (PatternMatchUtils.simpleMatch(URL_WHITE_LIST, request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        log.info("필터 검증 진입");
         String token = tokenProcessor(request);
-
-        // Test
-        SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
-
 
         if (token != null && jwtService.verifyToken(token)) {
             Authentication authentication = jwtService.getAuthentication(token);
-           log.info("Authentication 정보" + authentication);
-
-           log.info("SecurityContextHolder 정보 Before : "+ securityContextHolderStrategy.getContext());
-           SecurityContextHolder.getContext().setAuthentication(authentication);
-           log.info("SecurityContextHolder 정보 After : "+ securityContextHolderStrategy.getContext());
-
-            log.info("Security Context에 " + authentication.getName() + "의 정보를 저장했다.");
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } else {
-            log.debug("요청에 유효한 토큰이 없다.");
+            log.debug("요청에 유효한 토큰이 없습니다.");
         }
     }
 
