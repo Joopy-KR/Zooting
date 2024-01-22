@@ -1,5 +1,6 @@
 package com.zooting.api.domain.background.entity;
 
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +9,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class BackgroundInventory {
+public class BackgroundInventory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "inventory_id")

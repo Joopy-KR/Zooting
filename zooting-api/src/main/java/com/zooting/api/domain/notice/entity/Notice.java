@@ -1,5 +1,6 @@
 package com.zooting.api.domain.notice.entity;
 
+import com.zooting.api.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Notice {
+public class Notice extends BaseEntity {
     @Id
     @Column(name = "notice_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

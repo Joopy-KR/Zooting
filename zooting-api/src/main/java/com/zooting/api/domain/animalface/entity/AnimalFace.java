@@ -1,5 +1,6 @@
 package com.zooting.api.domain.animalface.entity;
 
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 // @Tag(description = "닮은 동물상 비율")
-public class AnimalFace {
+public class AnimalFace extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="animal_face_id")

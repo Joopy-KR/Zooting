@@ -1,6 +1,6 @@
 package com.zooting.api.domain.report.entity;
 
-import com.zooting.api.BaseEntity;
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;

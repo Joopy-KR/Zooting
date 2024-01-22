@@ -1,5 +1,6 @@
 package com.zooting.api.domain.dm.entity;
 
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,7 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "dm_room")
-public class DMRoom {
+public class DMRoom extends BaseEntity {
     @Id
     @Column(name = "dm_room_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

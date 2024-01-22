@@ -1,5 +1,6 @@
 package com.zooting.api.domain.file.entity;
 
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.dm.entity.DM;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +10,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class File {
+public class File extends BaseEntity {
     @Id
     @Column(name = "file_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
