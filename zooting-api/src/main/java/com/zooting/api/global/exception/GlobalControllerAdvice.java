@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
+import java.util.Optional;
+
 @Log4j2
 @RestControllerAdvice
 public class GlobalControllerAdvice {
@@ -20,9 +22,19 @@ public class GlobalControllerAdvice {
      * @param e Exception
      * @return ResponseEntity
      */
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<ErrorResponse> handleAllExceptions(Exception e) {
+        e.printStackTrace(); // 처리되지 않은 에러에 대해서는 서버 로그 출력
+        ErrorResponse response = ErrorResponse.of()
+                .code(ErrorCode.INTERNAL_SERVER_ERROR)
+                .message(e.getMessage())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
     @ExceptionHandler(RuntimeException.class)
-    protected ResponseEntity<ErrorResponse> handleAllExceptions(RuntimeException e) {
-        log.error(e.getMessage());
+    protected ResponseEntity<ErrorResponse> handleRuntimeExceptions(RuntimeException e) {
+        e.printStackTrace(); // 처리되지 않은 에러에 대해서는 서버 로그 출력
         ErrorResponse response = ErrorResponse.of()
                 .code(ErrorCode.INTERNAL_SERVER_ERROR)
                 .message(e.getMessage())
@@ -33,15 +45,13 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodValidation(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
-        // Validation 에러 정보를 추출하거나 처리할 로직을 작성
-        String errorMessage = "Validation error: " + bindingResult.getAllErrors().get(0).getDefaultMessage();
-
         ErrorResponse response = ErrorResponse.of()
                 .code(ErrorCode.NOT_VALID_ERROR)
-                .message(errorMessage)
+                .message(ex.getMessage())
+                .errors(bindingResult.getFieldErrors())
                 .build();
 
-        return ResponseEntity.badRequest().body(response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)
@@ -51,10 +61,20 @@ public class GlobalControllerAdvice {
                 .message(ex.getMessage())
                 .build();
 
-        return ResponseEntity.badRequest().body(response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex) {
+        // 원하는 응답 형식으로 ResponseEntity를 생성하여 반환
+        ErrorResponse response = ErrorResponse.of()
+                .code(ErrorCode.INTERNAL_SERVER_ERROR)
+                .message(ex.getMessage())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<ErrorResponse> handleNullPointException(NullPointerException ex) {
         // 원하는 응답 형식으로 ResponseEntity를 생성하여 반환
         ErrorResponse response = ErrorResponse.of()
                 .code(ErrorCode.INTERNAL_SERVER_ERROR)
