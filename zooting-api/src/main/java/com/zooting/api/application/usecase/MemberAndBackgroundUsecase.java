@@ -12,6 +12,7 @@ import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class MemberAndBackgroundUsecase {
     final private BackgroundRepository backgroundRepository;
     final private BackgroundInventoryRepository backgroundInventoryRepository;
 
+    @Transactional
     public Boolean buyBackgroundImg(String userId, MemberAndBackgroundReq backgroundReq) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
@@ -52,6 +54,7 @@ public class MemberAndBackgroundUsecase {
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         List<MemberAndBackgroundRes> backgroundResList = backgroundInventoryRepository.findAllByMember(member)
                 .stream().map(back-> new MemberAndBackgroundRes(
+                        back.getId(),
                         back.getBackground().getFile().getFileName(),
                         back.getBackground().getFile().getImg_url(),
                         back.getBackground().getPrice()) ).toList();

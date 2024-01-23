@@ -19,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -35,10 +33,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean checkAdditionalInfo(String userId) {
+    public boolean checkMemberPrivilege(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        return !member.getNickname().isBlank();
+        for (var role : member.getRole()) {
+            if (role.equals(Privilege.USER)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Transactional
@@ -53,6 +56,7 @@ public class MemberServiceImpl implements MemberService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         member.setBirth(sdf.parse(memberReq.birth()));
         member.setAddress(memberReq.address());
+        member.setGender(memberReq.gender());
         member.setPoint(0L); // 추가 정보 저장 시 포인트 0으로 저장
 
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
@@ -83,6 +87,8 @@ public class MemberServiceImpl implements MemberService {
         additionalInfo.setIdealAnimal(additionalReq.idealAnimal().toString());
         additionalInfo.setMember(member);
         memberRepository.save(member);
+
+
     }
 
     @Transactional
@@ -101,7 +107,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<MemberRes> findMemberList(String userId, String nickname) {
+    public List<MembeSearchrRes> findMemberList(String userId, String nickname) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
@@ -114,7 +120,7 @@ public class MemberServiceImpl implements MemberService {
             findMembers = memberRepository.findByNicknameContainingAndNicknameNotIn(nickname, blockMemberNicknames);
         }
         findMembers = memberRepository.findMemberByNicknameContaining(nickname);
-        List<MemberRes> resultList = findMembers.stream().map(mem -> new MemberRes(mem.getNickname(), mem.getEmail())).toList();
+        List<MembeSearchrRes> resultList = findMembers.stream().map(mem -> new MembeSearchrRes(mem.getNickname(), mem.getEmail())).toList();
         return resultList;
     }
 
