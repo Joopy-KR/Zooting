@@ -150,7 +150,7 @@
 
 <style scoped>
 .outer-container {
-    @apply flex flex-col justify-center items-center p-6 bg-slate-100 w-screen h-screen;
+    @apply flex flex-col justify-center items-center p-6 w-screen h-screen;
     overflow-y: auto;
 }
 

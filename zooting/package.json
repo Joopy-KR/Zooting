@@ -21,16 +21,20 @@
     "apexcharts": "^3.45.2",
     "axios": "^1.6.5",
     "flowbite": "^2.2.1",
+    "flowbite-datepicker": "^1.2.6",
     "headlessui": "^0.0.0",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
+    "tw-elements": "^1.1.0",
     "vue": "^3.3.11",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vue-tailwind-datepicker": "^1.6.1"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/vue-fontawesome": "^3.0.5",
+    "@tailwindcss/forms": "^0.5.7",
     "@tsconfig/node18": "^18.2.2",
     "@types/node": "^18.19.3",
     "@vitejs/plugin-vue": "^4.5.2",

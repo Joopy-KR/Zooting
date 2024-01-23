@@ -32,7 +32,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
   const state = ref<AccessTokenState>({
     accessToken: localStorage.getItem("accessToken") || null,
   })
-  
+
   const setAccessToken = function (token: string | null) {
     if (token) {
       localStorage.setItem("accessToken", token)
@@ -41,7 +41,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     }
     state.value.accessToken = token
   }
-  
+
   const getAccessToken = function () {
     if (state.value.accessToken) {
       return state.value.accessToken
@@ -56,7 +56,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       }
     }
   }
-  
+
   const isLogin = computed(() => {
     if (state.value.accessToken) {
       return true 
@@ -64,19 +64,19 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       return false
     }
   })
-  
+
   const signOut = function () {
     window.localStorage.clear()
     state.value.accessToken = null
   }
-  
+
   const userInfo = ref(null)
-  
+
   const getUserInfo = function () {
     return new Promise((resolve, reject) => {
       axios({
         method: 'get',
-        url: '',
+        url: `${API_URL}/api/members/`,
         headers: {
           accept: 'application/json',
           Authorization: `Bearer ${state.value.accessToken}`
@@ -95,6 +95,58 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     })
   }
   
+  const saveAdditionalInfo = function (
+    payload : {
+    nickname: string
+    gender: string
+    birth: string
+    address: string
+    interest:string[]
+    idealAnimal: string[]
+    }) {
+    const { nickname, gender, birth, address, interest, idealAnimal } = payload
+
+    axios({
+      method: 'put',
+      url: `${API_URL}/api/members`,
+      data: {
+        nickname,
+        // gender,
+        birth,
+        address,
+        interest,
+        idealAnimal
+      },
+      headers: {
+        Authorization: `Bearer ${state.value.accessToken}`
+      }
+    })
+    .then(res => {
+      console.log(res)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
+
+  const nicknameDuplicationCheck = function (nickname:string) {
+    axios({
+      method: 'get',
+      url: `${API_URL}/api/members/nickname/check`,
+      data: nickname,
+      headers: {
+        Authorization: `Bearer ${state.value.accessToken}`
+      }
+    })
+    .then(res => {
+      console.log(res)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
   const setPersonality = function (payload:string) {
     const personality = payload
     return new Promise((resolve, reject) => {
@@ -128,6 +180,8 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     userInfo,
     getUserInfo,
     setPersonality,
+    saveAdditionalInfo,
+    nicknameDuplicationCheck,
   }
 }, { persist: true })
 
