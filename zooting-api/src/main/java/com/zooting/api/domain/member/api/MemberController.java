@@ -1,8 +1,10 @@
 package com.zooting.api.domain.member.api;
 
-import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.member.application.MemberService;
-import com.zooting.api.domain.member.dto.request.*;
+import com.zooting.api.domain.member.dto.request.InterestsReq;
+import com.zooting.api.domain.member.dto.request.IntroduceReq;
+import com.zooting.api.domain.member.dto.request.MemberReq;
+import com.zooting.api.domain.member.dto.request.PersonalityReq;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.Member;
@@ -11,10 +13,10 @@ import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,7 +38,8 @@ public class MemberController {
                     "닉네임 중복되지 않을 때 false 반환"
     )
     @GetMapping("/nickname/check")
-    public ResponseEntity<BaseResponse<Boolean>> checkNicknameDuplicate(@RequestParam(name = "nickname") String nickname) {
+    public ResponseEntity<BaseResponse<Boolean>> checkNicknameDuplicate(
+            @Valid @NotNull @Size(min = 2, max = 16)  @RequestParam(name = "nickname") String nickname) {
         var result = memberService.existNickname(nickname);
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,

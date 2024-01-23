@@ -17,9 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -39,8 +38,8 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .cors(corsConfig -> corsConfig.configurationSource(corsConfigurationSource()))
                 .formLogin(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
                         session
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -64,22 +63,22 @@ public class WebSecurityConfig {
         return new JwtAuthenticateFilter(jwtService, URL_WHITE_LIST);
     }
 
-    @Bean
+    // CORS 설정
     CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList(      // 요청 헤더 중 허용할 헤더 설정
-                "Authorization",
-                "Cache-Control",
-                "Content-Type"
-        ));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+        final List<String> allowedHeaders = List.of(
+                "*"
+        );
+        final List<String> allowedOriginPatterns = List.of(
+                "http://localhost:8080",
+                "http://localhost:5173"
+        );
+        return request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedHeaders(allowedHeaders);
+            config.setAllowedMethods(Collections.singletonList("*"));
+            config.setAllowedOriginPatterns(allowedOriginPatterns); // ⭐️ 허용할 origin
+            config.setAllowCredentials(true);
+            return config;
+        };
     }
-
 }

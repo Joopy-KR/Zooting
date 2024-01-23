@@ -47,14 +47,14 @@ package:
     - cd ./zooting-api
     - echo [INFO] Start package stage
     - echo [INFO] SPRING_IMAGE_NAME      $SPRING_IMAGE_NAME
-    - echo [INFO] NGINX_IMAGE_NAME       $NGINX_IMAGE_NAME
+    # - echo [INFO] NGINX_IMAGE_NAME       $NGINX_IMAGE_NAME
     - echo [INFO] Spring docker project build
     - docker build -t $DOCKER_REGISTRY_USER/$SPRING_IMAGE_NAME . # Dockerfile로 build
     - docker push $DOCKER_REGISTRY_USER/$SPRING_IMAGE_NAME:latest # Container Registry에 image push
-    - echo [INFO] Nginx docker build
-    - cd ./nginx # nginx .conf 위치로 이동
-    - docker build -t $DOCKER_REGISTRY_USER/$NGINX_IMAGE_NAME .
-    - docker push $DOCKER_REGISTRY_USER/$NGINX_IMAGE_NAME:latest
+    # - echo [INFO] Nginx docker build
+    # - cd ./nginx # nginx .conf 위치로 이동
+    # - docker build -t $DOCKER_REGISTRY_USER/$NGINX_IMAGE_NAME .
+    # - docker push $DOCKER_REGISTRY_USER/$NGINX_IMAGE_NAME:latest
   # script가 실행된 후 수행 될 script
   after_script:
     - docker logout # GitLab Container Registry 로그아웃
