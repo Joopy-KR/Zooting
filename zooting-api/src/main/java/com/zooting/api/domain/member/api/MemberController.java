@@ -5,9 +5,9 @@ import com.zooting.api.domain.member.dto.request.InterestsReq;
 import com.zooting.api.domain.member.dto.request.IntroduceReq;
 import com.zooting.api.domain.member.dto.request.MemberReq;
 import com.zooting.api.domain.member.dto.request.PersonalityReq;
+import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
-import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +32,7 @@ import java.util.List;
 public class MemberController {
     private final MemberService memberService;
 
+    @PreAuthorize("permitAll()")
     @Operation(
             summary = "닉네임 중복 체크",
             description = "닉네임이 중복될 때 true반환, " +
@@ -195,6 +196,5 @@ public class MemberController {
                 SuccessCode.UPDATE_SUCCESS,
                 "변경 불가"
         );
-
     }
 }
