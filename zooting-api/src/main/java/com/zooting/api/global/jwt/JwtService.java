@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -22,29 +23,43 @@ import java.util.UUID;
 @Component
 public class JwtService {
     private final SecretKey secretKey;
-    private final long validityInMilliseconds;
+    private final long accessTokenExpirationTime;
+    private final long refreshTokenExpirationTime;
+
 
     public JwtService(
             @Value("${jwt.secretKey}") String secretKey,
-            @Value("${jwt.expiration-time}") long validityInMilliseconds
+            @Value("${jwt.access-token-expiration}") long accessTokenExpirationTime,
+            @Value("${jwt.refresh-token-expiration}") long refreshTokenExpirationTime
     ) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
-        this.validityInMilliseconds = validityInMilliseconds;
+        this.accessTokenExpirationTime = accessTokenExpirationTime;
+        this. refreshTokenExpirationTime = refreshTokenExpirationTime;
     }
 
-    public String createAccessToken(String userEmail, Collection<String> privileges){
+    public String createAccessToken(UserDetails userDetails){
+        return createToken(userDetails, accessTokenExpirationTime);
+    }
+    public String createRefreshToken(UserDetails userDetails){
+        return createToken(userDetails, refreshTokenExpirationTime);
+    }
+
+    public String createToken(UserDetails userDetails, long expirationTime){
         Date date = new Date();
-        Date expirationDate = new Date(date.getTime() + validityInMilliseconds);
+        Date expirationDate = new Date(date.getTime() + expirationTime);
 
         String issuer = "Zooting";
         return Jwts.builder()
                 .issuer(issuer)
                 .expiration(expirationDate)
-                .subject(userEmail)
-                .claim("Privilege", privileges)
+                .subject(userDetails.getUsername())
+                .claim("Privilege",
+                        userDetails.getAuthorities().stream()
+                                .map(GrantedAuthority::getAuthority).toList())
                 .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
     }
+
     public boolean verifyToken(String token){
         log.debug("토큰 검증 시작: " + token);
         return Jwts.parser()
