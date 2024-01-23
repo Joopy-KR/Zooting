@@ -1,20 +1,18 @@
 package com.zooting.api.domain.member.application;
 
-import com.zooting.api.domain.block.dao.BlockRepository;
 import com.zooting.api.domain.block.entity.Block;
-import com.zooting.api.domain.friend.dao.FriendRepository;
-import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.request.*;
+import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
 import com.zooting.api.domain.member.entity.Member;
-import com.zooting.api.domain.report.dao.ReportRepository;
-import com.zooting.api.domain.report.entity.ReportList;
+import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
+import org.objectweb.asm.Type;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,13 +32,34 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean checkAdditionalInfo(String userId) {
+    public boolean checkMemberPrivilege(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        if (member.getNickname().isBlank()) {
-            return false;
+        for (var role : member.getRole()) {
+            if (role.equals(Privilege.USER)) {
+                return true;
+            }
         }
-        return true;
+        return false;
+    }
+
+    @Override
+    public MemberRes findMemberInfo(String userId) {
+        Member member = memberRepository.findMemberByEmail(userId).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        MemberRes memberRes = new MemberRes(
+                member.getEmail(),
+                member.getGender(),
+                member.getNickname(),
+                member.getBirth(),
+                member.getAddress(),
+                member.getPoint(),
+                member.getAdditionalInfo().getPersonality(),
+                member.getAdditionalInfo().getAnimal(),
+                member.getAdditionalInfo().getInterest().lines().toList(),
+                member.getAdditionalInfo().getIdealAnimal().lines().toList()
+        );
+        return memberRes;
     }
 
     @Transactional
@@ -101,7 +120,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<MemberRes> findMemberList(String userId, String nickname) {
+    public List<MembeSearchrRes> findMemberList(String userId, String nickname) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
@@ -114,7 +133,7 @@ public class MemberServiceImpl implements MemberService {
             findMembers = memberRepository.findByNicknameContainingAndNicknameNotIn(nickname, blockMemberNicknames);
         }
         findMembers = memberRepository.findMemberByNicknameContaining(nickname);
-        List<MemberRes> resultList = findMembers.stream().map(mem -> new MemberRes(mem.getNickname(), mem.getEmail())).toList();
+        List<MembeSearchrRes> resultList = findMembers.stream().map(mem -> new MembeSearchrRes(mem.getNickname(), mem.getEmail())).toList();
         return resultList;
     }
 

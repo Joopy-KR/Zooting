@@ -1,8 +1,8 @@
 package com.zooting.api.domain.member.api;
 
-import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.*;
+import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.Member;
@@ -12,9 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,17 +44,18 @@ public class MemberController {
 
     @Operation(
             summary = "로그인 후 추가 정보가 저장 여부 확인",
-            description = "nickname 여부로 판단. " +
+            description = "previlege로 판단. " +
                     "false - 추가 정보 저장되지 않음" +
                     "true - 추가 정보 저장되어 있음")
-    @GetMapping("/additional/check")
-    public ResponseEntity<BaseResponse<Boolean>> checkAdditionalInfo(@AuthenticationPrincipal UserDetails userDetails) {
-        var result = memberService.checkAdditionalInfo(userDetails.getUsername());
+    @GetMapping("/privilege/check")
+    public ResponseEntity<BaseResponse<Boolean>> checkPrivilege(@AuthenticationPrincipal UserDetails userDetails) {
+        var result = memberService.checkMemberPrivilege(userDetails.getUsername());
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 result
         );
     }
+
     @Operation(summary = "로그인 후 추가 정보 저장")
     @PreAuthorize("hasAnyRole('ANONYMOUS')")
     @PutMapping
@@ -70,6 +69,18 @@ public class MemberController {
                 "추가 정보 저장 성공"
         );
     }
+    @Operation(summary = "로그인한 유저 정보 조회")
+    @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
+    @GetMapping
+    public ResponseEntity<BaseResponse<MemberRes>> findMemberInfo(
+            @AuthenticationPrincipal UserDetails userDetails){
+        MemberRes memberRes = memberService.findMemberInfo(userDetails.getUsername());
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                memberRes
+        );
+    }
+
 
     @Operation(summary = "관심사, 이상형 수정")
     @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
@@ -102,10 +113,10 @@ public class MemberController {
     )
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping("/members")
-    public ResponseEntity<BaseResponse<List<MemberRes>>> findMemberList(
+    public ResponseEntity<BaseResponse<List<MembeSearchrRes>>> findMemberList(
             @RequestParam(name = "nickname") String nickname,
             @AuthenticationPrincipal UserDetails userDetails) {
-        List<MemberRes> memberResList = memberService.findMemberList(userDetails.getUsername(), nickname);
+        List<MembeSearchrRes> memberResList = memberService.findMemberList(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.SELECT_SUCCESS,
                 memberResList
@@ -182,15 +193,5 @@ public class MemberController {
 
     }
 
-    @Operation(summary = "내 이메일 조회")
-    @GetMapping
-    public ResponseEntity<Member> getMemberByEmail(@RequestParam String email) {
-        return ResponseEntity.ok(memberService.getMemberByEmail(email));
-    }
-
-    @Operation(summary = "이메일 등록")
-    @PostMapping("/register/email")
-    public ResponseEntity<Member> initialMemberRegister(@RequestBody String email) {
-        return ResponseEntity.ok(memberService.initialMemberRegister(email));
-    }
+    
 }

@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "전체마스크 조회 응답시 DTO")
 public record MaskRes(
+        @Schema(description = "마스크 id")
+        Long maskId,
         @Schema(description = "동물상")
         String animal,
         @Schema(description = "마스크 설명, 마스크 이름?")

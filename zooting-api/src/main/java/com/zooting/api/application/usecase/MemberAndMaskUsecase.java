@@ -12,6 +12,7 @@ import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class MemberAndMaskUsecase {
     final private MaskRepository maskRepository;
     final private MaskInventoryRepository maskInventoryRepository;
 
+    @Transactional
     public Boolean buyMask(String userId, MemberAndMaskReq maskReq) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
@@ -46,11 +48,13 @@ public class MemberAndMaskUsecase {
 
     }
 
+    @Transactional
     public List<MemberAndMaskRes> findAllMaskInventory(String userId) {
         Member member = memberRepository.findMemberByEmail(userId).orElseThrow(()->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         List<MemberAndMaskRes> maskResList = maskInventoryRepository.findAllByMember(member)
                 .stream().map(myMask-> new MemberAndMaskRes(
+                        myMask.getId(),
                         myMask.getMask().getAnimal(),
                         myMask.getMask().getDescription(),
                         myMask.getMask().getPrice(),
