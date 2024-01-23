@@ -2,7 +2,6 @@ import axios from 'axios'
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import { useRouter } from 'vue-router'
-// import { resolve } from 'path'
 
 const router = useRouter()
 const API_URL:string = 'http://i10a702.p.ssafy.io'
