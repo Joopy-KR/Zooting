@@ -69,76 +69,80 @@ const formatter = ref<{ date: string; month: string }>({
         >탈퇴</span
       >
     </div>
-    <div class="flex flex-col w-2/3 px-16 py-20">
-      <div class="relative input__div">
-        <label for="nickname" class="absolute inline-block px-1 input__label bg-white -top-5 left-2"
-          >닉네임</label
-        >
-        <input
-          type="text"
-          name="nickname"
-          id="nickname"
-          class="block w-full px-8 py-2 text-2xl font-bold text-center text-gray-900 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
-          :value="nickname"
-        />
-      </div>
-      <div class="input__div">
-        <label for="gender" class="input__label">성별</label>
-        <RadioGroup v-model="gender" :disabled="true">
-          <div class="gender">
-            <RadioGroupOption
-              as="template"
-              v-for="gender in ['man', 'woman']"
-              :key="gender"
-              :value="gender"
-              v-slot="{ checked }"
-            >
-              <div
-                :class="[
-                  checked ? 'gender__option--checked' : 'gender__option--no-checked',
-                  'gender__option',
-                ]"
-              >
-                <RadioGroupLabel as="span">{{ getGenderLabel(gender) }}</RadioGroupLabel>
-              </div>
-            </RadioGroupOption>
-          </div>
-        </RadioGroup>
-      </div>
-      <div class="input__div">
-        <label for="birth" class="input__label">생년월일</label>
-        <VueTailwindDatepicker
-          id="birth"
-          v-model="birth"
-          as-single
-          :formatter="formatter"
-          weekdays-size="min"
-          class="font-bold text-center text-lg hover:bg-gray-200"
-          :disabled="true"
-        />
-      </div>
-      <div class="input__div">
-        <label for="address" class="input__label">지역</label>
-        <select id="address" v-model="address">
-          <option value="" disabled selected hidden>사는 지역을 선택해 주세요.</option>
-          <option v-for="(area, index) in areas" :key="index">{{ area }}</option>
-        </select>
-      </div>
-      <div class="input__div">
-        <label for="ideal-type" class="input__label">이상형</label>
-        <div class="ideal-type__div">
-          <!-- 선택한 성별에 따라 이상형 동물 목록 출력 -->
-          <div
-            class="ideal-type__item"
-            v-for="(value, index) in idealTypeList"
-            :key="index"
-            @click="pushIdealType(`animal${index + 1}`)"
-            :class="{
-              'ideal-type__item--checked': idealTypeSet.has(`animal${index + 1}`),
-              'ideal-type__item--no-checked': !idealTypeSet.has(`animal${index + 1}`),
-            }"
+    <div class="flex flex-col items-center w-full px-16 py-20 mx-8 my-4">
+      <div class="w-2/3">
+        <div class="relative input__div">
+          <label
+            for="nickname"
+            class="absolute inline-block px-1 bg-white input__label -top-5 left-2"
+            >닉네임</label
           >
-            {{ value }}
+          <input
+            type="text"
+            name="nickname"
+            id="nickname"
+            class="block w-full px-8 py-2 text-2xl font-bold text-center text-gray-900 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
+            :value="nickname"
+          />
+        </div>
+        <div class="input__div">
+          <label for="gender" class="input__label">성별</label>
+          <RadioGroup v-model="gender" :disabled="true">
+            <div class="gender">
+              <RadioGroupOption
+                as="template"
+                v-for="gender in ['man', 'woman']"
+                :key="gender"
+                :value="gender"
+                v-slot="{ checked }"
+              >
+                <div
+                  :class="[
+                    checked ? 'gender__option--checked' : 'gender__option--no-checked',
+                    'gender__option',
+                  ]"
+                >
+                  <RadioGroupLabel as="span">{{ getGenderLabel(gender) }}</RadioGroupLabel>
+                </div>
+              </RadioGroupOption>
+            </div>
+          </RadioGroup>
+        </div>
+        <div class="input__div">
+          <label for="birth" class="input__label">생년월일</label>
+          <VueTailwindDatepicker
+            id="birth"
+            v-model="birth"
+            as-single
+            :formatter="formatter"
+            weekdays-size="min"
+            class="text-lg font-bold text-center hover:bg-gray-200"
+            :disabled="true"
+          />
+        </div>
+        <div class="input__div">
+          <label for="address" class="input__label">지역</label>
+          <select id="address" v-model="address">
+            <option value="" disabled selected hidden>사는 지역을 선택해 주세요.</option>
+            <option v-for="(area, index) in areas" :key="index">{{ area }}</option>
+          </select>
+        </div>
+        <div class="input__div">
+          <label for="ideal-type" class="input__label">이상형</label>
+          <div class="ideal-type__div">
+            <!-- 선택한 성별에 따라 이상형 동물 목록 출력 -->
+            <div
+              class="ideal-type__item"
+              v-for="(value, index) in idealTypeList"
+              :key="index"
+              @click="pushIdealType(`animal${index + 1}`)"
+              :class="{
+                'ideal-type__item--checked': idealTypeSet.has(`animal${index + 1}`),
+                'ideal-type__item--no-checked': !idealTypeSet.has(`animal${index + 1}`),
+              }"
+            >
+              {{ value }}
+            </div>
           </div>
         </div>
       </div>
