@@ -1,6 +1,7 @@
 package com.zooting.api.domain.member.entity;
 
 
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.animalface.entity.AnimalFace;
 import com.zooting.api.domain.background.entity.BackgroundInventory;
 import com.zooting.api.domain.block.entity.Block;
@@ -19,7 +20,8 @@ import java.util.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Member {
+@Table(name = "member")
+public class Member extends BaseEntity {
     @Id
     private String email;
     private String gender;

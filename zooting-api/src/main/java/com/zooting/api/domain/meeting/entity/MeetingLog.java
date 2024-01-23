@@ -1,18 +1,19 @@
 package com.zooting.api.domain.meeting.entity;
-import com.zooting.api.domain.member.entity.Member;
 
+import com.zooting.api.domain.BaseEntity;
+import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.List;
 
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor
-public class MeetingLog {
+@Table(name = "meeting_log")
+public class MeetingLog extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="meeting_log_id")

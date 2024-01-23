@@ -7,9 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Log4j2
-//@RestControllerAdvice
+@RestControllerAdvice
 public class GlobalControllerAdvice {
     /**
      * 예외 처리 되지 않은 모든 에러 처리
@@ -19,7 +20,7 @@ public class GlobalControllerAdvice {
      */
     @ExceptionHandler({Exception.class})
     protected ResponseEntity<ErrorResponse> handleAllExceptions(Exception e) {
-//        e.printStackTrace();
+        e.printStackTrace();
         log.error(e.getMessage());
         ErrorResponse response = ErrorResponse.of()
                 .code(ErrorCode.INTERNAL_SERVER_ERROR)
@@ -27,5 +28,10 @@ public class GlobalControllerAdvice {
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @ExceptionHandler(NoResourceFoundException.class)
+    public final ResponseEntity<Object> handleResourceNotFound(Exception ex) throws Exception {
+        ex.printStackTrace();
+        throw ex;
     }
 }
