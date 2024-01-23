@@ -93,7 +93,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       url: `${API_URL}/api/members`,
       data: {
         nickname,
-        gender,
+        // gender,
         birth,
         address,
         interest,

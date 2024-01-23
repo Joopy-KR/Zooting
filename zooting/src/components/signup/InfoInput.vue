@@ -15,7 +15,7 @@
           v-model="nickname" 
           data-popover-target="popover-nickname" 
           data-popover-placement="bottom" 
-          placeholder="2~16자 사이의 영어, 한글 또는 숫자를 입력해 주세요."
+          placeholder="2~16자 사이의 영어, 한글 또는 숫자"
           maxlength="16" 
           @blur="validateNickname"
           required
@@ -138,7 +138,7 @@ const idealAnimalList = computed(() => {
   }
 })
 
-const interestList:string[] = ['관심사1', '관심사2', '관심사3', '관심사4', '관심사5', '관심사6', '관심사7', '관심사8', '관심사9', '관심사10', '관심사11', '관심사12', '관심사13']
+const interestList:string[] = ['관심사1', '관심사2', '관심사3', '관심사4', '관심사5', '관심사6', '관심사7', '관심사8', '관심사9', '관심사10', '관심사11', '관심사12', '관심사13', '관심사14', '관심사15', '관심사16', '관심사17']
 
 const pushInterest = (value:string) => {
   if (interestSet.value.size < 6 || interestSet.value.has(value)) {
@@ -177,19 +177,19 @@ interface Payload {
 
 <style scoped>
 .input__container {
-  @apply bg-white border border-gray-200 shadow grid grid-cols-1 md:grid-cols-2 md:h-full p-8 md:p-0;
+  @apply bg-white border border-gray-200 shadow grid grid-cols-1 lg:grid-cols-2 lg:h-full p-8 lg:p-6;
 }
 .input__section {
-  @apply md:p-8 h-full;
+  @apply lg:p-8 h-full;
 }
 .input__title {
-  @apply mb-5;
+  @apply mb-10;
 }
 .input__title p {
-  @apply text-2xl font-bold mb-1;
+  @apply text-3xl font-bold mb-1;
 }
 .input__div {
-  @apply mb-6;
+  @apply mb-10;
 }
 .input__label {
   @apply block mb-2 text-sm font-medium text-gray-900;
@@ -204,10 +204,10 @@ interface Payload {
   @apply text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2 text-center me-2 my-2 w-full;
 }
 .gender {
-  @apply grid grid-cols-2 gap-3;
+  @apply grid grid-cols-2 gap-3 h-10;
 }
 .gender__option {
-  @apply flex items-center justify-center rounded-lg p-2 text-sm uppercase md:flex-1;
+  @apply flex items-center justify-center rounded-lg p-2 text-sm uppercase;
 }
 .gender__option--checked {
   @apply text-violet-600 ring-2 ring-inset ring-violet-600 font-bold hover:bg-gray-50;
@@ -216,7 +216,7 @@ interface Payload {
   @apply ring-1 ring-inset ring-gray-300  text-gray-900 hover:bg-gray-50;
 }
 .ideal-type__div {
-  @apply mb-6 grid grid-cols-5 gap-3;
+  @apply mb-10 grid grid-cols-5 gap-3;
   height: 80px;
 }
 .ideal-type__item {
@@ -229,8 +229,8 @@ interface Payload {
   @apply border-gray-300 hover:bg-gray-50;
 }
 .interest__div {
-  @apply mb-6 border border-gray-300 rounded-md grid grid-cols-4 gap-4 p-3;
-  height: 205px;
+  @apply mb-10 border border-gray-300 rounded-md grid grid-cols-4 gap-4 p-3;
+  height: 270px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
@@ -260,10 +260,8 @@ interface Payload {
   position: relative;
 }
 .nickname__duplication-check button {
-  @apply bg-violet-600 rounded-md text-white text-sm hover:bg-violet-700;
+  @apply bg-violet-500 rounded-lg text-white text-sm hover:bg-violet-600 h-7 w-20;
   position: absolute;
-  width: 80px;
-  height: 30px;
   top: 0;
   bottom: 0;
   right: 5px;
