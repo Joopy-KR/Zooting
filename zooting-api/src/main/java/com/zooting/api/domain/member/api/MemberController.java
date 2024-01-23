@@ -70,7 +70,6 @@ public class MemberController {
                 "추가 정보 저장 성공"
         );
     }
-
     @Operation(summary = "관심사, 이상형 수정")
     @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
     @PutMapping("/interests")

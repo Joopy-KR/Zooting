@@ -33,9 +33,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         String email = (String) oAuth2User.getAttributes().get("email");
 
-        System.out.println();
-        log.info("OAuth2SuecessHandler에 유저 정보가 전달되었습니다: \n" + oAuth2User);
-        System.out.println();
+        log.info("OAuth2SuecessHandler에 유저 정보가 전달되었습니다: " + oAuth2User);
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
         String accessToken = jwtService.createAccessToken(userDetails);

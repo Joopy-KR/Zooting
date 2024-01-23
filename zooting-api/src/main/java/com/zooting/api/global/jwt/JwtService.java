@@ -69,18 +69,21 @@ public class JwtService {
 
     public Authentication verifyToken(String token){
         try{
+            log.info("Access Token 검증을 시작합니다");
             Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token) // Throws JWT Exception
                     .getPayload();
 
+            log.info("토큰이 정상적으로 검증되었습니다");
+
             UserDetails userDetails = CustomUserDetails.builder()
                     .email(claims.getSubject())
                     .authorities(getPrivileges(claims))
                     .build();
 
-            log.info(userDetails);
+            log.info("검증된 토큰 정보:" + userDetails.toString());
 
             return new UsernamePasswordAuthenticationToken(
                     userDetails,
@@ -88,8 +91,10 @@ public class JwtService {
                     userDetails.getAuthorities());
 
         } catch (ExpiredJwtException e) {
+            log.info("유저의 Access Token이 만료되었습니다. 토큰 재발급이 필요합니다");
             throw new BaseExceptionHandler(ErrorCode.EXPIRED_ACCESS_TOKEN_EXCEPTION);
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
+            log.info("유효하지 않은 토큰입니다.");
             throw new BaseExceptionHandler(ErrorCode.INVALID_ACCESS_TOKEN_EXCEPTION);
         }
     }
