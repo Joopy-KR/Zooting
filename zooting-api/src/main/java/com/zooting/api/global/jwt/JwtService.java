@@ -46,7 +46,7 @@ public class JwtService {
 
     public String createToken(UserDetails userDetails, long expirationTime){
         Date date = new Date();
-        Date expirationDate = new Date(date.getTime() + expirationTime);
+        Date expirationDate = new Date(date.getTime() + expirationTime * 1000);
 
         String issuer = "Zooting";
         return Jwts.builder()
