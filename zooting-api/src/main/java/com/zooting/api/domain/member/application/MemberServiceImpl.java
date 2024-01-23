@@ -2,8 +2,10 @@ package com.zooting.api.domain.member.application;
 
 import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.member.dao.MemberRepository;
-import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
+import com.zooting.api.domain.member.dto.request.InterestsReq;
+import com.zooting.api.domain.member.dto.request.IntroduceReq;
+import com.zooting.api.domain.member.dto.request.MemberReq;
+import com.zooting.api.domain.member.dto.request.PersonalityReq;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
@@ -12,7 +14,6 @@ import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
-import org.objectweb.asm.Type;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,25 +44,6 @@ public class MemberServiceImpl implements MemberService {
         return false;
     }
 
-    @Override
-    public MemberRes findMemberInfo(String userId) {
-        Member member = memberRepository.findMemberByEmail(userId).orElseThrow(() ->
-                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        MemberRes memberRes = new MemberRes(
-                member.getEmail(),
-                member.getGender(),
-                member.getNickname(),
-                member.getBirth(),
-                member.getAddress(),
-                member.getPoint(),
-                member.getAdditionalInfo().getPersonality(),
-                member.getAdditionalInfo().getAnimal(),
-                member.getAdditionalInfo().getInterest().lines().toList(),
-                member.getAdditionalInfo().getIdealAnimal().lines().toList()
-        );
-        return memberRes;
-    }
-
     @Transactional
     @Override
     public void updateMemberInfo(String memberId, MemberReq memberReq) throws ParseException, BaseExceptionHandler {
@@ -76,6 +58,7 @@ public class MemberServiceImpl implements MemberService {
         member.setAddress(memberReq.address());
         member.setGender(memberReq.gender());
         member.setPoint(0L); // 추가 정보 저장 시 포인트 0으로 저장
+
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
         if (Objects.isNull(additionalInfo)) {
             additionalInfo = new AdditionalInfo();
@@ -83,6 +66,10 @@ public class MemberServiceImpl implements MemberService {
         additionalInfo.setInterest(memberReq.interest().toString());
         additionalInfo.setIdealAnimal(memberReq.idealAnimal().toString());
         additionalInfo.setMember(member);
+
+        // 멤버의 권한 수정 Anonymouse 삭제하고 User 권한 부여
+        member.getRole().remove(Privilege.ANONYMOUS);
+        member.getRole().add(Privilege.USER);
 
         memberRepository.save(member);
     }
@@ -185,6 +172,7 @@ public class MemberServiceImpl implements MemberService {
     public Member initialMemberRegister(String email) {
         return memberRepository.save(Member
                 .builder()
+                .role(List.of(Privilege.ANONYMOUS))
                 .email(email)
                 .build());
     }

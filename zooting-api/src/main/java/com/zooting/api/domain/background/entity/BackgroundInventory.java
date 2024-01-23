@@ -9,6 +9,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "background_inventory")
 public class BackgroundInventory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

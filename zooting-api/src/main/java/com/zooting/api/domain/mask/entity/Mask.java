@@ -12,6 +12,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "mask")
 public class Mask  extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

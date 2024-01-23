@@ -10,6 +10,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "disabled_member")
 public class DisabledMember extends BaseEntity {
     @Id
     @Column(name = "disabled_member_id")

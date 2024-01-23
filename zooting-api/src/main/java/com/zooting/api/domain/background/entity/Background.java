@@ -10,6 +10,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "background")
 public class Background extends BaseEntity {
     @Id
     @Column(name = "background_id")

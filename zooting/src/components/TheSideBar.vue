@@ -131,7 +131,7 @@ const logout = () => {
 
 <style scoped>
 .side-bar {
-    @apply absolute flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-10;
+    @apply fixed flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-20;
 }
 .logo {
     @apply flex-shrink-0 py-4;
@@ -146,7 +146,7 @@ const logout = () => {
     @apply w-10 h-10 rounded-full shadow-md;
 }
 .side-tab {
-    @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 rounded-tr-3xl rounded-br-3xl;
+    @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 rounded-tr-3xl rounded-br-3xl z-10;
     width: 450px;
 }
 .side-tab__content {
