@@ -18,6 +18,9 @@ public record MemberReq(
         String birth,
        @Schema(description = "주소")
        String address,
+       @Schema(description = "성별")
+       String gender,
+
        @Schema(description = "관심사 리스트")
        List<String> interest,
        @Schema(description = "이상형 동물 리스트")

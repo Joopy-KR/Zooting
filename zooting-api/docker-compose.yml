@@ -5,15 +5,20 @@ services:
     container_name: zooting-api
     ports:
       - "8080:8080"
+    environment:
+      TZ: "Asia/Seoul"
     networks:
       - zooting_net
     restart: "always"
+
 
 #  nginx:
 #    image: duckbill413/zooting-docker-nginx:latest
 #    container_name: zooting-nginx
 #    ports:
 #      - "80:80"
+#    build:
+#      - ./nginx
 #    depends_on:
 #      - springboot
 #    networks:

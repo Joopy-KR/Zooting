@@ -25,16 +25,18 @@ public class JwtService {
     private final SecretKey secretKey;
     private final long accessTokenExpirationTime;
     private final long refreshTokenExpirationTime;
+    private final String issuer;
 
 
     public JwtService(
             @Value("${jwt.secretKey}") String secretKey,
             @Value("${jwt.access-token-expiration}") long accessTokenExpirationTime,
-            @Value("${jwt.refresh-token-expiration}") long refreshTokenExpirationTime
-    ) {
+            @Value("${jwt.refresh-token-expiration}") long refreshTokenExpirationTime,
+            @Value("${jwt.issuer}") String issuer) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
         this.accessTokenExpirationTime = accessTokenExpirationTime;
         this. refreshTokenExpirationTime = refreshTokenExpirationTime;
+        this.issuer = issuer;
     }
 
     public String createAccessToken(UserDetails userDetails){
@@ -45,8 +47,7 @@ public class JwtService {
     }
 
     public String createToken(UserDetails userDetails, long expirationTime){
-        Date date = new Date();
-        Date expirationDate = new Date(date.getTime() + expirationTime);
+        Date expirationDate = new Date(new Date().getTime() + expirationTime * 1000);
 
         String issuer = "Zooting";
         return Jwts.builder()

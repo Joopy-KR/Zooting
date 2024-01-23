@@ -14,7 +14,9 @@ public class MaskServiceImpl implements MaskService{
     @Override
     public List<MaskRes> findAllMask() {
         List<MaskRes> maskList = maskRepository.findAll()
-                .stream().map(mask->new MaskRes(mask.getAnimal(),
+                .stream().map(mask->new MaskRes(
+                        mask.getId(),
+                        mask.getAnimal(),
                         mask.getDescription(),
                         mask.getPrice(),
                         mask.getFile().getFileName(),
