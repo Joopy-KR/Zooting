@@ -49,16 +49,16 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from) => {
-  const store = useAccessTokenStore()
+// router.beforeEach((to, from) => {
+//   const store = useAccessTokenStore()
 
-  if (to.name === 'home' && !store.isLogin) {
-    return { name: 'signin' }
-  }
+//   if (to.name === 'home' && !store.isLogin) {
+//     return { name: 'signin' }
+//   }
 
-  if ((to.name === 'signup' || to.name === 'signin') && store.isLogin) {
-    return { name: 'home' }
-  }
-})
+//   if ((to.name === 'signup' || to.name === 'signin') && store.isLogin) {
+//     return { name: 'home' }
+//   }
+// })
 
 export default router
