@@ -1,4 +1,4 @@
-package com.zooting.api.global.security.userdetails.service;
+package com.zooting.api.global.security.userdetails;
 
 import java.util.Collection;
 import java.util.UUID;

@@ -3,10 +3,8 @@ package com.zooting.api.global.security.userdetails.service;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.entity.Privilege;
+import com.zooting.api.global.security.userdetails.CustomUserDetails;
 import jakarta.transaction.Transactional;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -14,6 +12,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 @Transactional

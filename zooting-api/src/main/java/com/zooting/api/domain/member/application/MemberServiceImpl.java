@@ -38,10 +38,7 @@ public class MemberServiceImpl implements MemberService {
     public boolean checkAdditionalInfo(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        if (member.getNickname().isBlank()) {
-            return false;
-        }
-        return true;
+        return !member.getNickname().isBlank();
     }
 
     @Transactional
@@ -65,6 +62,10 @@ public class MemberServiceImpl implements MemberService {
         additionalInfo.setInterest(memberReq.interest().toString());
         additionalInfo.setIdealAnimal(memberReq.idealAnimal().toString());
         additionalInfo.setMember(member);
+
+        // 멤버의 권한 수정 Anonymouse 삭제하고 User 권한 부여
+        member.getRole().remove(Privilege.ANONYMOUS);
+        member.getRole().add(Privilege.USER);
 
         memberRepository.save(member);
     }
