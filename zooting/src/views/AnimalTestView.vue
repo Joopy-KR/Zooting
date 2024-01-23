@@ -149,22 +149,17 @@
   }
 
   const saveTestResult = () => {
-    console.log(allAnimal.value)
-    const payload = ref({
-      animal1: allAnimal.value["dog"],
-      animal2: allAnimal.value["cat"],
-      animal3: allAnimal.value["rabbit"],
-      animal4: 0,
-      animal5: 0
-    })
+    const payload = ref([Number(allAnimal.value["dog"]), Number(allAnimal.value["cat"]), Number(allAnimal.value["rabbit"]), 0, 0])
 
     if (allAnimal.value["gender"] === 'female') {
-      payload.value.animal4 = allAnimal.value["deer"]
-      payload.value.animal5 = allAnimal.value["turtle"]
+      payload.value[3] = Number(allAnimal.value["deer"])
+      payload.value[4] = Number(allAnimal.value["turtle"])
     } else {
-      payload.value.animal4 = allAnimal.value["bear"]
-      payload.value.animal5 = allAnimal.value["dino"]
+      payload.value[3] = Number(allAnimal.value["bear"])
+      payload.value[4] = Number(allAnimal.value["dino"])
     }
+
+    // store.setAnimalFace(payload)
   }
 </script>
 

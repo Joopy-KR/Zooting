@@ -110,7 +110,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       url: `${API_URL}/api/members`,
       data: {
         nickname,
-        // gender,
+        gender,
         birth,
         address,
         interest,
@@ -175,6 +175,27 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       console.log(err)
     })
   }
+  
+  const setAnimalFace = function (payload:Number[]) {
+    const animalFaceList = payload
+    axios({
+      method: 'put',
+      url: `${API_URL}/api/animalface`,
+      data: {
+        animalFaceList
+      },
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${Token}`
+      }
+    })
+    .then (res => {
+      console.log(res)
+    })
+    .catch (err => {
+      console.log(err)
+    })
+  }
 
   return {
     setAccessToken,
@@ -187,6 +208,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     saveAdditionalInfo,
     isDuplication,
     checkNicknameDuplication,
+    setAnimalFace,
   }
 }, { persist: true })
 
