@@ -59,6 +59,27 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     }
   }
 
+  // 유저 정보
+  const userInfo = ref(null)
+  const getUserInfo = function () {
+    axios({
+      method: 'get',
+      url: `${API_URL}/api/members`,
+      headers: {
+        Authorization: `Bearer ${Token}`
+      }
+    })
+    .then(res => {
+      console.log(res)
+      userInfo.value = res.data
+      console.log(userInfo.value)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+    }
+
+  // 로그인 상태 판별
   const isLogin = computed(() => {
     if (state.value.accessToken) {
       return true 
@@ -67,17 +88,18 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     }
   })
 
+  // 로그아웃
   const signOut = function () {
     window.localStorage.clear()
     state.value.accessToken = null
   }
   
+  // 유저 권한 확인
   const isCompletedSignUp = ref<boolean>()
-  
   const checkCompletedSignUp = function () {
       axios({
         method: 'get',
-        url: `${API_URL}/api/members/additional/check`,
+        url: `${API_URL}/api/members/additional/check`, // api/members/privilege/check
         headers: {
           accept: 'application/json',
           Authorization: `Bearer ${Token}`
@@ -94,6 +116,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       })
   }
   
+  // 추가 정보 저장
   const saveAdditionalInfo = function (
     payload: { 
       nickname: string 
@@ -122,7 +145,6 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     })
     .then(res => {
       console.log(res)
-      //
       router.push({ name: 'animal_test' })
     })
     .catch(err => {
@@ -130,8 +152,8 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     })
   }
 
+  // 닉네임 중복 검사
   const isDuplication = ref<boolean>(false)
-
   const checkNicknameDuplication = function (payload:string) {
     axios({
       method: 'get',
@@ -152,6 +174,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     })
   }
   
+  // 성격 테스트 결과 저장
   const setPersonality = function (payload:string) {
     const personality = payload
     axios({
@@ -166,9 +189,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       }
     })
     .then (res => {
-      console.log(payload)
       console.log(res)
-      console.log(res.data)
       router.push({ name: 'home' })
     })
     .catch (err => {
@@ -176,6 +197,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     })
   }
   
+  // 동물상 테스트 결과 저장
   const setAnimalFace = function (payload:Number[]) {
     const animalFaceList = payload
     axios({
@@ -200,6 +222,8 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
   return {
     setAccessToken,
     getAccessToken,
+    userInfo,
+    getUserInfo,
     isLogin,
     signOut,
     isCompletedSignUp,
