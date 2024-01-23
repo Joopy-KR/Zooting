@@ -1,6 +1,6 @@
 <template>
   <div class="flex">
-    <TheSideBar></TheSideBar>
+    <TheSideBar/>
     <RouterView class="ms-14"/>
   </div>
 </template>
