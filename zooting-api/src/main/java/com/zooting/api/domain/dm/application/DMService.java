@@ -11,7 +11,7 @@ import java.util.List;
 public interface DMService {
     DMRoom      getDMRoom(String sender, String receiver);
     DMRoom      createDMRoom(String sender, String receiver);
-    List<DM>    getDMList(DMRoom dmRoom);
+    List<DM>    getDMList(Long dmRoomId);
     List<File>  getDmFiles(Long id);
     void        saveDM(DMDto dmDto);
 

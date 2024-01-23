@@ -24,12 +24,12 @@ public class DMWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     /**
-     *  /sub 엔드포인트를 활용하여 구독 ex) /sub/dm/{receiver}
-     *  /pub 엔드포인트를 활용하여 전송 ex) /pub/chat/message
+     *  /sub 엔드포인트를 활용하여 구독 ex) api/sub/dm/{receiver}
+     *  /pub 엔드포인트를 활용하여 전송 ex) api/pub/dm/message
      */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) {
-        brokerRegistry.enableSimpleBroker("/sub");
-        brokerRegistry.setApplicationDestinationPrefixes("/pub");
+        brokerRegistry.enableSimpleBroker("api/sub");
+        brokerRegistry.setApplicationDestinationPrefixes("api/pub");
     }
 }

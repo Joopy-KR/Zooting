@@ -6,7 +6,10 @@ import com.zooting.api.domain.dm.dto.DMDto;
 import com.zooting.api.domain.dm.entity.DM;
 import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.file.entity.File;
+import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
+import com.zooting.api.global.common.code.ErrorCode;
+import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -22,40 +25,28 @@ import java.util.Objects;
 public class DMServiceImpl implements DMService{
     private final DMRepository dmRepository;
     private final DMRoomRepository dmRoomRepository;
+    private final MemberRepository memberRepository;
     @Override
     public DMRoom getDMRoom(String sender, String receiver) {
-        //ToDO : 입력받은 값에 대해 검증
-        log.info("sender {} receiver {}", sender, receiver);
-        Member newSender = new Member();
-        newSender.setEmail(sender);
-        log.info("newSender {}", newSender.getEmail());
-        Member newReceiver = new Member();
-        newReceiver.setEmail(receiver);
-        log.info("newReceiver {}", newReceiver.getEmail());
+        //ToDO : 입력받은 값에 대해 검증 -> sender 는 로그인한 사람 receiver만 검증
+        Member newSender = Member.builder().email(sender).build();
+        Member newReceiver = memberRepository.findByEmail(receiver).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));;
         DMRoom dmRoom = dmRoomRepository.findBySenderAndReceiver(newSender, newReceiver);
-//        for(DM dm : dmRoom.getDms()){
-//            log.info("{}", dm.getMessage());
-//        }
         return Objects.nonNull(dmRoom) ? dmRoom : createDMRoom(sender, receiver); // DM방이 없을 경우 생성
     }
 
     @Transactional
     public DMRoom createDMRoom(String sender, String receiver){
-        //ToDO : 입력받은 값에 대해 검증
-        log.info("sender {} receiver {}", sender, receiver);
-        Member newSender = new Member();
-        newSender.setEmail(sender);
-        Member newReceiver = new Member();
-        newReceiver.setEmail(receiver);
+        Member newSender = Member.builder().email(sender).build();
+        Member newReceiver = Member.builder().email(receiver).build();
         DMRoom newDMRoom = DMRoom.builder().sender(newSender).receiver(newReceiver).build();
-        DMRoom newDMRoomReverse = DMRoom.builder().sender(newReceiver).receiver(newSender).build();
         dmRoomRepository.save(newDMRoom); // 만약 save 가 실패하면?
-        dmRoomRepository.save(newDMRoomReverse); // 만약 save 가 실패하면?
         return newDMRoom;
     }
     @Override
-    public List<DM> getDMList(DMRoom dmRoom) {
-        return dmRoomRepository.findDmsById(dmRoom.getId());
+    public List<DM> getDMList(Long dmRoomId) {
+        return dmRoomRepository.findDmsById(dmRoomId);
     }
 
     @Override
@@ -67,8 +58,9 @@ public class DMServiceImpl implements DMService{
     @Async
     @Transactional
     public void saveDM(DMDto dmDto) {
-        DMRoom dmRoom = getDMRoom(dmDto.sender(), dmDto.receiver());
         DM dm = new DM();
+        DMRoom dmRoom = new DMRoom();
+        dmRoom.setId(dmDto.dmRoomId());
         dm.setDmRoom(dmRoom);
         dm.setMessage(dmDto.message());
         dm.setSender(dmDto.sender());
