@@ -110,6 +110,24 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       console.log(err)
     })
   }
+  
+  
+  const nicknameDuplicationCheck = function (nickname:string) {
+    axios({
+      method: 'get',
+      url: `${API_URL}/api/members/nickname/check`,
+      data: nickname,
+      headers: {
+        Authorization: `Bearer ${state.value.accessToken}`
+      }
+    })
+    .then(res => {
+      console.log(res)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
 
   return {
     setAccessToken,
@@ -119,6 +137,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     userInfo,
     getUserInfo,
     saveAdditionalInfo,
+    nicknameDuplicationCheck,
   }
 }, { persist: true })
 

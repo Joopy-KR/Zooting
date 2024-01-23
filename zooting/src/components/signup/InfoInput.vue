@@ -9,7 +9,7 @@
     
       <div class="input__div">
         <label for="nickname" class="input__label nickname__label">닉네임</label>
-        <div class="nickname__duplication-check">
+        <div class="nickname">
           <input 
           id="nickname" 
           v-model="nickname" 
@@ -20,7 +20,7 @@
           @blur="validateNickname"
           required
           >
-          <button>중복 검사</button>
+          <button class="duplication-check" @click="nicknameDuplicationCheck">중복 검사</button>
         </div>
       </div>
     
@@ -76,7 +76,7 @@
         {{ interest }}
         </div>
       </div>
-      <button class="submit-button" type="button" @click="saveUserInfo">Submit</button>
+      <button class="submit-button" type="button" @click="saveAdditionalInfo">Submit</button>
     </div>
   </div>
 </template>
@@ -86,7 +86,7 @@ import { computed, ref } from 'vue'
 import VueTailwindDatepicker from 'vue-tailwind-datepicker'
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import { useAccessTokenStore } from '@/stores/store'
-import router from '@/router';
+import router from '@/router'
 
 const store = useAccessTokenStore()
 const nickname = ref<string>('')
@@ -98,15 +98,18 @@ const interestSet = ref(new Set<string>())
 
 const nicknameError = ref<boolean>(false)
 
-const validateNickname = function () {
+const validateNickname = () => {
   const regex = /^[a-zA-Z가-힣0-9]{2,16}$/
   if (!regex.test(nickname.value)) {
     nicknameError.value = true
   } else {
     nicknameError.value = false
   }
-  // 닉네임 중복 검사
 }
+
+const nicknameDuplicationCheck = () => {
+  store.nicknameDuplicationCheck(nickname.value)
+} 
 
 const getGenderLabel = (value: string) => {
   return value === 'man' ? '남자' : '여자'
@@ -151,7 +154,7 @@ const pushInterest = (value:string) => {
   }
 }
 
-const saveUserInfo = () => {
+const saveAdditionalInfo = () => {
   const payload: Payload = {
     nickname: nickname.value,
     gender: gender.value,
@@ -256,10 +259,10 @@ interface Payload {
 .interest__item--no-checked {
   @apply border-gray-300 hover:bg-gray-50;
 }
-.nickname__duplication-check {
+.nickname {
   position: relative;
 }
-.nickname__duplication-check button {
+.duplication-check {
   @apply bg-violet-500 rounded-lg text-white text-sm hover:bg-violet-600 h-7 w-20;
   position: absolute;
   top: 0;
