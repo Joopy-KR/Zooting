@@ -20,10 +20,7 @@ public interface MemberService {
     void updateIntroduce(String memberId, IntroduceReq introduceReq);
     List<MembeSearchrRes> findMemberList(String userId, String nickname);
     void updatePersonality(String userId, PersonalityReq personalityReq);
-    public Member getMemberByEmail(String email);
     PointRes findPoints(String userId);
     Boolean deductPoints(String userId, Long price);
     Member initialMemberRegister(String email);
-    Optional<Member> checkRegisteredMember (String email);
-
 }

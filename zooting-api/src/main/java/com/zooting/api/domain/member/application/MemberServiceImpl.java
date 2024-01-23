@@ -6,6 +6,7 @@ import com.zooting.api.domain.member.dto.request.InterestsReq;
 import com.zooting.api.domain.member.dto.request.IntroduceReq;
 import com.zooting.api.domain.member.dto.request.MemberReq;
 import com.zooting.api.domain.member.dto.request.PersonalityReq;
+import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
@@ -42,6 +43,26 @@ public class MemberServiceImpl implements MemberService {
             }
         }
         return false;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public MemberRes findMemberInfo(String memberId) {
+        Member member = memberRepository.findMemberByEmail(memberId).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+
+        return new MemberRes(
+                member.getEmail(),
+                member.getGender(),
+                member.getNickname(),
+                member.getBirth(),
+                member.getAddress(),
+                member.getPoint(),
+                member.getAdditionalInfo().getPersonality(),
+                member.getAdditionalInfo().getAnimal(),
+                member.getAdditionalInfo().getInterest(),
+                member.getAdditionalInfo().getIdealAnimal()
+        );
     }
 
     @Transactional
@@ -87,8 +108,6 @@ public class MemberServiceImpl implements MemberService {
         additionalInfo.setIdealAnimal(additionalReq.idealAnimal().toString());
         additionalInfo.setMember(member);
         memberRepository.save(member);
-
-
     }
 
     @Transactional
@@ -118,10 +137,10 @@ public class MemberServiceImpl implements MemberService {
         if (!blockList.isEmpty()) {
             List<String> blockMemberNicknames = blockList.stream().map(block -> block.getFrom().getNickname()).toList();
             findMembers = memberRepository.findByNicknameContainingAndNicknameNotIn(nickname, blockMemberNicknames);
+        } else {
+            findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         }
-        findMembers = memberRepository.findMemberByNicknameContaining(nickname);
-        List<MembeSearchrRes> resultList = findMembers.stream().map(mem -> new MembeSearchrRes(mem.getNickname(), mem.getEmail())).toList();
-        return resultList;
+        return findMembers.stream().map(mem -> new MembeSearchrRes(mem.getNickname(), mem.getEmail())).toList();
     }
 
     @Transactional
@@ -139,13 +158,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-
     @Override
     public PointRes findPoints(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
-        PointRes pointRes = new PointRes(member.getPoint());
-        return pointRes;
+        return new PointRes(member.getPoint());
     }
 
     @Transactional
@@ -161,13 +178,6 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
         return true;
     }
-
-    @Override
-    public Member getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(RuntimeException::new); //TODO
-    }
-
     @Override
     public Member initialMemberRegister(String email) {
         return memberRepository.save(Member
@@ -175,10 +185,5 @@ public class MemberServiceImpl implements MemberService {
                 .role(List.of(Privilege.ANONYMOUS))
                 .email(email)
                 .build());
-    }
-
-    @Override
-    public Optional<Member> checkRegisteredMember(String email) {
-        return memberRepository.findByEmail(email);
     }
 }

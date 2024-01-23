@@ -20,6 +20,6 @@ public class CustomOAuth2FailHandler implements AuthenticationFailureHandler {
     private String failRedirectUrl;
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        response.sendRedirect("http://localhost:5173/signin");
+        response.sendRedirect(failRedirectUrl);
     }
 }

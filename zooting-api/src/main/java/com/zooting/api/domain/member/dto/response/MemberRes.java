@@ -24,9 +24,9 @@ public record MemberRes(
         @Schema(description = "동물상")
         String animal,
         @Schema(description = "관심사")
-        List<String> interest,
+        String interest,
         @Schema(description = "이상형")
-        List<String> idealAnimal
+        String idealAnimal
 
 ) {
 }
