@@ -36,7 +36,6 @@ const props = defineProps<{
 
 const store = useStore()
 const accessTokenStore = useAccessTokenStore()
-const router = useRouter()
 
 const personality = store.personality[props.testResult]
 

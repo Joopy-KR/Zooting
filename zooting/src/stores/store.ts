@@ -3,8 +3,6 @@ import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import { useRouter } from 'vue-router'
 
-const API_URL:string = 'https://i10a702.p.ssafy.io'
-const wjstpToken = 'eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA2MDg0MDcyLCJzdWIiOiJyb2tpMzJAbmF2ZXIuY29tIiwiUHJpdmlsZWdlIjpbIkFOT05ZTU9VUyIsIlVTRVIiXX0.OM9r9XAr2AGLLv9va6eXhD61yFpXY2er8WuEuACwyQY'
 
 export const useStore = defineStore('store', () => {
   const personality: Personality = {
@@ -29,6 +27,8 @@ export const useStore = defineStore('store', () => {
 })
 
 export const useAccessTokenStore = defineStore ( "access-token", () => {
+  const API_URL:string = 'https://i10a702.p.ssafy.io'
+  const Token = 'eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA2MTgwMzcwLCJzdWIiOiJ6eW8wNzIwQGtha2FvLmNvbSIsIlByaXZpbGVnZSI6WyJVU0VSIl19.qCVf1LP6tpcMbLUpoQPk9mn6U0OcFOKS8W8AdINkK00'
   const router = useRouter()
 
   const state = ref<AccessTokenState>({
@@ -72,9 +72,6 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     state.value.accessToken = null
   }
   
-  const isNickname = ref<boolean>()
-  const isAnimal = ref<boolean>()
-  const isPersonality = ref<boolean>()
   const isCompletedSignUp = ref<boolean>()
   
   const checkCompletedSignUp = function () {
@@ -83,12 +80,14 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
         url: `${API_URL}/api/members/additional/check`,
         headers: {
           accept: 'application/json',
-          Authorization: `Bearer ${wjstpToken}`
+          Authorization: `Bearer ${Token}`
         }
       })
       .then(res => {
         console.log(res)
-        isNickname.value = res.data.result
+        if (!res.data.result) {
+          router.push({ name: "signup" })
+        }
       })
       .catch(err => {
         console.log(err)
@@ -118,7 +117,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
         idealAnimal
       },
       headers: {
-        Authorization: `Bearer ${wjstpToken}`
+        Authorization: `Bearer ${Token}`
       }
     })
     .then(res => {
@@ -131,7 +130,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     })
   }
 
-  const isDuplication = ref<boolean>()
+  const isDuplication = ref<boolean>(false)
 
   const checkNicknameDuplication = function (payload:string) {
     axios({
@@ -141,11 +140,12 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
         'nickname': payload
       },
       headers: {
-        Authorization: `Bearer ${state.value.accessToken}`
+        Authorization: `Bearer ${Token}`
       }
     })
     .then(res => {
       console.log(res)
+      isDuplication.value = res.data.result
     })
     .catch(err => {
       console.log(err)
@@ -162,7 +162,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       },
       headers: {
         accept: 'application/json',
-        Authorization: `Bearer ${wjstpToken}`
+        Authorization: `Bearer ${Token}`
       }
     })
     .then (res => {
@@ -181,9 +181,6 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     getAccessToken,
     isLogin,
     signOut,
-    isNickname,
-    isAnimal,
-    isPersonality,
     isCompletedSignUp,
     checkCompletedSignUp,
     setPersonality,
