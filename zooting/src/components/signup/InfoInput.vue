@@ -13,14 +13,11 @@
           <input 
           id="nickname" 
           v-model="nickname" 
-          data-popover-target="popover-nickname" 
-          data-popover-placement="bottom" 
           placeholder="2~16자 사이의 영어, 한글 또는 숫자"
           maxlength="16" 
-          @blur="validateNickname"
-          required
+          @blur="nicknameValidateCheck"
           >
-          <button class="duplication-check" @click="nicknameDuplicationCheck">중복 검사</button>
+          <button class="duplication-check" @click="checkNicknameDuplication">중복 검사</button>
         </div>
       </div>
     
@@ -76,7 +73,7 @@
         {{ interest }}
         </div>
       </div>
-      <button class="submit-button" type="button" @click="saveAdditionalInfo">Submit</button>
+      <button class="submit-button" type="button" @click.prevent="saveAdditionalInfo">동물상 분석하러 가기</button>
     </div>
   </div>
 </template>
@@ -86,19 +83,19 @@ import { computed, ref } from 'vue'
 import VueTailwindDatepicker from 'vue-tailwind-datepicker'
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import { useAccessTokenStore } from '@/stores/store'
-import router from '@/router'
 
 const store = useAccessTokenStore()
 const nickname = ref<string>('')
+const nicknameError = ref<boolean>(false)
 const gender = ref<string>('man')
 const birth = ref<string>('')
 const address = ref<string>('')
 const idealAnimalSet = ref(new Set<string>())
 const interestSet = ref(new Set<string>())
+const areas:string[] = (['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기도', '강원도', '충청북도', '충청남도', '전라북도', '전라남도', '경상북도', '경상남도', '제주도', '해외'])
+const interestList:string[] = ['관심사1', '관심사2', '관심사3', '관심사4', '관심사5', '관심사6', '관심사7', '관심사8', '관심사9', '관심사10', '관심사11', '관심사12', '관심사13', '관심사14', '관심사15', '관심사16', '관심사17']
 
-const nicknameError = ref<boolean>(false)
-
-const validateNickname = () => {
+const nicknameValidateCheck = () => {
   const regex = /^[a-zA-Z가-힣0-9]{2,16}$/
   if (!regex.test(nickname.value)) {
     nicknameError.value = true
@@ -107,8 +104,8 @@ const validateNickname = () => {
   }
 }
 
-const nicknameDuplicationCheck = () => {
-  store.nicknameDuplicationCheck(nickname.value)
+const checkNicknameDuplication = () => {
+  store.checkNicknameDuplication(nickname.value)
 } 
 
 const getGenderLabel = (value: string) => {
@@ -119,8 +116,6 @@ const formatter = ref<{date: string, month: string}>({
   date: 'YYYY-MM-DD',
   month: 'MMM',
 })
-
-const areas:string[] = (['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기도', '강원도', '충청북도', '충청남도', '전라북도', '전라남도', '경상북도', '경상남도', '제주도', '해외'])
 
 const pushidealAnimal = (value:string) => {
   if (idealAnimalSet.value.has(value)) {
@@ -134,14 +129,12 @@ const pushidealAnimal = (value:string) => {
 const idealAnimalList = computed(() => {
   if (gender.value === 'man') {
     idealAnimalSet.value = new Set<string>()
-    return ['강아지', '고양이', '토끼', '사슴', '꼬북이']
+    return ['강아지', '고양이', '토끼', '사슴', '꼬부기']
   } else if (gender.value === 'woman') {
     idealAnimalSet.value = new Set<string>()
     return ['강아지', '고양이', '토끼', '곰', '공룡']
   }
 })
-
-const interestList:string[] = ['관심사1', '관심사2', '관심사3', '관심사4', '관심사5', '관심사6', '관심사7', '관심사8', '관심사9', '관심사10', '관심사11', '관심사12', '관심사13', '관심사14', '관심사15', '관심사16', '관심사17']
 
 const pushInterest = (value:string) => {
   if (interestSet.value.size < 6 || interestSet.value.has(value)) {
@@ -163,9 +156,7 @@ const saveAdditionalInfo = () => {
     interest: Array.from(interestSet.value),
     idealAnimal: Array.from(idealAnimalSet.value),
   }
-  console.log(payload)
   store.saveAdditionalInfo(payload)
-  router.push({ name: 'animal_test' })
 }
 
 interface Payload {
@@ -263,7 +254,7 @@ interface Payload {
   position: relative;
 }
 .duplication-check {
-  @apply bg-violet-500 rounded-lg text-white text-sm hover:bg-violet-600 h-7 w-20;
+  @apply rounded-md text-white text-sm bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl h-7 w-20;
   position: absolute;
   top: 0;
   bottom: 0;

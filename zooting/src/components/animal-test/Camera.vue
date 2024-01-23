@@ -3,7 +3,6 @@
     <div class="grid items-center justify-center grid-cols-1 md:flex" v-show="is_started">
       <div id="webcam-container">
         <video id="webcam" ref="videoRef" autoplay playsinline></video>
-        <!-- <img src="@/assets/tempGuide.png" alt="" class="guide"> -->
       </div>
 
       <div class="flex flex-col items-center justify-between ml-10">
@@ -27,10 +26,10 @@
                       </div>
                       <div class="flex flex-col">
                         <p>카메라는 얼굴을 인식해요</p>
-                        <p>위처럼 촬영버튼이 회색이면 촬영되지 않아요</p>
+                        <p>위처럼 촬영 버튼이 회색이면 촬영되지 않아요</p>
                         <br>
                         <p>1. 카메라에 얼굴을 <span class="text-violet-500">가까이</span> 가져와 주세요</p>
-                        <p>2. 카메라에 두명 이상 있으면 촬영되지 <span class="text-violet-500">않아요</span></p>
+                        <p>2. 카메라에 두 명 이상 있으면 촬영되지 <span class="text-violet-500">않아요</span></p>
                       </div>
                     </div>
                   </div>
@@ -70,7 +69,7 @@
 <script setup type="text/javascript" lang="ts">
 
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue'
-import { ref, onMounted, nextTick, defineEmits } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { FaceDetector, FilesetResolver, Detection } from "@mediapipe/tasks-vision"
 
 const emit = defineEmits(['workFinished']);
@@ -119,7 +118,7 @@ const initializeFaceDetector = async () => {
 // 웹캠 실행 및 얼굴인식 시작(predictWebcam 함수)
 const enableCam = async () => {
   if (!faceDetector) {
-    alert("얼굴 인식 시스템이 로딩중입니다. 다시 시도해주세요");
+    alert("얼굴 인식 시스템이 로딩 중입니다. 다시 시도해 주세요");
     return;
   }
 

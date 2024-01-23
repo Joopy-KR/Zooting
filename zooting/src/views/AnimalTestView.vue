@@ -109,6 +109,9 @@
           resultAnimal.value = '토끼'
       }
     }
+    
+    saveTestResult()
+    
     // 다음 컴포넌트로 이동
     await wait(0.5)
     isAnimal.value = false
@@ -145,6 +148,24 @@
     isAnimal.value = true
   }
 
+  const saveTestResult = () => {
+    console.log(allAnimal.value)
+    const payload = ref({
+      animal1: allAnimal.value["dog"],
+      animal2: allAnimal.value["cat"],
+      animal3: allAnimal.value["rabbit"],
+      animal4: 0,
+      animal5: 0
+    })
+
+    if (allAnimal.value["gender"] === 'female') {
+      payload.value.animal4 = allAnimal.value["deer"]
+      payload.value.animal5 = allAnimal.value["turtle"]
+    } else {
+      payload.value.animal4 = allAnimal.value["bear"]
+      payload.value.animal5 = allAnimal.value["dino"]
+    }
+  }
 </script>
 
 

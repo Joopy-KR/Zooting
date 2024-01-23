@@ -3,7 +3,7 @@
 <template>
   <div class="flex flex-col m-4">
     <div class="p-1">
-      <a href="http://i10a702.p.ssafy.io/oauth2/authorization/kakao">
+      <a href="https://i10a702.p.ssafy.io/oauth2/authorization/kakao">
         <img src="@/assets/images/login/kakao_login.png" alt="Kakao Login" class="w-full h-auto" />
       </a>
     </div>
