@@ -31,7 +31,8 @@
           <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 animate-bounce">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
           </svg>
-          <button type="button" @click.prevent="goPersonalityTest" class="md:mt-3 rounded-md bg-violet-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-violet-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">성격테스트 하러 가기</button>
+          <button type="button" @click.prevent="goPersonalityTest" class="md:mt-3 rounded-md bg-violet-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl">성격테스트 하러 가기</button>
+        <!-- text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2 text-center me-2 my-2-->
         </div>
       </div>
     </div>

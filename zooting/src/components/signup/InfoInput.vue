@@ -165,7 +165,7 @@ const saveAdditionalInfo = () => {
   }
   console.log(payload)
   store.saveAdditionalInfo(payload)
-  // router.push({ name: 'animal_test' })
+  router.push({ name: 'animal_test' })
 }
 
 interface Payload {
