@@ -184,7 +184,7 @@ public class MemberController {
 
     @Operation(summary = "내 이메일 조회")
     @GetMapping
-    public ResponseEntity<Member> getMemberByEmail(@RequestParam String email) {
+    public ResponseEntity<Member> getMemberByEmail(@RequestParam(name = "email") String email) {
         return ResponseEntity.ok(memberService.getMemberByEmail(email));
     }
 

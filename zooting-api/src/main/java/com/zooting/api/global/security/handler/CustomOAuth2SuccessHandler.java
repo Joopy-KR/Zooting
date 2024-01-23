@@ -30,10 +30,12 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException {
 
-        // Authentication은 OAuth2 Service의 loaduser에서 담겨져 온 유저 인증 정보
-        // Attributes = {이메일, 소셜 로그인 Provider, userNameAttributeName}
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         String email = (String) oAuth2User.getAttributes().get("email");
+
+        System.out.println();
+        log.info("OAuth2SuecessHandler에 유저 정보가 전달되었습니다: \n" + oAuth2User);
+        System.out.println();
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
         String accessToken = jwtService.createAccessToken(userDetails);

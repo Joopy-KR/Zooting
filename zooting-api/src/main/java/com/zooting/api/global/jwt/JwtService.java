@@ -1,22 +1,29 @@
 package com.zooting.api.global.jwt;
 
+import com.zooting.api.global.common.code.ErrorCode;
+import com.zooting.api.global.exception.BaseExceptionHandler;
+import com.zooting.api.global.security.userdetails.CustomUserDetails;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import javax.crypto.SecretKey;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
-import java.util.Collection;
-import java.util.Date;
-import java.util.UUID;
 
 @Log4j2
 @Getter
@@ -60,44 +67,43 @@ public class JwtService {
                 .compact();
     }
 
-    public boolean verifyToken(String token){
-        log.debug("토큰 검증 시작: " + token);
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getExpiration()
-                .after(new Date());
+    public Authentication verifyToken(String token){
+        try{
+            Claims claims = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token) // Throws JWT Exception
+                    .getPayload();
+
+            UserDetails userDetails = CustomUserDetails.builder()
+                    .email(claims.getSubject())
+                    .authorities(getPrivileges(claims))
+                    .build();
+
+            log.info(userDetails);
+
+            return new UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    userDetails.getPassword(),
+                    userDetails.getAuthorities());
+
+        } catch (ExpiredJwtException e) {
+            throw new BaseExceptionHandler(ErrorCode.EXPIRED_ACCESS_TOKEN_EXCEPTION);
+        } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
+            throw new BaseExceptionHandler(ErrorCode.INVALID_ACCESS_TOKEN_EXCEPTION);
+        }
     }
 
-    public Authentication getAuthentication(String token) {
-        UserDetails userDetails = User.builder()
-                .username(getUserEmail(token))
-                .password(UUID.randomUUID().toString())
-                .roles(getPrivileges(token).toArray(new String[0]))
-                .build();
-        return new UsernamePasswordAuthenticationToken(
-                userDetails,
-                userDetails.getPassword(),
-                userDetails.getAuthorities());
-    }
-
-    public String getUserEmail(String token){
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
-    }
-
-    public Collection<String> getPrivileges(String token){
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .get("Privilege", Collection.class);
+    public Collection<GrantedAuthority> getPrivileges(Claims claims){
+        Object stringAuthorities = claims.get("Privilege");
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        if (stringAuthorities instanceof Collection<?>){
+            for(Object grantedAuthority : (Collection<?>) stringAuthorities){
+                if(grantedAuthority instanceof String){
+                    authorities.add(new SimpleGrantedAuthority((String) grantedAuthority));
+                }
+            }
+        }
+        return authorities;
     }
 }
