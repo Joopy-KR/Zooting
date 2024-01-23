@@ -1,74 +1,73 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.1'
-	id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+    id 'org.springframework.boot' version '3.2.1'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group = 'com.zooting'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '17'
+    sourceCompatibility = '17'
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	// validation
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	// jpa
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	// jdbc
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-	// websocket
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	// mysql-connector
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	// lombok
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	// modelmapper: https://mvnrepository.com/artifact/org.modelmapper/modelmapper
-	implementation 'org.modelmapper:modelmapper:3.2.0'
-	// easy-random: https://mvnrepository.com/artifact/org.jeasy/easy-random-core
-	testImplementation 'org.jeasy:easy-random-core:5.0.0'
-	// json jackson
-	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.2'
-	// swagger - springdoc
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
-	implementation 'org.springdoc:springdoc-openapi-starter-common:2.0.2'
-	implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
-	// websocket
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-//	implementation 'org.webjars:sockjs-client:1.1.2'
-//	implementation 'org.webjars:stomp-websocket:2.3.3-1'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	//view -delete after test
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-freemarker'
-	implementation 'org.springframework.boot:spring-boot-devtools'
-	implementation 'org.webjars.bower:bootstrap:4.3.1'
-	implementation 'org.webjars.bower:vue:2.5.16'
-	implementation 'org.webjars.bower:axios:0.17.1'
-	implementation 'com.google.code.gson:gson:2.8.0'
 
+    // security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // jdbc
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    // websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    // mysql-connector
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // modelmapper: https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+    implementation 'org.modelmapper:modelmapper:3.2.0'
+    // easy-random: https://mvnrepository.com/artifact/org.jeasy/easy-random-core
+    testImplementation 'org.jeasy:easy-random-core:5.0.0'
+    // json jackson
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.2'
+    // swagger - springdoc
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    implementation 'org.springdoc:springdoc-openapi-starter-common:2.0.2'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

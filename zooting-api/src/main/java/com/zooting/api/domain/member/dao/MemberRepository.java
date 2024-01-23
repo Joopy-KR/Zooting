@@ -1,18 +1,21 @@
 package com.zooting.api.domain.member.dao;
 
-import com.zooting.api.domain.dm.entity.DM;
 import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
-@Repository
 public interface MemberRepository extends JpaRepository<Member, String> {
-
+    boolean existsByNickname(String nickname);
+    Optional<Member> findMemberByEmail(String email);
+    Optional<Member> findMemberByNickname(String nickname);
+    List<Member> findMemberByNicknameContaining(String nickname);
+    List<Member> findByNicknameContainingAndNicknameNotIn(String nickname, List<String> nicknames);
+    Optional<Member> findByEmail(String email);
     @Query("SELECT m.dmRooms FROM Member m WHERE m.email = :email")
     List<DMRoom> findDMRoomsByEmail(@Param("email") String email);
     @Query("SELECT m.dmRoomsReverse FROM Member m WHERE m.email = :email")
