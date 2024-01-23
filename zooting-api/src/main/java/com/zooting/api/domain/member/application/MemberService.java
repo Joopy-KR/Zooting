@@ -1,6 +1,9 @@
 package com.zooting.api.domain.member.application;
 
-import com.zooting.api.domain.member.dto.request.*;
+import com.zooting.api.domain.member.dto.request.InterestsReq;
+import com.zooting.api.domain.member.dto.request.IntroduceReq;
+import com.zooting.api.domain.member.dto.request.MemberReq;
+import com.zooting.api.domain.member.dto.request.PersonalityReq;
 import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
@@ -9,7 +12,6 @@ import com.zooting.api.global.exception.BaseExceptionHandler;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Optional;
 
 public interface MemberService {
     boolean existNickname(String nickname);

@@ -3,7 +3,6 @@ package com.zooting.api.domain.member.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
-import java.util.List;
 
 @Schema(description="회원 정보 조회시 응답 DTO")
 public record MemberRes(

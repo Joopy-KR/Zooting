@@ -19,7 +19,7 @@ public class CustomOAuth2FailHandler implements AuthenticationFailureHandler {
     @Value("${client.redirect-url.fail}")
     private String failRedirectUrl;
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
         response.sendRedirect(failRedirectUrl);
     }
 }
