@@ -2,10 +2,7 @@ package com.zooting.api.domain.member.application;
 
 import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.member.dao.MemberRepository;
-import com.zooting.api.domain.member.dto.request.InterestsReq;
-import com.zooting.api.domain.member.dto.request.IntroduceReq;
-import com.zooting.api.domain.member.dto.request.MemberReq;
-import com.zooting.api.domain.member.dto.request.PersonalityReq;
+import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
@@ -20,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -88,7 +86,7 @@ public class MemberServiceImpl implements MemberService {
         additionalInfo.setIdealAnimal(memberReq.idealAnimal().toString());
         additionalInfo.setMember(member);
 
-        // 멤버의 권한 수정 Anonymouse 삭제하고 User 권한 부여
+        // 멤버의 권한 수정 Anonymous 삭제하고 User 권한 부여
         member.getRole().remove(Privilege.ANONYMOUS);
         member.getRole().add(Privilege.USER);
 
@@ -117,7 +115,6 @@ public class MemberServiceImpl implements MemberService {
             additionalInfo = new AdditionalInfo();
         }
         additionalInfo.setInterest(additionalReq.interest().toString());
-        additionalInfo.setIdealAnimal(additionalReq.idealAnimal().toString());
         additionalInfo.setMember(member);
         memberRepository.save(member);
     }
@@ -197,17 +194,5 @@ public class MemberServiceImpl implements MemberService {
                 .role(List.of(Privilege.ANONYMOUS))
                 .email(email)
                 .build());
-    }
-
-    @Override
-    public Optional<Member> checkRegisteredMember(String email) {
-        return memberRepository.findByEmail(email);
-    }
-    @Override
-    public List<DMRoom> getDmRooms(String sender) {
-        return memberRepository.findDMRoomsByEmail(sender);
-    }
-    public List<DMRoom> getDmRoomsReverse(String sender) {
-        return memberRepository.findDMRoomsReverseByEmail(sender);
     }
 }

@@ -1,14 +1,11 @@
 package com.zooting.api.domain.member.application;
 
-import com.zooting.api.domain.member.dto.request.InterestsReq;
-import com.zooting.api.domain.member.dto.request.IntroduceReq;
-import com.zooting.api.domain.member.dto.request.MemberReq;
-import com.zooting.api.domain.member.dto.request.PersonalityReq;
+import com.zooting.api.domain.dm.entity.DMRoom;
+import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.Member;
-import com.zooting.api.global.exception.BaseExceptionHandler;
 
 import java.text.ParseException;
 import java.util.List;
@@ -27,8 +24,4 @@ public interface MemberService {
     PointRes findPoints(String userId);
     Boolean deductPoints(String userId, Long price);
     Member initialMemberRegister(String email);
-    Optional<Member> checkRegisteredMember (String email);
-    List<DMRoom> getDmRooms(String sender);
-    List<DMRoom> getDmRoomsReverse(String sender);
-
 }
