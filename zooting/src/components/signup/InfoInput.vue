@@ -279,7 +279,6 @@ interface Payload {
   background-color: #d6d6d6;
   border-radius: 4px;
 }
-
 .interest__div::-webkit-scrollbar-track {
   background-color: transparent;
 }
