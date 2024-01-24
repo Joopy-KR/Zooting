@@ -30,7 +30,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
   const API_URL:string = 'https://i10a702.p.ssafy.io'
   const Token = 'eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA2MTgwMzcwLCJzdWIiOiJ6eW8wNzIwQGtha2FvLmNvbSIsIlByaXZpbGVnZSI6WyJVU0VSIl19.qCVf1LP6tpcMbLUpoQPk9mn6U0OcFOKS8W8AdINkK00'
   const router = useRouter()
-
+  
   const state = ref<AccessTokenState>({
     accessToken: localStorage.getItem("accessToken") || null,
   })
@@ -58,9 +58,11 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       }
     }
   }
-
+  
   // 유저 정보
-  const userInfo = ref(null)
+  const isCompletedTest = ref<boolean>(false)
+  const userInfo = ref<UserInfo | null>(null)
+  
   const getUserInfo = function () {
     axios({
       method: 'get',
@@ -71,14 +73,22 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     })
     .then(res => {
       console.log(res)
-      userInfo.value = res.data
-      console.log(userInfo.value)
+      userInfo.value = res.data.result
+      if (!userInfo.value?.nickname) {
+        router.push({ name: "signup" })
+      } else if (!userInfo.value?.animal) {
+        router.push({ name: "animal_test" })
+      } else if (!userInfo.value?.personality) {
+        router.push({ name: "personality_test" })
+      } else {
+        isCompletedTest.value = true
+      }
     })
     .catch(err => {
       console.log(err)
     })
-    }
-
+  }
+  
   // 로그인 상태 판별
   const isLogin = computed(() => {
     if (state.value.accessToken) {
@@ -87,19 +97,19 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       return false
     }
   })
-
+  
   // 로그아웃
   const signOut = function () {
     window.localStorage.clear()
     state.value.accessToken = null
   }
   
-  // 유저 권한 확인
-  const isCompletedSignUp = ref<boolean>()
+  // 추가 정보 저장 여부 확인
+  const isCompletedSignUp = ref<boolean>(false)
   const checkCompletedSignUp = function () {
-      axios({
-        method: 'get',
-        url: `${API_URL}/api/members/additional/check`, // api/members/privilege/check
+    axios({
+      method: 'get',
+        url: `${API_URL}/api/members/privilege/check`,
         headers: {
           accept: 'application/json',
           Authorization: `Bearer ${Token}`
@@ -107,7 +117,8 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       })
       .then(res => {
         console.log(res)
-        if (!res.data.result) {
+        isCompletedSignUp.value = res.data.result
+        if (!isCompletedSignUp) {
           router.push({ name: "signup" })
         }
       })
@@ -116,6 +127,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       })
   }
   
+
   // 추가 정보 저장
   const saveAdditionalInfo = function (
     payload: { 
@@ -201,7 +213,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
   const setAnimalFace = function (payload:Number[]) {
     const animalFaceList = payload
     axios({
-      method: 'put',
+      method: 'post',
       url: `${API_URL}/api/animalface`,
       data: {
         animalFaceList
@@ -227,6 +239,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     isLogin,
     signOut,
     isCompletedSignUp,
+    isCompletedTest,
     checkCompletedSignUp,
     setPersonality,
     saveAdditionalInfo,
@@ -247,4 +260,17 @@ interface Personality {
     match: string
     content: string[]
   }
+}
+
+interface UserInfo {
+  email: string
+  gender: string | null
+  nickname: string | null
+  birth: string | null
+  address: string | null
+  idealAnimal: string[] | null
+  interest: string[] | null
+  animal: string | null
+  personality: string | null
+  point: Number | null
 }

@@ -8,12 +8,11 @@
       </div>
       <div class="side-bar__item">
         <!-- Messages button -->
-        <button @click="toggleMessagesTab" v-if="isLoggedIn">
+        <button @click="toggleMessagesTab" v-if="isLoggedIn && isCompletedTest">
           <svg :class="[isActiveMessageTab() ? 'text-violet-800' : 'text-gray-400', 'w-5 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20" transform="rotate(45)">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m9 17 8 2L9 1 1 19l8-2Zm0 0V9"/>
           </svg>
         </button>
-
         <!-- Notifications button -->
         <button @click="toggleNotificationsTab">
           <svg :class="[isActivenotificationsTab() ? 'text-violet-800' : 'text-gray-400', 'w-6 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="20" fill="none" viewBox="0 0 14 20">
@@ -33,7 +32,7 @@
 
       <!-- User profile -->
       <div class="user-profile">
-        <RouterLink :to="getProfileLink()" v-if="isLoggedIn" @click="closeTab">
+        <RouterLink :to="getProfileLink()" v-if="isLoggedIn && isCompletedTest" @click="closeTab">
           <img class="user-profile__img" src="" alt="user-profile"/>
         </RouterLink>
       </div>
@@ -59,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAccessTokenStore } from "../stores/store"
 import DM from './DM.vue'
@@ -69,6 +68,7 @@ const store = useAccessTokenStore()
 const router = useRouter()
 
 const isLoggedIn = computed(() => store.isLogin)
+const isCompletedTest = computed(() => store.isCompletedTest)
 
 const isSideTabOpen = ref(false)
 const currentSideTab = ref<string | null>(null)
@@ -113,9 +113,16 @@ const isActivenotificationsTab = () => {
   }
 }
 
-const nickname = 'nickname'
+const userInfo = ref(store.userInfo)
+const nickname = ref<string | null | undefined>(null)
+
+watch(()=> store.userInfo, (UpdateUser)=>{
+  userInfo.value = UpdateUser
+  nickname.value = userInfo.value?.nickname
+})
+
 const getProfileLink = () => {
-  return `/profile/${nickname}`
+  return `/profile/${nickname.value}`
 }
 
 const closeTab = () => {

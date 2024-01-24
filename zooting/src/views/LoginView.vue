@@ -11,11 +11,12 @@ const handleSocialLoginRedirect = async () => {
     const accessToken = await getAccessTokenFromRedirectURL();
     if (accessToken) {
       await store.setAccessToken(accessToken);
+      store.getUserInfo()
       router.push({ name: "home" });
     }
   } catch (error) {
     console.error("소셜 로그인 실패: ", error);
-    router.push({ name: "home" });
+    router.push({ name: "signin" });
   }
 };
 

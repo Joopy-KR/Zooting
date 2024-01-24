@@ -36,6 +36,9 @@
   import { ref, onMounted } from 'vue'
   import Camera from '@/components/animal-test/Camera.vue'
   import Result from '@/components/animal-test/Result.vue'
+  import { useAccessTokenStore } from "../stores/store"
+
+  const store = useAccessTokenStore()
   
   // 닮은 동물상
   const resultAnimal = ref('')
@@ -159,7 +162,7 @@
       payload.value[4] = Number(allAnimal.value["dino"])
     }
 
-    // store.setAnimalFace(payload)
+    store.setAnimalFace(payload)
   }
 </script>
 

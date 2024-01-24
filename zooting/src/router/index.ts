@@ -60,8 +60,18 @@ router.beforeEach((to, from) => {
   if (to.name === 'signin' && store.isLogin) {
     return { name: 'home' }
   }
-
-  // 회원가입 및 테스트 완료 했으면 해당 페이지로 가지 못하게 막기 && 이용권 구매했을 경우 풀기
+  
+  if (to.name === 'signup' && store.isCompletedSignUp) {
+    return { name: 'home' }
+  }
+  
+  if (to.name === 'animal_test' && store.userInfo?.animal){
+    return { name: 'home' }
+  }
+  
+  if (to.name === 'personality_test' && store.userInfo?.personality) {
+    return { name: 'home' }
+  }
 })
 
 export default router

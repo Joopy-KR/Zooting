@@ -52,10 +52,10 @@
       <div class="input__div">          
         <label for="address" class="input__label">지역</label>
         <select id="address" v-model="address">
-          <option value="" disabled selected hidden>사는 지역을 선택해 주세요</option>
+          <option value="" disabled selected hidden>거주지를 선택해 주세요</option>
           <option v-for="(area, index) in areas" :key="index">{{ area }}</option>
         </select>
-        <div v-if="addressError" class="error-message">사는 지역을 선택해 주세요</div>
+        <div v-if="addressError" class="error-message">거주지를 선택해 주세요</div>
       </div>
     </div>
     
@@ -226,7 +226,7 @@ interface Payload {
   @apply text-3xl font-bold mb-1;
 }
 .input__div {
-  @apply mb-10;
+  @apply mb-8;
 }
 .input__label {
   @apply block mb-2 text-sm font-medium text-gray-900;
