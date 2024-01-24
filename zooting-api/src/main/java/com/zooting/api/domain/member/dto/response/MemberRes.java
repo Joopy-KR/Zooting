@@ -1,5 +1,6 @@
 package com.zooting.api.domain.member.dto.response;
 
+import com.zooting.api.domain.member.dto.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
@@ -25,7 +26,11 @@ public record MemberRes(
         @Schema(description = "관심사")
         String interest,
         @Schema(description = "이상형")
-        String idealAnimal
+        String idealAnimal,
+        @Schema(description = "배경이미지 id")
+        Long backgroundId,
+        @Schema(description = "마스크 id")
+        Long maskId
 
 ) {
 }

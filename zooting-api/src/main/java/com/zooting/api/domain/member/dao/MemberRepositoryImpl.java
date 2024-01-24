@@ -8,61 +8,71 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zooting.api.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Calendar;
 import java.util.List;
 
-import static com.zooting.api.domain.block.entity.QBlock.block;
 import static com.zooting.api.domain.member.entity.QMember.member;
 
 
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberRepositoryCustom {
     private final JPAQueryFactory queryFactory;
+
     @Override
-    public List<Member> extractMatchingMember(String userId, Date userBirth) {
-//        OrderSpecifier[] orderSpecifiers = createSpecifier();
+    public List<Member> extractMatchingMember(ExtractObj extractObj) {
         List<Member> notBlockAndNotFriend = queryFactory
                 .selectFrom(member)
                 .where(
                         // 차단 목록의 친구는 매칭되지 않는다
-                        member.notIn(member.blockFromList.any().from),
-                        member.notIn(member.blockToList.any().to),
+                        notInBlockToList(extractObj.getBlockToList()),
+                        notInBlockFromList(extractObj.getBlockFromList()),
                         // 이미 친구라면 매칭이 되지 않는다
-                        member.notIn(member.friendList.any().follower)
+                        notInFriendList(extractObj.getFriendList()),
+                        // 2~10살 차이 사람 조회
+                        betweenRangeYear(extractObj.getRangeYear())
+                        // 다른 성별
+//                        member.gender.ne(extractObj.getGender()) // todo:  1: 3 매칭을 하게 할시 booleanexpression으로 수정
+                ).orderBy(
+                        // 관심사가 일치하는 유저가 먼저 오도록 sort
+                        member.additionalInfo.interest.in(extractObj.getMemberInterests()).count().desc(),
+                        // 이상형이 일치하는 유저가 먼저 오도록 sort
+                        member.additionalInfo.animal.in(extractObj.getMemberIdeals()).count().desc()
+                ).groupBy(member.additionalInfo.interest, member.additionalInfo.idealAnimal)
+                .fetch();
 
-                ).fetch();
         return notBlockAndNotFriend;
     }
-//    private OrderSpecifier[] createOrderSpecifierByInterests(List<String> memberInterests) {
-//        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
-//        orderSpecifiers.add(new OrderSpecifier(Order.DESC, member.additionalInfo.interest.in(memberInterests).count())); // todo:수정해야함
-//    }
 
+    private BooleanExpression notInBlockToList(List<String> blockToList) {
 
+        if (blockToList != null || !blockToList.isEmpty()) {
+            return member.email.notIn(blockToList);
+        }
+        return null;
+    }
 
+    private BooleanExpression notInBlockFromList(List<String> blockFromList) {
+        if (blockFromList != null || !blockFromList.isEmpty()) {
+            return member.email.notIn(blockFromList);
+        }
+        return null;
+    }
 
-    // 위도 경도 기준 근처
-    // 생년 월일 범위 2~10
+    private BooleanExpression notInFriendList(List<String> friendList) {
+        if (friendList != null || !friendList.isEmpty()) {
+            return member.email.notIn(friendList);
+        }
+        return null;
+    }
 
-
-
-
-    // 관심사가 일치하는 유저가 먼저 오도록 sort
-//    private List<Member> interests(List<String> memberInterests) {
-//
-//        queryFactory.selectFrom(member)
-//                .where(
-//                        member.additionalInfo.interest
-//                )
-//    }
-    // 이상형이 일치하는 유저가 먼저 오도록 sort
-
-
-
-
+    private BooleanExpression betweenRangeYear(Integer rangeYear) {
+        if (rangeYear != null) {
+            return member.birth.year().between(member.birth.year().subtract(rangeYear), member.birth.year().add(rangeYear));
+        }
+        return null;
+    }
 }
+
+

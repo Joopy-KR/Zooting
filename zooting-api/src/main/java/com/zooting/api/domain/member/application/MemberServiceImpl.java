@@ -1,13 +1,12 @@
 package com.zooting.api.domain.member.application;
 
 import com.zooting.api.domain.block.entity.Block;
+import com.zooting.api.domain.member.dao.ExtractObj;
 import com.zooting.api.domain.member.dao.MemberRepository;
-import com.zooting.api.domain.member.dto.request.InterestsReq;
-import com.zooting.api.domain.member.dto.request.IntroduceReq;
-import com.zooting.api.domain.member.dto.request.MemberReq;
-import com.zooting.api.domain.member.dto.request.PersonalityReq;
-import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
+import com.zooting.api.domain.member.dto.request.*;
+import com.zooting.api.domain.member.dto.response.MemberSearchRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
+import com.zooting.api.domain.member.dto.response.MyProfileReq;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
 import com.zooting.api.domain.member.entity.Member;
@@ -45,6 +44,16 @@ public class MemberServiceImpl implements MemberService {
         return false;
     }
 
+    @Override
+    public MyProfileReq checkMyProfile(String userId, String nickname) {
+        Member member = memberRepository.findMemberByEmail(userId)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        if (member.getNickname().equals(nickname) ) {
+            return new MyProfileReq(true);
+        }
+        return new MyProfileReq(false);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public MemberRes findMemberInfo(String memberId) {
@@ -53,7 +62,7 @@ public class MemberServiceImpl implements MemberService {
 
         return new MemberRes(
                 member.getEmail(),
-                member.getGender(),
+                member.getGender().toString(),
                 member.getNickname(),
                 member.getBirth(),
                 member.getAddress(),
@@ -61,7 +70,29 @@ public class MemberServiceImpl implements MemberService {
                 member.getAdditionalInfo().getPersonality(),
                 member.getAdditionalInfo().getAnimal(),
                 member.getAdditionalInfo().getInterest(),
-                member.getAdditionalInfo().getIdealAnimal()
+                member.getAdditionalInfo().getIdealAnimal(),
+                member.getAdditionalInfo().getBackgroundId(),
+                member.getAdditionalInfo().getMaskId()
+        );
+    }
+
+    @Override
+    public MemberRes findMemberInfoByNickname(String nickname) {
+        Member member = memberRepository.findMemberByNickname(nickname).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        return new MemberRes(
+                member.getEmail(),
+                member.getGender().toString(),
+                member.getNickname(),
+                member.getBirth(),
+                member.getAddress(),
+                member.getPoint(),
+                member.getAdditionalInfo().getPersonality(),
+                member.getAdditionalInfo().getAnimal(),
+                member.getAdditionalInfo().getInterest(),
+                member.getAdditionalInfo().getIdealAnimal(),
+                member.getAdditionalInfo().getBackgroundId(),
+                member.getAdditionalInfo().getMaskId()
         );
     }
 
@@ -77,7 +108,7 @@ public class MemberServiceImpl implements MemberService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         member.setBirth(sdf.parse(memberReq.birth()));
         member.setAddress(memberReq.address());
-        member.setGender(memberReq.gender());
+        member.setGender(memberReq.gender().toString());
         member.setPoint(0L); // 추가 정보 저장 시 포인트 0으로 저장
 
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
@@ -126,7 +157,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<MembeSearchrRes> findMemberList(String userId, String nickname) {
+    public List<MemberSearchRes> findMemberList(String userId, String nickname) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
@@ -140,7 +171,7 @@ public class MemberServiceImpl implements MemberService {
         } else {
             findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         }
-        return findMembers.stream().map(mem -> new MembeSearchrRes(mem.getNickname(), mem.getEmail())).toList();
+        return findMembers.stream().map(mem -> new MemberSearchRes(mem.getNickname(), mem.getEmail())).toList();
     }
 
     @Transactional
@@ -185,5 +216,22 @@ public class MemberServiceImpl implements MemberService {
                 .role(List.of(Privilege.ANONYMOUS))
                 .email(email)
                 .build());
+    }
+
+    @Override
+    public List<MemberSearchRes> extractMembers(String userId, ExtractingReq extractingReq) {
+        Member member = memberRepository.findMemberByEmail(userId)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        ExtractObj extractObj = new ExtractObj();
+        extractObj.setUserId(userId);
+        extractObj.setBlockToList(member.getBlockToList().stream().map(block-> block.getFrom().getEmail()).toList());
+        extractObj.setBlockFromList(member.getBlockFromList().stream().map(block-> block.getTo().getEmail()).toList());
+        extractObj.setFriendList(member.getFriendList().stream().map(fr-> fr.getFollowing().getEmail()).toList());
+        extractObj.setMemberInterests(member.getAdditionalInfo().getInterest().lines().toList());
+        extractObj.setMemberIdeals(member.getAdditionalInfo().getIdealAnimal().lines().toList());
+        extractObj.setMemberBirth(member.getBirth());
+        extractObj.setRangeYear(extractingReq.rangeYear());
+        System.out.println(extractObj.getMemberIdeals());
+        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(),mem.getNickname())).toList();
     }
 }

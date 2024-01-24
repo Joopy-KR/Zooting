@@ -1,12 +1,10 @@
 package com.zooting.api.domain.member.api;
 
 import com.zooting.api.domain.member.application.MemberService;
-import com.zooting.api.domain.member.dto.request.InterestsReq;
-import com.zooting.api.domain.member.dto.request.IntroduceReq;
-import com.zooting.api.domain.member.dto.request.MemberReq;
-import com.zooting.api.domain.member.dto.request.PersonalityReq;
-import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
+import com.zooting.api.domain.member.dto.request.*;
+import com.zooting.api.domain.member.dto.response.MemberSearchRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
+import com.zooting.api.domain.member.dto.response.MyProfileReq;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
@@ -48,6 +46,7 @@ public class MemberController {
         );
     }
 
+    @PreAuthorize("permitAll()")
     @Operation(
             summary = "로그인 후 추가 정보가 저장 여부 확인",
             description = "previlege로 판단. " +
@@ -56,6 +55,22 @@ public class MemberController {
     @GetMapping("/privilege/check")
     public ResponseEntity<BaseResponse<Boolean>> checkPrivilege(@AuthenticationPrincipal UserDetails userDetails) {
         var result = memberService.checkMemberPrivilege(userDetails.getUsername());
+        return BaseResponse.success(
+                SuccessCode.CHECK_SUCCESS,
+                result
+        );
+    }
+    @PreAuthorize("hasAnyRole('USER')")
+    @Operation(
+            summary = "프로필 확인",
+            description = "내 프로필이 맞다면 myprofile = true" +
+                    "내 프로필이 아니라면 myprofile = false"
+    )
+    @GetMapping("/myprofile/check")
+    public ResponseEntity<BaseResponse<MyProfileReq>> checkMyProfile(
+            @Valid @NotNull @Size(min = 2, max = 16)  @RequestParam(name = "nickname") String nickname,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        var result = memberService.checkMyProfile(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 result
@@ -81,6 +96,17 @@ public class MemberController {
     public ResponseEntity<BaseResponse<MemberRes>> findMemberInfo(
             @AuthenticationPrincipal UserDetails userDetails){
         MemberRes memberRes = memberService.findMemberInfo(userDetails.getUsername());
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                memberRes
+        );
+    }
+    @Operation(summary = "닉네임으로 유저 정보 조회")
+    @PreAuthorize("hasAnyRole('USER')")
+    @GetMapping("/info")
+    public ResponseEntity<BaseResponse<MemberRes>> findMemberInfoByNickname(
+            @Valid @NotNull @Size(min = 2, max = 16)@RequestParam(name="nickname") String nickname){
+        MemberRes memberRes = memberService.findMemberInfoByNickname(nickname);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
                 memberRes
@@ -118,11 +144,11 @@ public class MemberController {
             description = "검색한 키워드에 해당하는 멤버 중 나를 차단한 사람 제외하고 리스트로 반환"
     )
     @PreAuthorize("hasAnyRole('USER')")
-    @GetMapping("/members")
-    public ResponseEntity<BaseResponse<List<MembeSearchrRes>>> findMemberList(
+    @GetMapping("/searchlist")
+    public ResponseEntity<BaseResponse<List<MemberSearchRes>>> findMemberList(
             @RequestParam(name = "nickname") String nickname,
             @AuthenticationPrincipal UserDetails userDetails) {
-        List<MembeSearchrRes> memberResList = memberService.findMemberList(userDetails.getUsername(), nickname);
+        List<MemberSearchRes> memberResList = memberService.findMemberList(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.SELECT_SUCCESS,
                 memberResList
@@ -195,6 +221,26 @@ public class MemberController {
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
                 "변경 불가"
+        );
+    }
+    @Operation(
+            summary = "매칭 인원 추출",
+            description = "차단 목록 유저 제외" +
+                    "친구인 유저 제외" +
+                    "나이 선택 o 시 - 해당 나이차 유저 추출" +
+                    "나이 선택 x 시 - 전체 나이대 유저 추출" +
+                    "관심사 일치하는 유저 순 정렬" +
+                    "이상형 일치하는 유저 순 정렬"
+    )
+    @PreAuthorize("hasAnyRole('USER')")
+    @GetMapping("/extract")
+    public ResponseEntity<BaseResponse<List<MemberSearchRes>>> extractMemberList(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody ExtractingReq extractingReq) {
+        List<MemberSearchRes> memberResList = memberService.extractMembers(userDetails.getUsername(), extractingReq);
+        return BaseResponse.success(
+                SuccessCode.SELECT_SUCCESS,
+                memberResList
         );
     }
 }

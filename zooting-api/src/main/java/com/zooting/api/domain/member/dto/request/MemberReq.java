@@ -1,5 +1,6 @@
 package com.zooting.api.domain.member.dto.request;
 
+import com.zooting.api.domain.member.dto.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -19,7 +20,7 @@ public record MemberReq(
        @Schema(description = "주소")
        String address,
        @Schema(description = "성별")
-       String gender,
+        Gender gender,
 
        @Schema(description = "관심사 리스트")
        List<String> interest,
