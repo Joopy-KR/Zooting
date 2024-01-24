@@ -24,11 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class DMRoomRepositoryTest {
 
     @Autowired
-    DMRoomRepository dmRoomRepository;
+    private DMRoomRepository dmRoomRepository;
     @Autowired
-    DMRepository dmRepository;
+    private DMRepository dmRepository;
     @Autowired
-    MemberRepository memberRepository;
+    private MemberRepository memberRepository;
     @BeforeEach
     void setUp() {
         Member sender = Member.builder().email("a").build();
@@ -46,9 +46,7 @@ class DMRoomRepositoryTest {
     @Test
     @Transactional
     void findBySenderAndReceiver() {
-        dmRoomRepository.findAll().forEach(dmRoom -> {
-            log.info("{} - {} - {}", dmRoom.getId(), dmRoom.getSender().getEmail(), dmRoom.getReceiver().getEmail());
-        });
+        dmRoomRepository.findAll().forEach(dmRoom -> log.info("{} - {} - {}", dmRoom.getId(), dmRoom.getSender().getEmail(), dmRoom.getReceiver().getEmail()));
         DMRoom dmRoom = dmRoomRepository.findBySenderAndReceiver(Member.builder().email("a").build(), Member.builder().email("b").build());
         log.info("{}", dmRoom.getId());
         DMRoom dmRoom2 = dmRoomRepository.findBySenderAndReceiver(Member.builder().email("b").build(), Member.builder().email("a").build());
