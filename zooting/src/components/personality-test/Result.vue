@@ -19,8 +19,7 @@
             {{ personality.match }}
           </span> 유형과 궁합이 맞아요.</li>
         </div>
-        <!-- click => axios & Home으로 라우팅 -->
-        <button class="test-completed" @click="complateTest">미팅 하러 가기</button>
+        <button class="test-completed" @click.prevent="completedTest">미팅 하러 가기</button>
       </div>
     </transition>
     </div>
@@ -28,7 +27,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useStore, useAccessTokenStore } from '@/stores/store.ts'
+import { useStore, useAccessTokenStore } from '@/stores/store'
 import { useRouter } from 'vue-router'
 
 const props = defineProps<{
@@ -37,7 +36,6 @@ const props = defineProps<{
 
 const store = useStore()
 const accessTokenStore = useAccessTokenStore()
-const router = useRouter()
 
 const personality = store.personality[props.testResult]
 
@@ -55,10 +53,8 @@ const getColorClass = (value: string) => {
   }
 }
 
-const complateTest = () => {
-  const payload:string = props.testResult
-  accessTokenStore.setPersonality(payload)
-  router.push({ name: 'home' })
+const completedTest = () => {
+  accessTokenStore.setPersonality(props.testResult)
 }
 
 const isShow = ref(false)

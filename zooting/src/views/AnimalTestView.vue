@@ -36,6 +36,9 @@
   import { ref, onMounted } from 'vue'
   import Camera from '@/components/animal-test/Camera.vue'
   import Result from '@/components/animal-test/Result.vue'
+  import { useAccessTokenStore } from "../stores/store"
+
+  const store = useAccessTokenStore()
   
   // 닮은 동물상
   const resultAnimal = ref('')
@@ -109,6 +112,9 @@
           resultAnimal.value = '토끼'
       }
     }
+    
+    saveTestResult()
+    
     // 다음 컴포넌트로 이동
     await wait(0.5)
     isAnimal.value = false
@@ -145,6 +151,19 @@
     isAnimal.value = true
   }
 
+  const saveTestResult = () => {
+    const payload = ref([Number(allAnimal.value["dog"]), Number(allAnimal.value["cat"]), Number(allAnimal.value["rabbit"]), 0, 0])
+
+    if (allAnimal.value["gender"] === 'female') {
+      payload.value[3] = Number(allAnimal.value["deer"])
+      payload.value[4] = Number(allAnimal.value["turtle"])
+    } else {
+      payload.value[3] = Number(allAnimal.value["bear"])
+      payload.value[4] = Number(allAnimal.value["dino"])
+    }
+
+    store.setAnimalFace(payload)
+  }
 </script>
 
 

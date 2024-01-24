@@ -1,5 +1,5 @@
 <template>
-  <div class="description__container" @click="testStart">
+  <div class="description__container">
     <transition name="fade">
       <p v-if="isShow">간단한 테스트를 통해 {{ nickname }} 님의 성격 유형을 알아볼게요</p>
     </transition>
@@ -12,10 +12,6 @@ import { ref, onMounted } from 'vue'
 const nickname = ref<string>('nickname')
 const emit = defineEmits(['testStart'])
 
-const testStart = () => {
-  emit('testStart')
-}
-
 const isShow = ref(false)
 
 onMounted(Run)
@@ -23,6 +19,10 @@ onMounted(Run)
 async function Run() {
     await wait(0.5)
     isShow.value = true
+    await wait(1.2)
+    isShow.value = false
+    await wait(1)
+    emit('testStart')
 }
 
 const wait = (sec:number) => {
@@ -41,7 +41,6 @@ const wait = (sec:number) => {
 .fade-leave-active {
   transition: opacity 1s ease;
 }
-
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
