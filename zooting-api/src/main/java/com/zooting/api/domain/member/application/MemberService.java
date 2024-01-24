@@ -1,6 +1,5 @@
 package com.zooting.api.domain.member.application;
 
-import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
@@ -9,7 +8,6 @@ import com.zooting.api.domain.member.entity.Member;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Optional;
 
 public interface MemberService {
     boolean existNickname(String nickname);
@@ -23,5 +21,4 @@ public interface MemberService {
     void updatePersonality(String userId, PersonalityReq personalityReq);
     PointRes findPoints(String userId);
     Boolean deductPoints(String userId, Long price);
-    Member initialMemberRegister(String email);
 }

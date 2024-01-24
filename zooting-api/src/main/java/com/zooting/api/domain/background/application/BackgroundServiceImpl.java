@@ -14,10 +14,7 @@ public class BackgroundServiceImpl implements BackgroundService{
 
     @Override
     public List<BackgroundRes> findAllBackgroundImg() {
-        List<BackgroundRes> backgroundResList = backgroundRepository.findAll()
+        return backgroundRepository.findAll()
                 .stream().map(back-> new BackgroundRes(back.getId(), back.getFile().getFileName(), back.getFile().getImg_url(), back.getPrice())).toList();
-        return  backgroundResList;
     }
-
-
 }

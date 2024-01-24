@@ -1,7 +1,5 @@
 package com.zooting.api.domain.dm.dto.response;
 
-import com.zooting.api.domain.dm.entity.DM;
-import com.zooting.api.domain.file.entity.File;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;

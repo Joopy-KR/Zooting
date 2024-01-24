@@ -1,9 +1,7 @@
-package com.zooting.api.domain.dm.websocket.config;
+package com.zooting.api.global.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -11,7 +9,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker // STOMP를 사용할 수 있게 해주는 어노테이션
 public class DMWebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
     /**
      * 소켓 연결을 위해 사용할 엔드포인트 등록과 cors 오류 방지를 위해 허용할 Origin을 등록해둔다.
      * 엔드포인트: /ws/dm
@@ -33,5 +30,4 @@ public class DMWebSocketConfig implements WebSocketMessageBrokerConfigurer {
         brokerRegistry.enableSimpleBroker("api/sub");
         brokerRegistry.setApplicationDestinationPrefixes("api/pub");
     }
-    
 }

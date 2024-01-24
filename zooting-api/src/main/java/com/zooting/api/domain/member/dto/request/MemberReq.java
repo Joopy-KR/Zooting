@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-import java.util.Date;
 import java.util.List;
 
 @Schema(description = "추가 정보 저장 요청 DTO")

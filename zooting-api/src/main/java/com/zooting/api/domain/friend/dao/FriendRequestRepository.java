@@ -1,6 +1,5 @@
 package com.zooting.api.domain.friend.dao;
 
-import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.friend.entity.FriendRequest;
 import com.zooting.api.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

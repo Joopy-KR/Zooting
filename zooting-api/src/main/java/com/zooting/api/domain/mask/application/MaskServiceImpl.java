@@ -13,7 +13,7 @@ public class MaskServiceImpl implements MaskService{
     final private MaskRepository maskRepository;
     @Override
     public List<MaskRes> findAllMask() {
-        List<MaskRes> maskList = maskRepository.findAll()
+        return maskRepository.findAll()
                 .stream().map(mask->new MaskRes(
                         mask.getId(),
                         mask.getAnimal(),
@@ -21,6 +21,5 @@ public class MaskServiceImpl implements MaskService{
                         mask.getPrice(),
                         mask.getFile().getFileName(),
                         mask.getFile().getImg_url())).toList();
-        return maskList;
     }
 }

@@ -7,7 +7,6 @@ import com.zooting.api.domain.dm.dto.response.DMDto;
 import com.zooting.api.domain.dm.dto.response.DMRoomRes;
 import com.zooting.api.domain.dm.entity.DM;
 import com.zooting.api.domain.dm.entity.DMRoom;
-import com.zooting.api.domain.file.entity.File;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.code.ErrorCode;
@@ -38,7 +37,6 @@ public class DMServiceImpl implements DMService {
         Member newSender = Member.builder().email(sender).build();
         Member newReceiver = memberRepository.findByEmail(receiver).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        ;
         DMRoom dmRoom = dmRoomRepository.findBySenderAndReceiver(newSender, newReceiver);
         return Objects.nonNull(dmRoom) ? dmRoom : createDMRoom(sender, receiver); // DM방이 없을 경우 생성
     }
@@ -60,13 +58,7 @@ public class DMServiceImpl implements DMService {
     @Override
     public Page<DM> getDMList(Long dmRoomId, Long cursor) {
         Pageable pageable = PageRequest.of(0, 10);
-//        return dmRoomRepository.findDmsByIdWithCursor(dmRoomId, cursor, pageable);
         return dmRepository.findByDmRoomIdAndIdLessThanOrderByIdDesc(dmRoomId, cursor, pageable);
-    }
-
-    @Override
-    public List<File> getDmFiles(Long id) {
-        return dmRepository.getFilesById(id);
     }
 
     @Override
@@ -87,9 +79,6 @@ public class DMServiceImpl implements DMService {
     public DMRoomRes enterDMRoom(String sender, String receiver) {
         DMRoom dmRoom = getDMRoom(sender, receiver);
         Long cursor = getStartCursor(dmRoom.getId(), sender);
-        if (Objects.isNull(dmRoom)) {
-            throw new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR);
-        }
         List<DM> dmList = getAllDMList(dmRoom.getId(), cursor);
         if (dmList.size() != 0) {
             dmRoom.setSenderLastReadId(dmList.get(dmList.size() - 1).getId());
@@ -99,8 +88,7 @@ public class DMServiceImpl implements DMService {
                 .stream()
                 .map(dm -> new DMDto(dm.getId(), sender, dm.getMessage()))
                 .toList();
-        DMRoomRes dmRoomRes = new DMRoomRes(dmRoom.getId(), dmDtoList, cursor);
-        return dmRoomRes;
+        return new DMRoomRes(dmRoom.getId(), dmDtoList, cursor);
     }
 
     @Override
@@ -110,12 +98,11 @@ public class DMServiceImpl implements DMService {
                 .stream()
                 .map(dm -> new DMDto(dm.getId(), dm.getSender(), dm.getMessage()))
                 .toList();
-        DMRoomRes dmRoomRes = new DMRoomRes(
+        return new DMRoomRes(
                 dmRoomId,
                 dmDtoList,
                 dmDtoList.size() > 0 ? dmDtoList.get(dmDtoList.size() - 1).dmRoomId() : 0
         );
-        return dmRoomRes;
     }
 
     private Long getStartCursor(Long dmRoomId, String sender) {

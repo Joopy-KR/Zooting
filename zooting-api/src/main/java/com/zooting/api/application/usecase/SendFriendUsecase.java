@@ -22,7 +22,7 @@ public class SendFriendUsecase {
     public void sendFriendRequest(String requestFrom, String requestTo) {
         Member fromMember = Member.builder().email(requestFrom).build();
         Member toMember = memberRepository.findByEmail(requestTo)
-                .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         FriendRequest friendRequest = new FriendRequest(fromMember, toMember);
         friendRequestRepository.save(friendRequest);
     }

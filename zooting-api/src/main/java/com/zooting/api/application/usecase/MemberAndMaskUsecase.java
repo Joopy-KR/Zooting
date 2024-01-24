@@ -52,7 +52,7 @@ public class MemberAndMaskUsecase {
     public List<MemberAndMaskRes> findAllMaskInventory(String userId) {
         Member member = memberRepository.findMemberByEmail(userId).orElseThrow(()->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        List<MemberAndMaskRes> maskResList = maskInventoryRepository.findAllByMember(member)
+        return maskInventoryRepository.findAllByMember(member)
                 .stream().map(myMask-> new MemberAndMaskRes(
                         myMask.getId(),
                         myMask.getMask().getAnimal(),
@@ -61,6 +61,5 @@ public class MemberAndMaskUsecase {
                         myMask.getMask().getFile().getFileName(),
                         myMask.getMask().getFile().getImg_url()
                          )).toList();
-        return maskResList;
     }
 }

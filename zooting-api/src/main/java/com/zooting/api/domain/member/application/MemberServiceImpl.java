@@ -187,12 +187,4 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
         return true;
     }
-    @Override
-    public Member initialMemberRegister(String email) {
-        return memberRepository.save(Member
-                .builder()
-                .role(List.of(Privilege.ANONYMOUS))
-                .email(email)
-                .build());
-    }
 }

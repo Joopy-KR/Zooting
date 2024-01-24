@@ -17,7 +17,7 @@ public class BaseResponse<T> {
     public static <T> ResponseEntity<BaseResponse<T>> success(SuccessCode successCode, T data) {
         return ResponseEntity
                 .status(successCode.getStatus())
-                .body(new BaseResponse<T>(
+                .body(new BaseResponse<>(
                         data,
                         successCode.getStatus(),
                         successCode.getMessage()

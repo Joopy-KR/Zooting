@@ -1,7 +1,6 @@
 package com.zooting.api.domain.dm.dao;
 
 import com.zooting.api.domain.dm.entity.DM;
-import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.file.entity.File;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +14,5 @@ import java.util.List;
 
 @Repository
 public interface DMRepository extends JpaRepository<DM, Long>{
-
-    @Query("SELECT f FROM File f WHERE f.dm.id = :id")
-    List<File> getFilesById(@Param("id") Long id);
-
     Page<DM> findByDmRoomIdAndIdLessThanOrderByIdDesc(Long dmRoomId, Long cursor, Pageable pageable);
 }
