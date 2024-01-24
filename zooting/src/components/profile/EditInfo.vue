@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
 import VueTailwindDatepicker from "vue-tailwind-datepicker";
+import SuccessDialog from "@/components/profile/SuccessDialog.vue";
+import FailDialog from "@/components/profile/FailDialog.vue";
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from "@headlessui/vue";
 import axios from "axios";
 import { useAccessTokenStore } from "@/stores/store";
-
-const store = useAccessTokenStore();
 
 interface Info {
   email: string | null;
@@ -63,12 +63,50 @@ const loadMyInfo = () => {
 
 // 나의 정보 수정
 const updateMyInfo = () => {
-  const apiUrl = "https://";
+  const apiUrl = "https://i10a702.p.ssafy.io/api/members/info";
+  const accessToken = useAccessTokenStore().getAccessToken();
+
+  // 유효성 검증
+  if (!myInfo.value!.address) {
+    failMessage.value = "정확한 주소를 입력해 주세요";
+    failAlert.value = true;
+    return;
+  }
+  if (idealTypeSet.value.size == 0) {
+    failMessage.value = "이상형 동물상을 선택해 주세요";
+    failAlert.value = true;
+    return;
+  }
+
+  const data = {
+    address: myInfo.value!.address,
+    idealAnimal: Array.from(idealTypeSet.value),
+  };
+
+  axios
+    .patch(apiUrl, data, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then(() => loadMyInfo())
+    .then(() => (successAlert.value = true));
 };
 
 const gender = ref<string>("man");
 const idealTypeSet = ref(new Set<string>());
 const birth = ref<string>("1900-01-01");
+const failAlert = ref(false);
+const failMessage = ref("");
+const successAlert = ref(false);
+
+const setFailAlert = (isOpen: boolean) => {
+  failAlert.value = isOpen;
+};
+const setSuccessAlert = (isOpen: boolean) => {
+  successAlert.value = isOpen;
+};
 
 const initChanges = () => {
   gender.value = myInfo.value.gender;
@@ -156,6 +194,18 @@ onMounted(() => {
 </script>
 
 <template>
+  <FailDialog
+    title="업데이트 실패!"
+    :message="failMessage"
+    :fail-alert="failAlert"
+    @set-fail-alert="setFailAlert"
+  />
+  <SuccessDialog
+    title="업데이트 성공!"
+    message="회원정보 업데이트 완료!"
+    :success-alert="successAlert"
+    @set-success-alert="setSuccessAlert"
+  />
   <div class="flex flex-col px-12 py-8">
     <div class="flex flex-row justify-between">
       <span
@@ -248,7 +298,7 @@ onMounted(() => {
     </div>
     <div class="flex flex-row justify-end w-5/6 mx-10">
       <button type="button" @click="initChanges" class="btn__save">초기화</button>
-      <button type="button" class="btn__cancel">저장</button>
+      <button type="button" @click="updateMyInfo" class="btn__cancel">저장</button>
     </div>
   </div>
 </template>
