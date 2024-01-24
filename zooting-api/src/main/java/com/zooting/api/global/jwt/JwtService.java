@@ -105,7 +105,7 @@ public class JwtService {
         if (stringAuthorities instanceof Collection<?>){
             for(Object grantedAuthority : (Collection<?>) stringAuthorities){
                 if(grantedAuthority instanceof String){
-                    authorities.add(new SimpleGrantedAuthority((String) grantedAuthority));
+                    authorities.add(new SimpleGrantedAuthority("ROLE_" + grantedAuthority));
                 }
             }
         }

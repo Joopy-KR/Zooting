@@ -38,7 +38,10 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
         log.info("유저 Request로부터 token을 가져왔습니다: " + token);
 
         if(token != null) {
+            log.info("검증된 토큰으로부터 인증 객체를 생성합니다.");
             Authentication authentication = jwtService.verifyToken(token);
+            log.info(authentication);
+
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
