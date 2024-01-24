@@ -1,5 +1,6 @@
 package com.zooting.api.domain.member.dao;
 
+import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
 import com.zooting.api.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

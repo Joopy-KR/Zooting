@@ -26,15 +26,13 @@ public class DM extends BaseEntity {
     @JoinColumn(name = "dm_room_id")
     private DMRoom dmRoom;
     private String message;
-    private Boolean status;
     private String sender;
 
     @Builder
-    public DM(List<File> files, DMRoom dmRoom, String message, Boolean status, String sender) {
+    public DM(List<File> files, DMRoom dmRoom, String message, String sender) {
         this.files = Objects.nonNull(files) ? files : new ArrayList<>();
         this.dmRoom = dmRoom;
         this.message = message;
-        this.status = status;
         this.sender = sender;
     }
 }

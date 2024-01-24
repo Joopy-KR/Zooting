@@ -39,6 +39,10 @@ public class QMember extends EntityPathBase<Member> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
+    public final ListPath<com.zooting.api.domain.dm.entity.DMRoom, com.zooting.api.domain.dm.entity.QDMRoom> dmRooms = this.<com.zooting.api.domain.dm.entity.DMRoom, com.zooting.api.domain.dm.entity.QDMRoom>createList("dmRooms", com.zooting.api.domain.dm.entity.DMRoom.class, com.zooting.api.domain.dm.entity.QDMRoom.class, PathInits.DIRECT2);
+
+    public final ListPath<com.zooting.api.domain.dm.entity.DMRoom, com.zooting.api.domain.dm.entity.QDMRoom> dmRoomsReverse = this.<com.zooting.api.domain.dm.entity.DMRoom, com.zooting.api.domain.dm.entity.QDMRoom>createList("dmRoomsReverse", com.zooting.api.domain.dm.entity.DMRoom.class, com.zooting.api.domain.dm.entity.QDMRoom.class, PathInits.DIRECT2);
+
     public final StringPath email = createString("email");
 
     public final ListPath<com.zooting.api.domain.friend.entity.Friend, com.zooting.api.domain.friend.entity.QFriend> friendList = this.<com.zooting.api.domain.friend.entity.Friend, com.zooting.api.domain.friend.entity.QFriend>createList("friendList", com.zooting.api.domain.friend.entity.Friend.class, com.zooting.api.domain.friend.entity.QFriend.class, PathInits.DIRECT2);

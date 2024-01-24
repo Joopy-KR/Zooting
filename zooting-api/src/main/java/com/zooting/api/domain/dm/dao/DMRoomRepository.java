@@ -3,6 +3,8 @@ package com.zooting.api.domain.dm.dao;
 import com.zooting.api.domain.dm.entity.DM;
 import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.member.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +21,7 @@ public interface DMRoomRepository extends JpaRepository<DMRoom, Long> {
             """
             ) // sender, receiver 역방향도 검색
     DMRoom findBySenderAndReceiver(@Param("sender") Member sender, @Param("receiver") Member receiver);
-    @Query("SELECT dm FROM DMRoom d JOIN d.dms dm WHERE d.id = :id")
-    List<DM> findDmsById(@Param("id") Long id);
+
+    @Query("SELECT dm FROM DM dm WHERE dm.dmRoom.id = :id AND dm.id >= :startCursor")
+    List<DM> findDmsById(@Param("id") Long id, @Param("startCursor") Long startCursor);
 }

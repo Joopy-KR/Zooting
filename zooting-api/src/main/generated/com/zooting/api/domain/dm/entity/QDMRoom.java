@@ -33,7 +33,11 @@ public class QDMRoom extends EntityPathBase<DMRoom> {
 
     public final com.zooting.api.domain.member.entity.QMember receiver;
 
+    public final NumberPath<Long> receiverLastReadId = createNumber("receiverLastReadId", Long.class);
+
     public final com.zooting.api.domain.member.entity.QMember sender;
+
+    public final NumberPath<Long> senderLastReadId = createNumber("senderLastReadId", Long.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
