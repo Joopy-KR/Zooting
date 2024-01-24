@@ -27,9 +27,9 @@ const profile = ref({
     <!-- <div class="w-2/3 h-full">
       <EditMaskList />
     </div> -->
-    <!-- <div class="w-2/3 h-full">
+    <div class="w-2/3 h-full">
       <EditInfo />
-    </div> -->
+    </div>
   </div>
 </template>
 

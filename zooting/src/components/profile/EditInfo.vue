@@ -4,6 +4,7 @@ import VueTailwindDatepicker from "vue-tailwind-datepicker";
 import SuccessDialog from "@/components/profile/SuccessDialog.vue";
 import FailDialog from "@/components/profile/FailDialog.vue";
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from "@headlessui/vue";
+import { loadMyInfoApi, updateMyInfoApi } from "@/api/profile";
 import axios from "axios";
 import { useAccessTokenStore } from "@/stores/store";
 
@@ -35,17 +36,8 @@ const myInfo = ref<Info>({
 
 // 나의 정보 불러오기
 const loadMyInfo = () => {
-  const apiUrl = "https://i10a702.p.ssafy.io/api/members";
-  const accessToken = useAccessTokenStore().getAccessToken();
-
-  axios
-    .get(apiUrl, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    })
-    .then((res) => res.data)
-    .then((data) => {
+  loadMyInfoApi(
+    ({ data }: any) => {
       myInfo.value!.email = data["result"].email;
       myInfo.value!.gender = data["result"].gender;
       myInfo.value!.nickname = data["result"].nickname;
@@ -56,9 +48,12 @@ const loadMyInfo = () => {
       myInfo.value!.animal = data["result"].animal;
       myInfo.value!.interest = data["result"].interest;
       myInfo.value!.idealAnimal = data["result"].idealAnimal;
-
       initChanges();
-    });
+    },
+    (error: any) => {
+      console.log(error);
+    }
+  );
 };
 
 // 나의 정보 수정
@@ -83,15 +78,14 @@ const updateMyInfo = () => {
     idealAnimal: Array.from(idealTypeSet.value),
   };
 
-  axios
-    .patch(apiUrl, data, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    })
-    .then(() => loadMyInfo())
-    .then(() => (successAlert.value = true));
+  updateMyInfoApi(
+    data,
+    () => {
+      loadMyInfo();
+      successAlert.value = true;
+    },
+    (error: any) => console.log(error)
+  );
 };
 
 const gender = ref<string>("man");
@@ -110,7 +104,7 @@ const setSuccessAlert = (isOpen: boolean) => {
 
 const initChanges = () => {
   gender.value = myInfo.value.gender;
-  birth.value = myInfo.value!.birth;
+  birth.value = myInfo.value.birth;
   idealTypeSet.value = parseStringToSet(myInfo.value!.idealAnimal);
 };
 
