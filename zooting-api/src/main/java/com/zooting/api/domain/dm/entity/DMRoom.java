@@ -27,11 +27,15 @@ public class DMRoom extends BaseEntity {
     @JoinColumn(name = "receiver")
     private Member receiver;
     @OneToMany(mappedBy = "dmRoom")
-    private List<DM> dms = new ArrayList<>();
+    private List<DM> dms;
+    private Long senderLastReadId;
+    private Long receiverLastReadId;
     @Builder
-    public DMRoom(Member sender, Member receiver, List<DM> dms) {
+    public DMRoom(Member sender, Member receiver, List<DM> dms, Long senderLastReadId, Long receiverLastReadId) {
         this.sender = sender;
         this.receiver = receiver;
         this.dms = Objects.nonNull(dms) ? dms : new ArrayList<>();
+        this.senderLastReadId = senderLastReadId;
+        this.receiverLastReadId = receiverLastReadId;
     }
 }

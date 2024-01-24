@@ -5,6 +5,7 @@ import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.animalface.entity.AnimalFace;
 import com.zooting.api.domain.background.entity.BackgroundInventory;
 import com.zooting.api.domain.block.entity.Block;
+import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.friend.entity.FriendRequest;
 import com.zooting.api.domain.mask.entity.MaskInventory;
@@ -12,7 +13,10 @@ import com.zooting.api.domain.meeting.entity.MeetingLog;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 //@Builder
 @Getter
@@ -60,10 +64,15 @@ public class Member extends BaseEntity {
     private List<BackgroundInventory> myBackgrounds;
     @OneToMany(mappedBy = "member")
     private List<MaskInventory> myMasks;
+    @OneToMany(mappedBy = "sender")
+    private List<DMRoom> dmRooms;
+    @OneToMany(mappedBy = "receiver")
+    private List<DMRoom> dmRoomsReverse;
 
     @Builder
     public Member(String email, String gender, String nickname, Date birth, String address, Long point,
-                  List<BackgroundInventory> myBackgrounds, List<MaskInventory> myMasks, List<Privilege> role) {
+                  List<BackgroundInventory> myBackgrounds, List<MaskInventory> myMasks, List<DMRoom> dmRooms,
+                  List<DMRoom> dmRoomsReverse, List<Privilege> role) {
         this.email = email;
         this.gender = gender;
         this.nickname = nickname;
@@ -73,6 +82,8 @@ public class Member extends BaseEntity {
         this.status = true; // 회원 가입 시 회원 상태 true 고정
         this.myBackgrounds = Objects.nonNull(myBackgrounds) ? myBackgrounds : new ArrayList<>();
         this.myMasks = Objects.nonNull(myMasks) ? myMasks : new ArrayList<>();
+        this.dmRooms = Objects.nonNull(dmRooms) ? dmRooms : new ArrayList<>();
+        this.dmRoomsReverse = Objects.nonNull(dmRoomsReverse) ? dmRoomsReverse : new ArrayList<>();
         this.role = Objects.nonNull(role) ? role : new ArrayList<>();
     }
 }

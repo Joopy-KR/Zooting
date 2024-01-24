@@ -2,7 +2,10 @@ package com.zooting.api.domain.member.application;
 
 import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.member.dao.MemberRepository;
-import com.zooting.api.domain.member.dto.request.*;
+import com.zooting.api.domain.member.dto.request.InterestsReq;
+import com.zooting.api.domain.member.dto.request.IntroduceReq;
+import com.zooting.api.domain.member.dto.request.MemberReq;
+import com.zooting.api.domain.member.dto.request.PersonalityReq;
 import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
@@ -17,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @Service
@@ -115,6 +117,7 @@ public class MemberServiceImpl implements MemberService {
             additionalInfo = new AdditionalInfo();
         }
         additionalInfo.setInterest(additionalReq.interest().toString());
+        additionalInfo.setIdealAnimal(additionalReq.idealAnimal().toString());
         additionalInfo.setMember(member);
         memberRepository.save(member);
     }
@@ -194,5 +197,17 @@ public class MemberServiceImpl implements MemberService {
                 .role(List.of(Privilege.ANONYMOUS))
                 .email(email)
                 .build());
+    }
+
+    @Override
+    public Optional<Member> checkRegisteredMember(String email) {
+        return memberRepository.findByEmail(email);
+    }
+    @Override
+    public List<DMRoom> getDmRooms(String sender) {
+        return memberRepository.findDMRoomsByEmail(sender);
+    }
+    public List<DMRoom> getDmRoomsReverse(String sender) {
+        return memberRepository.findDMRoomsReverseByEmail(sender);
     }
 }

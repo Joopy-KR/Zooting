@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test with SockJS and Stomp</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<h1>WebSocket Test with SockJS and Stomp</h1>
+
+<!-- Publisher Section -->
+<h2>Publisher</h2>
+<label for="message">Message:</label>
+<input type="text" id="message" placeholder="Type a message...">
+<label for="publishTopic">Topic to Publish:</label>
+<input type="text" id="publishTopic" placeholder="Enter topic...">
+<button onclick="sendMessage()">Publish Message</button>
+
+<!-- Subscriber Section -->
+<h2>Subscriber</h2>
+<label for="subscribeTopic">Topic to Subscribe:</label>
+<input type="text" id="subscribeTopic" placeholder="Enter topic...">
+<button onclick="subscribeToTopic()">Subscribe</button>
+
+<textarea id="subscriberOutput" rows="10" cols="50" readonly></textarea>
+
+<script>
+    const socket = new SockJS('http://localhost:9000/ws');
+    const stompClient = Stomp.over(socket);
+    let subscribedTopic = '';
+
+    // Publisher Sectiona
+    function sendMessage() {
+        const messageInput = document.getElementById('message');
+        const publishTopicInput = document.getElementById('publishTopic');
+        const message = messageInput.value;
+        const topic = publishTopicInput.value;
+
+        if (message.trim() !== '' && topic.trim() !== '') {
+            stompClient.send(`/pub/chat/sendMessage/${topic}`, {}, JSON.stringify({ content: message, topic: topic }));
+            appendToOutput(`Published message on ${topic}: ${message}`);
+            messageInput.value = '';
+        }
+    }
+
+    // Subscriber Section
+    function subscribeToTopic() {
+        const subscribeTopicInput = document.getElementById('subscribeTopic');
+        subscribedTopic = subscribeTopicInput.value;
+
+        if (subscribedTopic.trim() !== '') {
+            stompClient.subscribe(`/sub/chat/${subscribedTopic}`, onMessage);
+            appendToOutput(`Subscribed to topic: ${subscribedTopic}`);
+        }
+    }
+
+    function onMessage(message) {
+        const messageObject = JSON.parse(message.body);
+        const messageContent = messageObject.content;
+        const messageTopic = messageObject.topic;
+
+        if (messageTopic === subscribedTopic) {
+            appendToOutput(`Received message on ${subscribedTopic}: ${messageContent}`);
+        }
+    }
+
+    // Common Functions
+    function appendToOutput(message) {
+        const outputTextarea = document.getElementById('subscriberOutput');
+        outputTextarea.value += message + '\n';
+        outputTextarea.scrollTop = outputTextarea.scrollHeight;
+    }
+
+    // WebSocket Connection Setup
+    socket.onopen = (event) => {
+        appendToOutput('WebSocket 연결이 열렸습니다.');
+        // Additional setup if needed
+    };
+
+    socket.onclose = (event) => {
+        appendToOutput('WebSocket 연결이 닫혔습니다.');
+    };
+
+    socket.onerror = (event) => {
+        appendToOutput('WebSocket 에러 발생: ' + event);
+    };
+</script>
+</body>
+</html>
