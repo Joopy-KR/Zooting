@@ -3,8 +3,6 @@ import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import { useRouter } from 'vue-router'
 
-const API_URL:string = 'https://i10a702.p.ssafy.io'
-const wjstpToken = 'eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA2MDg0MDcyLCJzdWIiOiJyb2tpMzJAbmF2ZXIuY29tIiwiUHJpdmlsZWdlIjpbIkFOT05ZTU9VUyIsIlVTRVIiXX0.OM9r9XAr2AGLLv9va6eXhD61yFpXY2er8WuEuACwyQY'
 
 export const useStore = defineStore('store', () => {
   const personality: Personality = {
@@ -29,6 +27,8 @@ export const useStore = defineStore('store', () => {
 })
 
 export const useAccessTokenStore = defineStore ( "access-token", () => {
+  const API_URL:string = 'https://i10a702.p.ssafy.io'
+  const Token = 'eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA2MTgwMzcwLCJzdWIiOiJ6eW8wNzIwQGtha2FvLmNvbSIsIlByaXZpbGVnZSI6WyJVU0VSIl19.qCVf1LP6tpcMbLUpoQPk9mn6U0OcFOKS8W8AdINkK00'
   const router = useRouter()
 
   const state = ref<AccessTokenState>({
@@ -59,6 +59,27 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     }
   }
 
+  // 유저 정보
+  const userInfo = ref(null)
+  const getUserInfo = function () {
+    axios({
+      method: 'get',
+      url: `${API_URL}/api/members`,
+      headers: {
+        Authorization: `Bearer ${Token}`
+      }
+    })
+    .then(res => {
+      console.log(res)
+      userInfo.value = res.data
+      console.log(userInfo.value)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+    }
+
+  // 로그인 상태 판별
   const isLogin = computed(() => {
     if (state.value.accessToken) {
       return true 
@@ -67,34 +88,35 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     }
   })
 
+  // 로그아웃
   const signOut = function () {
     window.localStorage.clear()
     state.value.accessToken = null
   }
   
-  const isNickname = ref<boolean>()
-  const isAnimal = ref<boolean>()
-  const isPersonality = ref<boolean>()
+  // 유저 권한 확인
   const isCompletedSignUp = ref<boolean>()
-  
   const checkCompletedSignUp = function () {
       axios({
         method: 'get',
-        url: `${API_URL}/api/members/additional/check`,
+        url: `${API_URL}/api/members/additional/check`, // api/members/privilege/check
         headers: {
           accept: 'application/json',
-          Authorization: `Bearer ${wjstpToken}`
+          Authorization: `Bearer ${Token}`
         }
       })
       .then(res => {
         console.log(res)
-        isNickname.value = res.data.result
+        if (!res.data.result) {
+          router.push({ name: "signup" })
+        }
       })
       .catch(err => {
         console.log(err)
       })
   }
   
+  // 추가 정보 저장
   const saveAdditionalInfo = function (
     payload: { 
       nickname: string 
@@ -111,19 +133,18 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       url: `${API_URL}/api/members`,
       data: {
         nickname,
-        // gender,
+        gender,
         birth,
         address,
         interest,
         idealAnimal
       },
       headers: {
-        Authorization: `Bearer ${wjstpToken}`
+        Authorization: `Bearer ${Token}`
       }
     })
     .then(res => {
       console.log(res)
-      //
       router.push({ name: 'animal_test' })
     })
     .catch(err => {
@@ -131,8 +152,8 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     })
   }
 
-  const isDuplication = ref<boolean>()
-
+  // 닉네임 중복 검사
+  const isDuplication = ref<boolean>(false)
   const checkNicknameDuplication = function (payload:string) {
     axios({
       method: 'get',
@@ -141,17 +162,19 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
         'nickname': payload
       },
       headers: {
-        Authorization: `Bearer ${state.value.accessToken}`
+        Authorization: `Bearer ${Token}`
       }
     })
     .then(res => {
       console.log(res)
+      isDuplication.value = res.data.result
     })
     .catch(err => {
       console.log(err)
     })
   }
   
+  // 성격 테스트 결과 저장
   const setPersonality = function (payload:string) {
     const personality = payload
     axios({
@@ -162,14 +185,34 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       },
       headers: {
         accept: 'application/json',
-        Authorization: `Bearer ${wjstpToken}`
+        Authorization: `Bearer ${Token}`
       }
     })
     .then (res => {
-      console.log(payload)
       console.log(res)
-      console.log(res.data)
       router.push({ name: 'home' })
+    })
+    .catch (err => {
+      console.log(err)
+    })
+  }
+  
+  // 동물상 테스트 결과 저장
+  const setAnimalFace = function (payload:Number[]) {
+    const animalFaceList = payload
+    axios({
+      method: 'put',
+      url: `${API_URL}/api/animalface`,
+      data: {
+        animalFaceList
+      },
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${Token}`
+      }
+    })
+    .then (res => {
+      console.log(res)
     })
     .catch (err => {
       console.log(err)
@@ -179,17 +222,17 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
   return {
     setAccessToken,
     getAccessToken,
+    userInfo,
+    getUserInfo,
     isLogin,
     signOut,
-    isNickname,
-    isAnimal,
-    isPersonality,
     isCompletedSignUp,
     checkCompletedSignUp,
     setPersonality,
     saveAdditionalInfo,
     isDuplication,
     checkNicknameDuplication,
+    setAnimalFace,
   }
 }, { persist: true })
 

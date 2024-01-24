@@ -15,12 +15,21 @@
           v-model="nickname" 
           placeholder="2~16자 사이의 영어, 한글 또는 숫자"
           maxlength="16" 
-          @blur="nicknameValidateCheck"
+          @blur="checkNicknameValidate"
           >
-          <button class="duplication-check" @click="checkNicknameDuplication">중복 검사</button>
+          <button 
+          class="duplication-check" 
+          @click="checkNicknameDuplication"
+          :disabled="nicknameError"
+          >
+          중복 검사
+          </button>
         </div>
+        <div v-if="nicknameError" class="error-message">올바른 닉네임을 입력해 주세요</div>
+        <div v-if="isDuplication" class="error-message">이미 사용 중인 닉네임입니다</div>
+        <div v-if="isCorrectNickname" class="correct-message">사용 가능한 닉네임입니다</div>
       </div>
-    
+      
       <div class="input__div">
         <label for="gender" class="input__label">성별</label>
         <RadioGroup v-model="gender">
@@ -33,21 +42,23 @@
           </div>
         </RadioGroup>
       </div>
-    
+      
       <div class="input__div">
         <label for="birth" class="input__label">생년월일</label>
         <VueTailwindDatepicker id="birth" v-model="birth" as-single :formatter="formatter" weekdays-size="min" class="birth__datepicker"/>
+        <div v-if="birthError" class="error-message">생년월일을 선택해 주세요</div>
       </div>
-    
+      
       <div class="input__div">          
         <label for="address" class="input__label">지역</label>
         <select id="address" v-model="address">
-          <option value="" disabled selected hidden>사는 지역을 선택해 주세요.</option>
+          <option value="" disabled selected hidden>사는 지역을 선택해 주세요</option>
           <option v-for="(area, index) in areas" :key="index">{{ area }}</option>
         </select>
+        <div v-if="addressError" class="error-message">사는 지역을 선택해 주세요</div>
       </div>
     </div>
-  
+    
     <!-- 추가 정보 (관심사, 이상형) -->
     <div class="input__section">
       <label for="ideal-type" class="input__label">이상형</label>
@@ -79,23 +90,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import VueTailwindDatepicker from 'vue-tailwind-datepicker'
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import { useAccessTokenStore } from '@/stores/store'
 
 const store = useAccessTokenStore()
 const nickname = ref<string>('')
-const nicknameError = ref<boolean>(false)
 const gender = ref<string>('man')
 const birth = ref<string>('')
 const address = ref<string>('')
 const idealAnimalSet = ref(new Set<string>())
 const interestSet = ref(new Set<string>())
+
 const areas:string[] = (['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기도', '강원도', '충청북도', '충청남도', '전라북도', '전라남도', '경상북도', '경상남도', '제주도', '해외'])
 const interestList:string[] = ['관심사1', '관심사2', '관심사3', '관심사4', '관심사5', '관심사6', '관심사7', '관심사8', '관심사9', '관심사10', '관심사11', '관심사12', '관심사13', '관심사14', '관심사15', '관심사16', '관심사17']
 
-const nicknameValidateCheck = () => {
+const nicknameError = ref<boolean>(false)
+const birthError = ref<boolean>(false)
+const addressError = ref<boolean>(false)
+
+const checkNicknameValidate = () => {
   const regex = /^[a-zA-Z가-힣0-9]{2,16}$/
   if (!regex.test(nickname.value)) {
     nicknameError.value = true
@@ -104,8 +119,21 @@ const nicknameValidateCheck = () => {
   }
 }
 
+const isDuplication = computed(() => store.isDuplication)
+const isChecked = ref<boolean>(false)
+const checkedNickname = ref<string>('')
+const isCorrectNickname = computed(() => {
+  return !nicknameError.value && !isDuplication.value && checkedNickname.value === nickname.value && isChecked.value
+})
+
 const checkNicknameDuplication = () => {
-  store.checkNicknameDuplication(nickname.value)
+  if (!nickname.value) {
+    nicknameError.value = true
+  } else {
+    store.checkNicknameDuplication(nickname.value)
+    isChecked.value = true
+    checkedNickname.value = nickname.value
+  }
 } 
 
 const getGenderLabel = (value: string) => {
@@ -148,15 +176,30 @@ const pushInterest = (value:string) => {
 }
 
 const saveAdditionalInfo = () => {
-  const payload: Payload = {
-    nickname: nickname.value,
-    gender: gender.value,
-    birth: birth.value,
-    address: address.value,
-    interest: Array.from(interestSet.value),
-    idealAnimal: Array.from(idealAnimalSet.value),
+  if (isCorrectNickname.value && birth.value && address.value) {
+    const payload: Payload = {
+      nickname: nickname.value,
+      gender: gender.value,
+      birth: birth.value,
+      address: address.value,
+      interest: Array.from(interestSet.value),
+      idealAnimal: Array.from(idealAnimalSet.value),
+    }
+    console.log(payload)
+    store.saveAdditionalInfo(payload)
+  } else if (!isCorrectNickname.value) {
+    nicknameError.value = true
   }
-  store.saveAdditionalInfo(payload)
+  if (!birth.value) {
+    birthError.value = true
+  } else {
+    birthError.value = false
+  }
+   if (!address.value) {
+    addressError.value = true
+  } else {
+    addressError.value = false
+  }
 }
 
 interface Payload {
@@ -223,7 +266,7 @@ interface Payload {
   @apply border-gray-300 hover:bg-gray-50;
 }
 .interest__div {
-  @apply mb-10 border border-gray-300 rounded-md grid grid-cols-4 gap-4 p-3;
+  @apply mb-10 rounded-md grid grid-cols-4 gap-4 p-3;
   height: 270px;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -260,5 +303,11 @@ interface Payload {
   bottom: 0;
   right: 5px;
   margin: auto 2px;
+}
+.error-message {
+  @apply text-red-500 text-sm mt-1;
+}
+.correct-message {
+  @apply text-blue-500 text-sm mt-1;
 }
 </style>
