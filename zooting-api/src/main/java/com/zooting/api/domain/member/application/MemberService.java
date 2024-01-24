@@ -4,7 +4,6 @@ import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
-import com.zooting.api.domain.member.entity.Member;
 
 import java.text.ParseException;
 import java.util.List;
