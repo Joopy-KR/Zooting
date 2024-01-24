@@ -108,7 +108,7 @@ class DMRoomRepositoryTest {
 
         // When
         Pageable pageable = PageRequest.of(0, 10); // Adjust page number and size as needed
-        Page<DM> dmPage = dmRoomRepository.findDmsByIdWithCursor(roomId, lastItemId, pageable);
+        Page<DM> dmPage = dmRepository.findByDmRoomIdAndIdLessThanOrderByIdDesc(roomId, lastItemId, pageable);
 
         // Then
         List<DM> dmList = dmPage.getContent();
