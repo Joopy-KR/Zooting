@@ -75,6 +75,7 @@ public class MemberController {
                 "추가 정보 저장 성공"
         );
     }
+    @Operation(summary = "로그인 후 추가 정보 수정 (")
     @Operation(summary = "로그인한 유저 정보 조회")
     @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
     @GetMapping
