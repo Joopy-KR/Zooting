@@ -1,8 +1,5 @@
 package com.zooting.api.domain.dm.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,12 +14,11 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "dm_room")
-public class DMRoom {
+public class DMRoom extends BaseEntity {
     @Id
     @Column(name = "dm_room_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
     @JoinColumn(name = "sender")
     private Member sender;

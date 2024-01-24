@@ -1,5 +1,6 @@
 package com.zooting.api.domain.disabled.entity;
 
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +10,8 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class DisabledMember {
+@Table(name = "disabled_member")
+public class DisabledMember extends BaseEntity {
     @Id
     @Column(name = "disabled_member_id")
     private Long id;
