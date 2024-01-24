@@ -25,7 +25,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class MemberServiceImpl implements MemberService implements {
+public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
 
     @Override
@@ -63,7 +63,7 @@ public class MemberServiceImpl implements MemberService implements {
 
         return new MemberRes(
                 member.getEmail(),
-                member.getGender().toString(),
+                member.getGender(),
                 member.getNickname(),
                 member.getBirth(),
                 member.getAddress(),
@@ -83,7 +83,7 @@ public class MemberServiceImpl implements MemberService implements {
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         return new MemberRes(
                 member.getEmail(),
-                member.getGender().toString(),
+                member.getGender(),
                 member.getNickname(),
                 member.getBirth(),
                 member.getAddress(),
