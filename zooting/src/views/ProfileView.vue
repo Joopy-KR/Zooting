@@ -8,8 +8,6 @@ import { ref } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-console.log(route.params.nickname);
-
 const profile = ref({
   nickname: "",
   interests: ["등산", "수영", "여행", "캠핑", "게임", "노래"],

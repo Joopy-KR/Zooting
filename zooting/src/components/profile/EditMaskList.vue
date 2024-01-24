@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { List } from "postcss/lib/list";
+import EditMaskItem from "@/components/profile/EditMaskItem.vue";
 import IconMaskDropDown from "./IconMaskDropDown.vue";
 const point: Number = 122;
 
@@ -73,31 +73,7 @@ const masks: Mask[] = [
     </div>
     <div class="flex items-center content-center justify-center w-2/3 mx-auto">
       <div class="grid grid-cols-3 gap-3 px-12 py-8 m-4">
-        <div v-for="mask in masks" :key="mask.id">
-          <div
-            class="flex items-center justify-center overflow-hidden border-2 border-spacing-2 rounded-3xl border-red-500/20"
-            :class="{ 'bg-gray-400': !mask.status }"
-          >
-            <div class="relative">
-              <img
-                v-if="mask.isSelected"
-                class="absolute top-0 left-0 z-10 w-16"
-                src="/src/assets/images/mask/check_icon.png"
-              />
-              <img
-                v-if="!mask.status"
-                class="absolute bottom-0 right-0 z-10 w-16"
-                src="/src/assets/images/mask/lock_icon.png"
-              />
-              <img
-                :src="mask.imageUrl"
-                :alt="mask.title"
-                class="z-0 object-contain w-full h-full p-2"
-                :style="{ filter: mask.status ? 'none' : 'brightness(60%)' }"
-              />
-            </div>
-          </div>
-        </div>
+        <EditMaskItem v-for="mask in masks" :key="mask.id" :mask="mask" />
       </div>
     </div>
     <div class="flex justify-center">

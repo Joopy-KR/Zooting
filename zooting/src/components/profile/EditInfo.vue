@@ -1,13 +1,80 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
 import VueTailwindDatepicker from "vue-tailwind-datepicker";
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from "@headlessui/vue";
+import axios from "axios";
+import { useAccessTokenStore } from "@/stores/store";
 
-const nickname = ref<string>("duckbill");
+const store = useAccessTokenStore();
+
+interface Info {
+  email: string | null;
+  gender: string;
+  nickname: string;
+  birth: string;
+  address: string;
+  point: number;
+  personality: string;
+  animal: string;
+  interest: string;
+  idealAnimal: string;
+}
+
+const myInfo = ref<Info>({
+  email: "",
+  gender: "",
+  nickname: "",
+  birth: "",
+  address: "",
+  point: 0,
+  personality: "",
+  animal: "",
+  interest: "",
+  idealAnimal: "",
+});
+
+// 나의 정보 불러오기
+const loadMyInfo = () => {
+  const apiUrl = "https://i10a702.p.ssafy.io/api/members";
+  const accessToken = useAccessTokenStore().getAccessToken();
+
+  axios
+    .get(apiUrl, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((res) => res.data)
+    .then((data) => {
+      myInfo.value!.email = data["result"].email;
+      myInfo.value!.gender = data["result"].gender;
+      myInfo.value!.nickname = data["result"].nickname;
+      myInfo.value!.birth = convertDate(data["result"].birth);
+      myInfo.value!.address = data["result"].address;
+      myInfo.value!.point = data["result"].point;
+      myInfo.value!.personality = data["result"].personality;
+      myInfo.value!.animal = data["result"].animal;
+      myInfo.value!.interest = data["result"].interest;
+      myInfo.value!.idealAnimal = data["result"].idealAnimal;
+
+      initChanges();
+    });
+};
+
+// 나의 정보 수정
+const updateMyInfo = () => {
+  const apiUrl = "https://";
+};
+
 const gender = ref<string>("man");
-const birth = ref<string>("1996-04-13");
-const address = ref<string>("서울");
 const idealTypeSet = ref(new Set<string>());
+const birth = ref<string>("1900-01-01");
+
+const initChanges = () => {
+  gender.value = myInfo.value.gender;
+  birth.value = myInfo.value!.birth;
+  idealTypeSet.value = parseStringToSet(myInfo.value!.idealAnimal);
+};
 
 const areas: string[] = [
   "서울",
@@ -31,7 +98,6 @@ const areas: string[] = [
 ];
 
 const getGenderLabel = (value: string) => {
-  console.log(gender.value);
   return value === "man" ? "남자" : "여자";
 };
 const pushIdealType = (value: string) => {
@@ -40,20 +106,52 @@ const pushIdealType = (value: string) => {
   } else {
     idealTypeSet.value.add(value);
   }
-  console.log(idealTypeSet.value);
 };
 const idealTypeList = computed(() => {
   if (gender.value === "man") {
-    idealTypeSet.value = new Set<string>();
     return ["강아지", "고양이", "토끼", "사슴", "꼬북이"];
   } else if (gender.value === "woman") {
-    idealTypeSet.value = new Set<string>();
     return ["강아지", "고양이", "토끼", "곰", "공룡"];
   }
 });
 const formatter = ref<{ date: string; month: string }>({
   date: "YYYY-MM-DD",
   month: "MMM",
+});
+const parseStringToSet = (stringList: string) => {
+  try {
+    // 대괄호를 제거하고 쉼표로 구분하여 배열로 변환
+    const parsedList = stringList
+      .replace(/^\[|\]$/g, "") // 대괄호 제거
+      .split(", ")
+      .map((item) => item.trim()); // 양쪽 공백 제거
+
+    // 만약 배열이 아니면 예외 발생
+    if (!Array.isArray(parsedList)) {
+      throw new Error("Invalid input: Not an array.");
+    }
+
+    return new Set<string>(parsedList);
+  } catch (error) {
+    return new Set<string>(); // 파싱에 실패하면 null 반환
+  }
+};
+
+const convertDate = (inputDate: string) => {
+  // 주어진 문자열을 Date 객체로 변환
+  const originalDate = new Date(inputDate);
+
+  // 날짜를 하루 더함
+  originalDate.setDate(originalDate.getDate() + 1);
+
+  // 날짜를 원하는 형식으로 포맷
+  const formattedDate = originalDate.toISOString().split("T")[0];
+
+  return formattedDate;
+};
+
+onMounted(() => {
+  loadMyInfo();
 });
 </script>
 
@@ -69,7 +167,7 @@ const formatter = ref<{ date: string; month: string }>({
         >탈퇴</span
       >
     </div>
-    <div class="flex flex-col items-center w-full px-16 py-20 mx-8 my-4">
+    <div class="flex flex-col items-start w-full px-16 py-20 mx-10 my-4">
       <div class="w-2/3">
         <div class="relative input__div">
           <label
@@ -81,8 +179,9 @@ const formatter = ref<{ date: string; month: string }>({
             type="text"
             name="nickname"
             id="nickname"
-            class="block w-full px-8 py-2 text-2xl font-bold text-center text-gray-900 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
-            :value="nickname"
+            class="block w-full px-8 py-2 text-2xl font-bold text-center text-gray-900 bg-gray-100 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
+            :value="myInfo!.nickname"
+            :disabled="true"
           />
         </div>
         <div class="input__div">
@@ -116,13 +215,13 @@ const formatter = ref<{ date: string; month: string }>({
             as-single
             :formatter="formatter"
             weekdays-size="min"
-            class="text-lg font-bold text-center hover:bg-gray-200"
+            class="text-xl font-bold text-center hover:bg-gray-200"
             :disabled="true"
           />
         </div>
         <div class="input__div">
           <label for="address" class="input__label">지역</label>
-          <select id="address" v-model="address">
+          <select id="address" v-model="myInfo.address">
             <option value="" disabled selected hidden>사는 지역을 선택해 주세요.</option>
             <option v-for="(area, index) in areas" :key="index">{{ area }}</option>
           </select>
@@ -135,10 +234,10 @@ const formatter = ref<{ date: string; month: string }>({
               class="ideal-type__item"
               v-for="(value, index) in idealTypeList"
               :key="index"
-              @click="pushIdealType(`animal${index + 1}`)"
+              @click="pushIdealType(value)"
               :class="{
-                'ideal-type__item--checked': idealTypeSet.has(`animal${index + 1}`),
-                'ideal-type__item--no-checked': !idealTypeSet.has(`animal${index + 1}`),
+                'ideal-type__item--checked': idealTypeSet.has(value),
+                'ideal-type__item--no-checked': !idealTypeSet.has(value),
               }"
             >
               {{ value }}
@@ -146,6 +245,10 @@ const formatter = ref<{ date: string; month: string }>({
           </div>
         </div>
       </div>
+    </div>
+    <div class="flex flex-row justify-end w-5/6 mx-10">
+      <button type="button" @click="initChanges" class="btn__save">초기화</button>
+      <button type="button" class="btn__cancel">저장</button>
     </div>
   </div>
 </template>
@@ -184,5 +287,12 @@ const formatter = ref<{ date: string; month: string }>({
 }
 .ideal-type__item--no-checked {
   @apply border-gray-300 hover:bg-gray-50;
+}
+
+.btn__save {
+  @apply w-1/6 py-3 px-4 mx-3 text-2xl font-medium text-white bg-orange-400 rounded-full shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300;
+}
+.btn__cancel {
+  @apply w-1/6 py-3 px-4 mx-3 text-2xl font-medium text-white bg-indigo-600 rounded-full shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500;
 }
 </style>
