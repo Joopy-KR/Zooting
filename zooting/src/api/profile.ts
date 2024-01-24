@@ -12,6 +12,4 @@ async function updateMyInfoApi(body: any, success: any, fail: any) {
   await local.patch(`api/members/info`, body).then(success).catch(fail);
 }
 
-await function 
-
 export { loadMyInfoApi, updateMyInfoApi };
