@@ -76,7 +76,7 @@ import { FaceDetector, FilesetResolver, Detection } from "@mediapipe/tasks-visio
 const emit = defineEmits(['workFinished']);
 
 // 성별 정보
-const gender = ref('male')
+const gender = ref('female')
 
 // 얼굴인식 변수
 let faceDetector: FaceDetector
@@ -119,13 +119,13 @@ const initializeFaceDetector = async () => {
 // 웹캠 실행 및 얼굴인식 시작(predictWebcam 함수)
 const enableCam = async () => {
   if (!faceDetector) {
-    alert("얼굴 인식 시스템이 로딩중입니다. 다시 시도해주세요");
-    return;
+    alert("얼굴 인식 시스템이 로딩중입니다. 다시 시도해주세요")
+    return
   }
 
   const constraints = {
     video: true
-  };
+  }
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
