@@ -5,6 +5,7 @@ import com.zooting.api.global.exception.BaseExceptionHandler;
 import com.zooting.api.global.security.userdetails.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -29,43 +30,46 @@ import org.springframework.stereotype.Component;
 @Getter
 @Component
 public class JwtService {
+    private final String issuer;
     private final SecretKey secretKey;
     private final long accessTokenExpirationTime;
     private final long refreshTokenExpirationTime;
 
 
     public JwtService(
+            @Value("${jwt.issuer}") String issuer,
             @Value("${jwt.secretKey}") String secretKey,
             @Value("${jwt.access-token-expiration}") long accessTokenExpirationTime,
             @Value("${jwt.refresh-token-expiration}") long refreshTokenExpirationTime
     ) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
         this.accessTokenExpirationTime = accessTokenExpirationTime;
-        this. refreshTokenExpirationTime = refreshTokenExpirationTime;
+        this.refreshTokenExpirationTime = refreshTokenExpirationTime;
+        this.issuer = issuer;
     }
 
-    public String createAccessToken(UserDetails userDetails){
-        return createToken(userDetails, accessTokenExpirationTime);
-    }
-    public String createRefreshToken(UserDetails userDetails){
-        return createToken(userDetails, refreshTokenExpirationTime);
-    }
-
-    public String createToken(UserDetails userDetails, long expirationTime){
+    public JwtBuilder createToken(UserDetails userDetails, long expirationTime){
         Date date = new Date();
         Date expirationDate = new Date(date.getTime() + expirationTime);
 
-        String issuer = "Zooting";
         return Jwts.builder()
+                .signWith(secretKey, Jwts.SIG.HS256)
                 .issuer(issuer)
                 .expiration(expirationDate)
-                .subject(userDetails.getUsername())
+                .subject(userDetails.getUsername());
+    }
+
+    public String createAccessToken(UserDetails userDetails){
+        return createToken(userDetails, accessTokenExpirationTime)
                 .claim("Privilege",
                         userDetails.getAuthorities().stream()
                                 .map(GrantedAuthority::getAuthority).toList())
-                .signWith(secretKey, Jwts.SIG.HS256)
                 .compact();
     }
+    public String createRefreshToken(UserDetails userDetails){
+        return createToken(userDetails, refreshTokenExpirationTime).compact();
+    }
+
 
     public Authentication verifyToken(String token){
         try{
@@ -96,6 +100,31 @@ public class JwtService {
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
             log.info("유효하지 않은 토큰입니다.");
             throw new BaseExceptionHandler(ErrorCode.INVALID_ACCESS_TOKEN_EXCEPTION);
+        }
+    }
+
+    public String verifyRefreshToken(String token){
+        try{
+            log.info("Refresh Token 검증을 시작합니다");
+            Claims claims = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token) // Throws JWT Exception
+                    .getPayload();
+
+            String email = claims.getSubject();
+
+            log.info("토큰이 정상적으로 검증되었습니다");
+            log.info("Refresh Token 사용자: " + email);
+
+            return email;
+        } catch (ExpiredJwtException e) {
+            log.info("Refresh Token이 만료되었습니다. 로그인 페이지로 이동합니다.");
+            // TODO: Redirect to login Page
+            throw new BaseExceptionHandler(ErrorCode.EXPIRED_REFRESH_TOKEN_EXCEPTION);
+        } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
+            log.info("유효하지 않은 토큰입니다.");
+            throw new BaseExceptionHandler(ErrorCode.INVALID_REFRESH_TOKEN_EXCEPTION);
         }
     }
 
