@@ -1,12 +1,9 @@
 package com.zooting.api.domain.member.api;
 
 import com.zooting.api.domain.member.application.MemberService;
-import com.zooting.api.domain.member.dto.request.InterestsReq;
-import com.zooting.api.domain.member.dto.request.IntroduceReq;
-import com.zooting.api.domain.member.dto.request.MemberReq;
-import com.zooting.api.domain.member.dto.request.PersonalityReq;
-import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
+import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MemberRes;
+import com.zooting.api.domain.member.dto.response.MemberSearchRes;
 import com.zooting.api.domain.member.dto.response.MyProfileReq;
 import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.global.common.BaseResponse;

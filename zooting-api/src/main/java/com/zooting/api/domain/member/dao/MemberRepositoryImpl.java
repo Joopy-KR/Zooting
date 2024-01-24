@@ -1,16 +1,11 @@
 package com.zooting.api.domain.member.dao;
 
 
-import com.querydsl.core.types.ConstantImpl;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.*;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zooting.api.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 
-import java.util.Date;
 import java.util.List;
 
 import static com.zooting.api.domain.member.entity.QMember.member;
