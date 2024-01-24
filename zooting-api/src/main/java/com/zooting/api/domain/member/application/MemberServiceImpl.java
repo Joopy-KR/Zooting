@@ -2,10 +2,7 @@ package com.zooting.api.domain.member.application;
 
 import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.member.dao.MemberRepository;
-import com.zooting.api.domain.member.dto.request.InterestsReq;
-import com.zooting.api.domain.member.dto.request.IntroduceReq;
-import com.zooting.api.domain.member.dto.request.MemberReq;
-import com.zooting.api.domain.member.dto.request.PersonalityReq;
+import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
@@ -20,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -67,7 +65,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void updateMemberInfo(String memberId, MemberReq memberReq) throws ParseException, BaseExceptionHandler {
+    public void updateMemberInfo(String memberId, MemberReq memberReq) throws ParseException {
         Member member = memberRepository.findMemberByEmail(memberId).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         if (existNickname(memberReq.nickname())) {
@@ -97,7 +95,19 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void updateInterestsandIdeal(String memberId, InterestsReq additionalReq) {
+    public void updateMemberInfo(String memberId, MemberModifyReq memberModifyReq) {
+        Member member = memberRepository.findMemberByEmail(memberId).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+
+        member.setAddress(memberModifyReq.address());
+        member.getAdditionalInfo().setIdealAnimal(memberModifyReq.idealAnimal().toString());
+
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    @Override
+    public void updateInterests(String memberId, InterestsReq additionalReq) {
         Member member = memberRepository.findMemberByEmail(memberId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
@@ -105,7 +115,6 @@ public class MemberServiceImpl implements MemberService {
             additionalInfo = new AdditionalInfo();
         }
         additionalInfo.setInterest(additionalReq.interest().toString());
-        additionalInfo.setIdealAnimal(additionalReq.idealAnimal().toString());
         additionalInfo.setMember(member);
         memberRepository.save(member);
     }

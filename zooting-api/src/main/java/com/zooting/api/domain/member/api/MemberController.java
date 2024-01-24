@@ -1,10 +1,7 @@
 package com.zooting.api.domain.member.api;
 
 import com.zooting.api.domain.member.application.MemberService;
-import com.zooting.api.domain.member.dto.request.InterestsReq;
-import com.zooting.api.domain.member.dto.request.IntroduceReq;
-import com.zooting.api.domain.member.dto.request.MemberReq;
-import com.zooting.api.domain.member.dto.request.PersonalityReq;
+import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.MembeSearchrRes;
 import com.zooting.api.domain.member.dto.response.MemberRes;
 import com.zooting.api.domain.member.dto.response.PointRes;
@@ -28,7 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
-@Tag(name= "유저", description = "Member 관련 API")
+@Tag(name = "유저", description = "Member 관련 API")
 public class MemberController {
     private final MemberService memberService;
 
@@ -40,7 +37,7 @@ public class MemberController {
     )
     @GetMapping("/nickname/check")
     public ResponseEntity<BaseResponse<Boolean>> checkNicknameDuplicate(
-            @Valid @NotNull @Size(min = 2, max = 16)  @RequestParam(name = "nickname") String nickname) {
+            @Valid @NotNull @Size(min = 2, max = 16) @RequestParam(name = "nickname") String nickname) {
         var result = memberService.existNickname(nickname);
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
@@ -75,12 +72,26 @@ public class MemberController {
                 "추가 정보 저장 성공"
         );
     }
-    @Operation(summary = "로그인 후 추가 정보 수정 (")
+
+    @Operation(summary = "로그인 후 추가 정보 수정 (지역, 이상형)")
+    @PreAuthorize("hasAnyRole('USER')")
+    @PatchMapping("/info")
+    public ResponseEntity<BaseResponse<String>> updateAdditionalInfo(
+            @Valid @RequestBody MemberModifyReq memberModifyReq,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        memberService.updateMemberInfo(userDetails.getUsername(), memberModifyReq);
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                "지역, 이상형 정보 업데이트 성공"
+        );
+    }
+
     @Operation(summary = "로그인한 유저 정보 조회")
     @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
     @GetMapping
     public ResponseEntity<BaseResponse<MemberRes>> findMemberInfo(
-            @AuthenticationPrincipal UserDetails userDetails){
+            @AuthenticationPrincipal UserDetails userDetails) {
         MemberRes memberRes = memberService.findMemberInfo(userDetails.getUsername());
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
@@ -95,10 +106,10 @@ public class MemberController {
     public ResponseEntity<BaseResponse<String>> updateInterests(
             @Valid @RequestBody InterestsReq interestsReq,
             @AuthenticationPrincipal UserDetails userDetails) {
-        memberService.updateInterestsandIdeal(userDetails.getUsername(), interestsReq);
+        memberService.updateInterests(userDetails.getUsername(), interestsReq);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
-                "관심사, 이상형 수정 완료"
+                "관심사 수정 완료"
         );
     }
 
@@ -114,6 +125,7 @@ public class MemberController {
                 "자기소개 수정 완료"
         );
     }
+
     @Operation(
             summary = "유저 검색",
             description = "검색한 키워드에 해당하는 멤버 중 나를 차단한 사람 제외하고 리스트로 반환"
@@ -129,6 +141,7 @@ public class MemberController {
                 memberResList
         );
     }
+
     @Operation(summary = "성격 수정")
     @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
     @PutMapping("/characters")
@@ -155,6 +168,7 @@ public class MemberController {
                 result
         );
     }
+
     @Operation(
             summary = "동물변경권 구매",
             description = "포인트 부족 시에는 변경 불가")
@@ -177,6 +191,7 @@ public class MemberController {
 
 
     }
+
     @Operation(
             summary = "닉네임 변경권 구매",
             description = "포인트 부족시 닉네임 변경 불가"
