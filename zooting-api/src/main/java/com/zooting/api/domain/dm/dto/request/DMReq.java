@@ -1,8 +1,11 @@
 package com.zooting.api.domain.dm.dto.request;
 
+import com.zooting.api.domain.file.dto.response.FileRes;
 import com.zooting.api.domain.file.entity.File;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
 
 @Schema(description = "DM전송 시 요청 Dto")
 public record DMReq(
@@ -19,6 +22,6 @@ public record DMReq(
         @NotNull
         String receiver,
         //TODO: file
-        File file
+        List<FileRes> files
 ) {
 }
