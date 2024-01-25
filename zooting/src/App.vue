@@ -2,7 +2,8 @@
   <div class="flex">
     <TheSideBar></TheSideBar>
     <RouterView class="ms-14"/>
-    <FaceLandmarkDetection />
+    <test />
+    <!-- <FaceLandmarkDetection /> -->
   </div>
 </template>
 
@@ -10,6 +11,10 @@
 import { RouterView } from 'vue-router'
 import TheSideBar from '@/components/TheSideBar.vue'
 import FaceLandmarkDetection from '@/components/FaceLandmarkDetection.vue'
+import test from '@/components/test.vue'
+
+
+
 
 </script>
 
