@@ -20,21 +20,27 @@
           </svg>
         </button>
       </div>
-        
-      <!-- signout -->
-      <div class="signout">
-        <button @click="logout" v-if="isLoggedIn">
-          <svg class="w-5 h-6 m-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16" transform="rotate(180)">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8h11m0 0-4-4m4 4-4 4m-5 3H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3"/>
-          </svg>
-        </button>
-      </div>
 
-      <!-- User profile -->
-      <div class="user-profile">
-        <RouterLink :to="getProfileLink()" v-if="isLoggedIn && isCompletedTest" @click="closeTab">
-          <img class="user-profile__img" src="" alt="user-profile"/>
-        </RouterLink>
+      <img 
+        v-if="isLoggedIn"
+        id="avatarButton" 
+        type="button" 
+        data-dropdown-toggle="userDropdown" 
+        data-dropdown-placement="bottom-start" 
+        class="user-profile" 
+        src="" alt="User dropdown"
+      >
+
+      <!-- Dropdown menu -->
+      <div id="userDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44" v-if="isLoggedIn">
+          <ul class="py-2 text-sm text-gray-700" aria-labelledby="avatarButton">
+            <li>
+              <RouterLink :to="getProfileLink()" class="block px-4 py-2 hover:bg-gray-100" @click="closeTab">프로필</RouterLink>
+            </li>
+          </ul>
+          <div class="py-1">
+            <div class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click="logout">로그아웃</div>
+          </div>
       </div>
     </nav>
 
@@ -147,18 +153,12 @@ const logout = () => {
     @apply flex flex-col items-center flex-1 p-4 space-y-8;
 }
 .user-profile {
-    @apply relative flex items-center flex-shrink-0 my-3;
-}
-.user-profile__img {
-    @apply w-10 h-10 rounded-full shadow-md;
+    @apply w-10 h-10 rounded-full cursor-pointer bg-slate-500;
 }
 .side-tab {
     @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 rounded-tr-3xl rounded-br-3xl z-10;
     width: 450px;
 }
-.side-tab__content {
-}
-
 section {
     @apply px-4 py-6;
 }
