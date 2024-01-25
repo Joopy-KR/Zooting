@@ -67,8 +67,8 @@
         <div 
         class="ideal-type__item" 
         v-for="(value, index) in idealAnimalList" :key="index" 
-        @click="pushidealAnimal(`animal${index+1}`)"
-        :class="{ 'ideal-type__item--checked': idealAnimalSet.has(`animal${index+1}`), 'ideal-type__item--no-checked': !idealAnimalSet.has(`animal${index+1}`) }">
+        @click="pushidealAnimal(value)"
+        :class="{ 'ideal-type__item--checked': idealAnimalSet.has(value), 'ideal-type__item--no-checked': !idealAnimalSet.has(value) }">
         {{ value }}
         </div>
       </div>
@@ -84,7 +84,7 @@
         {{ interest }}
         </div>
       </div>
-      <button class="submit-button" type="button" @click.prevent="saveAdditionalInfo">동물상 분석하러 가기</button>
+      <button class="submit-button" type="button" @click.prevent="saveAdditionalInfo">다음으로</button>
     </div>
   </div>
 </template>

@@ -23,7 +23,7 @@ onMounted(async () => {
   // if (!store.isCompletedSignUp) {
   //     store.checkCompletedSignUp()
   // }
-  // store.getUserInfo()
+  store.getUserInfo()
 })
 </script>
 
