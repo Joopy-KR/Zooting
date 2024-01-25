@@ -3,6 +3,7 @@ package com.zooting.api.domain.mask.application;
 import com.zooting.api.domain.mask.dao.MaskRepository;
 import com.zooting.api.domain.mask.dto.response.MaskRes;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,8 +13,8 @@ import java.util.List;
 public class MaskServiceImpl implements MaskService{
     final private MaskRepository maskRepository;
     @Override
-    public List<MaskRes> findAllMask() {
-        return maskRepository.findAll()
+    public List<MaskRes> findAllMask(Pageable pageable) {
+        return maskRepository.findMasksBy(pageable)
                 .stream().map(mask->new MaskRes(
                         mask.getId(),
                         mask.getAnimal(),

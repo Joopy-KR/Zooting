@@ -23,6 +23,7 @@ import java.util.List;
 @Tag(name="멤버, 마스크", description = "멤버와 마스크 관련 API")
 public class MemberAndMaskController {
     private final MemberAndMaskUsecase memberAndMaskUsecase;
+    @PreAuthorize("hasAnyRole('USER')")
     @PostMapping
     @Operation(summary = "마스크 구매",
             description = "포인트 부족 / 이미 보유한 마스크/ 유저 동물상과 불일치 시 구매 실패"
