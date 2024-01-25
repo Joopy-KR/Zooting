@@ -1,23 +1,17 @@
 <template>
   <div class="recent__container">
-    <SocialRecentListItem />
-    <SocialRecentListItem />
-    <SocialRecentListItem />
-    <SocialRecentListItem />
-    <SocialRecentListItem />
-    <SocialRecentListItem />
-    <SocialRecentListItem />
-    <SocialRecentListItem />
+    <div class="item__container">
+      recent list item
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import SocialRecentListItem from './SocialRecentListItem.vue'
 </script>
 
 <style scoped>
 .recent__container {
-  @apply flex-grow;
+  @apply flex-grow grid grid-cols-2;
   background-color: darkorange;
   overflow-y: auto;
 }
@@ -31,5 +25,9 @@ import SocialRecentListItem from './SocialRecentListItem.vue'
 }
 .recent__container::-webkit-scrollbar-track {
   background-color: transparent;
+}
+.item__container {
+  background-color:darkgreen;
+  height: 70px;
 }
 </style>

@@ -61,7 +61,7 @@ router.beforeEach((to, from) => {
     return { name: 'home' }
   }
   
-  if (to.name === 'signup' && store.userInfo?.nickname) {
+  if (to.name === 'signup' && store.isCompletedSignUp) {
     return { name: 'home' }
   }
   

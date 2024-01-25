@@ -3,7 +3,6 @@ import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import { useRouter } from 'vue-router'
 
-
 export const useStore = defineStore('store', () => {
   const personality: Personality = {
     "INFP": { title: "설레는 봄", match: "포근한 겨울", content: ["남에게 피해를 주는 것을 싫어해서 혼자 해결할 때가 많아요.", "아무리 싫은 사람과 연락하더라도 읽씹은 잘 못해요.", "괜찮다고 말해도 괜찮지 않을 때가 많아요.", "좋아하는 티를 내 주고 감정 표현을 해 주는 사람에게 호감을 느껴요."]},
@@ -28,7 +27,6 @@ export const useStore = defineStore('store', () => {
 
 export const useAccessTokenStore = defineStore ( "access-token", () => {
   const API_URL:string = 'https://i10a702.p.ssafy.io'
-  const Token = 'eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA2MTgwMzcwLCJzdWIiOiJ6eW8wNzIwQGtha2FvLmNvbSIsIlByaXZpbGVnZSI6WyJVU0VSIl19.qCVf1LP6tpcMbLUpoQPk9mn6U0OcFOKS8W8AdINkK00'
   const router = useRouter()
   
   const state = ref<AccessTokenState>({
@@ -68,7 +66,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       method: 'get',
       url: `${API_URL}/api/members`,
       headers: {
-        Authorization: `Bearer ${Token}`
+        Authorization: `Bearer ${getAccessToken()}`
       }
     })
     .then(res => {
@@ -112,7 +110,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
         url: `${API_URL}/api/members/privilege/check`,
         headers: {
           accept: 'application/json',
-          Authorization: `Bearer ${Token}`
+          Authorization: `Bearer ${getAccessToken()}`
         }
       })
       .then(res => {
@@ -152,7 +150,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
         idealAnimal
       },
       headers: {
-        Authorization: `Bearer ${Token}`
+        Authorization: `Bearer ${getAccessToken()}`
       }
     })
     .then(res => {
@@ -174,7 +172,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
         'nickname': payload
       },
       headers: {
-        Authorization: `Bearer ${Token}`
+        Authorization: `Bearer ${getAccessToken()}`
       }
     })
     .then(res => {
@@ -197,7 +195,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       },
       headers: {
         accept: 'application/json',
-        Authorization: `Bearer ${Token}`
+        Authorization: `Bearer ${getAccessToken()}`
       }
     })
     .then (res => {
@@ -220,7 +218,7 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       },
       headers: {
         accept: 'application/json',
-        Authorization: `Bearer ${Token}`
+        Authorization: `Bearer ${getAccessToken()}`
       }
     })
     .then (res => {
@@ -230,7 +228,65 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
       console.log(err)
     })
   }
-
+  
+  // 친구 리스트
+  const friendList = ref<Friend[] | null>(null)
+  const getFriendList = function () {
+    axios({
+      method: 'get',
+      url: `${API_URL}/api/friends`,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
+    .then(res => {
+      console.log(res)
+      friendList.value = res.data.result
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+  
+  // 친구 요청 받은 리스트
+  const requestFromList = ref<Friend[] | null>(null)
+  const getRequestFromList = function () {
+    axios({
+      method: 'get',
+      url: `${API_URL}/api/friends/request/from`,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
+    .then(res => {
+      console.log(res)
+      requestFromList.value = res.data.result
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+  
+  // 친구 요청 보낸 리스트
+  const requestToList = ref<Friend[] | null>(null)
+  const getRequestToList = function () {
+    axios({
+      method: 'get',
+      url: `${API_URL}/api/friends/request/to`,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`
+      }
+    })
+    .then(res => {
+      console.log(res)
+      requestToList.value = res.data.result
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+  
+  
   return {
     setAccessToken,
     getAccessToken,
@@ -246,6 +302,12 @@ export const useAccessTokenStore = defineStore ( "access-token", () => {
     isDuplication,
     checkNicknameDuplication,
     setAnimalFace,
+    getFriendList,
+    getRequestFromList,
+    getRequestToList,
+    friendList,
+    requestFromList,
+    requestToList,
   }
 }, { persist: true })
 
@@ -273,4 +335,11 @@ interface UserInfo {
   animal: string | null
   personality: string | null
   point: Number | null
+}
+
+interface Friend {
+  email: string
+  nickname: string
+  // gender: string
+  // animal: string
 }

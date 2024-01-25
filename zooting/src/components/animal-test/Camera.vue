@@ -160,7 +160,7 @@ const gender = ref("male");
 // 얼굴인식 변수
 let faceDetector: FaceDetector;
 let runningMode: string = "IMAGE";
-const videoRef = (ref < HTMLVideoElement) | (null > null);
+const videoRef = ref <HTMLVideoElement | null> (null);
 
 const is_started = ref(false); // 카메라 로딩을 판단하는 변수 (false시 로딩중을 출력)
 let is_working = true; // 촬영버튼 시 측정 동작을 멈추는 변수
