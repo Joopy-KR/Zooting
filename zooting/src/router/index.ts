@@ -50,6 +50,27 @@ const router = createRouter({
       path: "/profile/:nickname?",
       name: "profile",
       component: ProfileView,
+      children: [
+        {
+          path: "",
+          component: ()=> import("@/components/profile/InfoMain.vue"),
+        },
+        {
+          path: "edit-info",
+          name: "edit_info",
+          component: () => import("@/components/profile/EditInfo.vue"),
+        },
+        {
+          path: "",
+          name: "",
+          component: () => import("@/components/profile/EditMaskList.vue"),
+        },
+        {
+          path: "",
+          name: "",
+          component: () => import("@/components/profile/InfoPersonal.vue"),
+        }
+      ]
     },
   ],
 });
