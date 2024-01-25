@@ -103,8 +103,46 @@ const address = ref<string>('')
 const idealAnimalSet = ref(new Set<string>())
 const interestSet = ref(new Set<string>())
 
-const areas:string[] = (['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기도', '강원도', '충청북도', '충청남도', '전라북도', '전라남도', '경상북도', '경상남도', '제주도', '해외'])
-const interestList:string[] = ['관심사1', '관심사2', '관심사3', '관심사4', '관심사5', '관심사6', '관심사7', '관심사8', '관심사9', '관심사10', '관심사11', '관심사12', '관심사13', '관심사14', '관심사15', '관심사16', '관심사17']
+const areas:string[] = ([
+  '서울', 
+  '부산', 
+  '대구', 
+  '인천', 
+  '광주', 
+  '대전', 
+  '울산', 
+  '세종', 
+  '경기도', 
+  '강원도', 
+  '충청북도', 
+  '충청남도', 
+  '전라북도', 
+  '전라남도', 
+  '경상북도', 
+  '경상남도', 
+  '제주도', 
+  '해외'
+])
+
+const interestList:string[] = [
+  '관심사1',
+  '관심사2', 
+  '관심사3', 
+  '관심사4', 
+  '관심사5', 
+  '관심사6', 
+  '관심사7', 
+  '관심사8', 
+  '관심사9', 
+  '관심사10', 
+  '관심사11', 
+  '관심사12', 
+  '관심사13', 
+  '관심사14', 
+  '관심사15', 
+  '관심사16', 
+  '관심사17'
+]
 
 const nicknameError = ref<boolean>(false)
 const birthError = ref<boolean>(false)
@@ -151,7 +189,6 @@ const pushidealAnimal = (value:string) => {
   } else {
     idealAnimalSet.value.add(value)
   }
-  console.log(idealAnimalSet.value)
 }
 
 const idealAnimalList = computed(() => {
@@ -171,7 +208,6 @@ const pushInterest = (value:string) => {
     } else {
       interestSet.value.add(value)
     }
-    console.log(interestSet.value)
   }
 }
 
