@@ -1,11 +1,11 @@
 <template>
   <div class="friend__container">
-    <div class="item__container">
+    <div class="item__container" v-for="(item, index) in friendList" :key="index">
       <div class="flex items-center gap-4">
         <img class="w-10 h-10 rounded-full" src="" alt="profile">
         <div class="font-medium dark:text-white">
-          <div>Jese Leos</div>
-          <div class="text-sm text-gray-500">Joined in August 2014</div>
+          <div>{{ item.nickname }}</div>
+          <div class="text-sm text-gray-500">content</div>
         </div>
       </div>
       <div class="flex">
@@ -16,6 +16,16 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useAccessTokenStore } from '@/stores/store'
+
+const store = useAccessTokenStore()
+
+const friendList = ref(store.friendList)
+
+watch(()=> store.friendList, (UpdateList)=>{
+  friendList.value = UpdateList
+})
 </script>
 
 <style scoped>
