@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from "vue-router";
-import { useAccessTokenStore } from "../stores/store";
+import {createRouter, createWebHistory} from "vue-router";
+import {useAccessTokenStore} from "../stores/store";
 import HomeView from "@/views/HomeView.vue";
 import SignInView from "@/views/SignInView.vue";
 import SignUpView from "@/views/SignUpView.vue";
