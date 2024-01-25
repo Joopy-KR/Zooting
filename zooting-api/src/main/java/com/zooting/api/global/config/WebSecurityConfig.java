@@ -1,7 +1,7 @@
 package com.zooting.api.global.config;
 
 import com.zooting.api.global.jwt.JwtAuthenticateFilter;
-import com.zooting.api.global.jwt.JwtService;
+import com.zooting.api.global.jwt.service.JwtService;
 import com.zooting.api.global.security.handler.CustomOAuth2FailHandler;
 import com.zooting.api.global.security.handler.CustomOAuth2SuccessHandler;
 import com.zooting.api.global.security.oauth2.service.CustomOAuth2UserService;
