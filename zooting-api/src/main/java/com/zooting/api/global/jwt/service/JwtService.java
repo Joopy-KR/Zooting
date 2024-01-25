@@ -23,6 +23,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -101,13 +102,13 @@ public class JwtService {
                     userDetails.getAuthorities());
     }
 
-    public String verifyRefreshToken(String token){
+    public String verifyRefreshToken(String refreshToken){
         try{
             log.info("Refresh Token 검증을 시작합니다");
             Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
-                    .parseSignedClaims(token) // Throws JWT Exception
+                    .parseSignedClaims(refreshToken) // Throws JWT Exception
                     .getPayload();
 
             String email = claims.getSubject();
@@ -126,48 +127,22 @@ public class JwtService {
         }
     }
 
-//    else { // Access 토큰이 없음 -> 리프레쉬 토큰이 있는지 확인후 재발급
-//        log.info("Access Token이 없습니다. Refresh Token 보유 여부를 확인합니다");
-//        String refreshToken = null;
-//
-//        Cookie[] cookies = request.getCookies();
-//
-//        for(Cookie cookie : cookies){
-//            if(cookie.getName().equals(REFRESH_HEADER_AUTHORIZATION)){
-//                refreshToken = cookie.getValue();
-//                break;
-//            }
-//        }
-//
-//        if(refreshToken != null){
-//            String email = jwtService.verifyRefreshToken(refreshToken);
-//
-//            log.info("리프레시 토큰의 유효성을 검증했습니다. 서버에 저장된 토큰과 비교합니다.");
-//            String refreshTokenInServer = redisTemplate.opsForValue().get(email);
-//
-//            if(!refreshToken.equals(refreshTokenInServer)){
-//                log.info("유저의 리프레시 토큰이 서버의 토큰과 일치하지 않습니다");
-//            } else {
-//                log.info("리프레시 토큰을 확인했습니다");
-//                UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-//
-//                accessToken = jwtService.createAccessToken(userDetails);
-//
-//                UriComponentsBuilder uriComponentsBuilder;
-//                uriComponentsBuilder = UriComponentsBuilder.fromUriString(REDIRECT_URI_SUCCESS)
-//                        .queryParam("access-token", accessToken);
-//
-//                String redirectURI = uriComponentsBuilder.toUriString();
-//                response.sendRedirect(redirectURI);
-//            }
-//        } else { // 토큰이 둘 다 없는 사용자
-//            log.info("토큰이 없는 사용자입니다.");
-//            throw new BaseExceptionHandler(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
-//        }
-//    }
-
     public void saveRefreshTokenRedis(String email, String refreshToken){
         redisTemplate.opsForValue().set(email, refreshToken, 15, TimeUnit.DAYS);
+    }
+
+    public String getRefreshTokenRedis(String email){
+        return redisTemplate.opsForValue().get(email);
+    }
+
+    public ResponseCookie buildResponseCookie(String refreshToken){
+        return ResponseCookie.from("refresh-token", refreshToken)
+                .maxAge(30 * 24 * 60 * 60)
+                .path("/")
+                .secure(true)
+                .sameSite("Lax") // Same site 설정 필요
+                .domain("localhost")  //어느 도메인에 열어줄 것인가
+                .build();
     }
 
     public Collection<GrantedAuthority> getPrivileges(Claims claims){

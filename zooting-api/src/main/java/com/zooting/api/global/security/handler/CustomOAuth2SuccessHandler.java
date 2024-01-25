@@ -11,7 +11,6 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -73,7 +72,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         }
 
         log.info("13. 응답 헤더에 Refresh Token을 Http Only Cookie로 저장했습니다");
-        response.setHeader("Set-cookie", buildResponseCookie(refreshToken).toString());
+        response.setHeader("Set-cookie", jwtService.buildResponseCookie(refreshToken).toString());
         String redirectURI = uriComponentsBuilder.toUriString();
         response.sendRedirect(redirectURI);
     }
@@ -82,14 +81,5 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             throw new BaseExceptionHandler(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
         }
         return userDetails.getAuthorities().contains(new SimpleGrantedAuthority(Privilege.ANONYMOUS.name()));
-    }
-    public ResponseCookie buildResponseCookie(String refreshToken){
-        return ResponseCookie.from("refresh-token", refreshToken)
-                .maxAge(30 * 24 * 60 * 60)
-                .path("/")
-                .secure(true)
-                .sameSite("Lax") // Same site 설정 필요
-                .domain("localhost")  //어느 도메인에 열어줄 것인가
-                .build();
     }
 }

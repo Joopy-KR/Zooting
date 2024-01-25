@@ -66,7 +66,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticateFilter jwtAuthenticateFilter() {
-        return new JwtAuthenticateFilter(redisTemplate, customUserDetailsService, jwtService, URL_WHITE_LIST);
+        return new JwtAuthenticateFilter(jwtService, URL_WHITE_LIST);
     }
 
     @Bean
