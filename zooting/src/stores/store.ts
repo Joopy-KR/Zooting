@@ -173,8 +173,6 @@ export const useAccessTokenStore = defineStore(
   "access-token",
   () => {
     const API_URL: string = "https://i10a702.p.ssafy.io";
-    const Token =
-    "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA2MTgwMzcwLCJzdWIiOiJ6eW8wNzIwQGtha2FvLmNvbSIsIlByaXZpbGVnZSI6WyJVU0VSIl19.qCVf1LP6tpcMbLUpoQPk9mn6U0OcFOKS8W8AdINkK00";
     const router = useRouter();
     
     const state = ref<TokenState>({
@@ -238,7 +236,7 @@ export const useAccessTokenStore = defineStore(
         method: "get",
         url: `${API_URL}/api/members`,
         headers: {
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
@@ -282,7 +280,7 @@ export const useAccessTokenStore = defineStore(
         url: `${API_URL}/api/members/privilege/check`,
         headers: {
           accept: "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
@@ -320,7 +318,7 @@ export const useAccessTokenStore = defineStore(
           idealAnimal,
         },
         headers: {
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
@@ -334,15 +332,15 @@ export const useAccessTokenStore = defineStore(
 
     // 닉네임 중복 검사
     const isDuplication = ref<boolean>(false);
-    const checkNicknameDuplication = function (payload: string) {
+    const checkNicknameDuplication = function (params: string) {
       axios({
         method: "get",
         url: `${API_URL}/api/members/nickname/check`,
         params: {
-          nickname: payload,
+          nickname: params,
         },
         headers: {
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
@@ -365,7 +363,7 @@ export const useAccessTokenStore = defineStore(
         },
         headers: {
           accept: "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
@@ -378,7 +376,7 @@ export const useAccessTokenStore = defineStore(
     };
 
     // 동물상 테스트 결과 저장
-    const setAnimalFace = function (payload: Number[]) {
+    const setAnimalFace = function (payload: number[]) {
       const animalFaceList = payload;
       axios({
         method: "post",
@@ -388,7 +386,7 @@ export const useAccessTokenStore = defineStore(
         },
         headers: {
           accept: "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
@@ -435,7 +433,7 @@ export const useAccessTokenStore = defineStore(
       .catch(err => {
         console.log(err);
       })
-    }
+    };
   
     // 친구 요청 보낸 리스트
     const requestToList = ref<Friend[] | null>(null);
@@ -454,7 +452,103 @@ export const useAccessTokenStore = defineStore(
       .catch(err => {
         console.log(err);
       })
-    }
+    };
+    
+    // 친구 요청 수락
+    const friendAccept = function (payload: {
+      email: string;
+      nickname: string;
+    }) {
+      const { email, nickname } = payload;
+      axios({
+        method: 'post',
+        url: `${API_URL}/api/friends/accept`,
+        data: {
+          email,
+          nickname,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+    
+    // 친구 요청 거절
+    const friendReject = function (payload: {
+      email: string;
+      nickname: string;
+    }) {
+      const { email, nickname } = payload;
+      axios({
+        method: 'delete',
+        url: `${API_URL}/api/friends/request/reject`,
+        data: {
+          email,
+          nickname,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+    
+    
+    // 친구 요청 취소
+    const friendRequestCancel = function (payload: {
+      email: string;
+      nickname: string;
+    }) {
+      const { email, nickname } = payload;
+      axios({
+        method: 'delete',
+        url: `${API_URL}/api/friends/request/cancel`,
+        data: {
+          email,
+          nickname,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+
+    // 친구 검색
+    const friendSearch = function (params: string) {
+      axios({
+        method: "get",
+        url: `${API_URL}/api/friends/search`,
+        params: {
+          nickname: params,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
 
     return {
       setAccessToken,
@@ -479,6 +573,10 @@ export const useAccessTokenStore = defineStore(
       getRequestFromList,
       requestToList,
       getRequestToList,
+      friendAccept,
+      friendReject,
+      friendRequestCancel,
+      friendSearch,
     };
   },
   { persist: true }
