@@ -8,10 +8,13 @@ const store = useAccessTokenStore();
 
 const handleSocialLoginRedirect = async () => {
   try {
-    const accessToken = await getAccessTokenFromRedirectURL();
-    if (accessToken) {
-      await store.setAccessToken(accessToken);
-      store.getUserInfo()
+    const token = await getTokenFromURL();
+    if (token["accessToken"]) {
+      await store.setAccessToken(token["accessToken"]);
+      if (token["refreshToken"]) {
+        store.setRefreshToken(token["refreshToken"]);
+      }
+      store.getUserInfo();
       router.push({ name: "home" });
     }
   } catch (error) {
@@ -20,9 +23,14 @@ const handleSocialLoginRedirect = async () => {
   }
 };
 
-const getAccessTokenFromRedirectURL = () => {
+const getTokenFromURL = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get("access-token");
+  const accessToken = urlParams.get("access-token");
+  const refreshToken = urlParams.get("refresh-token");
+  return {
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+  };
 };
 
 onMounted(() => {
