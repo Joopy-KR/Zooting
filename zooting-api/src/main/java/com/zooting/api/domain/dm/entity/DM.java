@@ -1,5 +1,6 @@
 package com.zooting.api.domain.dm.entity;
 
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.file.entity.File;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +14,8 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class DM {
+@Table(name = "dm")
+public class DM extends BaseEntity {
     @Id
     @Column(name = "dm_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,13 +26,13 @@ public class DM {
     @JoinColumn(name = "dm_room_id")
     private DMRoom dmRoom;
     private String message;
-    private Boolean status;
+    private String sender;
 
     @Builder
-    public DM(List<File> files, DMRoom dmRoom, String message, Boolean status) {
+    public DM(List<File> files, DMRoom dmRoom, String message, String sender) {
         this.files = Objects.nonNull(files) ? files : new ArrayList<>();
         this.dmRoom = dmRoom;
         this.message = message;
-        this.status = status;
+        this.sender = sender;
     }
 }

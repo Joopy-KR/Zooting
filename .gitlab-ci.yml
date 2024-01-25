@@ -1,0 +1,91 @@
+stages:
+  - build
+  - package
+  - deploy
+
+build: # JOB 이름
+  # 사용될 이미지 설정
+  image: gradle:8.5.0-jdk17 # gradle - java 이미지 지정
+  # stage 설정
+  stage: build
+  # 실행될 script 설정
+  script:
+    - echo [INFO] YML Settings
+    - cd ./zooting-api # zooting-api server 위치로 이동
+    - cd ./src/main/resources # resources 폴더 위치로 이동
+    - echo "$APPLICATION_YML" > "application.yml" # gitlab APPLICATION_YML을 이용하여 application.yml 파일 생성
+    - echo "$APPLICATION_DEV_YML" > "application-dev.yml"
+    - echo "$APPLICATION_LOCAL_YML" > "application-local.yml"
+    - echo "$APPLICATION_OAUTH_YML" > "application-oauth.yml"
+    - echo [INFO] spring-boot project build
+    - cd ../../.. # 프로젝트 폴더로 경로 이동
+    - chmod +x gradlew # gradle 권한 부여
+    - ./gradlew clean
+    - ./gradlew build
+  # artifacts 설정 (bulld를 통해 생성된 파일을 job artifacts에 보관하여 다음에 수행되는 JOB에서 가져다 활용할 수 있게 도와줌)
+  artifacts:
+    # 보관이 이루어질 경로 설정
+    paths:
+      - zooting-api/build/libs/zooting-api-0.0.1-SNAPSHOT.jar # Dockerfile에 지정한 경로로 지정
+    # 유효기간 설정
+    expire_in: 1 days
+  # JOB이 수행될 branch 설정 (설정된 branch에 push가 발생될 시 JOB 수행)
+  only:
+    - master
+    - release
+    - develop
+
+package:
+  image: docker:latest
+  stage: package
+  # service 설정 (설정한 image가 작업이 이루어지는 동안 실행되는 docker 이미지)
+  services:
+    - docker:dind
+    # script가 실행 전 수행 될 script
+  before_script:
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD # GitLab Container Registry에 로그인
+  # 실행될 script 설정
+  script:
+    - cd ./zooting-api
+    - echo [INFO] Start package stage
+    - echo [INFO] SPRING_IMAGE_NAME      $SPRING_IMAGE_NAME
+    # - echo [INFO] NGINX_IMAGE_NAME       $NGINX_IMAGE_NAME
+    - echo [INFO] Spring docker project build
+    - docker build -t $DOCKER_REGISTRY_USER/$SPRING_IMAGE_NAME . # Dockerfile로 build
+    - docker push $DOCKER_REGISTRY_USER/$SPRING_IMAGE_NAME:latest # Container Registry에 image push
+  # script가 실행된 후 수행 될 script
+  after_script:
+    - docker logout # GitLab Container Registry 로그아웃
+  # JOB이 수행될 branch 설정 (설정된 branch에 push가 발생될 시 JOB 수행)
+  only:
+    - master
+    - release
+    - develop
+
+deploy: # JOB 이름
+  image: docker:latest
+  # stage 설정
+  stage: deploy
+  services:
+    - docker:dind
+  # script가 실행 전 수행 될 script
+  before_script:
+    - echo [INFO] docker deploy start!
+    - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD # GitLab Container Registry에 로그인
+  # 실행될 script 설정
+  script:
+    - cd ./zooting-api
+    - docker system prune --volumes -f # 사용되지 않는 컨테이너, 이미지 삭제 및 볼륨 정리
+    - docker-compose down # docker-compose 내리기
+    - docker-compose pull # docker images pull
+    - docker-compose build # docker-compose 빌드
+    - docker-compose up -d # docker-compose 백그라운드 실행
+  # script가 실행된 후 수행 될 script
+  after_script:
+    - docker logout # GitLab Container Registry 로그아웃
+    - echo [INFO] docker deploy end!
+  # JOB이 수행될 branch 설정 (설정된 branch에 push가 발생될 시 JOB 수행)
+  only:
+    - master
+    - release
+    - develop

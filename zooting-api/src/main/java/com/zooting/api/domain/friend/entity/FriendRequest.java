@@ -1,4 +1,5 @@
 package com.zooting.api.domain.friend.entity;
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.member.entity.Member;
 
 import jakarta.persistence.*;
@@ -11,7 +12,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @NoArgsConstructor
-public class FriendRequest {
+@Table(name = "friend_request")
+public class FriendRequest  extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="friend_request_id")

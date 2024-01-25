@@ -1,6 +1,7 @@
 package com.zooting.api.domain.mask.entity;
 
 
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.file.entity.File;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +12,8 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Mask {
+@Table(name = "mask")
+public class Mask  extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mask_id")

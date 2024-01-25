@@ -28,7 +28,8 @@ public class ZootingApplication {
 	static class FaviconController {
 		@GetMapping("/favicon.ico")
 		@ResponseBody
-		void returnNoFavicon() {
+		public void returnNoFavicon() {
+			log.trace("favicon check");
 		}
 	}
 	// Health Checking Controller

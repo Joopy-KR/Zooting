@@ -1,9 +1,9 @@
 package com.zooting.api.domain.member.entity;
 
+import com.zooting.api.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -11,11 +11,11 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdditionalInfo {
+@Table(name = "additional_info")
+public class AdditionalInfo extends BaseEntity {
     @Id
     @Column(name = "additional_info_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
     @OneToOne
     @JoinColumn(name = "email")

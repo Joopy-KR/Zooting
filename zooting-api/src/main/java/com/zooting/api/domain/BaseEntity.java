@@ -30,7 +30,6 @@ public class BaseEntity {
 
     @PreUpdate
     public void preUpdate() {
-        LocalDateTime now = LocalDateTime.now();
-        this.updatedAt = now;
+        this.updatedAt = LocalDateTime.now();
     }
 }

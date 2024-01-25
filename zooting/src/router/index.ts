@@ -1,11 +1,12 @@
-import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "@/views/HomeView.vue";
-import SignInView from "@/views/SignInView.vue";
-import SignUpView from "@/views/SignUpView.vue";
-import AnimalTestView from "@/views/AnimalTestView.vue";
-import PersonalityTestView from "@/views/PersonalityTestView.vue";
-import ProfileView from "@/views/ProfileView.vue";
-import Login from "@/views/LoginView.vue";
+import { createRouter, createWebHistory } from "vue-router"
+import { useAccessTokenStore } from "../stores/store"
+import HomeView from "@/views/HomeView.vue"
+import SignInView from "@/views/SignInView.vue"
+import SignUpView from "@/views/SignUpView.vue"
+import AnimalTestView from "@/views/AnimalTestView.vue"
+import PersonalityTestView from "@/views/PersonalityTestView.vue"
+import ProfileView from "@/views/ProfileView.vue"
+import Login from "@/views/LoginView.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +47,31 @@ const router = createRouter({
       component: ProfileView,
     },
   ],
-});
+})
 
-export default router;
+router.beforeEach((to, from) => {
+  const store = useAccessTokenStore()
+
+  if ((to.name === 'home' || to.name === 'signup' || to.name === 'animal_test' || to.name === 
+  'personality_test') && !store.isLogin) {
+    return { name: 'signin' }
+  }
+
+  if (to.name === 'signin' && store.isLogin) {
+    return { name: 'home' }
+  }
+  
+  if (to.name === 'signup' && store.isCompletedSignUp) {
+    return { name: 'home' }
+  }
+  
+  if (to.name === 'animal_test' && store.userInfo?.animal){
+    return { name: 'home' }
+  }
+  
+  if (to.name === 'personality_test' && store.userInfo?.personality) {
+    return { name: 'home' }
+  }
+})
+
+export default router
