@@ -30,14 +30,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomOAuth2FailHandler customOAuth2FailHandler;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
-    private final CustomUserDetailsService customUserDetailsService;
-    private final StringRedisTemplate redisTemplate;
     private final JwtService jwtService;
     private static final String[] URL_WHITE_LIST = {"/error", "/login", "/favicon.ico",
             "/health", "/api-docs/**", "/swagger-ui/**",
-            "/swagger-resources/**", "/swagger-ui.html"};
+            "/swagger-resources/**", "/swagger-ui.html", "/api/token/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

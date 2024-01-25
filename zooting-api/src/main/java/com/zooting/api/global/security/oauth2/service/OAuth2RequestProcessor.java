@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+@Log4j2
 public abstract class OAuth2RequestProcessor extends DefaultOAuth2UserService {
     private final OAuth2UserRequest oAuth2UserRequest;
     private final OAuth2User oAuth2User;

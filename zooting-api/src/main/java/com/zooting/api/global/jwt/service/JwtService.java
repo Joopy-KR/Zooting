@@ -3,20 +3,10 @@ package com.zooting.api.global.jwt.service;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import com.zooting.api.global.security.userdetails.CustomUserDetails;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-import javax.crypto.SecretKey;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,11 +19,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 @Getter
-@Component
+@Service
 @RequiredArgsConstructor
 public class JwtService {
     private final String issuer;
@@ -42,12 +38,11 @@ public class JwtService {
     private final long refreshTokenExpiration;
     private final StringRedisTemplate redisTemplate;
 
-
     @Autowired
     public JwtService(
             @Value("${jwt.issuer}") String issuer,
             @Value("${jwt.secretKey}") String secretKey,
-            @Value("${jwt.access-token-expiration") long accessTokenExpiration,
+            @Value("${jwt.access-token-expiration}") long accessTokenExpiration,
             @Value("${jwt.refresh-token-expiration}") long refreshTokenExpiration,
             StringRedisTemplate redisTemplate
     ) {
@@ -85,6 +80,7 @@ public class JwtService {
     }
 
     public Authentication verifyAccessToken(String token){
+            log.info("3. Access Token 인증을 시작합니다.");
             Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()

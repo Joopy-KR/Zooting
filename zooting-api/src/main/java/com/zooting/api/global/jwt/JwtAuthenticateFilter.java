@@ -1,5 +1,7 @@
 package com.zooting.api.global.jwt;
 
+import com.google.gson.Gson;
+import com.zooting.api.global.common.ErrorResponse;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import com.zooting.api.global.jwt.service.JwtService;
@@ -23,8 +25,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Log4j2
 @RequiredArgsConstructor
 public class JwtAuthenticateFilter extends OncePerRequestFilter {
-    private static final String ACCESS_HEADER_AUTHORIZATION = "Authorization";
-    private static final String REFRESH_HEADER_AUTHORIZATION = "refresh-token";
+    private static final String ACCESS_HEADER_AUTHORIZATION = "access-token";
     private static final String TOKEN_PREFIX = "Bearer ";
     private final JwtService jwtService;
     private final String[] URL_WHITE_LIST;
@@ -53,11 +54,16 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-                log.info("4. 유저의 Access Token이 만료되었습니다. 토큰 재발급이 필요합니다");
-                throw new BaseExceptionHandler(ErrorCode.EXPIRED_ACCESS_TOKEN_EXCEPTION);
+            log.info("4. 유저의 Access Token이 만료되었습니다. 토큰 재발급이 필요합니다");
+            throw new BaseExceptionHandler(ErrorCode.EXPIRED_ACCESS_TOKEN_EXCEPTION);
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
             log.info("4. 유효하지 않은 토큰입니다.");
             throw new BaseExceptionHandler(ErrorCode.INVALID_ACCESS_TOKEN_EXCEPTION);
+        } catch (IllegalArgumentException e){
+            Gson gson = new Gson();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            gson.toJson(ErrorResponse.of().code(ErrorCode.NOT_VALID_HEADER_ERROR).build(), response.getWriter());
         }
     }
 
