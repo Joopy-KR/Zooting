@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +30,10 @@ public class MaskController {
     @Operation(summary = "모든 마스크 조회")
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping
-    public ResponseEntity<BaseResponse<List<MaskRes>>> findAllMasks()  {
-        List<MaskRes> result = maskService.findAllMask();
+    public ResponseEntity<BaseResponse<List<MaskRes>>> findAllMasks(
+            @PageableDefault(sort="createdAt", direction = Sort.Direction.DESC, page=0) Pageable pageable
+    )  {
+        List<MaskRes> result = maskService.findAllMask(pageable);
         return BaseResponse.success(
                 SuccessCode.SELECT_SUCCESS,
                 result
