@@ -12,4 +12,9 @@ async function updateMyInfoApi(body: any, success: any, fail: any) {
   await local.patch(`api/members/info`, body).then(success).catch(fail);
 }
 
-export { loadMyInfoApi, updateMyInfoApi };
+async function loadUserInfoApi(param: string, success: any, fail: any) {
+  local.defaults.headers["Authorization"] = `Bearer ${await localStorage.getItem("accessToken")}`;
+  await local.get(`api/members/info?nickname=${param}`).then(success).catch(fail);
+}
+
+export { loadMyInfoApi, updateMyInfoApi, loadUserInfoApi };

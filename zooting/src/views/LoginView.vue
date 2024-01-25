@@ -11,7 +11,7 @@ const handleSocialLoginRedirect = async () => {
     const accessToken = await getAccessTokenFromRedirectURL();
     if (accessToken) {
       await store.setAccessToken(accessToken);
-      store.getUserInfo()
+      store.getUserInfo();
       router.push({ name: "home" });
     }
   } catch (error) {

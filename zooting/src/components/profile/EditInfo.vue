@@ -1,37 +1,44 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import VueTailwindDatepicker from "vue-tailwind-datepicker";
 import SuccessDialog from "@/components/profile/SuccessDialog.vue";
 import FailDialog from "@/components/profile/FailDialog.vue";
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from "@headlessui/vue";
-import { loadMyInfoApi, updateMyInfoApi } from "@/api/profile";
+import { loadMyInfoApi, updateMyInfoApi, loadUserInfoApi } from "@/api/profile";
 import axios from "axios";
 import { useAccessTokenStore } from "@/stores/store";
 
+const router = useRoute();
+
 interface Info {
   email: string | null;
-  gender: string;
-  nickname: string;
-  birth: string;
-  address: string;
-  point: number;
-  personality: string;
-  animal: string;
-  interest: string;
+  gender: string | null;
+  nickname: string | null;
+  birth: string | null;
+  address: string | null;
+  point: number | null;
+  personality: string | null;
+  animal: string | null;
+  interest: string | null;
   idealAnimal: string;
+  backgroundId: Number | null;
+  maskId: Number | null;
 }
 
 const myInfo = ref<Info>({
-  email: "",
-  gender: "",
-  nickname: "",
-  birth: "",
-  address: "",
-  point: 0,
-  personality: "",
-  animal: "",
-  interest: "",
-  idealAnimal: "",
+  email: null,
+  gender: null,
+  nickname: null,
+  birth: null,
+  address: null,
+  point: null,
+  personality: null,
+  animal: null,
+  interest: null,
+  idealAnimal: "[]",
+  backgroundId: null,
+  maskId: null,
 });
 
 // 나의 정보 불러오기
@@ -58,9 +65,6 @@ const loadMyInfo = () => {
 
 // 나의 정보 수정
 const updateMyInfo = () => {
-  const apiUrl = "https://i10a702.p.ssafy.io/api/members/info";
-  const accessToken = useAccessTokenStore().getAccessToken();
-
   // 유효성 검증
   if (!myInfo.value!.address) {
     failMessage.value = "정확한 주소를 입력해 주세요";
@@ -88,11 +92,33 @@ const updateMyInfo = () => {
   );
 };
 
-const gender = ref<string>("man");
+const loadUserInfo = (nickname: string) => {
+  loadUserInfoApi(
+    nickname,
+    ({ data }: any) => {
+      myInfo.value!.email = data["result"].email;
+      myInfo.value!.gender = data["result"].gender;
+      myInfo.value!.nickname = data["result"].nickname;
+      myInfo.value!.birth = convertDate(data["result"].birth);
+      myInfo.value!.address = data["result"].address;
+      myInfo.value!.point = data["result"].point;
+      myInfo.value!.personality = data["result"].personality;
+      myInfo.value!.animal = data["result"].animal;
+      myInfo.value!.interest = data["result"].interest;
+      myInfo.value!.idealAnimal = data["result"].idealAnimal;
+      initChanges();
+    },
+    (error: any) => {
+      console.log(error);
+    }
+  );
+};
+
+const gender = ref<string | null>("man");
 const idealTypeSet = ref(new Set<string>());
-const birth = ref<string>("1900-01-01");
+const birth = ref<string | null>(null);
 const failAlert = ref(false);
-const failMessage = ref("");
+const failMessage = ref<string>();
 const successAlert = ref(false);
 
 const setFailAlert = (isOpen: boolean) => {
@@ -183,7 +209,15 @@ const convertDate = (inputDate: string) => {
 };
 
 onMounted(() => {
-  loadMyInfo();
+  // loadMyInfo();
+  const nickname = router.params.nickname;
+  if (!nickname) {
+    loadMyInfo();
+  } else {
+    if (typeof nickname === "string") {
+      loadUserInfo(nickname);
+    }
+  }
 });
 </script>
 
