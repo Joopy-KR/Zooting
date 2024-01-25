@@ -244,7 +244,7 @@ interface Payload {
   @apply grid grid-cols-2 gap-3 h-10;
 }
 .gender__option {
-  @apply flex items-center justify-center rounded-lg p-2 text-sm uppercase;
+  @apply flex items-center justify-center rounded-lg p-2 text-sm uppercase cursor-pointer;
 }
 .gender__option--checked {
   @apply text-violet-600 ring-2 ring-inset ring-violet-600 font-bold hover:bg-gray-50;
@@ -257,7 +257,7 @@ interface Payload {
   height: 80px;
 }
 .ideal-type__item {
-  @apply flex border rounded-md justify-center items-center;
+  @apply flex border rounded-md justify-center items-center cursor-pointer;
 }
 .ideal-type__item--checked {
   @apply text-violet-600 ring-2 ring-inset ring-violet-600 font-bold hover:bg-gray-50;
@@ -283,7 +283,7 @@ interface Payload {
   background-color: transparent;
 }
 .interest__item {
-  @apply flex justify-center items-center bg-white hover:bg-gray-50 border border-gray-300 rounded-md;
+  @apply flex justify-center items-center bg-white hover:bg-gray-50 border border-gray-300 rounded-md cursor-pointer;
   height: 50px;
 }
 .interest__item--checked {
