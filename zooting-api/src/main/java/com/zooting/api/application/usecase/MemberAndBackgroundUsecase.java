@@ -52,12 +52,11 @@ public class MemberAndBackgroundUsecase {
     public List<MemberAndBackgroundRes> findAllBackgroundInventory(String userId) {
         Member member = memberRepository.findMemberByEmail(userId).orElseThrow(()->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        List<MemberAndBackgroundRes> backgroundResList = backgroundInventoryRepository.findAllByMember(member)
+        return backgroundInventoryRepository.findAllByMember(member)
                 .stream().map(back-> new MemberAndBackgroundRes(
                         back.getId(),
                         back.getBackground().getFile().getFileName(),
                         back.getBackground().getFile().getImg_url(),
                         back.getBackground().getPrice()) ).toList();
-        return backgroundResList;
     }
 }

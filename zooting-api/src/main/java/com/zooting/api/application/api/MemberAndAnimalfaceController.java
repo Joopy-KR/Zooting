@@ -1,7 +1,6 @@
 package com.zooting.api.application.api;
 
 import com.zooting.api.application.dto.request.MemberAndAnimalfaceReq;
-import com.zooting.api.application.dto.request.MemberAndBackgroundReq;
 import com.zooting.api.application.usecase.MemberAndAnimalfaceUsecase;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;

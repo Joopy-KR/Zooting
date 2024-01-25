@@ -17,18 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Log4j2
 @SpringBootTest
@@ -57,41 +54,11 @@ class FriendServiceTest {
         // Given
         String fromEmail = "x";
         String toEmail = "y";
-        memberService.initialMemberRegister(fromEmail);
-        memberService.initialMemberRegister(toEmail);
+        memberRepository.save(Member.builder().email(fromEmail).build());
+        memberRepository.save(Member.builder().email(toEmail).build());
         sendFriendUsecase.sendFriendRequest(fromEmail, toEmail);
 
-        UserDetails userDetails = new UserDetails() {
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-            }
-            @Override
-            public String getPassword() {
-                return "password"; // 실제 비밀번호로 교체해야 함
-            }
-            @Override
-            public String getUsername() {
-                return fromEmail;
-            }
-            @Override
-            public boolean isAccountNonExpired() {
-                return true; // 계정 만료되지 않음
-            }
-            @Override
-            public boolean isAccountNonLocked() {
-                return true; // 계정 잠겨있지 않음
-            }
-            @Override
-            public boolean isCredentialsNonExpired() {
-                return true; // 자격 증명 만료되지 않음
-            }
-            @Override
-            public boolean isEnabled() {
-                return true; // 계정 활성화됨
-            }
-        };
-
+        UserDetails userDetails = getRoleUser(fromEmail);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "password", userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -103,22 +70,28 @@ class FriendServiceTest {
         List<Friend> friendList = friendRepository.findAll();
         friendList.forEach(friend -> log.info("{}, {}",friend.getFollower().getEmail(), friend.getFollowing().getEmail()));
 
-        assertTrue(friendService.getFriends(fromEmail).size() == 1);
-        assertTrue(friendService.getFriends(toEmail).size() == 1);
+        assertEquals(toEmail, friendService.getFriends(fromEmail).get(0).email());
+        assertEquals(fromEmail, friendService.getFriends(toEmail).get(0).email());
 
-    } // 친구 수락
+    }
+
+    private static UserDetails getRoleUser(String fromEmail) {
+        return User.builder()
+                .username(fromEmail)
+                .password(UUID.randomUUID().toString())
+                .roles("USER")
+                .build();
+    }
 
     @Test
     @DisplayName("친구 검색 테스트")
     @Transactional
     void searchFriendTest(){
         // Given
-        String fromEmail = "abcdefg";
-        String toEmail = "hijklmnop";
+        String fromEmail = UUID.randomUUID().toString();
+        String toEmail = UUID.randomUUID().toString();
         Member member1 = memberRepository.save(Member.builder().email(fromEmail).nickname(fromEmail).build());
         Member member2 = memberRepository.save(Member.builder().email(toEmail).nickname(toEmail).build());
-//        memberService.initialMemberRegister(fromEmail);
-//        memberService.initialMemberRegister(toEmail);
         Friend friend1 = Friend.builder().follower(member1).following(member2).build();
         Friend friend2 = Friend.builder().follower(member2).following(member1).build();
         friendRepository.save(friend1);
@@ -126,10 +99,9 @@ class FriendServiceTest {
         friendService.getFriends(fromEmail)
                 .forEach(friend -> log.info("{}, {}", friend.email(), friend.nickname()));
         // When
-        List<FriendRes> friendResList = friendService.searchFriend("o", fromEmail);
+        List<FriendRes> friendResList = friendService.searchFriend(toEmail.substring(0, toEmail.length()/2), fromEmail);
 
         // Then
-        assertEquals(1, friendResList.size());
-        assertEquals("hijklmnop", friendResList.get(0).email());
-    } // 친구 검색
+        assertEquals(toEmail, friendResList.get(0).email());
+    }
 }

@@ -35,7 +35,7 @@ public class QDM extends EntityPathBase<DM> {
 
     public final StringPath message = createString("message");
 
-    public final BooleanPath status = createBoolean("status");
+    public final StringPath sender = createString("sender");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
