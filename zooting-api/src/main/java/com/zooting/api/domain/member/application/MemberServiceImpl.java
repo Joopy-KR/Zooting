@@ -84,7 +84,7 @@ public class MemberServiceImpl implements MemberService {
                 member.getNickname(),
                 member.getBirth(),
                 member.getAddress(),
-                member.getPoint(),
+                null,
                 member.getAdditionalInfo().getPersonality(),
                 member.getAdditionalInfo().getAnimal(),
                 member.getAdditionalInfo().getInterest(),

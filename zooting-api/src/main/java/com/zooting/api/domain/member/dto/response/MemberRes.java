@@ -1,6 +1,9 @@
 package com.zooting.api.domain.member.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Nullable;
 
 import java.util.Date;
 
@@ -17,6 +20,7 @@ public record MemberRes(
         @Schema(description = "주소")
         String address,
         @Schema(description = "포인트")
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         Long point,
         @Schema(description = "성격")
         String personality,
