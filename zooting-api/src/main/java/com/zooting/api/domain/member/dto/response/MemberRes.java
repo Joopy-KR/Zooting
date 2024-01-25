@@ -1,6 +1,5 @@
 package com.zooting.api.domain.member.dto.response;
 
-import com.zooting.api.domain.member.dto.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;

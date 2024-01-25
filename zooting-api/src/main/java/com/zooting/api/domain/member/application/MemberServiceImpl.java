@@ -4,10 +4,7 @@ import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.member.dao.ExtractObj;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.MemberRes;
-import com.zooting.api.domain.member.dto.response.MemberSearchRes;
-import com.zooting.api.domain.member.dto.response.MyProfileReq;
-import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.dto.response.*;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.entity.Privilege;
@@ -183,7 +180,8 @@ public class MemberServiceImpl implements MemberService {
         } else {
             findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         }
-        return findMembers.stream().map(mem -> new MemberSearchRes(mem.getNickname(), mem.getEmail())).toList();
+        return findMembers.stream().map(mem -> new MemberSearchRes(mem.getNickname(), mem.getEmail(),
+                mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
     }
 
     @Transactional
@@ -235,6 +233,17 @@ public class MemberServiceImpl implements MemberService {
         extractObj.setMemberBirth(member.getBirth());
         extractObj.setRangeYear(extractingReq.rangeYear());
         System.out.println(extractObj.getMemberIdeals());
-        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(),mem.getNickname())).toList();
+        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(),mem.getNickname(), mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
+    }
+
+    @Override
+    public List<MemberSearchRes> findMyBlockList(String userId) {
+        Member member = memberRepository.findMemberByEmail(userId)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        return member.getBlockFromList().stream()
+                .map(block -> new MemberSearchRes(member.getEmail(), member.getNickname()
+                        , member.getGender().toString(), member.getAdditionalInfo().getAnimal())).toList();
+
+
     }
 }
