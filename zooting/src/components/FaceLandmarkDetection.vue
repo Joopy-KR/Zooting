@@ -107,11 +107,17 @@ async function enableWebcam() {
 
 let lastVideoTime = -1;
 let results: any = undefined;
+let imgX = 0;
+let imgY = 0;
+let imgZ = 0
+
+const img = new Image()
+img.src ="src/assets/animal_mask/dog_face.png"
 
 const predictWebcam = async () => {
   const video: any = webcamRef.value;
   const canvas: any = canvasRef.value;
-
+  
   const radio = video.videoHeight / video.videoWidth;
   video.style.width = videoWidth + "px";
   video.style.height = videoWidth * radio + "px";
@@ -119,6 +125,9 @@ const predictWebcam = async () => {
   canvas.style.height = videoWidth * radio + "px";
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
+  
+  const ctx: any = canvasRef.value?.getContext("2d")
+  
 
   // detectForVideo 함수를 사용하여 얼굴 추적
   let startTimeMs = performance.now();
@@ -126,67 +135,61 @@ const predictWebcam = async () => {
     lastVideoTime = video.currentTime;
     results = faceLandmarker.detectForVideo(video, startTimeMs);
   }
-
+  
   is_loaded.value = false
-
-  const ctx: any = canvasRef.value?.getContext("2d")
-  const img = new Image()
-  img.src ="src/assets/animal_mask/dog_face.png"
+  
 
   // 얼굴에 마스크 그리는 부분
   if (results.faceLandmarks) {
     for (const landmarks of results.faceLandmarks) {
       is_loaded.value = true
+      
+      // 이미지 좌표를 얼굴의 특정 랜드마크에서 가져오도록 수정
+      imgX = landmarks[FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS[0].start].x * 300;
+      imgY = landmarks[FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS[0].start].y * 150;
 
-      ctx.drawImage(
-        img, 
-        landmarks[FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS[0].start].x,
-        landmarks[FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS[0].start].y,
-        300,
-        300,
-        )
+      console.log(imgX)
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.drawImage(img, imgX, imgY, 350, 350)
 
-      // drawingUtils.value.drawConnectors(
-      //   landmarks,
-      //   FaceLandmarker.FACE_LANDMARKS_TESSELATION,
-      //   { color: "#C0C0C070", lineWidth: 1 }
-      // );
-      // drawingUtils.value.drawConnectors(
-      //   landmarks,
-      //   FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
-      //   { color: "#FF3030", lineWidth: 1 }
-      // );
-      // drawingUtils.value.drawConnectors(
-      //   landmarks,
-      //   FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW,
-      //   { color: "#FF3030", lineWidth: 1 }
-      // );
-      // drawingUtils.value.drawConnectors(
-      //   landmarks,
-      //   FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
-      //   { color: "#30FF30", lineWidth: 1 }
-      // );
-      // drawingUtils.value.drawConnectors(
-      //   landmarks,
-      //   FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW,
-      //   { color: "#30FF30", lineWidth: 1 }
-      // );
-      // drawingUtils.value.drawConnectors(
-      //   landmarks,
-      //   FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
-      //   { color: "#E0E0E0", lineWidth: 1 }
-      // );
-      // drawingUtils.value.drawConnectors(
-      //   landmarks,
-      //   FaceLandmarker.FACE_LANDMARKS_LIPS,
-      //   { color: "#E0E0E0", lineWidth: 1 }
-      // );
 
-      // console.log(landmarks[1].x)
-      console.log("x: " + landmarks[FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS[0].start].x)
-      // console.log("y: " + landmarks[FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS[0].start].y)
-      // console.log("z: " + landmarks[FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS[0].start].z)
-
+      /**  그리드 그리는 부분
+      drawingUtils.value.drawConnectors(
+        landmarks,
+        FaceLandmarker.FACE_LANDMARKS_TESSELATION,ㄴ
+        { color: "#C0C0C070", lineWidth: 1 }
+      )
+      drawingUtils.value.drawConnectors(
+        landmarks,
+        FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+        { color: "#FF3030", lineWidth: 1 }
+      )
+      drawingUtils.value.drawConnectors(
+        landmarks,
+        FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW,
+        { color: "#FF3030", lineWidth: 1 }
+      )
+      drawingUtils.value.drawConnectors(
+        landmarks,
+        FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+        { color: "#30FF30", lineWidth: 1 }
+      )
+      drawingUtils.value.drawConnectors(
+        landmarks,
+        FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW,
+        { color: "#30FF30", lineWidth: 1 }
+      )
+      drawingUtils.value.drawConnectors(
+        landmarks,
+        FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
+        { color: "#E0E0E0", lineWidth: 1 }
+      )
+      drawingUtils.value.drawConnectors(
+        landmarks,
+        FaceLandmarker.FACE_LANDMARKS_LIPS,
+        { color: "#E0E0E0", lineWidth: 1 }
+      )
       drawingUtils.value.drawConnectors(
         landmarks,
         FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS,
@@ -197,6 +200,7 @@ const predictWebcam = async () => {
         FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS,
         { color: "#30FF30", lineWidth: 1 }
       )
+    */
     }
   }
 
