@@ -150,12 +150,13 @@
 
 <script setup type="text/javascript" lang="ts">
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, computed } from "vue";
 import { FaceDetector, FilesetResolver, Detection } from "@mediapipe/tasks-vision";
-const emit = defineEmits(["workFinished"]);
+import { useAccessTokenStore } from "@/stores/store";
 
-// 성별 정보
-const gender = ref("male");
+const emit = defineEmits(["workFinished"]);
+const store = useAccessTokenStore()
+
 
 // 얼굴인식 변수
 let faceDetector: FaceDetector;
@@ -170,6 +171,17 @@ const showButton = ref(true); // 유사도가 90 이상일때 촬영버튼 출�
 onMounted(() => {
   initializeFaceDetector();
   init();
+  store.getUserInfo()
+});
+
+// 성별 정보
+// const gender = ref('female')
+const gender = computed(() => {
+  if (store.userInfo?.gender === 'man') {
+    return 'male';
+  } else {
+    return 'female';
+  }
 });
 
 // 얼굴 인식 모델
