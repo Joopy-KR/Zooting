@@ -3,13 +3,13 @@
     <div class="item__container">
       <div class="flex items-center gap-4">
         <img class="w-10 h-10 rounded-full" src="" alt="profile">
-        <div class="font-medium dark:text-white">
-          <div>Jese Leos</div>
-          <div class="text-sm text-gray-500">Joined in August 2014</div>
+        <div class="font-medium">
+          <div>Nickname</div>
+          <div class="text-sm text-gray-500">Content</div>
         </div>
       </div>
       <div class="flex">
-        <button>버튼</button>
+        <button class="px-3 border border-gray-500">해제</button>
       </div>
     </div>
   </div>

@@ -2,29 +2,29 @@
   <div class="friend__container">
     받은 요청
     <div class="item__container" v-for="(item, index) in requestFromList" :key="index">
-      <div class="flex items-center gap-4">
+      <RouterLink :to="getProfileLink(item.nickname)" class="flex items-center gap-4">
         <img class="w-10 h-10 rounded-full" src="" alt="profile">
-        <div class="font-medium dark:text-white">
+        <div class="font-medium">
           <div>{{ item.nickname }}</div>
-          <div class="text-sm text-gray-500">content</div>
+          <div class="text-sm text-gray-500">Content</div>
         </div>
-      </div>
+      </RouterLink>
       <div class="flex">
-        <button>버튼</button>
+        <button class="px-3 border border-gray-500 me-2" @click="friendAccept(item)">수락</button>
+        <button class="px-3 border border-gray-500" @click="friendReject(item)">거절</button>
       </div>
     </div>
-    {{ getRequestFromList }}
     보낸 요청
     <div class="item__container" v-for="(item, index) in requestToList" :key="index">
-      <div class="flex items-center gap-4">
+      <RouterLink :to="getProfileLink(item.nickname)" class="flex items-center gap-4">
         <img class="w-10 h-10 rounded-full" src="" alt="profile">
-        <div class="font-medium dark:text-white">
+        <div class="font-medium">
           <div>{{ item.nickname }}</div>
           <div class="text-sm text-gray-500">content</div>
         </div>
-      </div>
+      </RouterLink>
       <div class="flex">
-        <button>버튼</button>
+        <button class="px-3 border border-gray-500" @click="friendRequestCancel(item)">취소</button>
       </div>
     </div>
   </div>
@@ -46,6 +46,39 @@ watch(()=> store.requestFromList, (UpdateList)=>{
 watch(()=> store.requestToList, (UpdateList)=>{
   requestToList.value = UpdateList
 })
+
+const getProfileLink = (value: string) => {
+  return `/profile/${value}`
+}
+
+interface Friend {
+  email: string;
+  nickname: string;
+}
+
+const friendAccept = (item: Friend) => {
+  const params = {
+    email: item.email,
+    nickname: item.nickname,
+  }
+  store.friendAccept(params)
+}
+
+const friendReject = (item: Friend) => {
+  const params = {
+    email: item.email,
+    nickname: item.nickname,
+  }
+  store.friendReject(params)
+}
+
+const friendRequestCancel = (item: Friend) => {
+  const params = {
+    email: item.email,
+    nickname: item.nickname,
+  }
+  store.friendRequestCancel(params)
+}
 </script>
 
 <style scoped>

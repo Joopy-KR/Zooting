@@ -50,7 +50,6 @@ tabs.value[1].count = computed(() => {
 const currentList = shallowRef(SocialFriendList)
 
 const handleTabSelected = (currentTab: string) => {
-  console.log(currentTab)
   if (currentTab === '친구') {
     currentList.value = SocialFriendList
   } else if (currentTab === '친구 요청') {

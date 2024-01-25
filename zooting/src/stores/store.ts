@@ -242,7 +242,7 @@ export const useAccessTokenStore = defineStore(
         .then((res) => {
           console.log(res);
           userInfo.value = res.data.result;
-          if (!userInfo.value?.nickname) {
+          if (!isCompletedSignUp) {
             router.push({ name: "signup" });
           } else if (!userInfo.value?.animal) {
             router.push({ name: "animal_test" });
@@ -455,17 +455,16 @@ export const useAccessTokenStore = defineStore(
     };
     
     // 친구 요청 수락
-    const friendAccept = function (payload: {
+    const friendAccept = function (params: {
       email: string;
       nickname: string;
     }) {
-      const { email, nickname } = payload;
+      const friendReq = params;
       axios({
         method: 'post',
         url: `${API_URL}/api/friends/accept`,
-        data: {
-          email,
-          nickname,
+        params: {
+          friendReq
         },
         headers: {
           Authorization: `Bearer ${getAccessToken()}`
@@ -480,17 +479,16 @@ export const useAccessTokenStore = defineStore(
     };
     
     // 친구 요청 거절
-    const friendReject = function (payload: {
+    const friendReject = function (params: {
       email: string;
       nickname: string;
     }) {
-      const { email, nickname } = payload;
+      const friendReq = params;
       axios({
         method: 'delete',
         url: `${API_URL}/api/friends/request/reject`,
-        data: {
-          email,
-          nickname,
+        params: {
+          friendReq
         },
         headers: {
           Authorization: `Bearer ${getAccessToken()}`
@@ -506,17 +504,16 @@ export const useAccessTokenStore = defineStore(
     
     
     // 친구 요청 취소
-    const friendRequestCancel = function (payload: {
+    const friendRequestCancel = function (params: {
       email: string;
       nickname: string;
     }) {
-      const { email, nickname } = payload;
+      const friendReq = params;
       axios({
         method: 'delete',
         url: `${API_URL}/api/friends/request/cancel`,
-        data: {
-          email,
-          nickname,
+        params: {
+          friendReq
         },
         headers: {
           Authorization: `Bearer ${getAccessToken()}`

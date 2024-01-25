@@ -1,15 +1,19 @@
 <template>
   <div class="friend__container">
+    <div>
+      <p>친구</p>
+      <p>검색창</p>
+    </div>
     <div class="item__container" v-for="(item, index) in friendList" :key="index">
-      <div class="flex items-center gap-4">
+      <RouterLink :to="getProfileLink(item.nickname)" class="flex items-center gap-4">
         <img class="w-10 h-10 rounded-full" src="" alt="profile">
-        <div class="font-medium dark:text-white">
+        <div class="font-medium">
           <div>{{ item.nickname }}</div>
-          <div class="text-sm text-gray-500">content</div>
+          <div class="text-sm text-gray-500">Content</div>
         </div>
-      </div>
+      </RouterLink>
       <div class="flex">
-        <button>버튼</button>
+        <button class="px-3 border border-gray-500">삭제</button>
       </div>
     </div>
   </div>
@@ -18,6 +22,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAccessTokenStore } from '@/stores/store'
+import { RouterLink } from 'vue-router'
 
 const store = useAccessTokenStore()
 
@@ -26,6 +31,10 @@ const friendList = ref(store.friendList)
 watch(()=> store.friendList, (UpdateList)=>{
   friendList.value = UpdateList
 })
+
+const getProfileLink = (value: string) => {
+  return `/profile/${value}`
+}
 </script>
 
 <style scoped>
