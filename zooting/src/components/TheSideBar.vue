@@ -7,12 +7,14 @@
           </RouterLink>
       </div>
       <div class="side-bar__item">
+        
         <!-- Messages button -->
         <button @click="toggleMessagesTab" v-if="isLoggedIn && isCompletedTest">
           <svg :class="[isActiveMessageTab() ? 'text-violet-800' : 'text-gray-400', 'w-5 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20" transform="rotate(45)">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m9 17 8 2L9 1 1 19l8-2Zm0 0V9"/>
           </svg>
         </button>
+        
         <!-- Notifications button -->
         <button @click="toggleNotificationsTab">
           <svg :class="[isActivenotificationsTab() ? 'text-violet-800' : 'text-gray-400', 'w-6 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="20" fill="none" viewBox="0 0 14 20">
@@ -21,9 +23,19 @@
         </button>
       </div>
 
+      <!-- Log out -->
+      <div class="signout">
+        <button @click="logout" v-if="isLoggedIn && !store.isCompletedSignUp">
+          <svg class="w-5 h-6 m-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16" transform="rotate(180)">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8h11m0 0-4-4m4 4-4 4m-5 3H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3"/>
+          </svg>
+        </button>
+      </div>
+
+
       <!-- Profile image -->
       <img 
-        v-if="isLoggedIn"
+        v-if="isLoggedIn && store.isCompletedSignUp"
         id="avatarButton" 
         type="button" 
         data-dropdown-toggle="userDropdown" 
@@ -32,11 +44,6 @@
         src="" alt="User dropdown"
       >
       
-      <!-- 유저 정보가 없을 경우에 사용할 빈 프로필 -->
-      <!-- <div class="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-        <svg class="absolute w-12 h-12 text-gray-400 -left-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
-      </div> -->
-
       <!-- Dropdown menu -->
       <div id="userDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44" v-if="isLoggedIn">
           <ul class="py-2 text-sm text-gray-700" aria-labelledby="avatarButton">
@@ -44,8 +51,8 @@
               <RouterLink :to="getProfileLink()" class="block px-4 py-2 hover:bg-gray-100" @click="closeTab">프로필</RouterLink>
             </li>
           </ul>
-          <div class="py-1">
-            <div class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click="logout">로그아웃</div>
+          <div class="py-2">
+            <div class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" @click="logout">로그아웃</div>
           </div>
       </div>
     </nav>
