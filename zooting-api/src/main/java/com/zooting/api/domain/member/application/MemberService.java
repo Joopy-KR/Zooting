@@ -1,10 +1,8 @@
 package com.zooting.api.domain.member.application;
 
 import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.MemberRes;
-import com.zooting.api.domain.member.dto.response.MemberSearchRes;
-import com.zooting.api.domain.member.dto.response.MyProfileReq;
-import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.dto.response.*;
+
 
 import java.text.ParseException;
 import java.util.List;
@@ -24,4 +22,5 @@ public interface MemberService {
     PointRes findPoints(String userId);
     Boolean deductPoints(String userId, Long price);
     List<MemberSearchRes> extractMembers(String userId, ExtractingReq extractingReq);
+    List<MemberSearchRes> findMyBlockList(String userId);
 }

@@ -2,10 +2,7 @@ package com.zooting.api.domain.member.api;
 
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.MemberRes;
-import com.zooting.api.domain.member.dto.response.MemberSearchRes;
-import com.zooting.api.domain.member.dto.response.MyProfileReq;
-import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.dto.response.*;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -114,6 +111,22 @@ public class MemberController {
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
                 memberRes
+        );
+    }
+    @PreAuthorize("hasAnyRole('USER')")
+    @Operation(
+            summary = "프로필 확인",
+            description = "내 프로필이 맞다면 myprofile = true" +
+                    "내 프로필이 아니라면 myprofile = false"
+    )
+    @GetMapping("/blocklist")
+    public ResponseEntity<BaseResponse<List<MemberSearchRes>>> findMyBlockList(
+            @AuthenticationPrincipal UserDetails userDetails) {
+            var result = memberService.findMyBlockList(userDetails.getUsername());
+
+        return BaseResponse.success(
+                SuccessCode.CHECK_SUCCESS,
+                result
         );
     }
     @Operation(summary = "닉네임으로 유저 정보 조회")
