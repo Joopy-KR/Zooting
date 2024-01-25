@@ -2,14 +2,13 @@ package com.zooting.api.global.config;
 
 import com.zooting.api.global.jwt.JwtAuthenticateFilter;
 import com.zooting.api.global.jwt.service.JwtService;
-import com.zooting.api.global.security.handler.CustomOAuth2FailHandler;
 import com.zooting.api.global.security.handler.CustomOAuth2SuccessHandler;
 import com.zooting.api.global.security.oauth2.service.CustomOAuth2UserService;
-import com.zooting.api.global.security.userdetails.service.CustomUserDetailsService;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,9 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -73,7 +69,7 @@ public class WebSecurityConfig {
         configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList(      // 요청 헤더 중 허용할 헤더 설정
-                "Authorization",
+                "access-token",
                 "Cache-Control",
                 "Content-Type"
         ));

@@ -40,9 +40,6 @@ public class SwaggerConfig {
                 .license(new License().name("Apache License Version 2.0").url("http://www.apache.org/licenses/LICENSE-2.0"))
                 .version("v0.0.1");
 
-//        return new OpenAPI()
-//                .info(info);
-
         String jwt = "JWT";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwt);
         Components components = new Components().addSecuritySchemes(jwt, new SecurityScheme()

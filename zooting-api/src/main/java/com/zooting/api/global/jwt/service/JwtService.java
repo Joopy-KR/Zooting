@@ -80,7 +80,6 @@ public class JwtService {
     }
 
     public Authentication verifyAccessToken(String token){
-            log.info("3. Access Token 인증을 시작합니다.");
             Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
