@@ -4,11 +4,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.zooting.api.domain.dm.dao.DMRepository;
-import com.zooting.api.domain.dm.entity.DM;
 import com.zooting.api.domain.file.dao.FileRepository;
 import com.zooting.api.domain.file.dto.response.FileRes;
-import com.zooting.api.domain.file.entity.File;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,8 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Log4j2
 @Component
@@ -28,6 +26,7 @@ public class S3Util {
     private String bucket;
     private final AmazonS3 amazonS3;
     private final FileRepository fileRepository;
+
     // 파일 업로드
     @Transactional
     public List<FileRes> uploadFiles(List<MultipartFile> multipartFiles) throws IOException {
