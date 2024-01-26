@@ -81,7 +81,10 @@ public enum ErrorCode {
     NOT_FOUND_RESTAURANT(404, "B400", "존재하지 않는 음식점 입니다."),
     // S3 File 에러 (CODE: 900)
     NOT_FOUND_S3FILE(404, "B900", "존재하지 않는 S3 파일입니다."),
-    ; // End
+    // 친구 요청 에러 (CODE: 201)
+    ALREADY_EXIST_FRIEND_REQUEST(404,"B201" ,"이미 요청을 보냈습니다" ),
+    // 친구 에러 (CODE: 202)
+    ALREADY_EXIST_FRIEND(404,"B202" ,"이미 친구입니다" );
 
     /**
      * ******************************* Error Code Constructor ***************************************

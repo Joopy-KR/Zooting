@@ -33,6 +33,10 @@ public class AcceptFriendUsecase {
 
         Friend friend1 = new Friend(member1, member2);
         Friend friend2 = new Friend(member2, member1);
+        if(friendRepository.existsByFollowerAndFollowing(member1, member2) ||
+                friendRepository.existsByFollowerAndFollowing(member2, member1)) {
+            throw new BaseExceptionHandler(ErrorCode.ALREADY_EXIST_FRIEND);
+        }
         friendRepository.saveAll(List.of(friend1, friend2));
         friendRequestRepository.deleteFriendRequestByFromAndTo(member2, member1);
     }

@@ -32,7 +32,7 @@ public class FriendAndMemberController {
     @Operation(summary = "친구 요청 보내기", description = "로그인 한 사람이 친구 요청 보내기")
     @PostMapping("")
     public ResponseEntity<BaseResponse<String>> sendFriendRequest(@Valid @NotNull @RequestBody FriendReq friendReq, @AuthenticationPrincipal UserDetails userDetails){
-        sendFriendUsecase.sendFriendRequest(userDetails.getUsername(), friendReq.nickname());
+        sendFriendUsecase.sendFriendRequest(userDetails.getUsername(), friendReq.email());
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 "친구 요청 성공"
@@ -41,7 +41,7 @@ public class FriendAndMemberController {
 
     @Operation(summary = "친구 수락", description = "로그인 한 사람 기준 요청 온 친구 수락")
     @PostMapping("/accept")
-    public ResponseEntity<BaseResponse<String>> acceptFriend(@Valid @NotNull @RequestParam FriendReq friendReq, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<BaseResponse<String>> acceptFriend(@Valid @NotNull @RequestBody FriendReq friendReq, @AuthenticationPrincipal UserDetails userDetails){
         acceptFriendUsecase.acceptFriend(friendReq, userDetails);
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
