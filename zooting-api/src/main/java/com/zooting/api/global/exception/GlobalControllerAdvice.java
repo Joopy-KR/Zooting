@@ -27,7 +27,6 @@ public class GlobalControllerAdvice {
                 .code(ErrorCode.INTERNAL_SERVER_ERROR)
                 .message(e.getMessage())
                 .build();
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @ExceptionHandler(RuntimeException.class)

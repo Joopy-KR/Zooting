@@ -1,6 +1,7 @@
 package com.zooting.api.global.security.userdetails;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,5 +48,14 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled(){
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return " {CustomUserDetails {" +
+                "email: " + email +
+                ", nickname: " + nickname +
+                ", authorities: " + authorities +
+                "}}";
     }
 }
