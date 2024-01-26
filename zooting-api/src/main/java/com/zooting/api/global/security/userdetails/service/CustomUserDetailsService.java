@@ -24,8 +24,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        UserDetails userDetails;
+
         Optional<Member> member = memberRepository.findMemberByEmail(email);
-        CustomUserDetails userDetails;
 
         if(member.isPresent()) {
             Member registeredMember = member.get();
@@ -34,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .nickname(registeredMember.getNickname())
                     .authorities(mapPrivilegeToAuthorities(registeredMember))
                     .build();
-        } else { // 최초 등록하는 유저일 경우 DB에 저장 후 userDetails로 매핑
+        } else { // 최초 등록하는 유저일 경우 DB에 저장 후 userDetails 매핑
             Member newMember = memberRepository.save(Member.builder()
                             .email(email)
                             .role(List.of(Privilege.ANONYMOUS))

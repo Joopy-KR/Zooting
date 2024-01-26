@@ -4,7 +4,6 @@ import com.zooting.api.application.dto.request.ReportRejectReq;
 import com.zooting.api.application.dto.request.ReportAcceptReq;
 import com.zooting.api.domain.disabled.dao.DisabledRepository;
 import com.zooting.api.domain.disabled.entity.DisabledMember;
-import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.report.dao.ReportRepository;
 import com.zooting.api.domain.report.entity.ReportList;
 import com.zooting.api.global.common.code.ErrorCode;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

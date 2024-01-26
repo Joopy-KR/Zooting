@@ -1,7 +1,7 @@
 package com.zooting.api.global.config;
 
 import com.zooting.api.global.jwt.JwtAuthenticateFilter;
-import com.zooting.api.global.jwt.JwtService;
+import com.zooting.api.global.jwt.service.JwtService;
 import com.zooting.api.global.security.handler.CustomOAuth2FailHandler;
 import com.zooting.api.global.security.handler.CustomOAuth2SuccessHandler;
 import com.zooting.api.global.security.oauth2.service.CustomOAuth2UserService;
@@ -32,7 +32,7 @@ public class WebSecurityConfig {
     private final JwtService jwtService;
     private static final String[] URL_WHITE_LIST = {"/error", "/login", "/favicon.ico",
             "/health", "/api-docs/**", "/swagger-ui/**",
-            "/swagger-resources/**", "/swagger-ui.html"};
+            "/swagger-resources/**", "/swagger-ui.html", "/api/token/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -52,6 +52,7 @@ public class WebSecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService))
                         .successHandler(customOAuth2SuccessHandler)
+                        .failureHandler(customOAuth2FailHandler)
                 )
                 .addFilterBefore(jwtAuthenticateFilter(), UsernamePasswordAuthenticationFilter.class);
 
@@ -70,7 +71,8 @@ public class WebSecurityConfig {
         );
         final List<String> allowedOriginPatterns = List.of(
                 "http://localhost:8080",
-                "http://localhost:5173"
+                "http://localhost:5173",
+                "https://i10a702.p.ssafy.io"
         );
         return request -> {
             CorsConfiguration config = new CorsConfiguration();
