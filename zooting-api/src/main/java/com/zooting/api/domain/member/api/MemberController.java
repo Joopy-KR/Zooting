@@ -109,7 +109,7 @@ public class MemberController {
             @AuthenticationPrincipal UserDetails userDetails) {
         MemberRes memberRes = memberService.findMemberInfo(userDetails.getUsername());
         return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
+                SuccessCode.SELECT_SUCCESS,
                 memberRes
         );
     }
@@ -132,7 +132,7 @@ public class MemberController {
             @Valid @NotNull @Size(min = 2, max = 16)@RequestParam(name="nickname") String nickname){
         MemberRes memberRes = memberService.findMemberInfoByNickname(nickname);
         return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
+                SuccessCode.SELECT_SUCCESS,
                 memberRes
         );
     }
