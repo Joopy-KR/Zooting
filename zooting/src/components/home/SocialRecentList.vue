@@ -3,6 +3,15 @@
     <div class="item__container">
       recent list item
     </div>
+    <div class="item__container">
+      recent list item
+    </div>
+    <div class="item__container">
+      recent list item
+    </div>
+    <div class="item__container">
+      recent list item
+    </div>
   </div>
 </template>
 
@@ -11,9 +20,10 @@
 
 <style scoped>
 .recent__container {
-  @apply flex-grow grid grid-cols-2;
+  @apply flex-grow grid grid-cols-2 grid-rows-2;
   background-color: darkorange;
-  overflow-y: auto;
+  max-height: 250px;
+  min-height: 250px;
 }
 .recent__container::-webkit-scrollbar {
   width: 7px;
