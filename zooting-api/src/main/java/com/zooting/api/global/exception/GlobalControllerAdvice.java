@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
+import java.util.Objects;
+
 @Log4j2
 @RestControllerAdvice
 public class GlobalControllerAdvice {
@@ -45,7 +47,7 @@ public class GlobalControllerAdvice {
         ErrorResponse response = ErrorResponse.of()
                 .code(ErrorCode.NOT_VALID_ERROR)
                 .message(ex.getMessage())
-                .errors(bindingResult.getFieldErrors())
+                .errors(Objects.requireNonNull(bindingResult).getFieldErrors())
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
