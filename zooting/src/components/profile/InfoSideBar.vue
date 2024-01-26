@@ -1,13 +1,24 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, defineProps, onMounted, watch } from "vue";
 
-const profile = ref({
-  nickname: "",
-  interests: ["등산", "수영", "여행", "캠핑", "게임", "노래"],
-  introduce: "캐치마인드 개고수 입니다",
-  profileImg:
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCgmII3Iks54cyWu3LiHejR1mcmJb_PVT_unHodbxd5dk_Tg4oN38yn4JN_km5a9xoT4Q&usqp=CAU",
+const props = defineProps({
+  userInfo: Object,
 });
+
+const interests = ref([]);
+
+watch(
+  () => props.userInfo?.interest,
+  (newValue, oldValue) => {
+    if (newValue) {
+      console.log(newValue);
+      interests.value = JSON.parse(newValue.substring(1, newValue.length - 1));
+      console.log(interests.value);
+    } else {
+      interests.value = [];
+    }
+  }
+);
 </script>
 
 <template>
@@ -54,7 +65,7 @@ const profile = ref({
         <div class="w-2/3 m-4 border-t-4 shadow-inner rounded-3xl">
           <div class="grid grid-cols-1 gap-6 p-8 sm:grid-cols-2">
             <div
-              v-for="interest in profile.interests"
+              v-for="interest in interests"
               :key="interest"
               class="relative flex items-center px-6 py-3 space-x-3 bg-white border-gray-300 rounded-lg shadow-lg focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400"
             >

@@ -11,6 +11,13 @@ import { useAccessTokenStore } from "@/stores/store";
 
 const router = useRoute();
 
+const gender = ref<string | null>("man");
+const idealTypeSet = ref(new Set<string>());
+const birth = ref<string | null>(null);
+const failAlert = ref(false);
+const failMessage = ref<string>();
+const successAlert = ref(false);
+
 interface Info {
   email: string | null;
   gender: string | null;
@@ -26,7 +33,7 @@ interface Info {
   maskId: Number | null;
 }
 
-const myInfo = ref<Info>({
+const userInfo = ref<Info>({
   email: null,
   gender: null,
   nickname: null,
@@ -45,16 +52,16 @@ const myInfo = ref<Info>({
 const loadMyInfo = () => {
   loadMyInfoApi(
     ({ data }: any) => {
-      myInfo.value!.email = data["result"].email;
-      myInfo.value!.gender = data["result"].gender;
-      myInfo.value!.nickname = data["result"].nickname;
-      myInfo.value!.birth = convertDate(data["result"].birth);
-      myInfo.value!.address = data["result"].address;
-      myInfo.value!.point = data["result"].point;
-      myInfo.value!.personality = data["result"].personality;
-      myInfo.value!.animal = data["result"].animal;
-      myInfo.value!.interest = data["result"].interest;
-      myInfo.value!.idealAnimal = data["result"].idealAnimal;
+      userInfo.value!.email = data["result"].email;
+      userInfo.value!.gender = data["result"].gender;
+      userInfo.value!.nickname = data["result"].nickname;
+      userInfo.value!.birth = convertDate(data["result"].birth);
+      userInfo.value!.address = data["result"].address;
+      userInfo.value!.point = data["result"].point;
+      userInfo.value!.personality = data["result"].personality;
+      userInfo.value!.animal = data["result"].animal;
+      userInfo.value!.interest = data["result"].interest;
+      userInfo.value!.idealAnimal = data["result"].idealAnimal;
       initChanges();
     },
     (error: any) => {
@@ -67,16 +74,16 @@ const loadUserInfo = (nickname: string) => {
   loadUserInfoApi(
     nickname,
     ({ data }: any) => {
-      myInfo.value!.email = data["result"].email;
-      myInfo.value!.gender = data["result"].gender;
-      myInfo.value!.nickname = data["result"].nickname;
-      myInfo.value!.birth = convertDate(data["result"].birth);
-      myInfo.value!.address = data["result"].address;
-      myInfo.value!.point = data["result"].point;
-      myInfo.value!.personality = data["result"].personality;
-      myInfo.value!.animal = data["result"].animal;
-      myInfo.value!.interest = data["result"].interest;
-      myInfo.value!.idealAnimal = data["result"].idealAnimal;
+      userInfo.value!.email = data["result"].email;
+      userInfo.value!.gender = data["result"].gender;
+      userInfo.value!.nickname = data["result"].nickname;
+      userInfo.value!.birth = convertDate(data["result"].birth);
+      userInfo.value!.address = data["result"].address;
+      userInfo.value!.point = data["result"].point;
+      userInfo.value!.personality = data["result"].personality;
+      userInfo.value!.animal = data["result"].animal;
+      userInfo.value!.interest = data["result"].interest;
+      userInfo.value!.idealAnimal = data["result"].idealAnimal;
       initChanges();
     },
     (error: any) => {
@@ -88,7 +95,7 @@ const loadUserInfo = (nickname: string) => {
 // 나의 정보 수정
 const updateMyInfo = () => {
   // 유효성 검증
-  if (!myInfo.value!.address) {
+  if (!userInfo.value!.address) {
     failMessage.value = "정확한 주소를 입력해 주세요";
     failAlert.value = true;
     return;
@@ -100,7 +107,7 @@ const updateMyInfo = () => {
   }
 
   const data = {
-    address: myInfo.value!.address,
+    address: userInfo.value!.address,
     idealAnimal: Array.from(idealTypeSet.value),
   };
 
@@ -114,13 +121,6 @@ const updateMyInfo = () => {
   );
 };
 
-const gender = ref<string | null>("man");
-const idealTypeSet = ref(new Set<string>());
-const birth = ref<string | null>(null);
-const failAlert = ref(false);
-const failMessage = ref<string>();
-const successAlert = ref(false);
-
 const setFailAlert = (isOpen: boolean) => {
   failAlert.value = isOpen;
 };
@@ -129,9 +129,9 @@ const setSuccessAlert = (isOpen: boolean) => {
 };
 
 const initChanges = () => {
-  gender.value = myInfo.value.gender;
-  birth.value = myInfo.value.birth;
-  idealTypeSet.value = parseStringToSet(myInfo.value!.idealAnimal);
+  gender.value = userInfo.value.gender;
+  birth.value = userInfo.value.birth;
+  idealTypeSet.value = parseStringToSet(userInfo.value!.idealAnimal);
 };
 
 const areas: string[] = [
@@ -258,7 +258,7 @@ onMounted(() => {
             name="nickname"
             id="nickname"
             class="block w-full px-8 py-2 text-2xl font-bold text-center text-gray-900 bg-gray-100 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
-            :value="myInfo!.nickname"
+            :value="userInfo!.nickname"
             :disabled="true"
           />
         </div>
@@ -299,7 +299,7 @@ onMounted(() => {
         </div>
         <div class="input__div">
           <label for="address" class="input__label">지역</label>
-          <select id="address" v-model="myInfo.address">
+          <select id="address" v-model="userInfo.address">
             <option value="" disabled selected hidden>사는 지역을 선택해 주세요.</option>
             <option v-for="(area, index) in areas" :key="index">{{ area }}</option>
           </select>
