@@ -7,7 +7,12 @@ public record FriendRes(
         @Schema(description = "이메일")
         String email,
         @Schema(description = "닉네임")
-        String nickname
+        String nickname,
+        @Schema(description = "동물")
+        String animal,
+        @Schema(description = "성별")
+        String gender
+
 ) {
 
 }

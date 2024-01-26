@@ -20,7 +20,7 @@ public class FriendServiceImpl implements FriendService{
         List<Friend> friendList = friendRepository.findFriendByFollower(follower);
         return friendList
                 .stream()
-                .map(friend -> new FriendRes(friend.getFollowing().getEmail(), friend.getFollowing().getNickname()))
+                .map(friend -> new FriendRes(friend.getFollowing().getEmail(), friend.getFollowing().getNickname(), friend.getFollowing().getAdditionalInfo().getAnimal(), friend.getFollowing().getGender()))
                 .toList();
     }
 
@@ -30,7 +30,8 @@ public class FriendServiceImpl implements FriendService{
         return friendRepository.findByFollower_EmailAndFollowing_NicknameContaining
                         (loginEmail, nickname)
                 .stream()
-                .map(friend -> new FriendRes(friend.getFollowing().getEmail(), friend.getFollowing().getNickname()))
+                .map(friend -> new FriendRes(friend.getFollowing().getEmail(), friend.getFollowing().getNickname(), friend.getFollowing().getAdditionalInfo().getAnimal(), friend.getFollowing().getGender()))
                 .toList();
     }
+
 }

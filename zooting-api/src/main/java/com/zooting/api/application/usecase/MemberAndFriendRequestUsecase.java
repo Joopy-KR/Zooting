@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @PreAuthorize("hasAnyRole('USER')")
 @Service
 @RequiredArgsConstructor
-public class SendFriendUsecase {
+public class MemberAndFriendRequestUsecase {
     private final FriendRequestRepository friendRequestRepository;
     private final MemberRepository memberRepository;
 
@@ -31,4 +31,6 @@ public class SendFriendUsecase {
         FriendRequest friendRequest = new FriendRequest(fromMember, toMember);
         friendRequestRepository.save(friendRequest);
     }
+
+
 }
