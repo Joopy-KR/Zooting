@@ -12,12 +12,11 @@ import static com.zooting.api.domain.member.entity.QMember.member;
 
 
 @RequiredArgsConstructor
-public class MemberRepositoryImpl implements MemberRepositoryCustom {
+public class  MemberRepositoryImpl implements MemberRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
     public List<Member> extractMatchingMember(ExtractObj extractObj) {
-
         return queryFactory
                 .selectFrom(member)
                 .where(
@@ -37,6 +36,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                         member.additionalInfo.animal.in(extractObj.getMemberIdeals()).count().desc()
                 ).groupBy(member.additionalInfo.interest, member.additionalInfo.idealAnimal)
                 .fetch();
+
     }
 
     private BooleanExpression notInBlockToList(List<String> blockToList) {

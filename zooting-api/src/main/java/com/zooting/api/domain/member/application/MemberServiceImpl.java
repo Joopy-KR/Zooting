@@ -69,8 +69,8 @@ public class MemberServiceImpl implements MemberService {
                 member.getAdditionalInfo().getAnimal(),
                 member.getAdditionalInfo().getInterest(),
                 member.getAdditionalInfo().getIdealAnimal(),
-                member.getAdditionalInfo().getBackgroundId(),
-                member.getAdditionalInfo().getMaskId()
+                member.getAdditionalInfo().getBackgroundId().getFile().getImg_url(),
+                member.getAdditionalInfo().getMaskId().getFile().getImg_url()
         );
     }
 
@@ -89,8 +89,8 @@ public class MemberServiceImpl implements MemberService {
                 member.getAdditionalInfo().getAnimal(),
                 member.getAdditionalInfo().getInterest(),
                 member.getAdditionalInfo().getIdealAnimal(),
-                member.getAdditionalInfo().getBackgroundId(),
-                member.getAdditionalInfo().getMaskId()
+                member.getAdditionalInfo().getBackgroundId().getFile().getImg_url(),
+                member.getAdditionalInfo().getMaskId().getFile().getImg_url()
         );
     }
 
@@ -181,7 +181,7 @@ public class MemberServiceImpl implements MemberService {
             findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         }
         return findMembers.stream().map(mem -> new MemberSearchRes(mem.getNickname(), mem.getEmail(),
-                mem.getGender(), mem.getAdditionalInfo().getAnimal())).toList();
+                mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
     }
 
     @Transactional
@@ -233,7 +233,7 @@ public class MemberServiceImpl implements MemberService {
         extractObj.setMemberBirth(member.getBirth());
         extractObj.setRangeYear(extractingReq.rangeYear());
         System.out.println(extractObj.getMemberIdeals());
-        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(),mem.getNickname(), mem.getGender(), mem.getAdditionalInfo().getAnimal())).toList();
+        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(),mem.getNickname(), mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
     }
 
     @Override
@@ -241,8 +241,8 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         return member.getBlockFromList().stream()
-                .map(block -> new MemberSearchRes(member.getEmail(), member.getNickname()
-                        , member.getGender(), member.getAdditionalInfo().getAnimal())).toList();
+                .map(block -> new MemberSearchRes(block.getTo().getEmail(), block.getTo().getNickname()
+                        ,block.getTo().getGender().toString(), block.getTo().getAdditionalInfo().getAnimal())).toList();
 
 
     }

@@ -109,16 +109,12 @@ public class MemberController {
             @AuthenticationPrincipal UserDetails userDetails) {
         MemberRes memberRes = memberService.findMemberInfo(userDetails.getUsername());
         return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
+                SuccessCode.SELECT_SUCCESS,
                 memberRes
         );
     }
     @PreAuthorize("hasAnyRole('USER')")
-    @Operation(
-            summary = "프로필 확인",
-            description = "내 프로필이 맞다면 myprofile = true" +
-                    "내 프로필이 아니라면 myprofile = false"
-    )
+    @Operation(summary = "차단 리스트 조회")
     @GetMapping("/blocklist")
     public ResponseEntity<BaseResponse<List<MemberSearchRes>>> findMyBlockList(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -136,7 +132,7 @@ public class MemberController {
             @Valid @NotNull @Size(min = 2, max = 16)@RequestParam(name="nickname") String nickname){
         MemberRes memberRes = memberService.findMemberInfoByNickname(nickname);
         return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
+                SuccessCode.SELECT_SUCCESS,
                 memberRes
         );
     }
