@@ -6,6 +6,7 @@ import com.zooting.api.domain.friend.entity.FriendRequest;
 import com.zooting.api.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,7 @@ public class FriendRequestServiceImpl implements FriendRequestService{
 
 
     @Override
+    @Transactional
     public void rejectFriendRequest(String requestFrom, String requestTo) {
         Member from = Member.builder().email(requestFrom).build(); // x
         Member to = Member.builder().email(requestTo).build(); // y
