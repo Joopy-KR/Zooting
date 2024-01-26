@@ -1,9 +1,7 @@
 package com.zooting.api.domain.file.util;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import com.zooting.api.domain.file.dao.FileRepository;
 import com.zooting.api.domain.file.dto.response.FileRes;
 import lombok.RequiredArgsConstructor;
@@ -53,10 +51,24 @@ public class S3Util {
                     randomId,
                     originFileName,
                     fileName,
-                    fileUrl
+                    fileUrl,
+                    folderKey
             ));
         }
         return s3FileList;
+    }
+
+    public void remove(String folderKey) {
+        folderKey = folderKey + "/";
+        List<S3ObjectSummary> objectSummaries = amazonS3.listObjects(bucket, folderKey).getObjectSummaries();
+
+        // 내부 오브젝트 삭제
+        for (S3ObjectSummary summary : objectSummaries) {
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, summary.getKey()));
+        }
+
+        // 폴더 삭제
+        amazonS3.deleteObject(bucket, folderKey);
     }
 
 }

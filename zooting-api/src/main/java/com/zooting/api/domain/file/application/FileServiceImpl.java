@@ -10,6 +10,7 @@ import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -23,15 +24,16 @@ public class FileServiceImpl implements FileService{
 
     private final S3Util s3Util;
     private final FileRepository fileRepository;
-    private final DMRepository dmRepository;
     //TODO thumbnail
     @Override
     public List<FileRes> uploadFiles(List<MultipartFile> multipartFiles) throws IOException {
         return s3Util.uploadFiles(multipartFiles);
     }
 
+    @Transactional
     @Override
-    public void removeFile(UUID S3Id, Long fileId) {
-
+    public void removeFile(String fileName, String fileDir) {
+        fileRepository.deleteByFileName(fileName);
+        s3Util.remove(fileDir);
     }
 }

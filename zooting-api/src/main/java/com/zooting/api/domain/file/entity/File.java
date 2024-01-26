@@ -21,11 +21,13 @@ public class File extends BaseEntity {
     private DM dm;
     private String fileName; // 변환된 파일명
     private String img_url; // 파일 링크
+    private String fileDir; // S3 파일 경로
 
     @Builder
-    public File(DM dm, String fileName, String img_url) {
+    public File(DM dm, String fileName, String img_url, String fileDir) {
         this.dm = dm;
         this.fileName = fileName;
         this.img_url = img_url;
+        this.fileDir = fileDir;
     }
 }

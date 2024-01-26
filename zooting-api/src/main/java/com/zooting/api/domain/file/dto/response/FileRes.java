@@ -9,6 +9,7 @@ public record FileRes(
         UUID S3Id,
         String originFileName,
         String fileName,
-        String imgUrl
+        String imgUrl,
+        String fileDir
 ) {
 }

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <!-- stompjs 및 sockjs-client 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+<h1>WebSocket Chat</h1>
+
+<div id="messages"></div>
+<input type="text" id="messageInput" placeholder="Type your message">
+<input type="file" id="fileInput" multiple>
+<button onclick="sendMessage()">Send</button>
+
+<script>
+    const socket = new SockJS("/ws/dm"); // WebSocket 주소를 알맞게 변경
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, () => {
+        console.log('Connected to WebSocket');
+
+        // Subscribe to the WebSocket topic
+        stompClient.subscribe('/api/sub/dm/jeheon0717@nate.com', (message) => {
+            const dmReq = JSON.parse(message.body); // 받은 메시지를 처리
+            console.log('Received DM:', dmReq);
+
+            // 출력할 메시지를 추가
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML += `<p>${dmReq.sender}: ${dmReq.message}</p>`;
+
+        });
+    });
+
+    // Handle disconnection
+    socket.onclose = () => {
+        console.log('Disconnected from WebSocket');
+    };
+
+    // 메시지 전송 함수
+    async function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const messageContent = messageInput.value;
+        const fileInput = document.getElementById('fileInput');
+        const files = fileInput.files;
+
+        // FormData 객체 생성
+        const formData = new FormData();
+        formData.append('dmRoomId', 94);
+        formData.append('sender', 'c');
+        formData.append('receiver', 'jeheon0717@nate.com');
+        formData.append('message', messageContent);
+
+        // 파일들을 FormData에 추가
+        for (let i = 0; i < files.length; i++) {
+            formData.append('files', files[i]);
+        }
+
+        try {
+            // Axios를 사용하여 파일 업로드 요청 보내기
+            const response = await axios.post('/api/file/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            //response to fileResDto
+            console.log(response.data); // 파일 업로드에 대한 응답 확인
+                const filesList = response.data.result.map(file => ({
+                    S3Id: file.S3Id,
+                    originFileName: file.originFileName,
+                    fileName: file.fileName,
+                    imgUrl: file.imgUrl
+                }));
+
+
+                // Send a message to the WebSocket topic with FormData
+                stompClient.send('/api/pub/dm/message', {}, JSON.stringify({
+                    dmRoomId: 94,
+                    sender: 'c',
+                    receiver: 'jeheon0717@nate.com',
+                    message: messageContent,
+                    files: filesList
+                }));
+
+                // 입력 필드 초기화
+                messageInput.value = '';
+                fileInput.value = ''; // 파일 입력 필드 초기화
+            }
+
+        catch
+            (error)
+            {
+                console.error(error);
+            }
+        }
+</script>
+</body>
+</html>

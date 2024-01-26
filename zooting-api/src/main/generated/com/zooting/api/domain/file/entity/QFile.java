@@ -29,6 +29,8 @@ public class QFile extends EntityPathBase<File> {
 
     public final com.zooting.api.domain.dm.entity.QDM dm;
 
+    public final StringPath fileDir = createString("fileDir");
+
     public final StringPath fileName = createString("fileName");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);

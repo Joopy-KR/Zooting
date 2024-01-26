@@ -82,6 +82,7 @@ public class DMServiceImpl implements DMService {
                                 .dm(dm)
                                 .fileName(file.fileName())
                                 .img_url(file.imgUrl())
+                                .fileDir(file.fileDir())
                                 .build();
                         fileRepository.save(savedFile);
                         return savedFile;

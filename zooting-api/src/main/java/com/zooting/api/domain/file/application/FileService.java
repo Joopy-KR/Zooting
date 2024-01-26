@@ -13,8 +13,6 @@ import java.util.UUID;
 public interface FileService {
 
     List<FileRes> uploadFiles(List<MultipartFile> multipartFiles) throws IOException;
-    void removeFile(UUID S3Id, Long fileId);
-
-
+    void removeFile(String fileName, String fileDir);
 
 }
