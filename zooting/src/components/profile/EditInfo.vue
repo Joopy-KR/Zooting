@@ -63,6 +63,28 @@ const loadMyInfo = () => {
   );
 };
 
+const loadUserInfo = (nickname: string) => {
+  loadUserInfoApi(
+    nickname,
+    ({ data }: any) => {
+      myInfo.value!.email = data["result"].email;
+      myInfo.value!.gender = data["result"].gender;
+      myInfo.value!.nickname = data["result"].nickname;
+      myInfo.value!.birth = convertDate(data["result"].birth);
+      myInfo.value!.address = data["result"].address;
+      myInfo.value!.point = data["result"].point;
+      myInfo.value!.personality = data["result"].personality;
+      myInfo.value!.animal = data["result"].animal;
+      myInfo.value!.interest = data["result"].interest;
+      myInfo.value!.idealAnimal = data["result"].idealAnimal;
+      initChanges();
+    },
+    (error: any) => {
+      console.log(error);
+    }
+  );
+};
+
 // 나의 정보 수정
 const updateMyInfo = () => {
   // 유효성 검증
@@ -89,28 +111,6 @@ const updateMyInfo = () => {
       successAlert.value = true;
     },
     (error: any) => console.log(error)
-  );
-};
-
-const loadUserInfo = (nickname: string) => {
-  loadUserInfoApi(
-    nickname,
-    ({ data }: any) => {
-      myInfo.value!.email = data["result"].email;
-      myInfo.value!.gender = data["result"].gender;
-      myInfo.value!.nickname = data["result"].nickname;
-      myInfo.value!.birth = convertDate(data["result"].birth);
-      myInfo.value!.address = data["result"].address;
-      myInfo.value!.point = data["result"].point;
-      myInfo.value!.personality = data["result"].personality;
-      myInfo.value!.animal = data["result"].animal;
-      myInfo.value!.interest = data["result"].interest;
-      myInfo.value!.idealAnimal = data["result"].idealAnimal;
-      initChanges();
-    },
-    (error: any) => {
-      console.log(error);
-    }
   );
 };
 
