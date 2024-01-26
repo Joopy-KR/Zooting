@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,14 @@ public class FriendRequestServiceImpl implements FriendRequestService{
         List<FriendRequest> receivedList = friendRequestRepository.findByTo(requestTo);
         return receivedList
                 .stream()
-                .map(friendRequest -> new FriendRes(friendRequest.getFrom().getEmail(), friendRequest.getFrom().getNickname(), friendRequest.getFrom().getAdditionalInfo().getAnimal(), friendRequest.getFrom().getGender()))
+                .map(friendRequest -> new FriendRes(
+                        friendRequest.getFrom().getEmail(),
+                        friendRequest.getFrom().getNickname(),
+                        Optional.ofNullable(friendRequest.getFrom().getAdditionalInfo())
+                                .map(additionalInfo -> additionalInfo.getAnimal())
+                                .orElse(null),
+                        friendRequest.getFrom().getGender())
+                )
                 .toList();
     }
     @Override
@@ -27,7 +35,14 @@ public class FriendRequestServiceImpl implements FriendRequestService{
         List<FriendRequest> sentList = friendRequestRepository.findByFrom(requestFrom);
         return sentList
                 .stream()
-                .map(friendRequest -> new FriendRes(friendRequest.getTo().getEmail(), friendRequest.getTo().getNickname(), friendRequest.getTo().getAdditionalInfo().getAnimal(), friendRequest.getTo().getGender()))
+                .map(friendRequest -> new FriendRes(
+                        friendRequest.getTo().getEmail(),
+                        friendRequest.getTo().getNickname(),
+                        Optional.ofNullable(friendRequest.getTo().getAdditionalInfo())
+                                .map(additionalInfo -> additionalInfo.getAnimal())
+                                .orElse(null),
+                        friendRequest.getTo().getGender())
+                )
                 .toList();
     }
 
