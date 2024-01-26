@@ -7,5 +7,4 @@ import java.util.List;
 public interface FriendService {
     List<FriendRes> getFriends(String follower);
     List<FriendRes> searchFriend(String nickname, String loginEmail);
-
 }

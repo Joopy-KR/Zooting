@@ -19,7 +19,7 @@ public class FriendRequestServiceImpl implements FriendRequestService{
         List<FriendRequest> receivedList = friendRequestRepository.findByTo(requestTo);
         return receivedList
                 .stream()
-                .map(friendRequest -> new FriendRes(friendRequest.getFrom().getEmail(), friendRequest.getFrom().getNickname()))
+                .map(friendRequest -> new FriendRes(friendRequest.getFrom().getEmail(), friendRequest.getFrom().getNickname(), friendRequest.getFrom().getAdditionalInfo().getAnimal(), friendRequest.getFrom().getGender()))
                 .toList();
     }
     @Override
@@ -27,7 +27,7 @@ public class FriendRequestServiceImpl implements FriendRequestService{
         List<FriendRequest> sentList = friendRequestRepository.findByFrom(requestFrom);
         return sentList
                 .stream()
-                .map(friendRequest -> new FriendRes(friendRequest.getTo().getEmail(), friendRequest.getTo().getNickname()))
+                .map(friendRequest -> new FriendRes(friendRequest.getTo().getEmail(), friendRequest.getTo().getNickname(), friendRequest.getTo().getAdditionalInfo().getAnimal(), friendRequest.getTo().getGender()))
                 .toList();
     }
 
