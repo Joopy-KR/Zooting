@@ -1,153 +1,66 @@
 package com.zooting.api.global.jwt.service;
 
-import com.zooting.api.global.common.code.ErrorCode;
-import com.zooting.api.global.exception.BaseExceptionHandler;
+import com.zooting.api.global.jwt.dto.TokenDto;
 import com.zooting.api.global.security.userdetails.CustomUserDetails;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
-import lombok.Getter;
+import io.jsonwebtoken.Claims;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
 @Log4j2
-@Getter
 @Service
 public class JwtService {
-    private final String issuer;
-    private final SecretKey secretKey;
-    private final long accessTokenExpiration;
-    private final long refreshTokenExpiration;
-    private final StringRedisTemplate redisTemplate;
-    private static final String REFRESH_HASH = "refresh-token/";
-
+    private final JwtRepository jwtRepository;
+    private final JwtVerifier jwtVerifier;
+    private final JwtCreator jwtCreator;
+    private final UserDetailsService userDetailsService;
     public JwtService(
-            @Value("${jwt.issuer}") String issuer,
-            @Value("${jwt.secretKey}") String secretKey,
-            @Value("${jwt.access-token-expiration}") long accessTokenExpiration,
-            @Value("${jwt.refresh-token-expiration}") long refreshTokenExpiration,
-            StringRedisTemplate redisTemplate
+            JwtVerifier jwtVerifier,
+            JwtRepository jwtRepository,
+            JwtCreator jwtCreator,
+            UserDetailsService userDetailsService
     ) {
-        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
-        this.accessTokenExpiration = accessTokenExpiration;
-        this.refreshTokenExpiration = refreshTokenExpiration;
-        this.issuer = issuer;
-        this.redisTemplate = redisTemplate;
+        this.jwtVerifier = jwtVerifier;
+        this.jwtRepository = jwtRepository;
+        this.jwtCreator = jwtCreator;
+        this.userDetailsService = userDetailsService;
     }
 
-    public JwtBuilder createToken(UserDetails userDetails, long expirationTime) {
-        Date date = new Date();
-        Date expirationDate = new Date(date.getTime() + expirationTime);
+    public TokenDto getJwtTokens(String refreshToken){
+        TokenDto tokenDto = null;
+        Claims claims = jwtVerifier.verifyJwtToken(refreshToken);
 
-        return Jwts.builder()
-                .signWith(secretKey, Jwts.SIG.HS256)
-                .issuer(issuer)
-                .expiration(expirationDate)
-                .subject(userDetails.getUsername());
+        String email = claims.getSubject();
+        String refreshTokenInServer = jwtRepository.get(email);
+
+        if(refreshTokenInServer.equals(refreshToken)){
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            String newAccessToken = jwtCreator.createAccessToken(userDetails);
+            String newRefreshToken = jwtCreator.createRefreshToken(userDetails);
+
+            jwtRepository.save(email, newRefreshToken);
+
+            tokenDto = new TokenDto(newAccessToken, newRefreshToken);
+
+        }
+        return tokenDto;
     }
 
-    public String createAccessToken(UserDetails userDetails) {
-        return createToken(userDetails, accessTokenExpiration)
-                .claim("Privilege",
-                        userDetails
-                                .getAuthorities()
-                                .stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .toList()
-                )
-                .compact();
-    }
-
-    public String createRefreshToken(UserDetails userDetails) {
-        return createToken(userDetails, refreshTokenExpiration).compact();
-    }
-
-    public Authentication verifyAccessToken(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token) // Throws JWT Exception
-                .getPayload();
+    public Authentication authenticateToken(String token){
+        Claims claims = jwtVerifier.verifyJwtToken(token);
+        JwtClaimsParser jwtClaimsParser = new JwtClaimsParser(claims);
 
         UserDetails userDetails = CustomUserDetails.builder()
                 .email(claims.getSubject())
-                .authorities(getPrivileges(claims))
+                .authorities(jwtClaimsParser.getPrivileges())
                 .build();
 
         return new UsernamePasswordAuthenticationToken(
                 userDetails,
                 userDetails.getPassword(),
                 userDetails.getAuthorities());
-    }
-
-    public String verifyRefreshToken(String refreshToken) {
-        try {
-            log.info("Refresh Token 검증을 시작합니다");
-            Claims claims = Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(refreshToken) // Throws JWT Exception
-                    .getPayload();
-
-            String email = claims.getSubject();
-
-            log.info("토큰이 정상적으로 검증되었습니다");
-            log.info("Refresh Token 사용자: " + email);
-
-            return email;
-        } catch (ExpiredJwtException e) {
-            log.info("Refresh Token이 만료되었습니다. 로그인 페이지로 이동합니다.");
-            // TODO: Redirect to login Page
-            throw new BaseExceptionHandler(ErrorCode.EXPIRED_REFRESH_TOKEN_EXCEPTION);
-        } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
-            log.info("유효하지 않은 토큰입니다.");
-            throw new BaseExceptionHandler(ErrorCode.INVALID_REFRESH_TOKEN_EXCEPTION);
-        }
-    }
-
-    public void saveRefreshTokenRedis(String email, String refreshToken) {
-        redisTemplate.opsForValue().set(REFRESH_HASH + email, refreshToken, 15, TimeUnit.DAYS);
-    }
-
-    public String getRefreshTokenRedis(String email) {
-        return redisTemplate.opsForValue().get(REFRESH_HASH + email);
-    }
-
-    public ResponseCookie buildResponseCookie(String refreshToken) {
-        return ResponseCookie.from("refresh-token", refreshToken)
-                .maxAge(refreshTokenExpiration)
-                .path("/")
-                .secure(true)
-                .sameSite("Lax") // Same site 설정 필요
-                .domain("i10a702.p.ssafy.io")  //어느 도메인에 열어줄 것인가
-                .build();
-    }
-
-    public Collection<GrantedAuthority> getPrivileges(Claims claims) {
-        Object stringAuthorities = claims.get("Privilege");
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        if (stringAuthorities instanceof Collection<?>) {
-            for (Object grantedAuthority : (Collection<?>) stringAuthorities) {
-                if (grantedAuthority instanceof String) {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + grantedAuthority));
-                }
-            }
-        }
-        return authorities;
     }
 }

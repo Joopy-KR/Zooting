@@ -46,7 +46,7 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
 
         try {
             log.info("3. Access Token 인증을 시작합니다.");
-            Authentication authentication = jwtService.verifyAccessToken(accessToken);
+            Authentication authentication = jwtService.authenticateToken(accessToken);
             log.info("4. 인증이 성공적으로 완료되었습니다.");
             log.info("5. 유저의 Access Token 인증 정보를 SecurityContextHolder에 저장했습니다.");
             SecurityContextHolder.getContext().setAuthentication(authentication);
