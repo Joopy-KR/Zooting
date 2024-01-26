@@ -26,6 +26,7 @@ public class MemberAndFriendAndFriendRequestUsecase {
     private final FriendRequestRepository friendRequestRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public void acceptFriend(FriendReq friendReq, UserDetails userDetails) {
         //양방향 저장
         Member member1 = Member.builder().email(userDetails.getUsername()).build();
