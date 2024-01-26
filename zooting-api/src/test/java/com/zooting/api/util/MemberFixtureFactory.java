@@ -13,8 +13,6 @@ import static org.jeasy.random.FieldPredicates.*;
 
 
 public class MemberFixtureFactory {
-
-
     public static EasyRandomParameters getMemberParams() throws ParseException{
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date start = sdf.parse("1960-01-01");
