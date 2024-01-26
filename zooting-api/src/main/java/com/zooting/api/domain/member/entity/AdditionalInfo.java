@@ -1,6 +1,8 @@
 package com.zooting.api.domain.member.entity;
 
 import com.zooting.api.domain.BaseEntity;
+import com.zooting.api.domain.background.entity.Background;
+import com.zooting.api.domain.mask.entity.Mask;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,12 +28,15 @@ public class AdditionalInfo extends BaseEntity {
     private String interest;
     @Column(name = "ideal_animal")
     private String idealAnimal;
-    private Long maskId;
-    @Column(name = "background_id")
-    private Long backgroundId;
+    @OneToOne
+    @JoinColumn(name = "mask_id")
+    private Mask maskId;
+    @OneToOne
+    @JoinColumn(name = "background_id")
+    private Background backgroundId;
 
     @Builder
-    public AdditionalInfo(Member member, String personality, String animal, String introduce, String interest, String idealAnimal, Long maskId, Long backgroundId) {
+    public AdditionalInfo(Member member, String personality, String animal, String introduce, String interest, String idealAnimal, Mask maskId, Background backgroundId) {
         this.member = member;
         this.personality = personality;
         this.animal = animal;
