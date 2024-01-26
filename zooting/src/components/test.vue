@@ -39,7 +39,6 @@ class BasicScene {
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
     directionalLight.position.set(0, 1, 0);
     this.scene.add(directionalLight);
-    console.log(this.scene)
 
     // Set up the camera position and controls
     this.camera.position.z = 0;
@@ -182,10 +181,12 @@ class Avatar {
     this.gltf.scene.matrixAutoUpdate = false;
     this.gltf.scene.matrix.copy(matrix);
   }
-
   offsetRoot(offset: THREE.Vector3, rotation?: THREE.Vector3): void {
     if (this.root) {
-      this.root.position.copy(offset);
+      // 현재 루트의 위치를 가져와서 offset을 더해줌
+      const currentOffset = this.root.position.clone();
+      this.root.position.copy(currentOffset.add(offset));
+
       if (rotation) {
         let offsetQuat = new THREE.Quaternion().setFromEuler(
           new THREE.Euler(rotation.x, rotation.y, rotation.z)
@@ -204,15 +205,31 @@ onMounted(() => {
   init();
 });
 
+// 각각의 가면들 주소 할당
+const bear = "src/assets/animal_mask/bear/scene.gltf"
+const cat = "src/assets/animal_mask/cat/scene.gltf"
+const deer = "src/assets/animal_mask/deer/scene.gltf"
+const dino = "src/assets/animal_mask/dino/scene.gltf"
+const dog = "src/assets/animal_mask/dog/scene.gltf"
+const penguin = "src/assets/animal_mask/penguin/scene.gltf"
+const rabbit = "src/assets/animal_mask/rabbit/scene.gltf"
+const raccoon = "src/assets/animal_mask/raccoon_head.glb"
+
 
 async function init() {
   const scene = ref<BasicScene | null>(null);
   scene.value = new BasicScene();
 
   avatar = ref<Avatar | null>(null); // 전역 avatar에 할당
+
+  const maskURL = ref<any>('')
+
+  // 가면 바꾸는 변수
+  maskURL.value = raccoon
+  
+  
   avatar.value = new Avatar(
-    // "https://assets.codepen.io/9177687/raccoon_head.glb",
-    "https://assets.codepen.io/9177687/raccoon_head.glb",
+    maskURL.value,
     scene.value.scene
   );
 
@@ -306,6 +323,7 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
     let matrix = new THREE.Matrix4().fromArray(
       transformationMatrices[0].data
     );
+    avatar.value?.offsetRoot(new THREE.Vector3(0, 0, -10));
     avatar.value?.applyMatrix(matrix, { scale: 40 });
   }
 
