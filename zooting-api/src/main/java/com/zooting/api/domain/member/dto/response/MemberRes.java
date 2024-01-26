@@ -1,9 +1,7 @@
 package com.zooting.api.domain.member.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.annotation.Nullable;
 
 import java.util.Date;
 
@@ -30,10 +28,10 @@ public record MemberRes(
         String interest,
         @Schema(description = "이상형")
         String idealAnimal,
-        @Schema(description = "배경이미지 id")
-        Long backgroundId,
-        @Schema(description = "마스크 id")
-        Long maskId
+        @Schema(description = "배경이미지 이미지 url")
+        String backgroundImgUrl,
+        @Schema(description = "마스크 이미지 url")
+        String maskImgUrl
 
 ) {
 }

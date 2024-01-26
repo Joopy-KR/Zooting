@@ -80,7 +80,7 @@ public class DMServiceImpl implements DMService {
         DMRoom dmRoom = getDMRoom(sender, receiver);
         Long cursor = getStartCursor(dmRoom.getId(), sender);
         List<DM> dmList = getAllDMList(dmRoom.getId(), cursor);
-        if (dmList.size() != 0) {
+        if (!dmList.isEmpty()) {
             dmRoom.setSenderLastReadId(dmList.get(dmList.size() - 1).getId());
             cursor = dmList.get(dmList.size() - 1).getId();
         }
@@ -101,7 +101,7 @@ public class DMServiceImpl implements DMService {
         return new DMRoomRes(
                 dmRoomId,
                 dmDtoList,
-                dmDtoList.size() > 0 ? dmDtoList.get(dmDtoList.size() - 1).dmRoomId() : 0
+                !dmDtoList.isEmpty() ? dmDtoList.get(dmDtoList.size() - 1).dmRoomId() : 0
         );
     }
 

@@ -3,8 +3,7 @@ package com.zooting.api.global.security.handler;
 import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
-import com.zooting.api.global.jwt.JwtService;
-import com.zooting.api.global.security.oauth2.CustomOAuth2User;
+import com.zooting.api.global.jwt.service.JwtService;
 import com.zooting.api.global.security.userdetails.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,36 +25,57 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final JwtService jwtService;
+
     private final CustomUserDetailsService customUserDetailsService;
+
     @Value("${client.redirect-url.success}")
-    private String successRedirectUrl;
+    private String REDIRECT_URI_SUCCESS;
+
     @Value("${client.redirect-url.anonymous}")
-    private String anonymousRedirectUrl;
+    private String REDIRECT_URI_ANONYMOUS;
+
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
 
-        // Authentication은 OAuth2 Service의 loaduser에서 담겨져 온 유저 인증 정보
-        // Attributes = {이메일, 소셜 로그인 Provider, userNameAttributeName}
-        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = (String) oAuth2User.getAttributes().get("email");
 
+        log.info("5. 유저 정보가 성공적으로 전달되었습니다: " + oAuth2User);
+
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+
+        log.info("6. 유저에게 Access Token과 Refresh Token을 발급합니다.");
+
         String accessToken = jwtService.createAccessToken(userDetails);
+        log.info("7. 유저에게 Access Token 발급을 완료했습니다.");
+
+        String refreshToken = jwtService.createRefreshToken(userDetails);
+        log.info("8. 유저에게 Refresh Token 발급을 완료했습니다.");
+
+        log.info("9. 리프레시 토큰을 Redis Repository에 저장합니다.");
+        jwtService.saveRefreshTokenRedis(email, refreshToken);
+        log.info("10. 리프레시 토큰을 Redis Repository에 저장했습니다.");
 
         UriComponentsBuilder uriComponentsBuilder;
 
+        log.info("11. 유저의 추가 정보 기입 여부를 확인합니다");
         if (isAnonymousMember(userDetails)) {
-            // TODO
-            //  1. 링크 나올 시 추가 정보 기입 페이지 Redirect
-            uriComponentsBuilder = UriComponentsBuilder.fromUriString(anonymousRedirectUrl)
-                    .queryParam("access-token", accessToken);
+            log.info("12. 추가 기입 정보를 입력하지 않은 유저입니다. 추가 정보 기입 페이지로 이동합니다.");
+            uriComponentsBuilder = UriComponentsBuilder.fromUriString(REDIRECT_URI_ANONYMOUS)
+                    .queryParam("access-token", accessToken)
+                    .queryParam("refresh-token", refreshToken);
 
         } else {
-            uriComponentsBuilder = UriComponentsBuilder.fromUriString(successRedirectUrl)
-                    .queryParam("access-token", accessToken);
+            log.info("12. 추가 기입 정보를 입력한 유저입니다. 로그인 완료 페이지로 이동합니다.");
+            uriComponentsBuilder = UriComponentsBuilder.fromUriString(REDIRECT_URI_SUCCESS)
+                    .queryParam("access-token", accessToken)
+                    .queryParam("refresh-token", refreshToken);
         }
+
+        log.info("13. 응답 헤더에 Refresh Token을 Http Only Cookie로 저장했습니다");
+        response.setHeader("Set-cookie", jwtService.buildResponseCookie(refreshToken).toString());
         String redirectURI = uriComponentsBuilder.toUriString();
         response.sendRedirect(redirectURI);
     }

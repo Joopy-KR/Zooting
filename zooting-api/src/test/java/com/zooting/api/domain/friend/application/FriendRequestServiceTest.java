@@ -1,6 +1,6 @@
 package com.zooting.api.domain.friend.application;
 
-import com.zooting.api.application.usecase.SendFriendUsecase;
+import com.zooting.api.application.usecase.MemberAndFriendRequestUsecase;
 import com.zooting.api.domain.friend.dao.FriendRequestRepository;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
@@ -23,7 +23,7 @@ class FriendRequestServiceTest {
     @Autowired
     private FriendRequestRepository friendRequestRepository;
     @Autowired
-    private SendFriendUsecase sendFriendUsecase;
+    private MemberAndFriendRequestUsecase memberAndFriendRequestUsecase;
 
     @DisplayName("친구 거절 테스트")
     @Test
@@ -37,7 +37,7 @@ class FriendRequestServiceTest {
         memberRepository.save(deleteMember);
 
         // When
-        sendFriendUsecase.sendFriendRequest("y", "x");
+        memberAndFriendRequestUsecase.sendFriendRequest("y", "x");
         friendRequestRepository.findAll().forEach(friendRequest -> log.info("{}, {}", friendRequest.getFrom().getEmail(), friendRequest.getTo().getEmail()));
         friendRequestService.rejectFriendRequest("x", "y");
         friendRequestRepository.findAll().forEach(friendRequest -> log.info("{}, {}", friendRequest.getFrom().getEmail(), friendRequest.getTo().getEmail()));

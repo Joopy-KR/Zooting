@@ -23,4 +23,5 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     void deleteFriendByFollowerAndFollowingOrFollowingAndFollower(Member follower1, Member following1, Member following2, Member follower2);
 
     Boolean existsByFollowerAndFollowing(Member follower, Member following);
+
 }
