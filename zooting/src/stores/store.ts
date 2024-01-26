@@ -242,15 +242,15 @@ export const useAccessTokenStore = defineStore(
         .then((res) => {
           console.log(res);
           userInfo.value = res.data.result;
-          // if (!isCompletedSignUp) {
-          //   router.push({ name: "signup" });
-          // } else if (!userInfo.value?.animal) {
-          //   router.push({ name: "animal_test" });
-          // } else if (!userInfo.value?.personality) {
-          //   router.push({ name: "personality_test" });
-          // } else {
-          //   isCompletedTest.value = true;
-          // }
+          if (!isCompletedSignUp) {
+            router.push({ name: "signup" });
+          } else if (!userInfo.value?.animal) {
+            router.push({ name: "animal_test" });
+          } else if (!userInfo.value?.personality) {
+            router.push({ name: "personality_test" });
+          } else {
+            isCompletedTest.value = true;
+          }
         })
         .catch((err) => {
           console.log(err);

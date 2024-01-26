@@ -3,7 +3,7 @@
   <div class="search__container">
     <div class="search__input-container">
       
-      <div @click="toggleSearchType" class="cursor-pointer">
+      <div @click="toggleSearchType" class="absolute z-10 cursor-pointer ms-3">
         <!-- 전체 유저 중에서 검색 (친구일 경우 친구 신청 버튼 X) -->
         <svg 
           v-if="isGlobal"
@@ -13,6 +13,7 @@
           fill="none" 
           viewBox="0 0 24 24"
         >
+          <title>전체 검색</title>
           <path 
             stroke="currentColor" 
             stroke-linecap="round"
@@ -30,6 +31,7 @@
           fill="none" 
           viewBox="0 0 24 24"
         >
+          <title>친구 검색</title>
           <path 
             stroke="currentColor" 
             stroke-linecap="round" 
@@ -44,8 +46,9 @@
         <input
           v-model="searchQuery"
           placeholder="Search"
-          class="w-full pr-10 search__input"
+          class="w-full search__input"
           @keyup.enter="handleSearch"
+          maxlength="16"
         />
       </div>
     </div>
@@ -94,7 +97,7 @@ const handleSearch = () => {
 }
 
 .search__input {
-  padding: 10px 15px;
+  padding: 10px 18px 10px 45px;
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 30px;
