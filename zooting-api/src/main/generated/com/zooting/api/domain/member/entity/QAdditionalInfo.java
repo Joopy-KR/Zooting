@@ -26,7 +26,7 @@ public class QAdditionalInfo extends EntityPathBase<AdditionalInfo> {
 
     public final StringPath animal = createString("animal");
 
-    public final com.zooting.api.domain.background.entity.QBackground backgroundId;
+    public final StringPath backgroundUrl = createString("backgroundUrl");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -39,7 +39,7 @@ public class QAdditionalInfo extends EntityPathBase<AdditionalInfo> {
 
     public final StringPath introduce = createString("introduce");
 
-    public final com.zooting.api.domain.mask.entity.QMask maskId;
+    public final StringPath maskUrl = createString("maskUrl");
 
     public final QMember member;
 
@@ -66,8 +66,6 @@ public class QAdditionalInfo extends EntityPathBase<AdditionalInfo> {
 
     public QAdditionalInfo(Class<? extends AdditionalInfo> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.backgroundId = inits.isInitialized("backgroundId") ? new com.zooting.api.domain.background.entity.QBackground(forProperty("backgroundId"), inits.get("backgroundId")) : null;
-        this.maskId = inits.isInitialized("maskId") ? new com.zooting.api.domain.mask.entity.QMask(forProperty("maskId"), inits.get("maskId")) : null;
         this.member = inits.isInitialized("member") ? new QMember(forProperty("member"), inits.get("member")) : null;
     }
 

@@ -1,6 +1,8 @@
 package com.zooting.api.domain.member.application;
 
+import com.zooting.api.domain.background.entity.Background;
 import com.zooting.api.domain.block.entity.Block;
+import com.zooting.api.domain.mask.entity.Mask;
 import com.zooting.api.domain.member.dao.ExtractObj;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.request.*;
@@ -24,6 +26,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
+    public static final String DEFAULT_MASK = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/default_animal.png";
+    public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/zooting-background-default.jpg";
 
     @Override
     public boolean existNickname(String nickname) {
@@ -69,8 +73,8 @@ public class MemberServiceImpl implements MemberService {
                 member.getAdditionalInfo().getAnimal(),
                 member.getAdditionalInfo().getInterest(),
                 member.getAdditionalInfo().getIdealAnimal(),
-                member.getAdditionalInfo().getBackgroundId().getFile().getImg_url(),
-                member.getAdditionalInfo().getMaskId().getFile().getImg_url()
+                member.getAdditionalInfo().getBackgroundUrl(),
+                member.getAdditionalInfo().getMaskUrl()
         );
     }
 
@@ -89,8 +93,8 @@ public class MemberServiceImpl implements MemberService {
                 member.getAdditionalInfo().getAnimal(),
                 member.getAdditionalInfo().getInterest(),
                 member.getAdditionalInfo().getIdealAnimal(),
-                member.getAdditionalInfo().getBackgroundId().getFile().getImg_url(),
-                member.getAdditionalInfo().getMaskId().getFile().getImg_url()
+                member.getAdditionalInfo().getBackgroundUrl(),
+                member.getAdditionalInfo().getMaskUrl()
         );
     }
 
@@ -115,11 +119,17 @@ public class MemberServiceImpl implements MemberService {
         }
         additionalInfo.setInterest(memberReq.interest().toString());
         additionalInfo.setIdealAnimal(memberReq.idealAnimal().toString());
+
+        // 디폴트 마스크, 배경 이미지로 저장
+
+        additionalInfo.setMaskUrl("https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/default_animal.png");
+        additionalInfo.setBackgroundUrl("https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/zooting-background-default.jpg");
         additionalInfo.setMember(member);
 
         // 멤버의 권한 수정 Anonymous 삭제하고 User 권한 부여
         member.getRole().remove(Privilege.ANONYMOUS);
         member.getRole().add(Privilege.USER);
+
 
         memberRepository.save(member);
     }
