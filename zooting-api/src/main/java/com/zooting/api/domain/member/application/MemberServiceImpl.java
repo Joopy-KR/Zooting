@@ -181,7 +181,7 @@ public class MemberServiceImpl implements MemberService {
             findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         }
         return findMembers.stream().map(mem -> new MemberSearchRes(mem.getNickname(), mem.getEmail(),
-                mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
+                mem.getGender(), mem.getAdditionalInfo().getAnimal())).toList();
     }
 
     @Transactional
@@ -233,7 +233,7 @@ public class MemberServiceImpl implements MemberService {
         extractObj.setMemberBirth(member.getBirth());
         extractObj.setRangeYear(extractingReq.rangeYear());
         System.out.println(extractObj.getMemberIdeals());
-        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(),mem.getNickname(), mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
+        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(),mem.getNickname(), mem.getGender(), mem.getAdditionalInfo().getAnimal())).toList();
     }
 
     @Override
@@ -242,7 +242,7 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         return member.getBlockFromList().stream()
                 .map(block -> new MemberSearchRes(member.getEmail(), member.getNickname()
-                        , member.getGender().toString(), member.getAdditionalInfo().getAnimal())).toList();
+                        , member.getGender(), member.getAdditionalInfo().getAnimal())).toList();
 
 
     }

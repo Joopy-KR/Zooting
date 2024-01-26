@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -40,13 +42,20 @@ public class JwtController {
 
             String accessToken = jwtService.createAccessToken(userDetails);
             String newRefreshToken = jwtService.createRefreshToken(userDetails);
-//            ResponseCookie responseCookie = jwtService.buildResponseCookie(newRefreshToken);
+            ResponseCookie responseCookie = jwtService.buildResponseCookie(newRefreshToken);
             jwtService.saveRefreshTokenRedis(email, newRefreshToken);
 
-            return BaseResponse.success(
-                    SuccessCode.CHECK_SUCCESS,
-                    new TokenDto(accessToken, newRefreshToken)
-            );
+            TokenDto tokenDto = new TokenDto(accessToken, newRefreshToken); // 토큰 반환 DTO 설정
+            SuccessCode code = SuccessCode.CHECK_SUCCESS;
+
+            return ResponseEntity
+                    .status(code.getStatus())
+                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                    .body(new BaseResponse<>(
+                            tokenDto,
+                            code.getStatus(),
+                            code.getMessage()
+                    ));
         } else {
             throw new BaseExceptionHandler(ErrorCode.INVALID_REFRESH_TOKEN_EXCEPTION);
         }

@@ -1,6 +1,5 @@
 package com.zooting.api.domain.notice.api;
 
-import com.zooting.api.application.dto.request.MemberAndBlockReq;
 import com.zooting.api.domain.notice.application.NoticeService;
 import com.zooting.api.domain.notice.dto.request.NoticeDeleteReq;
 import com.zooting.api.domain.notice.dto.request.NoticeSaveReq;
@@ -11,7 +10,6 @@ import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

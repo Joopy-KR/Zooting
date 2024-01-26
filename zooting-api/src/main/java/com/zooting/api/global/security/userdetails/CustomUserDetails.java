@@ -1,7 +1,6 @@
 package com.zooting.api.global.security.userdetails;
 
 import java.util.Collection;
-import java.util.Set;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;

@@ -17,7 +17,8 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
     @Override
     public List<Member> extractMatchingMember(ExtractObj extractObj) {
-        List<Member> notBlockAndNotFriend = queryFactory
+
+        return queryFactory
                 .selectFrom(member)
                 .where(
                         // 차단 목록의 친구는 매칭되지 않는다
@@ -36,8 +37,6 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                         member.additionalInfo.animal.in(extractObj.getMemberIdeals()).count().desc()
                 ).groupBy(member.additionalInfo.interest, member.additionalInfo.idealAnimal)
                 .fetch();
-
-        return notBlockAndNotFriend;
     }
 
     private BooleanExpression notInBlockToList(List<String> blockToList) {

@@ -8,9 +8,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseCookie;
@@ -30,15 +28,14 @@ import java.util.concurrent.TimeUnit;
 @Log4j2
 @Getter
 @Service
-@RequiredArgsConstructor
 public class JwtService {
     private final String issuer;
     private final SecretKey secretKey;
     private final long accessTokenExpiration;
     private final long refreshTokenExpiration;
     private final StringRedisTemplate redisTemplate;
+    private static final String REFRESH_HASH = "refresh-token/";
 
-    @Autowired
     public JwtService(
             @Value("${jwt.issuer}") String issuer,
             @Value("${jwt.secretKey}") String secretKey,
@@ -53,7 +50,7 @@ public class JwtService {
         this.redisTemplate = redisTemplate;
     }
 
-    public JwtBuilder createToken(UserDetails userDetails, long expirationTime){
+    public JwtBuilder createToken(UserDetails userDetails, long expirationTime) {
         Date date = new Date();
         Date expirationDate = new Date(date.getTime() + expirationTime);
 
@@ -64,7 +61,7 @@ public class JwtService {
                 .subject(userDetails.getUsername());
     }
 
-    public String createAccessToken(UserDetails userDetails){
+    public String createAccessToken(UserDetails userDetails) {
         return createToken(userDetails, accessTokenExpiration)
                 .claim("Privilege",
                         userDetails
@@ -75,30 +72,31 @@ public class JwtService {
                 )
                 .compact();
     }
-    public String createRefreshToken(UserDetails userDetails){
+
+    public String createRefreshToken(UserDetails userDetails) {
         return createToken(userDetails, refreshTokenExpiration).compact();
     }
 
-    public Authentication verifyAccessToken(String token){
-            Claims claims = Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token) // Throws JWT Exception
-                    .getPayload();
+    public Authentication verifyAccessToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token) // Throws JWT Exception
+                .getPayload();
 
-            UserDetails userDetails = CustomUserDetails.builder()
-                    .email(claims.getSubject())
-                    .authorities(getPrivileges(claims))
-                    .build();
+        UserDetails userDetails = CustomUserDetails.builder()
+                .email(claims.getSubject())
+                .authorities(getPrivileges(claims))
+                .build();
 
-            return new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    userDetails.getPassword(),
-                    userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(
+                userDetails,
+                userDetails.getPassword(),
+                userDetails.getAuthorities());
     }
 
-    public String verifyRefreshToken(String refreshToken){
-        try{
+    public String verifyRefreshToken(String refreshToken) {
+        try {
             log.info("Refresh Token 검증을 시작합니다");
             Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
@@ -122,30 +120,30 @@ public class JwtService {
         }
     }
 
-    public void saveRefreshTokenRedis(String email, String refreshToken){
-        redisTemplate.opsForValue().set(email, refreshToken, 15, TimeUnit.DAYS);
+    public void saveRefreshTokenRedis(String email, String refreshToken) {
+        redisTemplate.opsForValue().set(REFRESH_HASH + email, refreshToken, 15, TimeUnit.DAYS);
     }
 
-    public String getRefreshTokenRedis(String email){
-        return redisTemplate.opsForValue().get(email);
+    public String getRefreshTokenRedis(String email) {
+        return redisTemplate.opsForValue().get(REFRESH_HASH + email);
     }
 
-    public ResponseCookie buildResponseCookie(String refreshToken){
+    public ResponseCookie buildResponseCookie(String refreshToken) {
         return ResponseCookie.from("refresh-token", refreshToken)
-                .maxAge(30 * 24 * 60 * 60)
+                .maxAge(refreshTokenExpiration)
                 .path("/")
                 .secure(true)
                 .sameSite("Lax") // Same site 설정 필요
-                .domain("localhost")  //어느 도메인에 열어줄 것인가
+                .domain("i10a702.p.ssafy.io")  //어느 도메인에 열어줄 것인가
                 .build();
     }
 
-    public Collection<GrantedAuthority> getPrivileges(Claims claims){
+    public Collection<GrantedAuthority> getPrivileges(Claims claims) {
         Object stringAuthorities = claims.get("Privilege");
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        if (stringAuthorities instanceof Collection<?>){
-            for(Object grantedAuthority : (Collection<?>) stringAuthorities){
-                if(grantedAuthority instanceof String){
+        if (stringAuthorities instanceof Collection<?>) {
+            for (Object grantedAuthority : (Collection<?>) stringAuthorities) {
+                if (grantedAuthority instanceof String) {
                     authorities.add(new SimpleGrantedAuthority("ROLE_" + grantedAuthority));
                 }
             }

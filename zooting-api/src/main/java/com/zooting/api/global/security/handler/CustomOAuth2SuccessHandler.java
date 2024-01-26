@@ -7,7 +7,6 @@ import com.zooting.api.global.jwt.service.JwtService;
 import com.zooting.api.global.security.userdetails.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +17,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.IOException;
 
 @Slf4j
 @Component
@@ -36,7 +37,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-            Authentication authentication) throws IOException {
+                                        Authentication authentication) throws IOException {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = (String) oAuth2User.getAttributes().get("email");
@@ -60,15 +61,17 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         UriComponentsBuilder uriComponentsBuilder;
 
         log.info("11. 유저의 추가 정보 기입 여부를 확인합니다");
-        if(isAnonymousMember(userDetails)){
+        if (isAnonymousMember(userDetails)) {
             log.info("12. 추가 기입 정보를 입력하지 않은 유저입니다. 추가 정보 기입 페이지로 이동합니다.");
             uriComponentsBuilder = UriComponentsBuilder.fromUriString(REDIRECT_URI_ANONYMOUS)
-                            .queryParam("access-token", accessToken);
+                    .queryParam("access-token", accessToken)
+                    .queryParam("refresh-token", refreshToken);
 
         } else {
             log.info("12. 추가 기입 정보를 입력한 유저입니다. 로그인 완료 페이지로 이동합니다.");
             uriComponentsBuilder = UriComponentsBuilder.fromUriString(REDIRECT_URI_SUCCESS)
-                    .queryParam("access-token", accessToken);
+                    .queryParam("access-token", accessToken)
+                    .queryParam("refresh-token", refreshToken);
         }
 
         log.info("13. 응답 헤더에 Refresh Token을 Http Only Cookie로 저장했습니다");
@@ -76,7 +79,8 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         String redirectURI = uriComponentsBuilder.toUriString();
         response.sendRedirect(redirectURI);
     }
-    public boolean isAnonymousMember(UserDetails userDetails){
+
+    public boolean isAnonymousMember(UserDetails userDetails) {
         if (userDetails.getAuthorities().isEmpty()) {
             throw new BaseExceptionHandler(ErrorCode.UNAUTHORIZED_USER_EXCEPTION);
         }
