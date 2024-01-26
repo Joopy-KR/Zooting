@@ -44,25 +44,27 @@ const selectTab = (selectedTab: string) => {
 
 <style scoped>
 .tab-bar__container {
-  min-height: 50px;
+  @apply bg-white;
 }
 .tab-bar__div {
-  @apply border-b border-gray-200;
+  @apply border-b border-gray-200 px-4;
 }
 .tab-bar {
   @apply flex -mb-px space-x-8;
 }
 .tab-bar__item {
-  @apply flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium;
+  @apply w-1/3 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-bold text-center;
+  position: relative;
 }
 .tab-bar__item--active {
   @apply border-indigo-500 text-indigo-600;
 }
 .tab-bar__item--inactive {
-  @apply border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700;
+  @apply border-transparent text-gray-400 hover:border-gray-200 hover:text-gray-500;
 }
 .tab-bar__text {
-  @apply ml-3 rounded-full py-0.5 px-2.5 text-xs font-medium;
+  @apply ml-2 rounded-full py-0.5 px-2 text-xs font-medium;
+  position: absolute;
 }
 .tab-bar__text--active {
   @apply bg-indigo-100 text-indigo-600;

@@ -1,17 +1,13 @@
 <template>
   <div class="ready__container">
     <div>
-      <img src="/images/logo_lg.png" alt="">
-    </div>
-
-    <div>
       <div>
         <ReadyParticipation />
       </div>
   
-      <div>
+      <!-- <div>
         <ReadyInvitation />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -25,6 +21,6 @@ import ReadyInvitation from './ReadyInvitation.vue'
 <style scoped>
 .ready__container {
   @apply flex-auto;
-  background-color: bisque;
+  background-color: #F1E4FF;
 }
 </style>

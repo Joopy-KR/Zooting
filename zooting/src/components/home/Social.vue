@@ -6,8 +6,6 @@
       @select-tab="handleTabSelected"
     />
     <component :is="currentList"/>
-    recent list
-    <SocialRecentList />
   </div>
 </template>
 
@@ -33,6 +31,7 @@ onMounted(async () => {
   store.getFriendList()
   store.getRequestFromList()
   store.getRequestToList()
+  store.getBlockList()
 })
 
 tabs.value[0].count = computed(() => {
@@ -43,9 +42,9 @@ tabs.value[1].count = computed(() => {
   return store.requestFromList?.length
 })
 
-// tabs.value[2].count = computed(() => {
-//   return store.BlockList?.length
-// })
+tabs.value[2].count = computed(() => {
+  return store.blockList?.length
+})
 
 const currentList = shallowRef(SocialFriendList)
 
@@ -62,8 +61,8 @@ const handleTabSelected = (currentTab: string) => {
 
 <style scoped>
 .social__container {
-  @apply flex flex-col;
+  @apply flex flex-col h-screen;
   min-width: 430px;
-  border: 1px solid black;
+  /* border-right: 1px solid black; */
 }
 </style>

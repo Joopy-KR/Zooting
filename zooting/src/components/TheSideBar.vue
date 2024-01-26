@@ -32,7 +32,6 @@
         </button>
       </div>
 
-
       <!-- Profile image -->
       <img 
         v-if="isLoggedIn && store.isCompletedSignUp"
@@ -41,7 +40,7 @@
         data-dropdown-toggle="userDropdown" 
         data-dropdown-placement="bottom-start" 
         class="user-profile" 
-        src="@/assets/animal_illustration/cat_illust.png" alt="User dropdown"
+        src="" alt="User dropdown"
       >
       
       <!-- Profile menu -->
@@ -166,7 +165,7 @@ const logout = () => {
     @apply flex flex-col items-center flex-1 p-4 space-y-8;
 }
 .user-profile {
-    @apply w-10 h-10 rounded-full cursor-pointer bg-slate-300;
+    @apply w-10 h-10 rounded-full cursor-pointer;
 }
 .side-tab {
     @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 rounded-tr-3xl rounded-br-3xl z-10;
