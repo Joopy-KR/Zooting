@@ -1,7 +1,7 @@
 <template>
   <div class="description__container">
     <transition name="fade">
-      <p v-if="isShow">간단한 테스트를 통해 {{ nickname }} 님의 성격 유형을 알아볼게요</p>
+      <p v-if="isShow">간단한 테스트를 통해 성격 유형을 알아볼게요</p>
     </transition>
   </div>
 </template>
@@ -9,7 +9,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
-const nickname = ref<string>('nickname')
 const emit = defineEmits(['testStart'])
 
 const isShow = ref(false)
