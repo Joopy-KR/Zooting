@@ -5,123 +5,122 @@
 </template>
 
 <script setup lang="ts" type="module">
-import { ref, onMounted, onUnmounted } from 'vue';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader, GLTF } from 'three/addons/loaders/GLTFLoader.js';
-import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
-const { FaceLandmarker, FilesetResolver } = vision;
+import { ref, onMounted } from 'vue'
+
+import * as THREE from 'three'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { GLTFLoader, GLTF } from 'three/addons/loaders/GLTFLoader.js'
+import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3"
+const { FaceLandmarker, FilesetResolver } = vision
 
 
 class BasicScene {
-  scene: THREE.Scene;
-  width: number;
-  height: number;
-  camera: THREE.PerspectiveCamera;
-  renderer: THREE.WebGLRenderer;
-  controls: OrbitControls;
-  lastTime: number = 0;
+  scene: THREE.Scene
+  width: number
+  height: number
+  camera: THREE.PerspectiveCamera
+  renderer: THREE.WebGLRenderer
+  controls: OrbitControls
+  lastTime: number = 0
 
   constructor() {
     this.height = window.innerHeight;
-    this.width = (this.height * 1280) / 720;
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 0.01, 5000);
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setSize(this.width, this.height);
+    this.width = (this.height * 1280  ) / 720
+    this.scene = new THREE.Scene()
+    this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 0.01, 5000)
+    this.renderer = new THREE.WebGLRenderer({ antialias: true })
+    this.renderer.setSize(this.width, this.height)
     THREE.ColorManagement.legacy = false
-    this.renderer.outputEncoding = THREE.sRGBEncoding;
-    document.body.appendChild(this.renderer.domElement);
+    this.renderer.outputEncoding = THREE.sRGBEncoding
+    document.body.appendChild(this.renderer.domElement)
 
-    // Set up the basic lighting for the scene
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
-    this.scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    directionalLight.position.set(0, 1, 0);
-    this.scene.add(directionalLight);
+    // 조명 추가
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5)
+    this.scene.add(ambientLight)
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5)
+    directionalLight.position.set(0, 1, 0)
+    this.scene.add(directionalLight)
 
-    // Set up the camera position and controls
+    // 카메라 설정
     this.camera.position.z = 0;
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.enabled = false
-    let orbitTarget = this.camera.position.clone();
-    orbitTarget.z -= 5;
-    this.controls.target = orbitTarget;
-    this.controls.update();
+    let orbitTarget = this.camera.position.clone()
+    orbitTarget.z -= 5
+    this.controls.target = orbitTarget
+    this.controls.update()
 
-    // Add a video background
+    // 재생되는 비디오로 백그라운드 설정
     const video = document.getElementById("video") as HTMLVideoElement
-    const inputFrameTexture = new THREE.VideoTexture(video);
-    if (!inputFrameTexture) {
-      throw new Error("Failed to get the 'input_frame' texture!");
-    }
-    inputFrameTexture.encoding = THREE.sRGBEncoding;
-    const inputFramesDepth = 500;
+    const inputFrameTexture = new THREE.VideoTexture(video)
+    inputFrameTexture.encoding = THREE.sRGBEncoding
+    const inputFramesDepth = 500  // 카메라와 3D 평면의 거리
     const inputFramesPlane = createCameraPlaneMesh(
       this.camera,
       inputFramesDepth,
       new THREE.MeshBasicMaterial({ map: inputFrameTexture })
     );
-    this.scene.add(inputFramesPlane);
+    this.scene.add(inputFramesPlane)
 
-    // Render the scene
-    this.render();
+    // 장면 렌더하기
+    this.render()
 
-    window.addEventListener("resize", this.resize.bind(this));
+    window.addEventListener("resize", this.resize.bind(this))
   }
 
+  // 화면 크기 변경 따른 크기 조정
   resize() {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    this.camera.aspect = this.width / this.height;
-    this.camera.updateProjectionMatrix();
+    this.width = window.innerWidth
+    this.height = window.innerHeight
+    this.camera.aspect = this.width / this.height
+    this.camera.updateProjectionMatrix()
 
-    this.renderer.setSize(this.width, this.height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setSize(this.width, this.height)
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
-    this.renderer.render(this.scene, this.camera);
+    this.renderer.render(this.scene, this.camera)
   }
 
   render(time: number = this.lastTime): void {
-    const delta = (time - this.lastTime) / 1000;
-    this.lastTime = time;
-    this.renderer.render(this.scene, this.camera);
-    requestAnimationFrame((t) => this.render(t));
+    this.lastTime = time
+    this.renderer.render(this.scene, this.camera)
+    requestAnimationFrame((t) => this.render(t))
   }
 }
 
 interface MatrixRetargetOptions {
-  decompose?: boolean;
-  scale?: number;
+  decompose?: boolean
+  scale?: number
 }
 
+// 아바타 설정
 class Avatar {
-  scene: THREE.Scene;
-  loader: GLTFLoader = new GLTFLoader();
-  gltf: GLTF;
-  root: THREE.Bone;
-  morphTargetMeshes: THREE.Mesh[] = [];
-  url: string;
+  scene: THREE.Scene
+  loader: GLTFLoader = new GLTFLoader()
+  gltf: GLTF
+  root: THREE.Bone
+  morphTargetMeshes: THREE.Mesh[] = []
+  url: string
 
   constructor(url: string, scene: THREE.Scene) {
-    this.url = url;
-    this.scene = scene;
-    this.loadModel(this.url);
+    this.url = url
+    this.scene = scene
+    this.loadModel(this.url)
   }
 
+  // 모델 로드
   loadModel(url: string) {
-    this.url = url;
+    this.url = url
     this.loader.load(
       url,
       (gltf) => {
         if (this.gltf) {
-          this.gltf.scene.remove();
-          this.morphTargetMeshes = [];
+          this.gltf.scene.remove()
+          this.morphTargetMeshes = []
         }
-        this.gltf = gltf;
-        console.log();
-        this.scene.add(gltf.scene);
-        this.init(gltf);
+        this.gltf = gltf
+        this.scene.add(gltf.scene)
+        this.init(gltf)
       },
       (progress) =>
         console.log(
@@ -133,38 +132,39 @@ class Avatar {
     );
   }
 
+  // gltf 객체 순회 및 초기화
   init(gltf: GLTF) {
     gltf.scene.traverse((object) => {
       if ((object as THREE.Bone).isBone && !this.root) {
-        this.root = object as THREE.Bone;
-        console.log(object);
+        this.root = object as THREE.Bone
       }
       if (!(object as THREE.Mesh).isMesh) {
-        return;
+        return
       }
 
-      const mesh = object as THREE.Mesh;
-      mesh.frustumCulled = false;
+      const mesh = object as THREE.Mesh
+      mesh.frustumCulled = false
 
       if (!mesh.morphTargetDictionary || !mesh.morphTargetInfluences) {
-        return;
+        return
       }
-      this.morphTargetMeshes.push(mesh);
-    });
+      this.morphTargetMeshes.push(mesh)
+    })
   }
 
+  // blendshapes 따라 아바타 모양 조절
   updateBlendshapes(blendshapes: Map<string, number>) {
     for (const mesh of this.morphTargetMeshes) {
       if (!mesh.morphTargetDictionary || !mesh.morphTargetInfluences) {
-        continue;
+        continue
       }
       for (const [name, value] of blendshapes) {
         if (!Object.keys(mesh.morphTargetDictionary).includes(name)) {
-          continue;
+          continue
         }
 
-        const idx = mesh.morphTargetDictionary[name];
-        mesh.morphTargetInfluences[idx] = value;
+        const idx = mesh.morphTargetDictionary[name]
+        mesh.morphTargetInfluences[idx] = value
       }
     }
   }
@@ -173,25 +173,29 @@ class Avatar {
     matrix: THREE.Matrix4,
     matrixRetargetOptions?: MatrixRetargetOptions
   ): void {
-    const { decompose = false, scale = 1 } = matrixRetargetOptions || {};
+    const { decompose = false, scale = 1 } = matrixRetargetOptions || {}
     if (!this.gltf) {
-      return;
+      return
     }
-    matrix.scale(new THREE.Vector3(scale, scale, scale));
-    this.gltf.scene.matrixAutoUpdate = false;
-    this.gltf.scene.matrix.copy(matrix);
+    matrix.scale(new THREE.Vector3(scale, scale, scale))
+    this.gltf.scene.matrixAutoUpdate = false
+    this.gltf.scene.matrix.copy(matrix)
   }
+
+  // 아바타 위치 조절
   offsetRoot(offset: THREE.Vector3, rotation?: THREE.Vector3): void {
     if (this.root) {
       // 현재 루트의 위치를 가져와서 offset을 더해줌
-      const currentOffset = this.root.position.clone();
-      this.root.position.copy(currentOffset.add(offset));
+      const currentOffset = this.root.position.clone()
+      this.root.position.copy(currentOffset.add(offset))
 
+      console.log(rotation)
       if (rotation) {
+        console.log(1111111)
         let offsetQuat = new THREE.Quaternion().setFromEuler(
           new THREE.Euler(rotation.x, rotation.y, rotation.z)
-        );
-        this.root.quaternion.copy(offsetQuat);
+        )
+        this.root.quaternion.copy(offsetQuat)
       }
     }
   }
@@ -225,7 +229,7 @@ async function init() {
   const maskURL = ref<any>('')
 
   // 가면 바꾸는 변수
-  maskURL.value = raccoon
+  maskURL.value = raccoon 
   
   
   avatar.value = new Avatar(
@@ -280,8 +284,6 @@ async function runDemo() {
     outputFaceBlendshapes: true,
     outputFacialTransformationMatrixes: true,
   });
-
-  console.log("Finished Loading MediaPipe Model.");
 }
 
 function createCameraPlaneMesh(
@@ -322,7 +324,8 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
   if (transformationMatrices && transformationMatrices.length > 0) {
     let matrix = new THREE.Matrix4().fromArray(
       transformationMatrices[0].data
-    );
+    )
+
     avatar.value?.offsetRoot(new THREE.Vector3(0, 0, -10));
     avatar.value?.applyMatrix(matrix, { scale: 40 });
   }

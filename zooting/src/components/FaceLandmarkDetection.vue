@@ -148,16 +148,16 @@ const predictWebcam = async () => {
       imgX = landmarks[FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS[0].start].x * 300;
       imgY = landmarks[FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS[0].start].y * 150;
 
-      console.log(imgX)
+      // console.log(imgX)
       
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.drawImage(img, imgX, imgY, 350, 350)
+      // ctx.clearRect(0, 0, canvas.width, canvas.height)
+      // ctx.drawImage(img, imgX, imgY, 350, 350)
 
 
-      /**  그리드 그리는 부분
+      // /**  그리드 그리는 부분
       drawingUtils.value.drawConnectors(
         landmarks,
-        FaceLandmarker.FACE_LANDMARKS_TESSELATION,ㄴ
+        FaceLandmarker.FACE_LANDMARKS_TESSELATION,
         { color: "#C0C0C070", lineWidth: 1 }
       )
       drawingUtils.value.drawConnectors(
@@ -200,7 +200,7 @@ const predictWebcam = async () => {
         FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS,
         { color: "#30FF30", lineWidth: 1 }
       )
-    */
+    
     }
   }
 

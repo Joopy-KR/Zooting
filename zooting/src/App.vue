@@ -2,7 +2,7 @@
   <div class="flex">
     <TheSideBar></TheSideBar>
     <RouterView class="ms-14"/>
-    <test />
+    <!-- <test /> -->
     <!-- <FaceLandmarkDetection /> -->
   </div>
 </template>

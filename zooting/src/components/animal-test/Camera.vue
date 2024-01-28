@@ -263,6 +263,11 @@ const loop = async () => {
 const predict = async () => {
   // 촬영시까지 동작함
   const prediction = await model.predict(webcam.canvas)
+  console.log("강" + prediction[0].probability.toFixed(2))
+  console.log("고" + prediction[1].probability.toFixed(2))
+  console.log("꼬" + prediction[2].probability.toFixed(2))
+  console.log("사" + prediction[3].probability.toFixed(2))
+  console.log("토" + prediction[4].probability.toFixed(2))
 
   // 촬영시 동물 변수에 값을 담음
   if (is_working === false) {
