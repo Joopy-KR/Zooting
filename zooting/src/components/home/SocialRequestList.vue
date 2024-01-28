@@ -11,6 +11,7 @@
           <span class="px-2 text-sm text-gray-500 bg-white">받은 요청</span>
         </div>
       </div>
+
       <!-- Content -->
       <div v-if="!requestFromList" class="mt-3 text-center text-gray-500">
         받은 요청이 없습니다
@@ -50,6 +51,7 @@
           <span class="px-2 text-sm text-gray-500 bg-white">보낸 요청</span>
         </div>
       </div>
+      
       <!-- Content -->
       <div v-if="!requestToList" class="mt-3 text-center text-gray-500">
         보낸 요청이 없습니다
@@ -57,7 +59,7 @@
       <ul role="list" class="friend-list">
         <li v-for="(item, index) in requestToList" :key="index" class="friend-list__item">
           <RouterLink :to="getProfileLink(item.nickname)" class="friend-list__item__link">
-            <img class="friend-list__img" src="" alt="profile">
+            <img class="friend-list__img" :src="getProfileImage(item.animal)" alt="profile">
             <div class="font-medium">
               <div class="flex items-center">
                 {{ item.nickname }}
@@ -133,6 +135,10 @@ const friendRequestCancel = (item: Friend) => {
 
 const getHeartClass = (gender: string) => {
   return gender === 'man' ? 'w-4 h-4 text-blue-500 ms-1' : 'w-4 h-4 text-pink-500 ms-1';
+}
+
+const getProfileImage = (animal: string) => {
+  return `/images/${animal}.png`
 }
 </script>
 

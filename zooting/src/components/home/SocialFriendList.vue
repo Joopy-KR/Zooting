@@ -4,7 +4,7 @@
       <li v-for="(item, index) in friendList" :key="index" class="friend-list__item">
         <RouterLink :to="getProfileLink(item.nickname)" class="friend-list__item__link">
           <div class="flex items-center gap-4">
-            <img class="friend-list__img" src="" alt="profile">
+            <img class="friend-list__img" :src="getProfileImage(item.animal)" alt="profile">
             <div class="font-medium">
               <div class="flex items-center">
                 {{ item.nickname }}
@@ -60,6 +60,10 @@ const friendDelete = (item: Friend) => {
 
 const getHeartClass = (gender: string) => {
   return gender === 'man' ? 'w-4 h-4 text-blue-500 ms-1' : 'w-4 h-4 text-pink-500 ms-1';
+}
+
+const getProfileImage = (animal: string) => {
+  return `/images/${animal}.png`
 }
 </script>
 

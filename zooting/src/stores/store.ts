@@ -398,7 +398,7 @@ export const useAccessTokenStore = defineStore(
     };
 
     // 친구 리스트
-    const friendList = ref<Friend[] | null>(null);
+    const friendList = ref<Friend[]>([]);
     const getFriendList = function () {
       axios({
         method: 'get',
@@ -417,7 +417,7 @@ export const useAccessTokenStore = defineStore(
     };
   
   // 친구 요청 받은 리스트
-    const requestFromList = ref<Friend[] | null>(null);
+    const requestFromList = ref<Friend[]>([]);
     const getRequestFromList = function () {
       axios({
         method: 'get',
@@ -436,7 +436,7 @@ export const useAccessTokenStore = defineStore(
     };
   
     // 친구 요청 보낸 리스트
-    const requestToList = ref<Friend[] | null>(null);
+    const requestToList = ref<Friend[]>([]);
     const getRequestToList = function () {
       axios({
         method: 'get',
@@ -455,7 +455,7 @@ export const useAccessTokenStore = defineStore(
     };
 
     // 차단 리스트
-    const blockList = ref<Friend[] | null>(null);
+    const blockList = ref<Friend[]>([]);
     const getBlockList = function () {
       axios({
         method: 'get',
@@ -465,7 +465,6 @@ export const useAccessTokenStore = defineStore(
         }
       })
       .then(res => {
-        // console.log(res);
         blockList.value = res.data.result;
       })
       .catch(err => {
@@ -473,6 +472,32 @@ export const useAccessTokenStore = defineStore(
       })
     };
     
+    // 친구 요청
+    const friendRequest = function (payload: {
+      email: string;
+      nickname: string;
+    }) {
+      const {email, nickname} = payload;
+      axios({
+        method: 'post',
+        url: `${API_URL}/api/friends`,
+        data: {
+          email,
+          nickname
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        console.log(res);
+        getRequestToList();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+
     // 친구 요청 수락
     const friendAccept = function (payload: {
       email: string;
@@ -492,8 +517,8 @@ export const useAccessTokenStore = defineStore(
       })
       .then(res => {
         console.log(res);
-        getRequestFromList()
-        getFriendList()
+        getRequestFromList();
+        getFriendList();
       })
       .catch(err => {
         console.log(err);
@@ -519,7 +544,7 @@ export const useAccessTokenStore = defineStore(
       })
       .then(res => {
         console.log(res);
-        getRequestFromList()
+        getRequestFromList();
       })
       .catch(err => {
         console.log(err);
@@ -545,7 +570,7 @@ export const useAccessTokenStore = defineStore(
       })
       .then(res => {
         console.log(res);
-        getRequestToList()
+        getRequestToList();
       })
       .catch(err => {
         console.log(err);
@@ -567,7 +592,7 @@ export const useAccessTokenStore = defineStore(
       })
       .then(res => {
         console.log(res);
-        getBlockList()
+        getBlockList();
       })
       .catch(err => {
         console.log(err);
@@ -593,12 +618,14 @@ export const useAccessTokenStore = defineStore(
       })
       .then(res => {
         console.log(res);
-        getFriendList()
+        getFriendList();
       })
       .catch(err => {
         console.log(err);
       })
     };
+
+    const searchResult = ref<Friend[]>([])
 
     // 친구 검색
     const friendSearch = function (params: string) {
@@ -612,8 +639,9 @@ export const useAccessTokenStore = defineStore(
           Authorization: `Bearer ${getAccessToken()}`,
         },
       })
-        .then((res) => {
-          console.log(res);
+      .then((res) => {
+          searchResult.value = res.data.result;
+          // console.log(res);
         })
         .catch((err) => {
           console.log(err);
@@ -622,24 +650,26 @@ export const useAccessTokenStore = defineStore(
       
       // 유저 검색
     const userSearch = function (params: string) {
+      const nickname = params
       axios({
         method: "get",
-        url: `${API_URL}/api/members/search`,
+        url: `${API_URL}/api/members/searchlist`,
         params: {
-          nickname: params,
+          nickname,
         },
         headers: {
           Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
-          console.log(res);
+          searchResult.value = res.data.result;
+          // console.log(res);
         })
         .catch((err) => {
           console.log(err);
         });
+    };
 
-    }
 
     return {
       setAccessToken,
@@ -666,6 +696,7 @@ export const useAccessTokenStore = defineStore(
       getRequestToList,
       blockList,
       getBlockList,
+      friendRequest,
       friendAccept,
       friendReject,
       friendRequestCancel,
@@ -673,6 +704,7 @@ export const useAccessTokenStore = defineStore(
       friendDelete,
       friendSearch,
       userSearch,
+      searchResult,
     };
   },
   { persist: true }
@@ -694,7 +726,7 @@ interface Personality {
 interface UserInfo {
   email: string;
   gender: string | null;
-  nickname: string | null;
+  nickname: string;
   birth: string | null;
   address: string | null;
   idealAnimal: string[] | null;

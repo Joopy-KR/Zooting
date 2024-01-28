@@ -53,7 +53,7 @@ const selectTab = (selectedTab: string) => {
   @apply flex -mb-px space-x-8;
 }
 .tab-bar__item {
-  @apply w-1/3 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-bold text-center;
+  @apply w-1/3 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-bold text-center cursor-pointer;
   position: relative;
 }
 .tab-bar__item--active {

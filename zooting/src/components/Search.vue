@@ -3,7 +3,7 @@
   <div class="search__container">
     <div class="search__input-container">
       
-      <div @click="toggleSearchType" class="absolute z-10 cursor-pointer ms-3">
+      <div @click="toggleSearchType" class="search__toggle">
         <!-- 전체 유저 중에서 검색 (친구일 경우 친구 신청 버튼 X) -->
         <svg 
           v-if="isGlobal"
@@ -44,19 +44,94 @@
       <!-- Search bar -->
       <div class="relative flex-1">
         <input
-          v-model="searchQuery"
+          :value="searchQuery"
           placeholder="Search"
-          class="w-full search__input"
-          @keyup.enter="handleSearch"
+          class="search__input"
+          @input="handleSearch"
           maxlength="16"
         />
+
+        <!-- Cancel (x) button -->
+        <div v-if="searchQuery" @click="cancelSearch" class="search__cancel">
+          <svg
+            class="w-5 h-5 text-gray-500 cursor-pointer hover:text-gray-700"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <title>Cancel Search</title>
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-width="1.5"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
+
+        <!-- 검색 결과 표시 -->
+        <div v-if="searchQuery.length > 1" class="search__result">
+          <ul v-if="searchResult?.length > 0">
+            <li v-for="result in searchResult" :key="result.nickname">
+              <RouterLink :to="getProfileLink(result.nickname)" class="hover:font-semibold ms-1">
+              {{ result.nickname }}
+              </RouterLink>
+              <button v-if="!isRequestInList(result)" @click="sendFriendRequest(result)">
+                <!-- 친구 신청 아이콘 -->
+                <svg
+                  class="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700 me-1"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <title>친구 신청</title>
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-width="1.5"
+                    d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1c0 .6-.4 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              </button>
+            </li>
+            <li v-for="result in searchResult" :key="result.nickname">
+              <RouterLink :to="getProfileLink(result.nickname)" class="hover:font-semibold ms-1">
+              {{ result.nickname }}
+              </RouterLink>
+              <button v-if="!isRequestInList(result)" @click="sendFriendRequest(result)">
+                <!-- 친구 신청 아이콘 -->
+                <svg
+                  class="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700 me-1"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <title>친구 신청</title>
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-width="1.5"
+                    d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1c0 .6-.4 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                  />
+                </svg>
+              </button>
+            </li>
+          </ul>
+          <div v-else class="flex justify-center h-10 mt-1">
+            <p>일치하는 닉네임이 없습니다</p>
+          </div>
+        </div>
+        
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useAccessTokenStore } from '@/stores/store'
 
 const store = useAccessTokenStore()
@@ -66,41 +141,84 @@ const isGlobal = ref<boolean>(true)
 
 const toggleSearchType = () => {
   isGlobal.value = !isGlobal.value
-}
-
-// const searchResult = ref<
-const handleSearch = () => {
-  if (isGlobal) {
-    store.userSearch()
-  } else {
-    store.friendSearch()
+  if (searchQuery.value) {
+    if (isGlobal.value) {
+      store.userSearch(searchQuery.value)
+    } else {
+      store.friendSearch(searchQuery.value)
+    }
   }
 }
 
+const handleSearch = function (event: any) {
+  searchQuery.value = event.target.value
+  if (searchQuery.value) {
+    if (isGlobal.value) {
+      store.userSearch(searchQuery.value)
+    } else {
+      store.friendSearch(searchQuery.value)
+    }
+  }
+}
+
+const searchResult = ref(store.searchResult)
+
+watch(()=> store.searchResult, (UpdateList)=>{
+  searchResult.value = UpdateList
+})
+
+const cancelSearch = () => {
+  searchQuery.value = ''
+  store.searchResult = []
+}
+
+interface Result {
+  email: string
+  nickname: string
+  gender: string
+  animal: string
+}
+
+const sendFriendRequest = (result: Result) => {
+  const payload = {
+    email: result.email,
+    nickname: result.nickname,
+  }
+  store.friendRequest(payload)
+}
+
+const isRequestInList = (result: Result) => {
+  return store.requestToList.some(item => item.nickname === result.nickname)
+}
+
+const getProfileLink = (value: string) => {
+  return `/profile/${value}`
+}
 </script>
 
 <style scoped>
 .search__container {
-  /* min-height: 50px; */
 }
-
 .search__input-container {
-  @apply mt-3 mb-1 mx-3;
-  display: flex;
-  align-items: center;
+  @apply mt-3 mb-1 mx-3 flex items-center;
 }
-
-.search__dropdown {
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
 .search__input {
+  @apply border border-gray-300 shadow-sm rounded-3xl text-sm w-full; 
   padding: 10px 18px 10px 45px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 30px;
-  font-size: 14px;
+}
+.search__toggle {
+  @apply absolute z-10 cursor-pointer ms-3;
+}
+.search__cancel {
+  @apply absolute z-10 right-4 top-1/2 transform -translate-y-1/2;
+}
+.search__result {
+  @apply absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-xl shadow-sm text-sm;
+}
+.search__result ul {
+  @apply divide-y divide-gray-200 px-1;
+}
+.search__result li {
+  @apply p-2 flex justify-between items-center h-12;
 }
 </style>
