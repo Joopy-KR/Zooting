@@ -60,7 +60,7 @@
             fill="none"
             viewBox="0 0 24 24"
           >
-            <title>Cancel Search</title>
+            <title>검색 취소</title>
             <path
               stroke="currentColor"
               stroke-linecap="round"
@@ -71,7 +71,7 @@
         </div>
 
         <!-- 검색 결과 표시 -->
-        <div v-if="searchQuery.length > 1" class="search__result">
+        <div v-if="searchQuery" class="search__result">
           <ul v-if="searchResult?.length > 0">
             <li v-for="result in searchResult" :key="result.nickname">
               <RouterLink :to="getProfileLink(result.nickname)" class="hover:font-semibold ms-1">

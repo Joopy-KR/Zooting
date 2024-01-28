@@ -5,16 +5,12 @@
         <ReadyParticipation />
       </div>
   
-      <!-- <div>
-        <ReadyInvitation />
-      </div> -->
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import ReadyParticipation from './ReadyParticipation.vue'
-import ReadyInvitation from './ReadyInvitation.vue'
 
 </script>
 
