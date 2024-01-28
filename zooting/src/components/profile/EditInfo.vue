@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import VueTailwindDatepicker from "vue-tailwind-datepicker";
 import SuccessDialog from "@/components/profile/SuccessDialog.vue";
 import FailDialog from "@/components/profile/FailDialog.vue";
@@ -9,16 +9,17 @@ import { loadMyInfoApi, updateMyInfoApi, loadUserInfoApi } from "@/api/profile";
 import axios from "axios";
 import { useAccessTokenStore } from "@/stores/store";
 
-const router = useRoute();
+const route = useRoute();
+const router = useRouter();
 
-const gender = ref<string | null>("man");
+const gender = ref<string>("man");
 const idealTypeSet = ref(new Set<string>());
 const birth = ref<string | null>(null);
 const failAlert = ref(false);
 const failMessage = ref<string>();
 const successAlert = ref(false);
 
-interface Info {
+interface UserInfo {
   email: string | null;
   gender: string | null;
   nickname: string | null;
@@ -28,12 +29,14 @@ interface Info {
   personality: string | null;
   animal: string | null;
   interest: string | null;
+  introduce: string | null;
   idealAnimal: string;
-  backgroundId: Number | null;
-  maskId: Number | null;
+  backgroundImgUrl: string | null;
+  mbti: string | null;
+  maskImgUrl: string | null;
 }
 
-const userInfo = ref<Info>({
+const userInfo = ref<UserInfo>({
   email: null,
   gender: null,
   nickname: null,
@@ -43,27 +46,33 @@ const userInfo = ref<Info>({
   personality: null,
   animal: null,
   interest: null,
+  introduce: null,
   idealAnimal: "[]",
-  backgroundId: null,
-  maskId: null,
+  backgroundImgUrl: null,
+  maskImgUrl: null,
+  mbti: null,
 });
 
+const setUserInfo = (data: any) => {
+  userInfo.value!.email = data["result"].email;
+  userInfo.value!.gender = data["result"].gender;
+  userInfo.value!.nickname = data["result"].nickname;
+  userInfo.value!.birth = convertDate(data["result"].birth);
+  userInfo.value!.address = data["result"].address;
+  userInfo.value!.point = data["result"].point;
+  userInfo.value!.personality = data["result"].personality;
+  userInfo.value!.animal = data["result"].animal;
+  userInfo.value!.interest = data["result"].interest;
+  userInfo.value!.idealAnimal = data["result"].idealAnimal;
+  userInfo.value!.backgroundImgUrl = data["result"].backgroundImgUrl;
+  userInfo.value!.maskImgUrl = data["result"].maskImgUrl;
+  userInfo.value!.mbti = data["result"].mbti;
+  initChanges();
+};
 // 나의 정보 불러오기
 const loadMyInfo = () => {
   loadMyInfoApi(
-    ({ data }: any) => {
-      userInfo.value!.email = data["result"].email;
-      userInfo.value!.gender = data["result"].gender;
-      userInfo.value!.nickname = data["result"].nickname;
-      userInfo.value!.birth = convertDate(data["result"].birth);
-      userInfo.value!.address = data["result"].address;
-      userInfo.value!.point = data["result"].point;
-      userInfo.value!.personality = data["result"].personality;
-      userInfo.value!.animal = data["result"].animal;
-      userInfo.value!.interest = data["result"].interest;
-      userInfo.value!.idealAnimal = data["result"].idealAnimal;
-      initChanges();
-    },
+    ({ data }: any) => setUserInfo(data),
     (error: any) => {
       console.log(error);
     }
@@ -73,19 +82,7 @@ const loadMyInfo = () => {
 const loadUserInfo = (nickname: string) => {
   loadUserInfoApi(
     nickname,
-    ({ data }: any) => {
-      userInfo.value!.email = data["result"].email;
-      userInfo.value!.gender = data["result"].gender;
-      userInfo.value!.nickname = data["result"].nickname;
-      userInfo.value!.birth = convertDate(data["result"].birth);
-      userInfo.value!.address = data["result"].address;
-      userInfo.value!.point = data["result"].point;
-      userInfo.value!.personality = data["result"].personality;
-      userInfo.value!.animal = data["result"].animal;
-      userInfo.value!.interest = data["result"].interest;
-      userInfo.value!.idealAnimal = data["result"].idealAnimal;
-      initChanges();
-    },
+    ({ data }: any) => setUserInfo(data),
     (error: any) => {
       console.log(error);
     }
@@ -129,7 +126,9 @@ const setSuccessAlert = (isOpen: boolean) => {
 };
 
 const initChanges = () => {
-  gender.value = userInfo.value.gender;
+  if (userInfo.value.gender) {
+    gender.value = userInfo.value.gender;
+  }
   birth.value = userInfo.value.birth;
   idealTypeSet.value = parseStringToSet(userInfo.value!.idealAnimal);
 };
@@ -208,9 +207,16 @@ const convertDate = (inputDate: string) => {
   return formattedDate;
 };
 
+const moveToMyPage = () => {
+  router.push({
+    name: "profile-check",
+    params: { nickname: userInfo.value.nickname },
+  });
+};
+
 onMounted(() => {
   // loadMyInfo();
-  const nickname = router.params.nickname;
+  const nickname = route.params.nickname;
   if (!nickname) {
     loadMyInfo();
   } else {
@@ -236,10 +242,29 @@ onMounted(() => {
   />
   <div class="flex flex-col px-12 py-8">
     <div class="flex flex-row justify-between">
-      <span
-        class="inline-flex items-center px-10 py-3 text-xl font-bold text-blue-500 rounded-full bg-blue-50 ring-1 ring-inset ring-blue-700/10"
-        >설정</span
-      >
+      <div class="flex flex-row items-center">
+        <span
+          class="inline-flex items-center px-10 py-3 text-xl font-bold text-blue-500 rounded-full bg-blue-50 ring-1 ring-inset ring-blue-700/10"
+          >설정</span
+        >
+        <div @click="moveToMyPage()" class="flex flex-col items-center ml-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-10 h-10 stroke-orange-500 fill-rose-100 mx-auto"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+            />
+          </svg>
+          <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
+        </div>
+      </div>
       <span
         class="inline-flex items-center px-4 py-3 text-sm text-gray-800 rounded-full bg-gray-50 ring-1 ring-inset ring-gray-500/10"
         >탈퇴</span

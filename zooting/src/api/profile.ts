@@ -17,4 +17,9 @@ async function loadUserInfoApi(param: string, success: any, fail: any) {
   await local.get(`api/members/info?nickname=${param}`).then(success).catch(fail);
 }
 
-export { loadMyInfoApi, updateMyInfoApi, loadUserInfoApi };
+async function checkIsMyProfileApi(param: string, success: any, fail: any) {
+  local.defaults.headers["Authorization"] = `Bearer ${await localStorage.getItem("accessToken")}`;
+  await local.get(`api/members/myprofile/check?nickname=${param}`).then(success).catch(fail);
+}
+
+export { loadMyInfoApi, updateMyInfoApi, loadUserInfoApi, checkIsMyProfileApi };

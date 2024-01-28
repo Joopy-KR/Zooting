@@ -1,14 +1,32 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, defineProps, defineEmits } from "vue";
 
-const activeBadge = ref<string>("강아지상");
+const props = defineProps({
+  animalType: String,
+});
+
+const emits = defineEmits(["setAnimalType"]);
+
 const showAllBadges = ref<boolean>(false);
 const allowDirection = ref<string>("arrow-down");
+
+interface Animal {
+  name: string;
+  type: string;
+  style: string;
+}
+const animalTypes: Animal[] = [
+  { name: "강아지", type: "common", style: "mask__selector-dog" },
+  { name: "고양이", type: "common", style: "mask__selector-cat" },
+  { name: "토끼", type: "common", style: "mask__selector-rabbit" },
+  { name: "곰", type: "common", style: "mask__selector-bear" },
+  { name: "공룡", type: "common", style: "mask__selector-dinosaur" },
+];
 
 const toggleBadge = (badge: string) => {
   showAllBadges.value = false;
   allowDirection.value = "arrow-down";
-  activeBadge.value = badge;
+  emits("setAnimalType", badge);
 };
 
 const toggleShowAllBadge = () => {
@@ -25,46 +43,24 @@ const toggleShowAllBadge = () => {
   <div class="relative">
     <div class="absolute top-0 left-3">
       <div class="flex flex-row">
-        <div class="flex justify-center px-2 mr-3">
+        <div class="flex justify-center items-start px-2 py-1">
           <font-awesome-icon
             :icon="['fas', allowDirection]"
-            size="3x"
+            size="2x"
             @click="toggleShowAllBadge"
             class="font-awesome-icon"
           />
         </div>
-        <div class="flex flex-col gap-2">
-          <span
-            v-if="showAllBadges || activeBadge === '강아지상'"
-            @click="() => toggleBadge('강아지상')"
-            class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full"
-          >
-            <p class="px-4 py-2 text-3xl font-medium w-44">강아지상</p></span
-          >
-          <span
-            v-if="showAllBadges || activeBadge === '고양이상'"
-            @click="() => toggleBadge('고양이상')"
-            class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full"
-            ><p class="px-4 py-2 text-3xl font-medium w-44">고양이상</p></span
-          >
-          <span
-            v-if="showAllBadges || activeBadge === '토끼상'"
-            @click="() => toggleBadge('토끼상')"
-            class="inline-flex items-center px-2 py-1 text-xs font-medium text-pink-700 bg-pink-100 rounded-full"
-            ><p class="px-4 py-2 text-3xl font-medium w-44">토끼상</p></span
-          >
-          <span
-            v-if="showAllBadges || activeBadge === '곰상'"
-            @click="() => toggleBadge('곰상')"
-            class="inline-flex items-center px-2 py-1 text-xs font-medium text-purple-700 bg-purple-100 rounded-full"
-            ><p class="px-4 py-2 text-3xl font-medium w-44">곰상</p></span
-          >
-          <span
-            v-if="showAllBadges || activeBadge === '공룡상'"
-            @click="() => toggleBadge('공룡상')"
-            class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full"
-            ><p class="px-4 py-2 text-3xl font-medium w-44">공룡상</p></span
-          >
+        <div :class="{ div__mask_showAll: showAllBadges, div__mask: !showAllBadges }">
+          <span v-for="badge in animalTypes" :key="badge.name">
+            <p
+              v-if="showAllBadges || animalType === badge.name"
+              @click="() => toggleBadge(badge.name)"
+              :class="['mask__selector', badge.style]"
+            >
+              {{ badge.name }}상
+            </p>
+          </span>
         </div>
       </div>
     </div>
@@ -73,7 +69,33 @@ const toggleShowAllBadge = () => {
 
 <style scoped>
 .font-awesome-icon {
+  display: flex;
   justify-content: center;
   align-items: center;
+}
+.div__mask {
+  @apply flex flex-col;
+}
+.div__mask_showAll {
+  @apply flex flex-col gap-2;
+}
+.mask__selector {
+  @apply font-sans flex justify-center px-3 py-1 text-2xl font-semibold w-36 rounded-full;
+}
+
+.mask__selector-dog {
+  @apply text-red-700 bg-red-100;
+}
+.mask__selector-cat {
+  @apply text-blue-700 bg-blue-100;
+}
+.mask__selector-rabbit {
+  @apply text-pink-700 bg-pink-100;
+}
+.mask__selector-bear {
+  @apply text-purple-700 bg-purple-100;
+}
+.mask__selector-dinosaur {
+  @apply text-green-700 bg-green-100;
 }
 </style>

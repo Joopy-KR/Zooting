@@ -175,6 +175,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   const state = ref<AccessTokenState>({
     accessToken: localStorage.getItem("accessToken") || null,
+    refreshToken: localStorage.getItem("refreshToken") || null,
   });
 
   const setAccessToken = function (token: string | null) {
@@ -201,6 +202,25 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     }
   };
 
+  const setRefreshToken = function (token: string | null) {
+    if (token) {
+      localStorage.setItem("refreshToken", token);
+      state.value.refreshToken = token;
+    }
+  };
+
+  const getRefreshToken = function () {
+    if (state.value.refreshToken) {
+      return state.value.refreshToken;
+    } else {
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (refreshToken) {
+        state.value.refreshToken = refreshToken;
+        return refreshToken;
+      }
+    }
+  };
+
   // 유저 정보
   const isCompletedTest = ref<boolean>(false);
   const userInfo = ref<UserInfo | null>(null);
@@ -213,7 +233,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         Authorization: `Bearer ${getAccessToken()}`,
       },
     })
-      .then((res) => {
+      .then((res: any) => {
         console.log(res);
         userInfo.value = res.data.result;
         if (userInfo.value) {
@@ -236,7 +256,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 로그인 상태 판별
   const isLogin = computed(() => {
-    if (state.value.accessToken) {
+    if (state.value && state.value.accessToken) {
       return true;
     } else {
       return false;
@@ -247,6 +267,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const signOut = function () {
     window.localStorage.clear();
     state.value.accessToken = null;
+    state.value.refreshToken = null;
   };
 
   // 추가 정보 저장 여부 확인
@@ -329,6 +350,20 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       });
   };
 
+  // MBTI와 동물유형으로 소개 만들기
+  const getPersonalityIntroduce = function () {
+    const myInfo = localStorage.getItem("myInfo");
+    if (myInfo) {
+      // 내 정보가 없으면 불러오기
+      getUserInfo();
+    }
+    if (myInfo) {
+      return;
+    }
+
+    // const mbti: string = myInfo!.mbti;
+  };
+
   // 성격 테스트 결과 저장
   const setPersonality = function (payload: string) {
     const personality = payload;
@@ -377,6 +412,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   return {
     setAccessToken,
     getAccessToken,
+    setRefreshToken,
+    getRefreshToken,
     userInfo,
     getUserInfo,
     isLogin,
@@ -385,6 +422,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     isCompletedTest,
     checkCompletedSignUp,
     setPersonality,
+    getPersonalityIntroduce,
     saveAdditionalInfo,
     isDuplication,
     checkNicknameDuplication,
@@ -394,6 +432,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
 interface AccessTokenState {
   accessToken: string | null;
+  refreshToken: string | null;
 }
 
 interface Personality {
@@ -405,14 +444,18 @@ interface Personality {
 }
 
 interface UserInfo {
-  email: string;
+  email: string | null;
   gender: string | null;
   nickname: string | null;
   birth: string | null;
   address: string | null;
-  idealAnimal: string[] | null;
-  interest: string[] | null;
-  animal: string | null;
+  point: number | null;
   personality: string | null;
-  point: Number | null;
+  animal: string | null;
+  interest: string | null;
+  introduce: string | null;
+  idealAnimal: string;
+  backgroundImgUrl: string | null;
+  mbti: string | null;
+  maskImgUrl: string | null;
 }

@@ -2,7 +2,7 @@
 import InfoSideBar from "@/components/profile/InfoSideBar.vue";
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { loadUserInfoApi } from "@/api/profile";
+import { loadMyInfoApi, loadUserInfoApi, checkIsMyProfileApi } from "@/api/profile";
 
 const route = useRoute();
 
@@ -16,9 +16,10 @@ interface Info {
   personality: string | null;
   animal: string | null;
   interest: string | null;
+  introduce: string | null;
   idealAnimal: string;
-  backgroundId: Number | null;
-  maskId: Number | null;
+  backgroundImgUrl: string | null;
+  maskImgUrl: string | null;
 }
 
 const userInfo = ref<Info>({
@@ -31,28 +32,42 @@ const userInfo = ref<Info>({
   personality: null,
   animal: null,
   interest: null,
+  introduce: null,
   idealAnimal: "[]",
-  backgroundId: null,
-  maskId: null,
+  backgroundImgUrl: null,
+  maskImgUrl: null,
 });
+
+const setUserInfo = (data: any) => {
+  userInfo.value!.email = data["result"].email;
+  userInfo.value!.gender = data["result"].gender;
+  userInfo.value!.nickname = data["result"].nickname;
+  userInfo.value!.birth = convertDate(data["result"].birth);
+  userInfo.value!.address = data["result"].address;
+  userInfo.value!.point = data["result"].point;
+  userInfo.value!.personality = data["result"].personality;
+  userInfo.value!.animal = data["result"].animal;
+  userInfo.value!.introduce = data["result"].introduce;
+  userInfo.value!.interest = data["result"].interest;
+  userInfo.value!.idealAnimal = data["result"].idealAnimal;
+  userInfo.value!.backgroundImgUrl = data["result"].backgroundImgUrl;
+  userInfo.value!.maskImgUrl = data["result"].maskImgUrl;
+};
 
 const loadUserInfo = (nickname: string) => {
   loadUserInfoApi(
     nickname,
-    ({ data }: any) => {
-      userInfo.value!.email = data["result"].email;
-      userInfo.value!.gender = data["result"].gender;
-      userInfo.value!.nickname = data["result"].nickname;
-      userInfo.value!.birth = convertDate(data["result"].birth);
-      userInfo.value!.address = data["result"].address;
-      userInfo.value!.point = data["result"].point;
-      userInfo.value!.personality = data["result"].personality;
-      userInfo.value!.animal = data["result"].animal;
-      userInfo.value!.interest = data["result"].interest;
-      userInfo.value!.idealAnimal = data["result"].idealAnimal;
+    ({ data }: any) => setUserInfo(data),
+    (error: any) => {
+      console.log(error);
+    }
+  );
+};
 
-      console.log(userInfo.value);
-    },
+// 나의 정보 불러오기
+const loadMyInfo = () => {
+  loadMyInfoApi(
+    ({ data }: any) => setUserInfo(data),
     (error: any) => {
       console.log(error);
     }
@@ -72,30 +87,44 @@ const convertDate = (inputDate: string) => {
   return formattedDate;
 };
 
-onMounted(() => {
-  // loadMyInfo();
+const isMyProfile = ref<boolean>(false);
+
+const checkIsMyProfile = async (nickname: string) => {
+  await checkIsMyProfileApi(
+    nickname,
+    ({ data }: any) => {
+      const myProfile = data?.result?.myProfile;
+
+      if (myProfile !== undefined) {
+        isMyProfile.value = myProfile;
+      }
+    },
+    (error: any) => console.log(error)
+  );
+};
+
+onMounted(async () => {
   const nickname = route.params.nickname;
   if (typeof nickname === "string") {
-    loadUserInfo(nickname);
+    await checkIsMyProfile(nickname);
+
+    if (!isMyProfile.value) {
+      await loadUserInfo(nickname); // 다른 사람 프로필 조회
+    } else {
+      await loadMyInfo(); // 내 정보 조회
+    }
   }
 });
 </script>
 <template>
-  <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
-    <div class="w-1/3 h-full">
-      <InfoSideBar :user-info="userInfo" />
-    </div>
-    <!-- <div class="w-2/3 h-full">
-      <InfoMain />
-    </div> -->
-    <!-- <div class="w-2/3 h-full">
-      <EditMaskList />
-    </div> -->
-    <!--    <div class="w-2/3 h-full">-->
-    <!--      <EditInfo />-->
-    <!--    </div>-->
-    <div class="w-2/3 h-full">
-      <router-view name="rcomp" :user-info="userInfo" />
+  <div>
+    <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
+      <div class="w-1/3 h-full">
+        <InfoSideBar :user-info="userInfo" :is-my-profile="isMyProfile" />
+      </div>
+      <div class="w-2/3 h-full">
+        <router-view :user-info="userInfo" :is-my-profile="isMyProfile" />
+      </div>
     </div>
   </div>
 </template>

@@ -3,10 +3,12 @@ import { ListBulletIcon } from "@heroicons/vue/16/solid";
 import { defineProps } from "vue";
 
 interface Mask {
-  id: number;
-  imageUrl: string;
-  price: Number;
-  title: string;
+  maskId: number;
+  animal: string;
+  description: string;
+  price: number;
+  fileName: string;
+  imgUrl: string;
   status: boolean;
   isSelected: boolean;
 }
@@ -35,8 +37,8 @@ const props = defineProps({
         src="/src/assets/images/mask/lock_icon.png"
       />
       <img
-        :src="mask.imageUrl"
-        :alt="mask.title"
+        :src="mask.imgUrl"
+        :alt="mask.description"
         class="z-0 object-contain w-full h-full p-2"
         :style="{ filter: mask.status ? 'none' : 'brightness(60%)' }"
       />
