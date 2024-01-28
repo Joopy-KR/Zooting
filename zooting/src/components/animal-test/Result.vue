@@ -12,19 +12,19 @@
       </div>
     
       <div class="flex flex-col flex-wrap items-center justify-center md:h-screen">
-        <img src="@/assets/animal_illustration/dog_illust.png" alt="강아지 사진" style="height: 50vh;"
+        <img src="/images/개.png" alt="강아지 사진" style="height: 50vh;"
         v-if="resultAnimal === '강아지'">
-        <img src="@/assets/animal_illustration/cat_illust.png" alt="고양이 사진" style="height: 50vh;"
+        <img src="/images/고양이.png" alt="고양이 사진" style="height: 50vh;"
         v-if="resultAnimal === '고양이'">
-        <img src="@/assets/animal_illustration/bear_illust.png" alt="곰 사진" style="height: 50vh;"
+        <img src="/images/곰.png" alt="곰 사진" style="height: 50vh;"
         v-if="resultAnimal === '곰'">
-        <img src="@/assets/animal_illustration/dino_illust.png" alt="공룡 사진" style="height: 50vh;"
+        <img src="/images/공룡.png" alt="공룡 사진" style="height: 50vh;"
         v-if="resultAnimal === '공룡'">
-        <img src="@/assets/animal_illustration/rabbit_illust.png" alt="토끼 사진" style="height: 50vh;"
+        <img src="/images/토끼.png" alt="토끼 사진" style="height: 50vh;"
         v-if="resultAnimal === '토끼'">
-        <img src="@/assets/animal_illustration/turtle_illust.png" alt="꼬부기 사진" style="height: 50vh;"
-        v-if="resultAnimal === '꼬부기'">
-        <img src="@/assets/animal_illustration/deer_illust.png" alt="사슴 사진" style="height: 50vh;"
+        <img src="/images/펭귄.png" alt="펭귄 사진" style="height: 50vh;"
+        v-if="resultAnimal === '펭귄'">
+        <img src="/images/사슴.png" alt="사슴 사진" style="height: 50vh;"
         v-if="resultAnimal === '사슴'">
 
         <div class="flex flex-col items-center justify-center md:mt-10">
@@ -106,7 +106,7 @@ const options = {
             return value + "%"
           }
         },
-        categories: props.allAnimal.gender === "male" ? ["강아지", "고양이", "곰", "공룡", "토끼"] : ["강아지", "고양이", "꼬부기", "사슴", "토끼"],
+        categories: props.allAnimal.gender === "male" ? ["강아지", "고양이", "곰", "공룡", "토끼"] : ["강아지", "고양이", "펭귄", "사슴", "토끼"],
         axisTicks: {
           show: false,
         },
