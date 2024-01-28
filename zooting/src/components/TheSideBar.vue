@@ -40,7 +40,7 @@
         data-dropdown-toggle="userDropdown" 
         data-dropdown-placement="bottom-start" 
         class="user-profile" 
-        src="" alt="User dropdown"
+        :src="getProfileImage()" alt="User dropdown"
       >
       
       <!-- Profile menu -->
@@ -132,15 +132,17 @@ const isActivenotificationsTab = () => {
 }
 
 const userInfo = ref(store.userInfo)
-const nickname = ref<string | null | undefined>(null)
 
 watch(()=> store.userInfo, (UpdateUser)=>{
   userInfo.value = UpdateUser
-  nickname.value = userInfo.value?.nickname
 })
 
 const getProfileLink = () => {
-  return `/profile/${nickname.value}`
+  return `/profile/${userInfo.value?.nickname}`
+}
+
+const getProfileImage = () => {
+  return `/images/${userInfo.value?.animal}.png`
 }
 
 const closeTab = () => {

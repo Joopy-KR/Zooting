@@ -12,7 +12,7 @@
       </div>
     
       <div class="flex flex-col flex-wrap items-center justify-center md:h-screen">
-        <img src="/images/개.png" alt="강아지 사진" style="height: 50vh;"
+        <img src="/images/강아지.png" alt="강아지 사진" style="height: 50vh;"
         v-if="resultAnimal === '강아지'">
         <img src="/images/고양이.png" alt="고양이 사진" style="height: 50vh;"
         v-if="resultAnimal === '고양이'">

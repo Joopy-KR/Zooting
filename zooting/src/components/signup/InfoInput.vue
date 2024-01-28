@@ -125,23 +125,27 @@ const areas:string[] = ([
 ])
 
 const interestList:string[] = [
-  '관심사1',
-  '관심사2', 
-  '관심사3', 
-  '관심사4', 
-  '관심사5', 
-  '관심사6', 
-  '관심사7', 
-  '관심사8', 
-  '관심사9', 
-  '관심사10', 
-  '관심사11', 
-  '관심사12', 
-  '관심사13', 
-  '관심사14', 
-  '관심사15', 
-  '관심사16', 
-  '관심사17'
+  '개발',
+  '건강',
+  '게임', 
+  '공연',
+  '글쓰기',
+  '드라마',
+  '맛집', 
+  '미술', 
+  '문화', 
+  '스포츠', 
+  '여행', 
+  '예술', 
+  '영화', 
+  '요리', 
+  '운동',
+  '음식',
+  '음악', 
+  '정치', 
+  '사진', 
+  '투자', 
+  '학문', 
 ]
 
 const nicknameError = ref<boolean>(false)
@@ -194,7 +198,7 @@ const pushidealAnimal = (value:string) => {
 const idealAnimalList = computed(() => {
   if (gender.value === 'man') {
     idealAnimalSet.value = new Set<string>()
-    return ['강아지', '고양이', '토끼', '사슴', '꼬부기']
+    return ['강아지', '고양이', '토끼', '사슴', '펭귄']
   } else if (gender.value === 'woman') {
     idealAnimalSet.value = new Set<string>()
     return ['강아지', '고양이', '토끼', '곰', '공룡']
