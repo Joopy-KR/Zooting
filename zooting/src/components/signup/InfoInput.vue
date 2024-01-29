@@ -67,8 +67,8 @@
         <div 
         class="ideal-type__item" 
         v-for="(value, index) in idealAnimalList" :key="index" 
-        @click="pushidealAnimal(`animal${index+1}`)"
-        :class="{ 'ideal-type__item--checked': idealAnimalSet.has(`animal${index+1}`), 'ideal-type__item--no-checked': !idealAnimalSet.has(`animal${index+1}`) }">
+        @click="pushidealAnimal(value)"
+        :class="{ 'ideal-type__item--checked': idealAnimalSet.has(value), 'ideal-type__item--no-checked': !idealAnimalSet.has(value) }">
         {{ value }}
         </div>
       </div>
@@ -84,7 +84,7 @@
         {{ interest }}
         </div>
       </div>
-      <button class="submit-button" type="button" @click.prevent="saveAdditionalInfo">동물상 분석하러 가기</button>
+      <button class="submit-button" type="button" @click.prevent="saveAdditionalInfo">다음으로</button>
     </div>
   </div>
 </template>
@@ -103,8 +103,50 @@ const address = ref<string>('')
 const idealAnimalSet = ref(new Set<string>())
 const interestSet = ref(new Set<string>())
 
-const areas:string[] = (['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '경기도', '강원도', '충청북도', '충청남도', '전라북도', '전라남도', '경상북도', '경상남도', '제주도', '해외'])
-const interestList:string[] = ['관심사1', '관심사2', '관심사3', '관심사4', '관심사5', '관심사6', '관심사7', '관심사8', '관심사9', '관심사10', '관심사11', '관심사12', '관심사13', '관심사14', '관심사15', '관심사16', '관심사17']
+const areas:string[] = ([
+  '서울', 
+  '부산', 
+  '대구', 
+  '인천', 
+  '광주', 
+  '대전', 
+  '울산', 
+  '세종', 
+  '경기도', 
+  '강원도', 
+  '충청북도', 
+  '충청남도', 
+  '전라북도', 
+  '전라남도', 
+  '경상북도', 
+  '경상남도', 
+  '제주도', 
+  '해외'
+])
+
+const interestList:string[] = [
+  '개발',
+  '건강',
+  '게임', 
+  '공연',
+  '글쓰기',
+  '드라마',
+  '맛집', 
+  '미술', 
+  '문화', 
+  '스포츠', 
+  '여행', 
+  '예술', 
+  '영화', 
+  '요리', 
+  '운동',
+  '음식',
+  '음악', 
+  '정치', 
+  '사진', 
+  '투자', 
+  '학문', 
+]
 
 const nicknameError = ref<boolean>(false)
 const birthError = ref<boolean>(false)
@@ -151,13 +193,12 @@ const pushidealAnimal = (value:string) => {
   } else {
     idealAnimalSet.value.add(value)
   }
-  console.log(idealAnimalSet.value)
 }
 
 const idealAnimalList = computed(() => {
   if (gender.value === 'man') {
     idealAnimalSet.value = new Set<string>()
-    return ['강아지', '고양이', '토끼', '사슴', '꼬부기']
+    return ['강아지', '고양이', '토끼', '사슴', '펭귄']
   } else if (gender.value === 'woman') {
     idealAnimalSet.value = new Set<string>()
     return ['강아지', '고양이', '토끼', '곰', '공룡']
@@ -171,7 +212,6 @@ const pushInterest = (value:string) => {
     } else {
       interestSet.value.add(value)
     }
-    console.log(interestSet.value)
   }
 }
 
@@ -244,7 +284,7 @@ interface Payload {
   @apply grid grid-cols-2 gap-3 h-10;
 }
 .gender__option {
-  @apply flex items-center justify-center rounded-lg p-2 text-sm uppercase;
+  @apply flex items-center justify-center rounded-lg p-2 text-sm uppercase cursor-pointer;
 }
 .gender__option--checked {
   @apply text-violet-600 ring-2 ring-inset ring-violet-600 font-bold hover:bg-gray-50;
@@ -257,7 +297,7 @@ interface Payload {
   height: 80px;
 }
 .ideal-type__item {
-  @apply flex border rounded-md justify-center items-center;
+  @apply flex border rounded-md justify-center items-center cursor-pointer;
 }
 .ideal-type__item--checked {
   @apply text-violet-600 ring-2 ring-inset ring-violet-600 font-bold hover:bg-gray-50;
@@ -279,12 +319,11 @@ interface Payload {
   background-color: #d6d6d6;
   border-radius: 4px;
 }
-
 .interest__div::-webkit-scrollbar-track {
   background-color: transparent;
 }
 .interest__item {
-  @apply flex justify-center items-center bg-white hover:bg-gray-50 border border-gray-300 rounded-md;
+  @apply flex justify-center items-center bg-white hover:bg-gray-50 border border-gray-300 rounded-md cursor-pointer;
   height: 50px;
 }
 .interest__item--checked {

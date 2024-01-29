@@ -62,7 +62,7 @@ public class JwtService {
     }
 
     public String createAccessToken(UserDetails userDetails) {
-        return createToken(userDetails, accessTokenExpiration)
+        return createToken(userDetails, accessTokenExpiration * 1000)
                 .claim("Privilege",
                         userDetails
                                 .getAuthorities()
@@ -74,7 +74,7 @@ public class JwtService {
     }
 
     public String createRefreshToken(UserDetails userDetails) {
-        return createToken(userDetails, refreshTokenExpiration).compact();
+        return createToken(userDetails, refreshTokenExpiration * 1000).compact();
     }
 
     public Authentication verifyAccessToken(String token) {
@@ -130,7 +130,7 @@ public class JwtService {
 
     public ResponseCookie buildResponseCookie(String refreshToken) {
         return ResponseCookie.from("refresh-token", refreshToken)
-                .maxAge(refreshTokenExpiration)
+                .maxAge(refreshTokenExpiration * 1000)
                 .path("/")
                 .secure(true)
                 .sameSite("Lax") // Same site 설정 필요

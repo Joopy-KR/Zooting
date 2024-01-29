@@ -173,10 +173,8 @@ export const useAccessTokenStore = defineStore(
   "access-token",
   () => {
     const API_URL: string = "https://i10a702.p.ssafy.io";
-    const Token =
-      "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA2MTgwMzcwLCJzdWIiOiJ6eW8wNzIwQGtha2FvLmNvbSIsIlByaXZpbGVnZSI6WyJVU0VSIl19.qCVf1LP6tpcMbLUpoQPk9mn6U0OcFOKS8W8AdINkK00";
     const router = useRouter();
-
+    
     const state = ref<TokenState>({
       accessToken: localStorage.getItem("accessToken") || null,
       refreshToken: localStorage.getItem("refreshToken") || null,
@@ -238,13 +236,13 @@ export const useAccessTokenStore = defineStore(
         method: "get",
         url: `${API_URL}/api/members`,
         headers: {
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
           console.log(res);
           userInfo.value = res.data.result;
-          if (!userInfo.value?.nickname) {
+          if (!isCompletedSignUp) {
             router.push({ name: "signup" });
           } else if (!userInfo.value?.animal) {
             router.push({ name: "animal_test" });
@@ -282,7 +280,7 @@ export const useAccessTokenStore = defineStore(
         url: `${API_URL}/api/members/privilege/check`,
         headers: {
           accept: "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
@@ -320,7 +318,7 @@ export const useAccessTokenStore = defineStore(
           idealAnimal,
         },
         headers: {
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
@@ -334,15 +332,15 @@ export const useAccessTokenStore = defineStore(
 
     // 닉네임 중복 검사
     const isDuplication = ref<boolean>(false);
-    const checkNicknameDuplication = function (payload: string) {
+    const checkNicknameDuplication = function (params: string) {
       axios({
         method: "get",
         url: `${API_URL}/api/members/nickname/check`,
         params: {
-          nickname: payload,
+          nickname: params,
         },
         headers: {
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
@@ -365,7 +363,7 @@ export const useAccessTokenStore = defineStore(
         },
         headers: {
           accept: "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
@@ -378,7 +376,7 @@ export const useAccessTokenStore = defineStore(
     };
 
     // 동물상 테스트 결과 저장
-    const setAnimalFace = function (payload: Number[]) {
+    const setAnimalFace = function (payload: number[]) {
       const animalFaceList = payload;
       axios({
         method: "post",
@@ -388,7 +386,7 @@ export const useAccessTokenStore = defineStore(
         },
         headers: {
           accept: "application/json",
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       })
         .then((res) => {
@@ -398,6 +396,280 @@ export const useAccessTokenStore = defineStore(
           console.log(err);
         });
     };
+
+    // 친구 리스트
+    const friendList = ref<Friend[]>([]);
+    const getFriendList = function () {
+      axios({
+        method: 'get',
+        url: `${API_URL}/api/friends`,
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        // console.log(res);
+        friendList.value = res.data.result;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+  
+  // 친구 요청 받은 리스트
+    const requestFromList = ref<Friend[]>([]);
+    const getRequestFromList = function () {
+      axios({
+        method: 'get',
+        url: `${API_URL}/api/friends/request/from`,
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        // console.log(res);
+        requestFromList.value = res.data.result;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+  
+    // 친구 요청 보낸 리스트
+    const requestToList = ref<Friend[]>([]);
+    const getRequestToList = function () {
+      axios({
+        method: 'get',
+        url: `${API_URL}/api/friends/request/to`,
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        // console.log(res);
+        requestToList.value = res.data.result;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+
+    // 차단 리스트
+    const blockList = ref<Friend[]>([]);
+    const getBlockList = function () {
+      axios({
+        method: 'get',
+        url: `${API_URL}/api/members/blocklist`,
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        blockList.value = res.data.result;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+    
+    // 친구 요청
+    const friendRequest = function (payload: {
+      email: string;
+      nickname: string;
+    }) {
+      const {email, nickname} = payload;
+      axios({
+        method: 'post',
+        url: `${API_URL}/api/friends`,
+        data: {
+          email,
+          nickname
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        console.log(res);
+        getRequestToList();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+
+    // 친구 요청 수락
+    const friendAccept = function (payload: {
+      email: string;
+      nickname: string;
+    }) {
+      const {email, nickname} = payload;
+      axios({
+        method: 'post',
+        url: `${API_URL}/api/friends/accept`,
+        data: {
+          email,
+          nickname
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        console.log(res);
+        getRequestFromList();
+        getFriendList();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+    
+    // 친구 요청 거절
+    const friendReject = function (payload: {
+      email: string;
+      nickname: string;
+    }) {
+      const {email, nickname} = payload;
+      axios({
+        method: 'delete',
+        url: `${API_URL}/api/friends/request/reject`,
+        data: {
+          email,
+          nickname
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        console.log(res);
+        getRequestFromList();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+    
+    // 친구 요청 취소
+    const friendRequestCancel = function (payload: {
+      email: string;
+      nickname: string;
+    }) {
+      const {email, nickname} = payload;
+      axios({
+        method: 'delete',
+        url: `${API_URL}/api/friends/request/cancel`,
+        data: {
+          email,
+          nickname,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        console.log(res);
+        getRequestToList();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+
+    // 차단 해제
+    const blockCancel = function (payload: string) {
+      const nickname = payload;
+      axios({
+        method: 'delete',
+        url: `${API_URL}/api/block`,
+        data: {
+          nickname,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        console.log(res);
+        getBlockList();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+
+    // 친구 삭제
+    const friendDelete = function (payload: {
+      email: string;
+      nickname: string;
+    }) {
+      const {email, nickname} = payload;
+      axios({
+        method: 'delete',
+        url: `${API_URL}/api/friends/delete`,
+        data: {
+          email,
+          nickname,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`
+        }
+      })
+      .then(res => {
+        console.log(res);
+        getFriendList();
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    };
+
+    const searchResult = ref<Friend[]>([])
+
+    // 친구 검색
+    const friendSearch = function (params: string) {
+      axios({
+        method: "get",
+        url: `${API_URL}/api/friends/search`,
+        params: {
+          nickname: params,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+      .then((res) => {
+          searchResult.value = res.data.result;
+          // console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      };
+      
+      // 유저 검색
+    const userSearch = function (params: string) {
+      const nickname = params
+      axios({
+        method: "get",
+        url: `${API_URL}/api/members/searchlist`,
+        params: {
+          nickname,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          searchResult.value = res.data.result;
+          // console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
 
     return {
       setAccessToken,
@@ -416,6 +688,23 @@ export const useAccessTokenStore = defineStore(
       isDuplication,
       checkNicknameDuplication,
       setAnimalFace,
+      friendList,
+      getFriendList,
+      requestFromList,
+      getRequestFromList,
+      requestToList,
+      getRequestToList,
+      blockList,
+      getBlockList,
+      friendRequest,
+      friendAccept,
+      friendReject,
+      friendRequestCancel,
+      blockCancel,
+      friendDelete,
+      friendSearch,
+      userSearch,
+      searchResult,
     };
   },
   { persist: true }
@@ -437,7 +726,7 @@ interface Personality {
 interface UserInfo {
   email: string;
   gender: string | null;
-  nickname: string | null;
+  nickname: string;
   birth: string | null;
   address: string | null;
   idealAnimal: string[] | null;
@@ -445,4 +734,11 @@ interface UserInfo {
   animal: string | null;
   personality: string | null;
   point: Number | null;
+}
+
+interface Friend {
+  email: string;
+  nickname: string;
+  animal: string;
+  gender: string;
 }
