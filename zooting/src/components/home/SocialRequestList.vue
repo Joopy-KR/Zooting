@@ -144,10 +144,22 @@ const getProfileImage = (animal: string) => {
 
 <style scoped>
 .friend__container {
-  @apply flex-grow;
+  @apply h-screen overflow-y-auto;
+}
+.friend__container::-webkit-scrollbar {
+  width: 6px;
+  background-color: white;
+}
+.friend__container::-webkit-scrollbar-thumb {
+  background-color: #d6d6d6;
+  border-radius: 4px;
+}
+.friend__container::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 .friend-list {
-  @apply m-1 divide-y divide-gray-200;
+  @apply divide-y divide-gray-200 flex-shrink-0;
+  flex-grow: 1;
 }
 .friend-list__item {
   @apply flex justify-between px-6 py-4;
