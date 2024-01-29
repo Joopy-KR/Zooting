@@ -30,6 +30,7 @@ public class DMRoom extends BaseEntity {
     private List<DM> dms;
     private Long senderLastReadId;
     private Long receiverLastReadId;
+
     @Builder
     public DMRoom(Member sender, Member receiver, List<DM> dms, Long senderLastReadId, Long receiverLastReadId) {
         this.sender = sender;

@@ -136,7 +136,7 @@ public class MemberController {
                 memberRes
         );
     }
-    @Operation(summary = "닉네임 변경")
+    @Operation(summary = "포인트 차감 후 닉네임 변경")
     @PreAuthorize("hasAnyRole('USER')")
     @PutMapping("/nickname")
     public ResponseEntity<BaseResponse<String>> modifyNickname(
@@ -223,50 +223,6 @@ public class MemberController {
         );
     }
 
-    @Operation(
-            summary = "동물변경권 구매",
-            description = "포인트 부족 시에는 변경 불가")
-    @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/animal")
-    public ResponseEntity<BaseResponse<String>> buyAnimalChangeItem(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        Long price = 300L; // 동물상 변경권 가격
-        boolean isDeducted = memberService.deductPoints(userDetails.getUsername(), price);
-        if (isDeducted) {
-            return BaseResponse.success(
-                    SuccessCode.UPDATE_SUCCESS,
-                    "변경 허용"
-            );
-        }
-        return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
-                "변경 불가"
-        );
-
-
-    }
-
-    @Operation(
-            summary = "닉네임 변경권 구매",
-            description = "포인트 부족시 닉네임 변경 불가"
-    )
-    @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/nickname")
-    public ResponseEntity<BaseResponse<String>> buyNicknameChangeItem(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        Long price = 600L; // 닉네임 변경권 가격
-        boolean isDeducted = memberService.deductPoints(userDetails.getUsername(), price);
-        if (isDeducted) {
-            return BaseResponse.success(
-                    SuccessCode.UPDATE_SUCCESS,
-                    "변경 허용"
-            );
-        }
-        return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
-                "변경 불가"
-        );
-    }
     @Operation(
             summary = "매칭 인원 추출",
             description = "차단 목록 유저 제외" +

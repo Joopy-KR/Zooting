@@ -162,7 +162,7 @@
       payload.value[4] = Number(allAnimal.value["dino"])
     }
 
-    store.setAnimalFace(payload)
+    store.setAnimalFace(payload.value)
   }
 </script>
 

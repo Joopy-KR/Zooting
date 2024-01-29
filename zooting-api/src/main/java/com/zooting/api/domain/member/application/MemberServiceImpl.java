@@ -134,11 +134,6 @@ public class MemberServiceImpl implements MemberService {
         additionalInfo.setBackgroundId(DEFAULT_BACKGROUND_ID);
         additionalInfo.setMember(member);
 
-        // 멤버의 권한 수정 Anonymous 삭제하고 User 권한 부여
-        member.getRole().remove(Privilege.ANONYMOUS);
-        member.getRole().add(Privilege.USER);
-
-
         memberRepository.save(member);
     }
 

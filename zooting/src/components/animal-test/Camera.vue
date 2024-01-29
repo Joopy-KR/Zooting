@@ -157,7 +157,6 @@ import { useAccessTokenStore } from "@/stores/store";
 const emit = defineEmits(["workFinished"]);
 const store = useAccessTokenStore()
 
-
 // 얼굴인식 변수
 let faceDetector: FaceDetector;
 let runningMode: string = "IMAGE";
@@ -175,7 +174,6 @@ onMounted(() => {
 });
 
 // 성별 정보
-// const gender = ref('female')
 const gender = computed(() => {
   if (store.userInfo?.gender === 'man') {
     return 'male';

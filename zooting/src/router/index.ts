@@ -51,7 +51,7 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   const store = useAccessTokenStore()
-
+  
   if ((to.name === 'home' || to.name === 'signup' || to.name === 'animal_test' || to.name === 
   'personality_test') && !store.isLogin) {
     return { name: 'signin' }

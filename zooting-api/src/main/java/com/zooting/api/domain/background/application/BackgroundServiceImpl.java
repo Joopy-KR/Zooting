@@ -20,7 +20,7 @@ public class BackgroundServiceImpl implements BackgroundService{
     public BackgroundPageRes findAllBackgroundImg(Pageable pageable) {
         Page<Background> result = backgroundRepository.findBackgroundsBy(pageable);
         List<BackgroundRes> backgroundResList =  result
-                .stream().map(back-> new BackgroundRes(back.getId(), back.getFile().getFileName(), back.getFile().getImg_url(), back.getPrice())).toList();
+                .stream().map(back-> new BackgroundRes(back.getId(), back.getFile().getFileName(), back.getFile().getImgUrl(), back.getPrice())).toList();
         return new BackgroundPageRes(backgroundResList,pageable.getPageNumber(), result.getTotalPages());
     }
 }

@@ -27,7 +27,7 @@ public class DMWebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry brokerRegistry) {
-        brokerRegistry.enableSimpleBroker("api/sub");
-        brokerRegistry.setApplicationDestinationPrefixes("api/pub");
+        brokerRegistry.enableSimpleBroker("/api/sub");
+        brokerRegistry.setApplicationDestinationPrefixes("/api/pub");
     }
 }

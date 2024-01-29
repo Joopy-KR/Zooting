@@ -10,10 +10,16 @@ import java.util.List;
 
 public interface DMService {
     DMRoom getDMRoom(String sender, String receiver);
+
     DMRoom createDMRoom(String sender, String receiver);
+
     List<DM> getAllDMList(Long dmRoomId, Long start);
+
     Page<DM> getDMList(Long dmRoomId, Long cursor);
+
     void saveDM(DMReq dmReq);
+
     DMRoomRes enterDMRoom(String sender, String receiver);
+
     DMRoomRes getDMRoomWithCursor(Long dmRoomId, Long cursor);
 }

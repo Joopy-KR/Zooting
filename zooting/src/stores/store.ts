@@ -240,7 +240,6 @@ export const useAccessTokenStore = defineStore(
         },
       })
         .then((res) => {
-          console.log(res);
           userInfo.value = res.data.result;
           if (!isCompletedSignUp) {
             router.push({ name: "signup" });
@@ -284,7 +283,6 @@ export const useAccessTokenStore = defineStore(
         },
       })
         .then((res) => {
-          console.log(res);
           isCompletedSignUp.value = res.data.result;
           if (!isCompletedSignUp) {
             router.push({ name: "signup" });

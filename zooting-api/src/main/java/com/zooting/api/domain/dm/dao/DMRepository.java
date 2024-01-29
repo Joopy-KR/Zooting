@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface DMRepository extends JpaRepository<DM, Long>{
+public interface DMRepository extends JpaRepository<DM, Long> {
     Page<DM> findByDmRoomIdAndIdLessThanOrderByIdDesc(Long dmRoomId, Long cursor, Pageable pageable);
 }
