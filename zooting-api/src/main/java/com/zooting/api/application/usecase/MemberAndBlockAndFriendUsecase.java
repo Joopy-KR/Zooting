@@ -20,6 +20,7 @@ public class MemberAndBlockAndFriendUsecase {
     private final BlockRepository blockRepository;
     @Transactional
     public void insertBlockList(String userId, MemberAndBlockReq insertBlockListReq) {
+
         Member me = new Member();
         me.setEmail(userId);
         // 차단할 사람
@@ -44,6 +45,8 @@ public class MemberAndBlockAndFriendUsecase {
         // 차단 당한 사람
         Member blockedMember = memberRepository.findMemberByNickname(blockReq.nickname())
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        System.out.println(me.getNickname());
+        System.out.println(blockedMember.getEmail());
         blockRepository.deleteBlockByFromAndTo(me, blockedMember);
 
     }

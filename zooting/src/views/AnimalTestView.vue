@@ -36,6 +36,9 @@
   import { ref, onMounted } from 'vue'
   import Camera from '@/components/animal-test/Camera.vue'
   import Result from '@/components/animal-test/Result.vue'
+  import { useAccessTokenStore } from "../stores/store"
+
+  const store = useAccessTokenStore()
   
   // 닮은 동물상
   const resultAnimal = ref('')
@@ -88,7 +91,7 @@
       } else if (maxIdx.value === 5) {
           resultAnimal.value = '토끼'
       }
-    // 여자는 강아지, 고양이, 꼬부기, 사슴, 토끼
+    // 여자는 강아지, 고양이, 펭귄, 사슴, 토끼
     } else if (gender.value === 'female') {
       allAnimal.value["gender"] = 'female'
       allAnimal.value["dog"] = (Number(args[1]) * 100).toFixed(0)
@@ -102,13 +105,16 @@
       } else if (maxIdx.value === 2) {
           resultAnimal.value = '고양이'
       } else if (maxIdx.value === 3) {
-          resultAnimal.value = '꼬부기'
+          resultAnimal.value = '펭귄'
       } else if (maxIdx.value === 4) {
           resultAnimal.value = '사슴'
       } else if (maxIdx.value === 5) {
           resultAnimal.value = '토끼'
       }
     }
+    
+    saveTestResult()
+    
     // 다음 컴포넌트로 이동
     await wait(0.5)
     isAnimal.value = false
@@ -145,12 +151,25 @@
     isAnimal.value = true
   }
 
+  const saveTestResult = () => {
+    const payload = ref([Number(allAnimal.value["dog"]), Number(allAnimal.value["cat"]), Number(allAnimal.value["rabbit"]), 0, 0])
+
+    if (allAnimal.value["gender"] === 'female') {
+      payload.value[3] = Number(allAnimal.value["deer"])
+      payload.value[4] = Number(allAnimal.value["turtle"])
+    } else {
+      payload.value[3] = Number(allAnimal.value["bear"])
+      payload.value[4] = Number(allAnimal.value["dino"])
+    }
+
+    store.setAnimalFace(payload.value)
+  }
 </script>
 
 
 <style scoped>
 .outer-container {
-    @apply flex flex-col justify-center items-center p-6 bg-slate-100 w-screen h-screen;
+    @apply flex flex-col justify-center items-center p-6 w-screen h-screen;
     overflow-y: auto;
 }
 

@@ -1,11 +1,12 @@
 package com.zooting.api.domain.friend.application;
 
-import com.zooting.api.application.usecase.SendFriendUsecase;
+import com.zooting.api.application.usecase.MemberAndFriendRequestUsecase;
 import com.zooting.api.domain.friend.dao.FriendRequestRepository;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,51 +17,32 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 class FriendRequestServiceTest {
     @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
     private FriendRequestService friendRequestService;
     @Autowired
     private FriendRequestRepository friendRequestRepository;
     @Autowired
-    private FriendService friendService;
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private SendFriendUsecase sendFriendUsecase;
+    private MemberAndFriendRequestUsecase memberAndFriendRequestUsecase;
 
-    @Test
-    void getReceivedFriendRequestsTest() {
-    }
-
-    @Test
-    void getSentFriendRequestsTest() {
-    }
-
-    @Test
-    void sendFriendRequestTest() {
-    }
-
+    @DisplayName("친구 거절 테스트")
     @Test
     @Transactional
     @WithMockUser(username = "x", roles = "USER")
     void rejectFriendRequestTest() {
+        // Given
         Member loginMember = Member.builder().email("x").build();
         Member deleteMember = Member.builder().email("y").build();
-        sendFriendUsecase.sendFriendRequest("y", "x");
-        friendRequestRepository.findAll().forEach(friendRequest -> log.info("{}, {}", friendRequest.getFrom().getEmail(), friendRequest.getTo().getEmail()));
-        friendRequestService.rejectFriendRequest("x", "y");
-        friendRequestRepository.findAll().forEach(friendRequest -> log.info("{}, {}", friendRequest.getFrom().getEmail(), friendRequest.getTo().getEmail()));
-        assertEquals(0, friendRequestRepository.findByFrom("x").size());
-    }
+        memberRepository.save(loginMember);
+        memberRepository.save(deleteMember);
 
-    @Test
-    @Transactional
-    @WithMockUser(username = "x", roles = "USER")
-    void cancelFriendRequestTest() {
-        Member loginMember = Member.builder().email("x").build();
-        Member deleteMember = Member.builder().email("y").build();
-        sendFriendUsecase.sendFriendRequest("x", "y");
+        // When
+        memberAndFriendRequestUsecase.sendFriendRequest("y", "x");
         friendRequestRepository.findAll().forEach(friendRequest -> log.info("{}, {}", friendRequest.getFrom().getEmail(), friendRequest.getTo().getEmail()));
         friendRequestService.rejectFriendRequest("x", "y");
         friendRequestRepository.findAll().forEach(friendRequest -> log.info("{}, {}", friendRequest.getFrom().getEmail(), friendRequest.getTo().getEmail()));
-        assertEquals(0, friendRequestRepository.findByTo("x").size());
+
+        // Then
+        assertEquals(0, friendRequestRepository.findByFrom("x").size());
     }
 }

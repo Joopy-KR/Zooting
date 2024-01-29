@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "해금배경이미지 조회 응답시 DTO")
 public record MemberAndBackgroundRes(
+        @Schema(description = "해금 파일 id")
+        Long id,
         @Schema(description = "파일이름")
         String fileName,
         @Schema(description = "이미지 url")

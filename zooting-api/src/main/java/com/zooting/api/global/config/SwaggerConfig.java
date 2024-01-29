@@ -14,12 +14,12 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
-    //    private final ServerProperties serverProperties;
     @Bean
     public OpenAPI openAPI() {
         Info info = new Info()
@@ -40,8 +40,8 @@ public class SwaggerConfig {
                 .license(new License().name("Apache License Version 2.0").url("http://www.apache.org/licenses/LICENSE-2.0"))
                 .version("v0.0.1");
 
-//        return new OpenAPI()
-//                .info(info);
+        var localServer = new Server().description("local server").url("http://localhost:8080");
+        var webServer = new Server().description("web server").url("https://i10a702.p.ssafy.io");
 
         String jwt = "JWT";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwt);
@@ -55,6 +55,8 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(info)
                 .addSecurityItem(securityRequirement)
+                .addServersItem(localServer)
+                .addServersItem(webServer)
                 .components(components);
     }
 }

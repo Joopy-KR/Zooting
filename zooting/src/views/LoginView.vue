@@ -8,20 +8,29 @@ const store = useAccessTokenStore();
 
 const handleSocialLoginRedirect = async () => {
   try {
-    const accessToken = await getAccessTokenFromRedirectURL();
-    if (accessToken) {
-      await store.setAccessToken(accessToken);
+    const token = await getTokenFromURL();
+    if (token["accessToken"]) {
+      await store.setAccessToken(token["accessToken"]);
+      if (token["refreshToken"]) {
+        store.setRefreshToken(token["refreshToken"]);
+      }
+      store.getUserInfo();
       router.push({ name: "home" });
     }
   } catch (error) {
     console.error("소셜 로그인 실패: ", error);
-    router.push({ name: "home" });
+    router.push({ name: "signin" });
   }
 };
 
-const getAccessTokenFromRedirectURL = () => {
+const getTokenFromURL = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get("access-token");
+  const accessToken = urlParams.get("access-token");
+  const refreshToken = urlParams.get("refresh-token");
+  return {
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+  };
 };
 
 onMounted(() => {

@@ -8,7 +8,6 @@ import com.zooting.api.domain.game.dto.response.CatchMindRes;
 import com.zooting.api.domain.game.dto.response.LiarGameRes;
 import com.zooting.api.domain.game.entity.BalanceGame;
 import com.zooting.api.domain.game.entity.CatchMind;
-import com.zooting.api.domain.game.entity.LiarGame;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
@@ -26,16 +25,14 @@ public class GameServiceImpl implements GameService{
     public BalanceGameRes findBalanceSentences() {
         BalanceGame balanceGame = balanceGameRepository.find().orElseThrow(()->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
-        BalanceGameRes balanceGameRes = new BalanceGameRes(balanceGame.getSentence1(), balanceGame.getSentence2());
-        return balanceGameRes;
+        return new BalanceGameRes(balanceGame.getSentence1(), balanceGame.getSentence2());
     }
 
     @Override
     public CatchMindRes findCatchMindWord() {
         CatchMind catchMind = catchMindRepository.find().orElseThrow(()->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
-        CatchMindRes catchMindRes = new CatchMindRes(catchMind.getWord());
-        return catchMindRes;
+        return new CatchMindRes(catchMind.getWord());
     }
 
     @Override
@@ -44,9 +41,7 @@ public class GameServiceImpl implements GameService{
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
         List<String> liarGameWordList = liarGameRepository.findWord(liarGameTopic).orElseThrow(()->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR)).stream().toList();
-        LiarGameRes liarGameRes = new LiarGameRes(liarGameTopic, liarGameWordList.get(0), liarGameWordList.get(1));
-
-        return liarGameRes;
+        return new LiarGameRes(liarGameTopic, liarGameWordList.get(0), liarGameWordList.get(1));
     }
 
 }

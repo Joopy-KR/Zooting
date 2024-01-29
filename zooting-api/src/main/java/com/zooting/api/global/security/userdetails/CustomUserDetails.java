@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -49,5 +47,14 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled(){
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return " {CustomUserDetails {" +
+                "email: " + email +
+                ", nickname: " + nickname +
+                ", authorities: " + authorities +
+                "}}";
     }
 }

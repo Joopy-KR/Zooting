@@ -1,13 +1,10 @@
 package com.zooting.api.domain.member.application;
 
 import com.zooting.api.domain.block.entity.Block;
+import com.zooting.api.domain.member.dao.ExtractObj;
 import com.zooting.api.domain.member.dao.MemberRepository;
-import com.zooting.api.domain.member.dto.request.InterestsReq;
-import com.zooting.api.domain.member.dto.request.IntroduceReq;
-import com.zooting.api.domain.member.dto.request.MemberReq;
-import com.zooting.api.domain.member.dto.request.PersonalityReq;
-import com.zooting.api.domain.member.dto.response.MemberRes;
-import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.dto.request.*;
+import com.zooting.api.domain.member.dto.response.*;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.entity.Privilege;
@@ -21,29 +18,96 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
-
+    public static final String DEFAULT_MASK = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/default_animal.png";
+    public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/zooting-background-default.jpg";
+    public static final Long DEFAULT_MASK_ID = 99L;
+    public static final Long DEFAULT_BACKGROUND_ID = 99L;
+    public static final Long DEFAULT_POINT = 0L;
+    public static final Long CHANGE_NICKNAME_PRICE = 10L;
     @Override
     public boolean existNickname(String nickname) {
         return memberRepository.existsByNickname(nickname);
     }
 
     @Override
-    public boolean checkAdditionalInfo(String userId) {
+    public boolean checkMemberPrivilege(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        return !member.getNickname().isBlank();
+        for (var role : member.getRole()) {
+            if (role.equals(Privilege.USER)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public MyProfileReq checkMyProfile(String userId, String nickname) {
+        Member member = memberRepository.findMemberByEmail(userId)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        if (member.getNickname().equals(nickname) ) {
+            return new MyProfileReq(true);
+        }
+        return new MyProfileReq(false);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public MemberRes findMemberInfo(String memberId) {
+        Member member = memberRepository.findMemberByEmail(memberId).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+
+        return new MemberRes(
+                member.getEmail(),
+                member.getGender(),
+                member.getNickname(),
+                member.getBirth(),
+                member.getAddress(),
+                member.getPoint(),
+                member.getAdditionalInfo().getIntroduce(),
+                member.getAdditionalInfo().getPersonality(),
+                member.getAdditionalInfo().getAnimal(),
+                member.getAdditionalInfo().getInterest(),
+                member.getAdditionalInfo().getIdealAnimal(),
+                member.getAdditionalInfo().getBackgroundId(),
+                member.getAdditionalInfo().getBackgroundUrl(),
+                member.getAdditionalInfo().getMaskId(),
+                member.getAdditionalInfo().getMaskUrl()
+        );
+    }
+
+    @Override
+    public MemberRes findMemberInfoByNickname(String nickname) {
+        Member member = memberRepository.findMemberByNickname(nickname).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        return new MemberRes(
+                member.getEmail(),
+                member.getGender(),
+                member.getNickname(),
+                member.getBirth(),
+                member.getAddress(),
+                null,
+                member.getAdditionalInfo().getIntroduce(),
+                member.getAdditionalInfo().getPersonality(),
+                member.getAdditionalInfo().getAnimal(),
+                member.getAdditionalInfo().getInterest(),
+                member.getAdditionalInfo().getIdealAnimal(),
+                member.getAdditionalInfo().getBackgroundId(),
+                member.getAdditionalInfo().getBackgroundUrl(),
+                member.getAdditionalInfo().getMaskId(),
+                member.getAdditionalInfo().getMaskUrl()
+        );
     }
 
     @Transactional
     @Override
-    public void updateMemberInfo(String memberId, MemberReq memberReq) throws ParseException, BaseExceptionHandler {
+    public void updateMemberInfo(String memberId, MemberReq memberReq) throws ParseException {
         Member member = memberRepository.findMemberByEmail(memberId).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         if (existNickname(memberReq.nickname())) {
@@ -53,7 +117,8 @@ public class MemberServiceImpl implements MemberService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         member.setBirth(sdf.parse(memberReq.birth()));
         member.setAddress(memberReq.address());
-        member.setPoint(0L); // 추가 정보 저장 시 포인트 0으로 저장
+        member.setGender(memberReq.gender().toString());
+        member.setPoint(DEFAULT_POINT); // 추가 정보 저장 시 포인트 0으로 저장
 
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
         if (Objects.isNull(additionalInfo)) {
@@ -61,18 +126,32 @@ public class MemberServiceImpl implements MemberService {
         }
         additionalInfo.setInterest(memberReq.interest().toString());
         additionalInfo.setIdealAnimal(memberReq.idealAnimal().toString());
-        additionalInfo.setMember(member);
 
-        // 멤버의 권한 수정 Anonymouse 삭제하고 User 권한 부여
-        member.getRole().remove(Privilege.ANONYMOUS);
-        member.getRole().add(Privilege.USER);
+        // 디폴트 마스크, 배경 이미지로 저장
+        additionalInfo.setMaskUrl(DEFAULT_MASK);
+        additionalInfo.setBackgroundUrl(DEFAULT_BACKGROUND);
+        additionalInfo.setMaskId(DEFAULT_MASK_ID);
+        additionalInfo.setBackgroundId(DEFAULT_BACKGROUND_ID);
+        additionalInfo.setMember(member);
 
         memberRepository.save(member);
     }
 
     @Transactional
     @Override
-    public void updateInterestsandIdeal(String memberId, InterestsReq additionalReq) {
+    public void updateMemberInfo(String memberId, MemberModifyReq memberModifyReq) {
+        Member member = memberRepository.findMemberByEmail(memberId).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+
+        member.setAddress(memberModifyReq.address());
+        member.getAdditionalInfo().setIdealAnimal(memberModifyReq.idealAnimal().toString());
+
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    @Override
+    public void updateInterests(String memberId, InterestsReq additionalReq) {
         Member member = memberRepository.findMemberByEmail(memberId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
@@ -80,7 +159,6 @@ public class MemberServiceImpl implements MemberService {
             additionalInfo = new AdditionalInfo();
         }
         additionalInfo.setInterest(additionalReq.interest().toString());
-        additionalInfo.setIdealAnimal(additionalReq.idealAnimal().toString());
         additionalInfo.setMember(member);
         memberRepository.save(member);
     }
@@ -99,9 +177,26 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
+    @Transactional
+    @Override
+    public boolean modifyNickname(String memberId, NicknameReq nicknameReq) {
+        Member member = memberRepository.findMemberByEmail(memberId)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        // 닉네임 중복 체크 && 잔여 포인트 확인
+        if (! memberRepository.existsByNickname(nicknameReq.nickname()) && member.getPoint() >= CHANGE_NICKNAME_PRICE) {
+            // 닉네임 변경
+            member.setNickname(nicknameReq.nickname());
+            // 포인트 차감
+            member.setPoint(member.getPoint()- CHANGE_NICKNAME_PRICE);
+            memberRepository.save(member);
+            return true;
+        }
+        return false;
+    }
+
     @Transactional(readOnly = true)
     @Override
-    public List<MemberRes> findMemberList(String userId, String nickname) {
+    public List<MemberSearchRes> findMemberList(String userId, String nickname) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
@@ -112,10 +207,11 @@ public class MemberServiceImpl implements MemberService {
         if (!blockList.isEmpty()) {
             List<String> blockMemberNicknames = blockList.stream().map(block -> block.getFrom().getNickname()).toList();
             findMembers = memberRepository.findByNicknameContainingAndNicknameNotIn(nickname, blockMemberNicknames);
+        } else {
+            findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         }
-        findMembers = memberRepository.findMemberByNicknameContaining(nickname);
-        List<MemberRes> resultList = findMembers.stream().map(mem -> new MemberRes(mem.getNickname(), mem.getEmail())).toList();
-        return resultList;
+        return findMembers.stream().map(mem -> new MemberSearchRes(mem.getEmail(), mem.getNickname(),
+                mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
     }
 
     @Transactional
@@ -133,13 +229,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-
     @Override
     public PointRes findPoints(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
-        PointRes pointRes = new PointRes(member.getPoint());
-        return pointRes;
+        return new PointRes(member.getPoint());
     }
 
     @Transactional
@@ -155,24 +249,31 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
         return true;
     }
-
     @Override
-    public Member getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(RuntimeException::new); //TODO
+    public List<MemberSearchRes> extractMembers(String userId, ExtractingReq extractingReq) {
+        Member member = memberRepository.findMemberByEmail(userId)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        ExtractObj extractObj = new ExtractObj();
+        extractObj.setUserId(userId);
+        extractObj.setBlockToList(member.getBlockToList().stream().map(block-> block.getFrom().getEmail()).toList());
+        extractObj.setBlockFromList(member.getBlockFromList().stream().map(block-> block.getTo().getEmail()).toList());
+        extractObj.setFriendList(member.getFriendList().stream().map(fr-> fr.getFollowing().getEmail()).toList());
+        extractObj.setMemberInterests(member.getAdditionalInfo().getInterest().lines().toList());
+        extractObj.setMemberIdeals(member.getAdditionalInfo().getIdealAnimal().lines().toList());
+        extractObj.setMemberBirth(member.getBirth());
+        extractObj.setRangeYear(extractingReq.rangeYear());
+        System.out.println(extractObj.getMemberIdeals());
+        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(),mem.getNickname(), mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
     }
 
     @Override
-    public Member initialMemberRegister(String email) {
-        return memberRepository.save(Member
-                .builder()
-                .role(List.of(Privilege.ANONYMOUS))
-                .email(email)
-                .build());
-    }
+    public List<MemberSearchRes> findMyBlockList(String userId) {
+        Member member = memberRepository.findMemberByEmail(userId)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        return member.getBlockFromList().stream()
+                .map(block -> new MemberSearchRes(block.getTo().getEmail(), block.getTo().getNickname()
+                        ,block.getTo().getGender().toString(), block.getTo().getAdditionalInfo().getAnimal())).toList();
 
-    @Override
-    public Optional<Member> checkRegisteredMember(String email) {
-        return memberRepository.findByEmail(email);
+
     }
 }
