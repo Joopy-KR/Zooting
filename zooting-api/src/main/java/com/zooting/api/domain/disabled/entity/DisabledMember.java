@@ -14,6 +14,7 @@ import lombok.*;
 public class DisabledMember extends BaseEntity {
     @Id
     @Column(name = "disabled_member_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     @JoinColumn(name = "email")

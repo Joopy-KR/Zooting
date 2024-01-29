@@ -2,10 +2,7 @@ package com.zooting.api.domain.member.api;
 
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.MemberRes;
-import com.zooting.api.domain.member.dto.response.MemberSearchRes;
-import com.zooting.api.domain.member.dto.response.MyProfileReq;
-import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.dto.response.*;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -112,8 +109,20 @@ public class MemberController {
             @AuthenticationPrincipal UserDetails userDetails) {
         MemberRes memberRes = memberService.findMemberInfo(userDetails.getUsername());
         return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
+                SuccessCode.SELECT_SUCCESS,
                 memberRes
+        );
+    }
+    @PreAuthorize("hasAnyRole('USER')")
+    @Operation(summary = "차단 리스트 조회")
+    @GetMapping("/blocklist")
+    public ResponseEntity<BaseResponse<List<MemberSearchRes>>> findMyBlockList(
+            @AuthenticationPrincipal UserDetails userDetails) {
+            var result = memberService.findMyBlockList(userDetails.getUsername());
+
+        return BaseResponse.success(
+                SuccessCode.CHECK_SUCCESS,
+                result
         );
     }
     @Operation(summary = "닉네임으로 유저 정보 조회")
@@ -123,7 +132,7 @@ public class MemberController {
             @Valid @NotNull @Size(min = 2, max = 16)@RequestParam(name="nickname") String nickname){
         MemberRes memberRes = memberService.findMemberInfoByNickname(nickname);
         return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
+                SuccessCode.SELECT_SUCCESS,
                 memberRes
         );
     }

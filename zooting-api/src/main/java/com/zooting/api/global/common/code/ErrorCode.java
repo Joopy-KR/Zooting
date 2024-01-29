@@ -63,12 +63,14 @@ public enum ErrorCode {
 
     // 사용자 권한 인증 실패 (CODE: 100)
     UNAUTHORIZED_USER_EXCEPTION(403, "B100", "권한이 없는 사용자입니다."),
+    FAILED_OAUTH2_AUTHENTICATION_EXCEPTION(403, "B101", "소셜 로그인에 실패했습니다."),
     INVALID_ACCESS_TOKEN_EXCEPTION(403, "B102", "유효하지 않은 ACCESS TOKEN 입니다."),
     EXPIRED_ACCESS_TOKEN_EXCEPTION(403, "B103", "만료된 ACCESS TOKEN 입니다."),
     INCONSISTENT_ACCESS_TOKEN_EXCEPTION(403, "B104", "일치하지 않는 ACCESS TOKEN 입니다."),
-    INVALID_REFRESH_TOKEN_EXCEPTION(403, "B102", "유효하지 않은 REFRESH TOKEN 입니다."),
-    EXPIRED_REFRESH_TOKEN_EXCEPTION(403, "B103", "만료된 REFRESH TOKEN 입니다."),
-    INCONSISTENT_REFRESH_TOKEN_EXCEPTION(403, "B104", "일치하지 않는 REFRESH TOKEN 입니다."),
+    INVALID_REFRESH_TOKEN_EXCEPTION(403, "B105", "유효하지 않은 REFRESH TOKEN 입니다."),
+    EXPIRED_REFRESH_TOKEN_EXCEPTION(403, "B106", "만료된 REFRESH TOKEN 입니다."),
+    INCONSISTENT_REFRESH_TOKEN_EXCEPTION(403, "B107", "일치하지 않는 REFRESH TOKEN 입니다."),
+    ILLEGAL_TOKEN_EXCEPTION(403, "B107", "헤더에 토큰 정보가 존재하지 않습니다."),
 
     // 유저 에러 (CODE: 200)
     // 유저가 존재하지 않음
@@ -81,7 +83,10 @@ public enum ErrorCode {
     NOT_FOUND_RESTAURANT(404, "B400", "존재하지 않는 음식점 입니다."),
     // S3 File 에러 (CODE: 900)
     NOT_FOUND_S3FILE(404, "B900", "존재하지 않는 S3 파일입니다."),
-    ; // End
+    // 친구 요청 에러 (CODE: 201)
+    ALREADY_EXIST_FRIEND_REQUEST(404,"B201" ,"이미 요청을 보냈습니다" ),
+    // 친구 에러 (CODE: 202)
+    ALREADY_EXIST_FRIEND(404,"B202" ,"이미 친구입니다" );
 
     /**
      * ******************************* Error Code Constructor ***************************************

@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,11 +21,12 @@ import java.util.List;
 @PreAuthorize("hasAnyRole('USER')")
 @Service
 @RequiredArgsConstructor
-public class AcceptFriendUsecase {
+public class MemberAndFriendAndFriendRequestUsecase {
     private final FriendRepository friendRepository;
     private final FriendRequestRepository friendRequestRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public void acceptFriend(FriendReq friendReq, UserDetails userDetails) {
         //양방향 저장
         Member member1 = Member.builder().email(userDetails.getUsername()).build();
@@ -33,7 +35,18 @@ public class AcceptFriendUsecase {
 
         Friend friend1 = new Friend(member1, member2);
         Friend friend2 = new Friend(member2, member1);
+        if(friendRepository.existsByFollowerAndFollowing(member1, member2) ||
+                friendRepository.existsByFollowerAndFollowing(member2, member1)) {
+            throw new BaseExceptionHandler(ErrorCode.ALREADY_EXIST_FRIEND);
+        }
         friendRepository.saveAll(List.of(friend1, friend2));
         friendRequestRepository.deleteFriendRequestByFromAndTo(member2, member1);
+    }
+    @Transactional
+    public void deleteFriend(String username, String email) {
+        Member member1 = Member.builder().email(username).build();
+        Member member2 = memberRepository.findByEmail(email)
+                .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        friendRepository.deleteFriendByFollowerAndFollowingOrFollowingAndFollower(member1, member2, member1, member2);
     }
 }

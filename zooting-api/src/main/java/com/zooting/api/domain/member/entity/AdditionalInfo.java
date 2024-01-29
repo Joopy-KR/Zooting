@@ -1,6 +1,9 @@
 package com.zooting.api.domain.member.entity;
 
 import com.zooting.api.domain.BaseEntity;
+import com.zooting.api.domain.background.entity.Background;
+import com.zooting.api.domain.background.entity.BackgroundInventory;
+import com.zooting.api.domain.mask.entity.Mask;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,20 +29,19 @@ public class AdditionalInfo extends BaseEntity {
     private String interest;
     @Column(name = "ideal_animal")
     private String idealAnimal;
-    private Long maskId;
-    @Column(name = "background_id")
-    private Long backgroundId;
+    private String maskUrl;
+    private String backgroundUrl;
 
     @Builder
-    public AdditionalInfo(Member member, String personality, String animal, String introduce, String interest, String idealAnimal, Long maskId, Long backgroundId) {
+    public AdditionalInfo(Member member, String personality, String animal, String introduce, String interest, String idealAnimal, String  maskUrl, String backgroundUrl) {
         this.member = member;
         this.personality = personality;
         this.animal = animal;
         this.introduce = introduce;
         this.interest = interest;
         this.idealAnimal = idealAnimal;
-        this.maskId = maskId;
-        this.backgroundId = backgroundId;
+        this.maskUrl = maskUrl;
+        this.backgroundUrl = backgroundUrl;
     }
 
     public void setMember(Member member) {

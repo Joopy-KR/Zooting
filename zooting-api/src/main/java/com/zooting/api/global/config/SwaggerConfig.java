@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
-    //    private final ServerProperties serverProperties;
     @Bean
     public OpenAPI openAPI() {
         Info info = new Info()
