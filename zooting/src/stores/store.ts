@@ -377,12 +377,12 @@ export const useAccessTokenStore = defineStore(
 
     // 동물상 테스트 결과 저장
     const setAnimalFace = function (payload: number[]) {
-      const animalFaceList = payload;
+      const animalfaceList = payload;
       axios({
         method: "post",
         url: `${API_URL}/api/animalface`,
         data: {
-          animalFaceList,
+          animalfaceList,
         },
         headers: {
           accept: "application/json",
@@ -648,7 +648,7 @@ export const useAccessTokenStore = defineStore(
         });
       };
       
-      // 유저 검색
+    // 유저 검색
     const userSearch = function (params: string) {
       const nickname = params
       axios({
@@ -669,6 +669,28 @@ export const useAccessTokenStore = defineStore(
           console.log(err);
         });
     };
+
+    // // DM방 입장
+    // const enterDmRoom = function (params: string) {
+    //   const email = params
+    //   axios({
+    //     method: "get",
+    //     url: `${API_URL}/api/dm/room`,
+    //     params: {
+    //       email,
+    //     },
+    //     headers: {
+    //       Authorization: `Bearer ${getAccessToken()}`,
+    //     },
+    //   })
+    //     .then((res) => {
+    //       searchResult.value = res.data.result;
+    //       // console.log(res);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // };
 
 
     return {

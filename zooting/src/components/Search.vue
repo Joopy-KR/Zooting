@@ -4,7 +4,7 @@
     <div class="search__input-container">
       
       <div @click="toggleSearchType" class="search__toggle">
-        <!-- 전체 유저 중에서 검색 (친구일 경우 친구 신청 버튼 X) -->
+        <!-- 전체 유저 중에서 검색 -->
         <svg 
           v-if="isGlobal"
           class="text-gray-500 w-7 h-7 me-1 hover:text-gray-700" 
@@ -77,7 +77,7 @@
               <RouterLink :to="getProfileLink(result.nickname)" class="hover:font-semibold ms-1">
               {{ result.nickname }}
               </RouterLink>
-              <button v-if="!isRequestInList(result) && isGlobal" @click="sendFriendRequest(result)">
+              <button v-if="!isRequestInList(result) && isGlobal && !(result.nickname===store.userInfo?.nickname)" @click="sendFriendRequest(result)">
                 <!-- 친구 신청 아이콘 -->
                 <svg
                   class="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700 me-1"
