@@ -240,6 +240,7 @@ export const useAccessTokenStore = defineStore(
         },
       })
         .then((res) => {
+          console.log(res);
           userInfo.value = res.data.result;
           if (!isCompletedSignUp) {
             router.push({ name: "signup" });
@@ -283,6 +284,7 @@ export const useAccessTokenStore = defineStore(
         },
       })
         .then((res) => {
+          console.log(res);
           isCompletedSignUp.value = res.data.result;
           if (!isCompletedSignUp) {
             router.push({ name: "signup" });
@@ -375,12 +377,12 @@ export const useAccessTokenStore = defineStore(
 
     // 동물상 테스트 결과 저장
     const setAnimalFace = function (payload: number[]) {
-      const animalfaceList = payload;
+      const animalFaceList = payload;
       axios({
         method: "post",
         url: `${API_URL}/api/animalface`,
         data: {
-          animalfaceList,
+          animalFaceList,
         },
         headers: {
           accept: "application/json",
@@ -646,7 +648,7 @@ export const useAccessTokenStore = defineStore(
         });
       };
       
-      // 유저 검색
+    // 유저 검색
     const userSearch = function (params: string) {
       const nickname = params
       axios({
@@ -662,6 +664,27 @@ export const useAccessTokenStore = defineStore(
         .then((res) => {
           searchResult.value = res.data.result;
           // console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    // DM 방 최초 생성
+    const createDmRoom = function (params: string) {
+      const receiver = params
+      axios({
+        method: "get",
+        url: `${API_URL}/api/dm/room`,
+        params: {
+          receiver,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          console.log(res);
         })
         .catch((err) => {
           console.log(err);
@@ -703,6 +726,7 @@ export const useAccessTokenStore = defineStore(
       friendSearch,
       userSearch,
       searchResult,
+      createDmRoom,
     };
   },
   { persist: true }

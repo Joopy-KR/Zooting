@@ -19,6 +19,7 @@
           </div>
         </RouterLink>
         <div class="flex items-center">
+          <button class="me-2" @click="createDmRoom(item.email)">DM</button>
           <button @click="friendDelete(item)">삭제</button>
         </div>
       </li>
@@ -65,6 +66,10 @@ const getHeartClass = (gender: string) => {
 const getProfileImage = (animal: string) => {
   return `/images/${animal}.png`
 }
+
+const createDmRoom = (email: string) => {
+  store.createDmRoom(email)
+} 
 </script>
 
 <style scoped>
