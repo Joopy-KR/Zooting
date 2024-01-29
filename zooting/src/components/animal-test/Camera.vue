@@ -174,7 +174,6 @@ onMounted(() => {
 });
 
 // 성별 정보
-// const gender = ref('female')
 const gender = computed(() => {
   if (store.userInfo?.gender === 'man') {
     return 'male';
