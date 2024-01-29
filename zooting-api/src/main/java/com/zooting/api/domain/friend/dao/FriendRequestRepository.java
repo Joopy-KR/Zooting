@@ -23,5 +23,7 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, Lo
         WHERE fr.from.email = :from
     """)
     List<FriendRequest> findByFrom(@Param("from") String from); // 친구 요청 보낸 리스트
+
+    boolean existsByFromAndTo(Member fromMember, Member toMember);
 }
 

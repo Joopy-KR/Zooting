@@ -2,10 +2,7 @@ package com.zooting.api.domain.member.api;
 
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.MemberRes;
-import com.zooting.api.domain.member.dto.response.MemberSearchRes;
-import com.zooting.api.domain.member.dto.response.MyProfileReq;
-import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.dto.response.*;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -112,8 +109,20 @@ public class MemberController {
             @AuthenticationPrincipal UserDetails userDetails) {
         MemberRes memberRes = memberService.findMemberInfo(userDetails.getUsername());
         return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
+                SuccessCode.SELECT_SUCCESS,
                 memberRes
+        );
+    }
+    @PreAuthorize("hasAnyRole('USER')")
+    @Operation(summary = "차단 리스트 조회")
+    @GetMapping("/blocklist")
+    public ResponseEntity<BaseResponse<List<MemberSearchRes>>> findMyBlockList(
+            @AuthenticationPrincipal UserDetails userDetails) {
+            var result = memberService.findMyBlockList(userDetails.getUsername());
+
+        return BaseResponse.success(
+                SuccessCode.CHECK_SUCCESS,
+                result
         );
     }
     @Operation(summary = "닉네임으로 유저 정보 조회")
@@ -123,14 +132,30 @@ public class MemberController {
             @Valid @NotNull @Size(min = 2, max = 16)@RequestParam(name="nickname") String nickname){
         MemberRes memberRes = memberService.findMemberInfoByNickname(nickname);
         return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
+                SuccessCode.SELECT_SUCCESS,
                 memberRes
         );
     }
-
+    @Operation(summary = "포인트 차감 후 닉네임 변경")
+    @PreAuthorize("hasAnyRole('USER')")
+    @PutMapping("/nickname")
+    public ResponseEntity<BaseResponse<String>> modifyNickname(
+            @Valid @RequestBody NicknameReq nicknameReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        if (memberService.modifyNickname(userDetails.getUsername(), nicknameReq)) {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    "닉네임 변경 완료"
+            );
+        }
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                "닉네임 변경 실패 - 잔여 포인트 부족 / 닉네임 중복"
+        );
+    }
 
     @Operation(summary = "관심사, 이상형 수정")
-    @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
+    @PreAuthorize("hasAnyRole('USER')")
     @PutMapping("/interests")
     public ResponseEntity<BaseResponse<String>> updateInterests(
             @Valid @RequestBody InterestsReq interestsReq,
@@ -143,7 +168,7 @@ public class MemberController {
     }
 
     @Operation(summary = "자기소개 수정")
-    @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
+    @PreAuthorize("hasAnyRole('USER')")
     @PutMapping("/introduce")
     public ResponseEntity<BaseResponse<String>> updateIntroduce(
             @Valid @RequestBody IntroduceReq introduceReq,
@@ -198,50 +223,6 @@ public class MemberController {
         );
     }
 
-    @Operation(
-            summary = "동물변경권 구매",
-            description = "포인트 부족 시에는 변경 불가")
-    @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/animal")
-    public ResponseEntity<BaseResponse<String>> buyAnimalChangeItem(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        Long price = 300L; // 동물상 변경권 가격
-        boolean isDeducted = memberService.deductPoints(userDetails.getUsername(), price);
-        if (isDeducted) {
-            return BaseResponse.success(
-                    SuccessCode.UPDATE_SUCCESS,
-                    "변경 허용"
-            );
-        }
-        return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
-                "변경 불가"
-        );
-
-
-    }
-
-    @Operation(
-            summary = "닉네임 변경권 구매",
-            description = "포인트 부족시 닉네임 변경 불가"
-    )
-    @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/nickname")
-    public ResponseEntity<BaseResponse<String>> buyNicknameChangeItem(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        Long price = 600L; // 닉네임 변경권 가격
-        boolean isDeducted = memberService.deductPoints(userDetails.getUsername(), price);
-        if (isDeducted) {
-            return BaseResponse.success(
-                    SuccessCode.UPDATE_SUCCESS,
-                    "변경 허용"
-            );
-        }
-        return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
-                "변경 불가"
-        );
-    }
     @Operation(
             summary = "매칭 인원 추출",
             description = "차단 목록 유저 제외" +

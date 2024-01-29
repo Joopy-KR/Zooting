@@ -11,6 +11,16 @@ services:
       - zooting_net
     restart: "always"
 
+  redis:
+    image: redis:alpine
+    container_name: zooting-redis
+    command: redis-server --port 6379
+    hostname: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - zooting_net
+    restart: always
 
 #  nginx:
 #    image: duckbill413/zooting-docker-nginx:latest

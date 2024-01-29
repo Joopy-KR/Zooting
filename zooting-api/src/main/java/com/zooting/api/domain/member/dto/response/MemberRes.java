@@ -1,6 +1,6 @@
 package com.zooting.api.domain.member.dto.response;
 
-import com.zooting.api.domain.member.dto.Gender;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
@@ -18,7 +18,10 @@ public record MemberRes(
         @Schema(description = "주소")
         String address,
         @Schema(description = "포인트")
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         Long point,
+        @Schema
+        String introduce,
         @Schema(description = "성격")
         String personality,
         @Schema(description = "동물상")
@@ -29,8 +32,12 @@ public record MemberRes(
         String idealAnimal,
         @Schema(description = "배경이미지 id")
         Long backgroundId,
+        @Schema(description = "배경이미지 이미지 url")
+        String backgroundImgUrl,
         @Schema(description = "마스크 id")
-        Long maskId
+        Long maskId,
+        @Schema(description = "마스크 이미지 url")
+        String maskImgUrl
 
 ) {
 }

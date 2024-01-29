@@ -90,13 +90,7 @@ const router = createRouter({
       component: PersonalityTestView,
     },
     {
-      path: "/profile",
-      name: "profile",
-      component: ProfileView,
-      beforeEnter: requireAuth(),
-    },
-    {
-      path: "/profile/:nickname?",
+      path: "/profile/:nickname",
       name: "profile",
       component: ProfileView,
       beforeEnter: (to, from, next) => {
@@ -138,43 +132,29 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
-  const store = useAccessTokenStore();
+router.beforeEach((to, from) => {
+  const store = useAccessTokenStore()
 
-  if (
-    (to.name === "home" ||
-      to.name === "signup" ||
-      to.name === "animal_test" ||
-      to.name === "personality_test" ||
-      to.name === "profile") &&
-    !store.isLogin
-  ) {
-    next({ name: "signin" });
-    return;
+  if ((to.name === 'home' || to.name === 'signup' || to.name === 'animal_test' || to.name === 
+  'personality_test') && !store.isLogin) {
+    return { name: 'signin' }
   }
 
-  if (to.name === "signin" && store.isLogin) {
-    next({ name: "home" });
-    return;
+  if (to.name === 'signin' && store.isLogin) {
+    return { name: 'home' }
   }
-
-  if (to.name === "signup" && store.isCompletedSignUp) {
-    next({ name: "home" });
-    return;
+  
+  if (to.name === 'signup' && store.isCompletedSignUp) {
+    return { name: 'home' }
   }
-
-  if (to.name === "animal_test" && store.userInfo?.animal) {
-    next({ name: "home" });
-    return;
+  
+  if (to.name === 'animal_test' && store.userInfo?.animal){
+    return { name: 'home' }
   }
-
-  if (to.name === "personality_test" && store.userInfo?.personality) {
-    next({ name: "home" });
-    return;
+  
+  if (to.name === 'personality_test' && store.userInfo?.personality) {
+    return { name: 'home' }
   }
+})
 
-  // 다음 페이지로 이동
-  next();
-});
-
-export default router;
+export default router

@@ -91,7 +91,7 @@
       } else if (maxIdx.value === 5) {
           resultAnimal.value = '토끼'
       }
-    // 여자는 강아지, 고양이, 꼬부기, 사슴, 토끼
+    // 여자는 강아지, 고양이, 펭귄, 사슴, 토끼
     } else if (gender.value === 'female') {
       allAnimal.value["gender"] = 'female'
       allAnimal.value["dog"] = (Number(args[1]) * 100).toFixed(0)
@@ -105,7 +105,7 @@
       } else if (maxIdx.value === 2) {
           resultAnimal.value = '고양이'
       } else if (maxIdx.value === 3) {
-          resultAnimal.value = '꼬부기'
+          resultAnimal.value = '펭귄'
       } else if (maxIdx.value === 4) {
           resultAnimal.value = '사슴'
       } else if (maxIdx.value === 5) {
@@ -162,7 +162,7 @@
       payload.value[4] = Number(allAnimal.value["dino"])
     }
 
-    store.setAnimalFace(payload)
+    store.setAnimalFace(payload.value)
   }
 </script>
 

@@ -7,12 +7,14 @@
           </RouterLink>
       </div>
       <div class="side-bar__item">
+        
         <!-- Messages button -->
         <button @click="toggleMessagesTab" v-if="isLoggedIn && isCompletedTest">
           <svg :class="[isActiveMessageTab() ? 'text-violet-800' : 'text-gray-400', 'w-5 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20" transform="rotate(45)">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m9 17 8 2L9 1 1 19l8-2Zm0 0V9"/>
           </svg>
         </button>
+        
         <!-- Notifications button -->
         <button @click="toggleNotificationsTab">
           <svg :class="[isActivenotificationsTab() ? 'text-violet-800' : 'text-gray-400', 'w-6 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="20" fill="none" viewBox="0 0 14 20">
@@ -20,21 +22,37 @@
           </svg>
         </button>
       </div>
-        
-      <!-- signout -->
+
+      <!-- Log out -->
       <div class="signout">
-        <button @click="logout" v-if="isLoggedIn">
+        <button @click="logout" v-if="isLoggedIn && !store.isCompletedSignUp">
           <svg class="w-5 h-6 m-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16" transform="rotate(180)">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8h11m0 0-4-4m4 4-4 4m-5 3H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3"/>
           </svg>
         </button>
       </div>
 
-      <!-- User profile -->
-      <div class="user-profile">
-        <RouterLink :to="getProfileLink()" v-if="isLoggedIn && isCompletedTest" @click="closeTab">
-          <img class="user-profile__img" src="" alt="user-profile"/>
-        </RouterLink>
+      <!-- Profile image -->
+      <img 
+        v-if="isLoggedIn && store.isCompletedSignUp"
+        id="avatarButton" 
+        type="button" 
+        data-dropdown-toggle="userDropdown" 
+        data-dropdown-placement="bottom-start" 
+        class="user-profile" 
+        :src="getProfileImage()" alt="User dropdown"
+      >
+      
+      <!-- Profile menu -->
+      <div id="userDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44" v-if="isLoggedIn">
+          <ul class="py-2 text-sm text-gray-700" aria-labelledby="avatarButton">
+            <li>
+              <RouterLink :to="getProfileLink()" class="block px-4 py-2 hover:bg-gray-100" @click="closeTab">프로필</RouterLink>
+            </li>
+          </ul>
+          <div class="py-2">
+            <div class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" @click="logout">로그아웃</div>
+          </div>
       </div>
     </nav>
 
@@ -114,15 +132,17 @@ const isActivenotificationsTab = () => {
 }
 
 const userInfo = ref(store.userInfo)
-const nickname = ref<string | null | undefined>(null)
 
 watch(()=> store.userInfo, (UpdateUser)=>{
   userInfo.value = UpdateUser
-  nickname.value = userInfo.value?.nickname
 })
 
 const getProfileLink = () => {
-  return `/profile/${nickname.value}`
+  return `/profile/${userInfo.value?.nickname}`
+}
+
+const getProfileImage = () => {
+  return `/images/${userInfo.value?.animal}.png`
 }
 
 const closeTab = () => {
@@ -138,7 +158,7 @@ const logout = () => {
 
 <style scoped>
 .side-bar {
-    @apply fixed flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-20;
+    @apply fixed flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-30;
 }
 .logo {
     @apply flex-shrink-0 py-4;
@@ -147,18 +167,12 @@ const logout = () => {
     @apply flex flex-col items-center flex-1 p-4 space-y-8;
 }
 .user-profile {
-    @apply relative flex items-center flex-shrink-0 my-3;
-}
-.user-profile__img {
-    @apply w-10 h-10 rounded-full shadow-md;
+    @apply w-10 h-10 rounded-full cursor-pointer;
 }
 .side-tab {
-    @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 rounded-tr-3xl rounded-br-3xl z-10;
+    @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 rounded-tr-3xl rounded-br-3xl z-20;
     width: 450px;
 }
-.side-tab__content {
-}
-
 section {
     @apply px-4 py-6;
 }

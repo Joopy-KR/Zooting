@@ -7,6 +7,8 @@ import com.zooting.api.domain.dm.dto.response.DMDto;
 import com.zooting.api.domain.dm.dto.response.DMRoomRes;
 import com.zooting.api.domain.dm.entity.DM;
 import com.zooting.api.domain.dm.entity.DMRoom;
+import com.zooting.api.domain.file.dao.FileRepository;
+import com.zooting.api.domain.file.entity.File;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.code.ErrorCode;
@@ -30,6 +32,7 @@ public class DMServiceImpl implements DMService {
     private final DMRepository dmRepository;
     private final DMRoomRepository dmRoomRepository;
     private final MemberRepository memberRepository;
+    private final FileRepository fileRepository;
 
     @Override
     public DMRoom getDMRoom(String sender, String receiver) {
@@ -71,6 +74,21 @@ public class DMServiceImpl implements DMService {
         dm.setDmRoom(dmRoom);
         dm.setMessage(dmReq.message());
         dm.setSender(dmReq.sender());
+        List<File> files = dmReq.files()
+                .stream()
+                .map(file -> {
+                    File savedFile = File.builder()
+                            .dm(dm)
+                            .fileName(file.fileName())
+                            .imgUrl(file.imgUrl())
+                            .fileDir(file.fileDir())
+                            .thumbnailUrl(file.thumbnailUrl())
+                            .originFileName(file.originFileName())
+                            .build();
+                    fileRepository.save(savedFile);
+                    return savedFile;
+                }).toList();
+        dm.setFiles(files);
         dmRepository.save(dm);
     }
 
@@ -80,7 +98,7 @@ public class DMServiceImpl implements DMService {
         DMRoom dmRoom = getDMRoom(sender, receiver);
         Long cursor = getStartCursor(dmRoom.getId(), sender);
         List<DM> dmList = getAllDMList(dmRoom.getId(), cursor);
-        if (dmList.size() != 0) {
+        if (!dmList.isEmpty()) {
             dmRoom.setSenderLastReadId(dmList.get(dmList.size() - 1).getId());
             cursor = dmList.get(dmList.size() - 1).getId();
         }
@@ -101,7 +119,7 @@ public class DMServiceImpl implements DMService {
         return new DMRoomRes(
                 dmRoomId,
                 dmDtoList,
-                dmDtoList.size() > 0 ? dmDtoList.get(dmDtoList.size() - 1).dmRoomId() : 0
+                !dmDtoList.isEmpty() ? dmDtoList.get(dmDtoList.size() - 1).dmRoomId() : 0
         );
     }
 

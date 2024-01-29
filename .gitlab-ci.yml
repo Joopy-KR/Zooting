@@ -17,6 +17,8 @@ build: # JOB 이름
     - echo "$APPLICATION_DEV_YML" > "application-dev.yml"
     - echo "$APPLICATION_LOCAL_YML" > "application-local.yml"
     - echo "$APPLICATION_OAUTH_YML" > "application-oauth.yml"
+    - echo "$APPLICATION_REDIS_YML" > "application-redis.yml"
+    - echo "$APPLICATION_AWS_YML" > "application-aws.yml"
     - echo [INFO] spring-boot project build
     - cd ../../.. # 프로젝트 폴더로 경로 이동
     - chmod +x gradlew # gradle 권한 부여

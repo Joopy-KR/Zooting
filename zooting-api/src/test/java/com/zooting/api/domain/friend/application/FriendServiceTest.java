@@ -1,7 +1,7 @@
 package com.zooting.api.domain.friend.application;
 
-import com.zooting.api.application.usecase.AcceptFriendUsecase;
-import com.zooting.api.application.usecase.SendFriendUsecase;
+import com.zooting.api.application.usecase.MemberAndFriendAndFriendRequestUsecase;
+import com.zooting.api.application.usecase.MemberAndFriendRequestUsecase;
 import com.zooting.api.domain.friend.dao.FriendRepository;
 import com.zooting.api.domain.friend.dto.request.FriendReq;
 import com.zooting.api.domain.friend.dto.response.FriendRes;
@@ -41,9 +41,9 @@ class FriendServiceTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
-    private AcceptFriendUsecase acceptUsecase;
+    private MemberAndFriendAndFriendRequestUsecase acceptUsecase;
     @Autowired
-    private SendFriendUsecase sendFriendUsecase;
+    private MemberAndFriendRequestUsecase memberAndFriendRequestUsecase;
 
 
     @Test
@@ -56,7 +56,7 @@ class FriendServiceTest {
         String toEmail = "y";
         memberRepository.save(Member.builder().email(fromEmail).build());
         memberRepository.save(Member.builder().email(toEmail).build());
-        sendFriendUsecase.sendFriendRequest(fromEmail, toEmail);
+        memberAndFriendRequestUsecase.sendFriendRequest(fromEmail, toEmail);
 
         UserDetails userDetails = getRoleUser(fromEmail);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "password", userDetails.getAuthorities());
