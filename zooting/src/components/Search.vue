@@ -77,30 +77,7 @@
               <RouterLink :to="getProfileLink(result.nickname)" class="hover:font-semibold ms-1">
               {{ result.nickname }}
               </RouterLink>
-              <button v-if="!isRequestInList(result)" @click="sendFriendRequest(result)">
-                <!-- 친구 신청 아이콘 -->
-                <svg
-                  class="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700 me-1"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <title>친구 신청</title>
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-width="1.5"
-                    d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1c0 .6-.4 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                </svg>
-              </button>
-            </li>
-            <li v-for="result in searchResult" :key="result.nickname">
-              <RouterLink :to="getProfileLink(result.nickname)" class="hover:font-semibold ms-1">
-              {{ result.nickname }}
-              </RouterLink>
-              <button v-if="!isRequestInList(result)" @click="sendFriendRequest(result)">
+              <button v-if="!isRequestInList(result) && isGlobal" @click="sendFriendRequest(result)">
                 <!-- 친구 신청 아이콘 -->
                 <svg
                   class="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700 me-1"
@@ -188,7 +165,7 @@ const sendFriendRequest = (result: Result) => {
 }
 
 const isRequestInList = (result: Result) => {
-  return store.requestToList.some(item => item.nickname === result.nickname)
+  return store.requestToList.some(item => item.nickname === result.nickname) || store.requestFromList.some(item => item.nickname === result.nickname)
 }
 
 const getProfileLink = (value: string) => {
