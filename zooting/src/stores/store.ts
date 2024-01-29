@@ -174,7 +174,7 @@ export const useAccessTokenStore = defineStore(
   () => {
     const API_URL: string = "https://i10a702.p.ssafy.io";
     const router = useRouter();
-    
+
     const state = ref<TokenState>({
       accessToken: localStorage.getItem("accessToken") || null,
       refreshToken: localStorage.getItem("refreshToken") || null,
@@ -415,7 +415,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-  
+
   // 친구 요청 받은 리스트
     const requestFromList = ref<Friend[]>([]);
     const getRequestFromList = function () {
@@ -434,7 +434,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-  
+
     // 친구 요청 보낸 리스트
     const requestToList = ref<Friend[]>([]);
     const getRequestToList = function () {
@@ -471,7 +471,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-    
+
     // 친구 요청
     const friendRequest = function (payload: {
       email: string;
@@ -524,7 +524,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-    
+
     // 친구 요청 거절
     const friendReject = function (payload: {
       email: string;
@@ -550,7 +550,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-    
+
     // 친구 요청 취소
     const friendRequestCancel = function (payload: {
       email: string;
@@ -691,7 +691,6 @@ export const useAccessTokenStore = defineStore(
         });
     };
 
-
     return {
       setAccessToken,
       getAccessToken,
@@ -729,7 +728,6 @@ export const useAccessTokenStore = defineStore(
       createDmRoom,
     };
   },
-  { persist: true }
 );
 
 interface TokenState {
@@ -746,16 +744,20 @@ interface Personality {
 }
 
 interface UserInfo {
-  email: string;
+  email: string | null;
   gender: string | null;
-  nickname: string;
+  nickname: string | null;
   birth: string | null;
   address: string | null;
-  idealAnimal: string[] | null;
-  interest: string[] | null;
-  animal: string | null;
-  personality: string | null;
   point: Number | null;
+  personality: string | null;
+  animal: string | null;
+  interest: string | null;
+  introduce: string | null;
+  idealAnimal: string;
+  backgroundImgUrl: string | null;
+  mbti: string | null;
+  maskImgUrl: string | null;
 }
 
 interface Friend {

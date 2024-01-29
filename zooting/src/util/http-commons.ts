@@ -61,7 +61,7 @@ function localAxios() {
 
           const refreshToken = await localStorage.getItem("refreshToken");
           const { data } = await axios.post(VITE_SERVER_API_URL + "/api/refresh/token", {
-            refreshToken,
+            refreshToken: refreshToken,
           });
           console.log(data);
 
