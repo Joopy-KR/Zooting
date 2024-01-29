@@ -377,12 +377,12 @@ export const useAccessTokenStore = defineStore(
 
     // 동물상 테스트 결과 저장
     const setAnimalFace = function (payload: number[]) {
-      const animalFaceList = payload;
+      const animalfaceList = payload;
       axios({
         method: "post",
         url: `${API_URL}/api/animalface`,
         data: {
-          animalFaceList,
+          animalfaceList,
         },
         headers: {
           accept: "application/json",

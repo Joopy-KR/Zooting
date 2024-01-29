@@ -20,6 +20,8 @@ public record MemberRes(
         @Schema(description = "포인트")
         @JsonInclude(JsonInclude.Include.NON_NULL)
         Long point,
+        @Schema
+        String introduce,
         @Schema(description = "성격")
         String personality,
         @Schema(description = "동물상")
@@ -28,8 +30,12 @@ public record MemberRes(
         String interest,
         @Schema(description = "이상형")
         String idealAnimal,
+        @Schema(description = "배경이미지 id")
+        Long backgroundId,
         @Schema(description = "배경이미지 이미지 url")
         String backgroundImgUrl,
+        @Schema(description = "마스크 id")
+        Long maskId,
         @Schema(description = "마스크 이미지 url")
         String maskImgUrl
 

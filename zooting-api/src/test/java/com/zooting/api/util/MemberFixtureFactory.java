@@ -19,7 +19,7 @@ public class MemberFixtureFactory {
         Date end = sdf.parse("2023-01-01");
         return new EasyRandomParameters()
                 .stringLengthRange(5, 10)
-                .randomize(named("gender").and(ofType(Gender.class)), new StringRandomizer())
+//                .randomize(named("gender").and(ofType(Gender.class)), new StringRandomizer('woman', 'man')
                 .randomize(named("birth").and(ofType(Date.class)), new DateRandomizer());
 
     }
