@@ -1,17 +1,27 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { computed, ref, onMounted, watch } from "vue";
+import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router";
 import VueTailwindDatepicker from "vue-tailwind-datepicker";
 import SuccessDialog from "@/components/profile/SuccessDialog.vue";
 import FailDialog from "@/components/profile/FailDialog.vue";
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from "@headlessui/vue";
-import { loadMyInfoApi, updateMyInfoApi, loadUserInfoApi } from "@/api/profile";
-import axios from "axios";
+import {
+  loadMyInfoApi,
+  updateMyInfoApi,
+  loadUserInfoApi,
+  checkNicknameApi,
+  updateNicknameApi,
+} from "@/api/profile";
 import { useAccessTokenStore } from "@/stores/store";
+
+const store = useAccessTokenStore();
 
 const route = useRoute();
 const router = useRouter();
 
+const nickname = ref<string | null>();
+const isNicknameUpdatable = ref<boolean>(false);
+const isNicknameVerify = ref<boolean>(false);
 const gender = ref<string>("man");
 const idealTypeSet = ref(new Set<string>());
 const birth = ref<string | null>(null);
@@ -89,6 +99,10 @@ const loadUserInfo = (nickname: string) => {
   );
 };
 
+const toggleNicknameUpdateStatus = () => {
+  isNicknameUpdatable.value = !isNicknameUpdatable.value;
+};
+
 // 나의 정보 수정
 const updateMyInfo = () => {
   // 유효성 검증
@@ -118,6 +132,62 @@ const updateMyInfo = () => {
   );
 };
 
+const executeUpdateNickname = () => {
+  if (!nickname.value) return;
+
+  const data = {
+    nickname: nickname.value,
+  };
+
+  updateNicknameApi(
+    data,
+    ({ data }: any) => {
+      if (nickname.value) {
+        userInfo.value.nickname = nickname.value;
+      }
+      // 로컬스토리지 유저 정보 업데이트
+      store.getUserInfo();
+
+      // 마이페이지로 리다이렉트
+      router.replace({
+        name: "home",
+      });
+
+      isNicknameUpdatable.value = false;
+      isNicknameVerify.value = false;
+    },
+    (error: any) => {
+      console.log(error);
+      nickname.value = userInfo.value.nickname;
+      isNicknameUpdatable.value = false;
+      isNicknameVerify.value = false;
+    }
+  );
+};
+
+const cancelUpdateNickname = () => {
+  nickname.value = userInfo.value.nickname;
+  isNicknameUpdatable.value = false;
+  isNicknameVerify.value = false;
+};
+
+const checkNickname = async (name: string) => {
+  if (!name) {
+    return;
+  }
+  checkNicknameApi(
+    name,
+    ({ data }: any) => {
+      if (data["result"] === true) {
+        isNicknameVerify.value = false; // 닉네임 중복
+      } else {
+        isNicknameVerify.value = true; // 닉네임 중복 X
+      }
+    },
+    (error: any) => console.log(error)
+  );
+};
+
 const setFailAlert = (isOpen: boolean) => {
   failAlert.value = isOpen;
 };
@@ -128,6 +198,9 @@ const setSuccessAlert = (isOpen: boolean) => {
 const initChanges = () => {
   if (userInfo.value.gender) {
     gender.value = userInfo.value.gender;
+  }
+  if (userInfo.value.nickname) {
+    nickname.value = userInfo.value.nickname;
   }
   birth.value = userInfo.value.birth;
   idealTypeSet.value = parseStringToSet(userInfo.value!.idealAnimal);
@@ -214,6 +287,17 @@ const moveToMyPage = () => {
   });
 };
 
+const updateNicknameValue = (event: any) => {
+  nickname.value = event.target.value;
+};
+
+watch(nickname, async (newValue, oldValue) => {
+  if (!newValue) return;
+
+  await checkNickname(newValue);
+  console.log(isNicknameVerify.value);
+});
+
 onMounted(() => {
   // loadMyInfo();
   const nickname = route.params.nickname;
@@ -231,6 +315,7 @@ onMounted(() => {
   <FailDialog
     title="업데이트 실패!"
     :message="failMessage"
+    :introduce="userInfo.nickname"
     :fail-alert="failAlert"
     @set-fail-alert="setFailAlert"
   />
@@ -254,7 +339,7 @@ onMounted(() => {
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="w-10 h-10 stroke-orange-500 fill-rose-100 mx-auto"
+            class="w-10 h-10 stroke-orange-500 fill-rose-100 mx-auto hover:fill-rose-300"
           >
             <path
               stroke-linecap="round"
@@ -262,7 +347,9 @@ onMounted(() => {
               d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
             />
           </svg>
-          <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
+          <p class="font-sans font-semibold text-xs tracking-tight text-center">
+            마이페이지
+          </p>
         </div>
       </div>
       <span
@@ -282,10 +369,68 @@ onMounted(() => {
             type="text"
             name="nickname"
             id="nickname"
-            class="block w-full px-8 py-2 text-2xl font-bold text-center text-gray-900 bg-gray-100 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
-            :value="userInfo!.nickname"
-            :disabled="true"
+            :class="
+              isNicknameUpdatable ? 'input__nickname_enabled' : 'input__nickname_disabled'
+            "
+            :value="nickname"
+            @input="updateNicknameValue"
+            :disabled="!isNicknameUpdatable"
           />
+          <div v-if="!isNicknameUpdatable">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="btn__nickname_enabled"
+              @click="toggleNicknameUpdateStatus"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+              />
+            </svg>
+          </div>
+          <div v-if="isNicknameUpdatable">
+            <svg
+              v-if="isNicknameVerify"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="btn__nickname_disabled"
+              @click="executeUpdateNickname()"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m4.5 12.75 6 6 9-13.5"
+              />
+            </svg>
+            <svg
+              v-if="!isNicknameVerify"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="btn__nickname_disabled"
+              @click="cancelUpdateNickname()"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+
+            <p v-if="!isNicknameVerify" class="absolute -bottom-7 right-0 text-red-600">
+              닉네임이 중복 됩니다.
+            </p>
+          </div>
         </div>
         <div class="input__div">
           <label for="gender" class="input__label">성별</label>
@@ -304,7 +449,9 @@ onMounted(() => {
                     'gender__option',
                   ]"
                 >
-                  <RadioGroupLabel as="span">{{ getGenderLabel(gender) }}</RadioGroupLabel>
+                  <RadioGroupLabel as="span">{{
+                    getGenderLabel(gender)
+                  }}</RadioGroupLabel>
                 </div>
               </RadioGroupOption>
             </div>
@@ -357,6 +504,18 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.input__nickname_enabled {
+  @apply block w-full px-8 py-2 text-2xl font-bold text-center text-gray-900 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6;
+}
+.input__nickname_disabled {
+  @apply block w-full px-8 py-2 text-2xl font-bold text-center text-gray-900 bg-gray-100 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6;
+}
+.btn__nickname_enabled {
+  @apply w-8 h-8 absolute bottom-2 right-3 hover:stroke-indigo-600;
+}
+.btn__nickname_disabled {
+  @apply w-8 h-8 absolute bottom-2 right-3 fill-orange-300 hover:stroke-orange-700;
+}
 .input__div {
   @apply w-full mx-4 my-3;
 }

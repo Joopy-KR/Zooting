@@ -84,18 +84,18 @@ const toggleShowAllBadge = () => {
 }
 
 .mask__selector-dog {
-  @apply text-red-700 bg-red-100;
+  @apply text-red-700 bg-red-100 hover:bg-red-200;
 }
 .mask__selector-cat {
-  @apply text-blue-700 bg-blue-100;
+  @apply text-blue-700 bg-blue-100 hover:bg-blue-200;
 }
 .mask__selector-rabbit {
-  @apply text-pink-700 bg-pink-100;
+  @apply text-pink-700 bg-pink-100 hover:bg-pink-200;
 }
 .mask__selector-bear {
-  @apply text-purple-700 bg-purple-100;
+  @apply text-purple-700 bg-purple-100 hover:bg-purple-200;
 }
 .mask__selector-dinosaur {
-  @apply text-green-700 bg-green-100;
+  @apply text-green-600 bg-green-100 hover:bg-green-200;
 }
 </style>

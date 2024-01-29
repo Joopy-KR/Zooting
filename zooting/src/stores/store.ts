@@ -350,6 +350,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       });
   };
 
+  // TODO:
   // MBTI와 동물유형으로 소개 만들기
   const getPersonalityIntroduce = function () {
     const myInfo = localStorage.getItem("myInfo");

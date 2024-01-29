@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import EditMaskItem from "@/components/profile/EditMaskItem.vue";
 import IconMaskDropDown from "./IconMaskDropDown.vue";
 import { getMyMaskListApi, getMaskListApi } from "@/api/mask";
+import { checkNicknameApi } from "@/api/profile";
 
 const router = useRouter();
 const props = defineProps({
@@ -175,14 +176,17 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col relative">
-    <div @click="moveToMyPage()" class="flex flex-col items-center ml-4 absolute top-5 left-5">
+    <div
+      @click="moveToMyPage()"
+      class="flex flex-col items-center ml-4 absolute top-5 left-5"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         stroke-width="1.5"
         stroke="currentColor"
-        class="w-10 h-10 stroke-orange-500 fill-rose-100 mx-auto"
+        class="w-10 h-10 stroke-orange-500 fill-rose-100 mx-auto hover:fill-rose-300"
       >
         <path
           stroke-linecap="round"
@@ -192,10 +196,16 @@ onMounted(async () => {
       </svg>
       <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
     </div>
-    <p class="p-12 m-4 text-5xl font-bold tracking-tighter text-center">아바타 동물상 선택</p>
+    <p class="p-12 m-4 text-5xl font-bold tracking-tighter text-center">
+      아바타 동물상 선택
+    </p>
     <div>
       <div class="flex flex-row justify-between px-12 mr-4">
-        <IconMaskDropDown :animal-type="animalType" @set-animal-type="setAnimalType" class="z-30" />
+        <IconMaskDropDown
+          :animal-type="animalType"
+          @set-animal-type="setAnimalType"
+          class="z-30"
+        />
         <span
           class="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-11"
         >
@@ -210,7 +220,11 @@ onMounted(async () => {
     </div>
     <div class="flex items-center content-center justify-center w-2/3 mx-auto">
       <div class="grid grid-cols-3 gap-3 px-12 py-8 m-4">
-        <EditMaskItem v-for="mask in filterMaskByAnimal" :key="mask.maskId" :mask="mask" />
+        <EditMaskItem
+          v-for="mask in filterMaskByAnimal"
+          :key="mask.maskId"
+          :mask="mask"
+        />
       </div>
     </div>
     <div class="flex justify-center">

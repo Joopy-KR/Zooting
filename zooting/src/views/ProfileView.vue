@@ -3,6 +3,9 @@ import InfoSideBar from "@/components/profile/InfoSideBar.vue";
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { loadMyInfoApi, loadUserInfoApi, checkIsMyProfileApi } from "@/api/profile";
+import { useAccessTokenStore } from "@/stores/store";
+
+const store = useAccessTokenStore();
 
 const route = useRoute();
 
