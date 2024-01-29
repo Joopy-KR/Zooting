@@ -144,9 +144,9 @@ router.beforeEach((to, from) => {
     return { name: 'home' }
   }
   
-  if (to.name === 'signup' && store.isCompletedSignUp) {
-    return { name: 'home' }
-  }
+  // if (to.name === 'signup' && store.isCompletedSignUp) {
+  //   return { name: 'home' }
+  // }
   
   if (to.name === 'animal_test' && store.userInfo?.animal){
     return { name: 'home' }

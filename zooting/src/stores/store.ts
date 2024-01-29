@@ -668,6 +668,28 @@ export const useAccessTokenStore = defineStore(
         });
     };
 
+    // // DM방 입장
+    // const enterDmRoom = function (params: string) {
+    //   const email = params
+    //   axios({
+    //     method: "get",
+    //     url: `${API_URL}/api/dm/room`,
+    //     params: {
+    //       email,
+    //     },
+    //     headers: {
+    //       Authorization: `Bearer ${getAccessToken()}`,
+    //     },
+    //   })
+    //     .then((res) => {
+    //       searchResult.value = res.data.result;
+    //       // console.log(res);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // };
+
 
     return {
       setAccessToken,

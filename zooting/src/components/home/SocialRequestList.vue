@@ -19,7 +19,7 @@
       <ul role="list" class="friend-list">
         <li v-for="(item, index) in requestFromList" :key="index" class="friend-list__item">
           <RouterLink :to="getProfileLink(item.nickname)" class="friend-list__item__link">
-            <img class="friend-list__img" src="" alt="profile">
+            <img class="friend-list__img" :src="getProfileImage(item.animal)" alt="profile">
             <div class="font-medium">
               <div class="flex items-center">
                 {{ item.nickname }}
