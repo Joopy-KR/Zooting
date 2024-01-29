@@ -29,7 +29,9 @@ public class AdditionalInfo extends BaseEntity {
     private String interest;
     @Column(name = "ideal_animal")
     private String idealAnimal;
+    private Long maskId;
     private String maskUrl;
+    private Long backgroundId;
     private String backgroundUrl;
 
     @Builder

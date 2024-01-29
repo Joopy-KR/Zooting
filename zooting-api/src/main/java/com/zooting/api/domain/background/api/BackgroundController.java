@@ -1,7 +1,7 @@
 package com.zooting.api.domain.background.api;
 
 import com.zooting.api.domain.background.application.BackgroundService;
-import com.zooting.api.domain.background.dto.response.BackgroundRes;
+import com.zooting.api.domain.background.dto.response.BackgroundPageRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("api/items/background")
@@ -25,10 +24,10 @@ public class BackgroundController {
     @Operation(summary = "전체 배경 이미지 조회")
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping
-    public ResponseEntity<BaseResponse<List<BackgroundRes>>> findAllBackgroundImg(
+    public ResponseEntity<BaseResponse<BackgroundPageRes>> findAllBackgroundImg(
             @PageableDefault(sort="createdAt", direction = Sort.Direction.DESC, page=0) Pageable pageable
     ) {
-        List<BackgroundRes> result = backgroundService.findAllBackgroundImg(pageable);
+        BackgroundPageRes result = backgroundService.findAllBackgroundImg(pageable);
         return BaseResponse.success(
                 SuccessCode.SELECT_SUCCESS,
                 result
