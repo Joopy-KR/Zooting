@@ -207,15 +207,6 @@ const initializeFaceDetector = async () => {
 // 웹캠 실행 및 얼굴인식 시작(predictWebcam 함수)
 const enableCam = async () => {
   if (!faceDetector) {
-<<<<<<< HEAD
-    alert("얼굴 인식 시스템이 로딩중입니다. 다시 시도해주세요")
-    return
-  }
-
-  const constraints = {
-    video: true
-  }
-=======
     alert("얼굴 인식 시스템이 로딩 중입니다. 다시 시도해 주세요");
     return;
   }
@@ -223,7 +214,6 @@ const enableCam = async () => {
   const constraints = {
     video: true,
   };
->>>>>>> 02292bdea565eb69428eda7e63797b8ac63ebedc
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -353,16 +343,7 @@ const loop = async () => {
 // 이미지 모델을 기반으로 웹캠 실행
 const predict = async () => {
   // 촬영시까지 동작함
-<<<<<<< HEAD
-  const prediction = await model.predict(webcam.canvas)
-  console.log("강" + prediction[0].probability.toFixed(2))
-  console.log("고" + prediction[1].probability.toFixed(2))
-  console.log("꼬" + prediction[2].probability.toFixed(2))
-  console.log("사" + prediction[3].probability.toFixed(2))
-  console.log("토" + prediction[4].probability.toFixed(2))
-=======
   const prediction = await model.predict(webcam.canvas);
->>>>>>> 02292bdea565eb69428eda7e63797b8ac63ebedc
 
   // 촬영시 동물 변수에 값을 담음
   if (is_working === false) {
