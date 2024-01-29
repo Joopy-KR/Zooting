@@ -90,7 +90,7 @@ const router = createRouter({
       component: PersonalityTestView,
     },
     {
-      path: "/profile/:nickname",
+      path: "/profile/:nickname?",
       name: "profile",
       component: ProfileView,
       beforeEnter: (to, from, next) => {
