@@ -29,7 +29,7 @@ public class MaskServiceImpl implements MaskService{
                     mask.getDescription(),
                     mask.getPrice(),
                     mask.getFile().getFileName(),
-                    mask.getFile().getImg_url())).toList();
+                    mask.getFile().getImgUrl())).toList();
             return new MaskPageRes(maskResList, pageable.getPageNumber(), result.getTotalPages());
         }
         else {
@@ -41,7 +41,7 @@ public class MaskServiceImpl implements MaskService{
                     mask.getDescription(),
                     mask.getPrice(),
                     mask.getFile().getFileName(),
-                    mask.getFile().getImg_url())).toList();
+                    mask.getFile().getImgUrl())).toList();
             return new MaskPageRes(maskResList, pageable.getPageNumber(), result.getTotalPages());
         }
 

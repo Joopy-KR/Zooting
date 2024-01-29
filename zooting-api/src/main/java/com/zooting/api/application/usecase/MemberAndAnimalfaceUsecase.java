@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class MemberAndAnimalfaceUsecase {
@@ -31,6 +33,9 @@ public class MemberAndAnimalfaceUsecase {
         }
         // animalFace 저장 - 동물상 닮은 비율 저장
         AnimalFace animalFace = member.getAnimalFace();
+        if (Objects.isNull(animalFace)){
+            animalFace = new AnimalFace();
+        }
         animalFace.setAnimal1(animalfaceReq.animalfaceList().get(0));
         animalFace.setAnimal2(animalfaceReq.animalfaceList().get(1));
         animalFace.setAnimal3(animalfaceReq.animalfaceList().get(2));

@@ -59,7 +59,7 @@ public class MemberAndMaskUsecase {
                         myMask.getMask().getDescription(),
                         myMask.getMask().getPrice(),
                         myMask.getMask().getFile().getFileName(),
-                        myMask.getMask().getFile().getImg_url()
+                        myMask.getMask().getFile().getImgUrl()
                          )).toList();
     }
 }
