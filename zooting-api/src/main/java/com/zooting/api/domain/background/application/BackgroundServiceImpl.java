@@ -16,6 +16,6 @@ public class BackgroundServiceImpl implements BackgroundService{
     @Override
     public List<BackgroundRes> findAllBackgroundImg(Pageable pageable) {
         return backgroundRepository.findBackgroundsBy(pageable)
-                .stream().map(back-> new BackgroundRes(back.getId(), back.getFile().getFileName(), back.getFile().getImg_url(), back.getPrice())).toList();
+                .stream().map(back-> new BackgroundRes(back.getId(), back.getFile().getFileName(), back.getFile().getImgUrl(), back.getPrice())).toList();
     }
 }

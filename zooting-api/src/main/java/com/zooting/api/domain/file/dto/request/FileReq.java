@@ -6,6 +6,8 @@ import java.util.UUID;
 
 @Schema(description = "파일 업로드 시 요청 Dto")
 public record FileReq(
+        @Schema(description = "파일 아이디")
+        UUID S3Id,
         @Schema(description = "파일 이름")
         String fileName,
         @Schema(description = "파일 경로")

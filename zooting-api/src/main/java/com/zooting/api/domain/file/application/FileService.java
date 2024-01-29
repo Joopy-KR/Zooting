@@ -14,5 +14,7 @@ public interface FileService {
 
     List<FileRes> uploadFiles(List<MultipartFile> multipartFiles) throws IOException;
     void removeFile(String fileName, String fileDir);
+    Object[] downloadFile(String fileName) throws IOException;
+
 
 }

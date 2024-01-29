@@ -21,6 +21,6 @@ public class MaskServiceImpl implements MaskService{
                         mask.getDescription(),
                         mask.getPrice(),
                         mask.getFile().getFileName(),
-                        mask.getFile().getImg_url())).toList();
+                        mask.getFile().getImgUrl())).toList();
     }
 }

@@ -56,7 +56,7 @@ public class MemberAndBackgroundUsecase {
                 .stream().map(back-> new MemberAndBackgroundRes(
                         back.getId(),
                         back.getBackground().getFile().getFileName(),
-                        back.getBackground().getFile().getImg_url(),
+                        back.getBackground().getFile().getImgUrl(),
                         back.getBackground().getPrice()) ).toList();
     }
 }

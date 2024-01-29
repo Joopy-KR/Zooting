@@ -20,14 +20,18 @@ public class File extends BaseEntity {
     @JoinColumn(name = "dm_id")
     private DM dm;
     private String fileName; // 변환된 파일명
-    private String img_url; // 파일 링크
+    private String originFileName; // 파일 원본 이름
+    private String imgUrl; // 파일 링크
     private String fileDir; // S3 파일 경로
+    private String thumbnailUrl; // 썸네일 파일 링크
 
     @Builder
-    public File(DM dm, String fileName, String img_url, String fileDir) {
+    public File(DM dm, String fileName, String imgUrl, String fileDir, String thumbnailUrl, String originFileName){
         this.dm = dm;
         this.fileName = fileName;
-        this.img_url = img_url;
+        this.imgUrl = imgUrl;
         this.fileDir = fileDir;
+        this.thumbnailUrl = thumbnailUrl;
+        this.originFileName = originFileName;
     }
 }
