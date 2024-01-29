@@ -1,8 +1,6 @@
 package com.zooting.api.domain.member.application;
 
-import com.zooting.api.domain.background.entity.Background;
 import com.zooting.api.domain.block.entity.Block;
-import com.zooting.api.domain.mask.entity.Mask;
 import com.zooting.api.domain.member.dao.ExtractObj;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.request.*;
@@ -28,7 +26,10 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     public static final String DEFAULT_MASK = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/default_animal.png";
     public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/zooting-background-default.jpg";
-
+    public static final Long DEFAULT_MASK_ID = 99L;
+    public static final Long DEFAULT_BACKGROUND_ID = 99L;
+    public static final Long DEFAULT_POINT = 0L;
+    public static final Long CHANGE_NICKNAME_PRICE = 10L;
     @Override
     public boolean existNickname(String nickname) {
         return memberRepository.existsByNickname(nickname);
@@ -69,11 +70,14 @@ public class MemberServiceImpl implements MemberService {
                 member.getBirth(),
                 member.getAddress(),
                 member.getPoint(),
+                member.getAdditionalInfo().getIntroduce(),
                 member.getAdditionalInfo().getPersonality(),
                 member.getAdditionalInfo().getAnimal(),
                 member.getAdditionalInfo().getInterest(),
                 member.getAdditionalInfo().getIdealAnimal(),
+                member.getAdditionalInfo().getBackgroundId(),
                 member.getAdditionalInfo().getBackgroundUrl(),
+                member.getAdditionalInfo().getMaskId(),
                 member.getAdditionalInfo().getMaskUrl()
         );
     }
@@ -89,11 +93,14 @@ public class MemberServiceImpl implements MemberService {
                 member.getBirth(),
                 member.getAddress(),
                 null,
+                member.getAdditionalInfo().getIntroduce(),
                 member.getAdditionalInfo().getPersonality(),
                 member.getAdditionalInfo().getAnimal(),
                 member.getAdditionalInfo().getInterest(),
                 member.getAdditionalInfo().getIdealAnimal(),
+                member.getAdditionalInfo().getBackgroundId(),
                 member.getAdditionalInfo().getBackgroundUrl(),
+                member.getAdditionalInfo().getMaskId(),
                 member.getAdditionalInfo().getMaskUrl()
         );
     }
@@ -111,7 +118,7 @@ public class MemberServiceImpl implements MemberService {
         member.setBirth(sdf.parse(memberReq.birth()));
         member.setAddress(memberReq.address());
         member.setGender(memberReq.gender().toString());
-        member.setPoint(0L); // 추가 정보 저장 시 포인트 0으로 저장
+        member.setPoint(DEFAULT_POINT); // 추가 정보 저장 시 포인트 0으로 저장
 
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
         if (Objects.isNull(additionalInfo)) {
@@ -121,9 +128,10 @@ public class MemberServiceImpl implements MemberService {
         additionalInfo.setIdealAnimal(memberReq.idealAnimal().toString());
 
         // 디폴트 마스크, 배경 이미지로 저장
-
-        additionalInfo.setMaskUrl("https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/default_animal.png");
-        additionalInfo.setBackgroundUrl("https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/zooting-background-default.jpg");
+        additionalInfo.setMaskUrl(DEFAULT_MASK);
+        additionalInfo.setBackgroundUrl(DEFAULT_BACKGROUND);
+        additionalInfo.setMaskId(DEFAULT_MASK_ID);
+        additionalInfo.setBackgroundId(DEFAULT_BACKGROUND_ID);
         additionalInfo.setMember(member);
 
         // 멤버의 권한 수정 Anonymous 삭제하고 User 권한 부여
@@ -174,6 +182,23 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
+    @Transactional
+    @Override
+    public boolean modifyNickname(String memberId, NicknameReq nicknameReq) {
+        Member member = memberRepository.findMemberByEmail(memberId)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        // 닉네임 중복 체크 && 잔여 포인트 확인
+        if (! memberRepository.existsByNickname(nicknameReq.nickname()) && member.getPoint() >= CHANGE_NICKNAME_PRICE) {
+            // 닉네임 변경
+            member.setNickname(nicknameReq.nickname());
+            // 포인트 차감
+            member.setPoint(member.getPoint()- CHANGE_NICKNAME_PRICE);
+            memberRepository.save(member);
+            return true;
+        }
+        return false;
+    }
+
     @Transactional(readOnly = true)
     @Override
     public List<MemberSearchRes> findMemberList(String userId, String nickname) {
@@ -190,7 +215,7 @@ public class MemberServiceImpl implements MemberService {
         } else {
             findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         }
-        return findMembers.stream().map(mem -> new MemberSearchRes(mem.getNickname(), mem.getEmail(),
+        return findMembers.stream().map(mem -> new MemberSearchRes(mem.getEmail(), mem.getNickname(),
                 mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
     }
 

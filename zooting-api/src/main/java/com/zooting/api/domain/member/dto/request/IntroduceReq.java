@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 @Schema(description = "자기소개 수정 요청 DTO")
 public record IntroduceReq(
         @Schema(description = "자기소개")
-        @Size(min=10, max=2000)
+        @Size(min=2, max=50)
         @NotNull
         String introduce
 ) {
