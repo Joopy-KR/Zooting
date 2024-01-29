@@ -19,6 +19,7 @@ public class File extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "dm_id")
     private DM dm;
+    @Column(length = 1000)
     private String fileName; // 변환된 파일명
     private String originFileName; // 파일 원본 이름
     private String imgUrl; // 파일 링크
@@ -26,7 +27,7 @@ public class File extends BaseEntity {
     private String thumbnailUrl; // 썸네일 파일 링크
 
     @Builder
-    public File(DM dm, String fileName, String imgUrl, String fileDir, String thumbnailUrl, String originFileName){
+    public File(DM dm, String fileName, String imgUrl, String fileDir, String thumbnailUrl, String originFileName) {
         this.dm = dm;
         this.fileName = fileName;
         this.imgUrl = imgUrl;

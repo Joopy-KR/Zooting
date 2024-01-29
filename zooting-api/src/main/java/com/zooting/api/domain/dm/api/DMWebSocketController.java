@@ -9,17 +9,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
+@PreAuthorize("hasRole('USER')")
 @RequiredArgsConstructor
 @RestController
-@Tag(name="DM 웹소켓", description = "DM웹소켓 관련 API")
+@Tag(name = "DM 웹소켓", description = "DM웹소켓 관련 API")
 public class DMWebSocketController {
 
     private final SimpMessageSendingOperations template;
-//    private final RedisTemplate<String, Object> redisTemplate;
+    //    private final RedisTemplate<String, Object> redisTemplate;
     private final DMService dmService;
 
     /**
@@ -30,6 +31,6 @@ public class DMWebSocketController {
     public void receiveAndSendMessage(DMReq dmReq, SimpMessageHeaderAccessor headerAccessor) {
         log.info("SEND_CHAT_SUCCESS (201 CREATED) ::");
         dmService.saveDM(dmReq);
-        template.convertAndSend("api/sub/dm/"+ dmReq.receiver(), dmReq);
+        template.convertAndSend("api/sub/dm/" + dmReq.receiver(), dmReq);
     }
 }

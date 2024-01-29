@@ -3,7 +3,6 @@ package com.zooting.api.domain.file.api;
 import com.zooting.api.domain.file.application.FileService;
 import com.zooting.api.domain.file.dto.request.FileReq;
 import com.zooting.api.domain.file.dto.response.FileRes;
-import com.zooting.api.domain.file.entity.File;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,10 +22,11 @@ import java.io.IOException;
 import java.util.List;
 
 @Log4j2
+@PreAuthorize("hasRole('USER')")
 @RestController
 @RequestMapping("api/file")
 @RequiredArgsConstructor
-@Tag(name="파일", description = "파일 관련 API")
+@Tag(name = "파일", description = "파일 관련 API")
 public class FileController {
     private final FileService fileService;
 

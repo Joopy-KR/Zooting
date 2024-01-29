@@ -13,8 +13,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.net.URL;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,19 +56,7 @@ public class S3Util {
             //이미지일 경우 썸네일 설정
             String thumbnailUrl = null;
             if (multipartFile.getContentType().contains("image")) {
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                String thumbnailKey = folderKey + "thumbnail_" + fileName;
-                Thumbnails.of(multipartFile.getInputStream())
-                        .size(100, 100)
-                        .toOutputStream(outputStream);
-                byte[] thumbnailBytes = outputStream.toByteArray();
-                ByteArrayInputStream thumbnailInputStream = new ByteArrayInputStream(thumbnailBytes);
-                ObjectMetadata thumbnailObjectMetadata = new ObjectMetadata();
-                thumbnailObjectMetadata.setContentLength(thumbnailBytes.length);
-                thumbnailObjectMetadata.setContentType(multipartFile.getContentType());
-                amazonS3.putObject(new PutObjectRequest(bucket, thumbnailKey, thumbnailInputStream, thumbnailObjectMetadata)
-                        .withCannedAcl(CannedAccessControlList.PublicRead));
-                thumbnailUrl = amazonS3.getUrl(bucket, thumbnailKey).toString();
+                thumbnailUrl = uploadThumbnail(multipartFile, folderKey, fileName);
             }
             String fileUrl = amazonS3.getUrl(bucket, objectKey).toString();
             s3FileList.add(new FileRes(
@@ -93,6 +82,26 @@ public class S3Util {
 
         // 폴더 삭제
         amazonS3.deleteObject(bucket, folderKey);
+    }
+
+    @Transactional
+    public String uploadThumbnail(MultipartFile multipartFile, String folderKey, String fileName) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        String thumbnailKey = folderKey + "thumbnail_" + fileName;
+        //re-size
+        Thumbnails.of(multipartFile.getInputStream())
+                .size(100, 100)
+                .toOutputStream(outputStream);
+        //re-size된 파일 byte[] 로 변환
+        byte[] thumbnailBytes = outputStream.toByteArray();
+        ByteArrayInputStream thumbnailInputStream = new ByteArrayInputStream(thumbnailBytes);
+        ObjectMetadata thumbnailObjectMetadata = new ObjectMetadata();
+        thumbnailObjectMetadata.setContentLength(thumbnailBytes.length);
+        thumbnailObjectMetadata.setContentType(multipartFile.getContentType());
+        //업로드
+        amazonS3.putObject(new PutObjectRequest(bucket, thumbnailKey, thumbnailInputStream, thumbnailObjectMetadata)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+        return amazonS3.getUrl(bucket, thumbnailKey).toString();
     }
 
     public byte[] downloadFile(String fileDir) throws IOException {
