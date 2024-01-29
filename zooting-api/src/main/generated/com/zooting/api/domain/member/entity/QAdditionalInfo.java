@@ -26,6 +26,8 @@ public class QAdditionalInfo extends EntityPathBase<AdditionalInfo> {
 
     public final StringPath animal = createString("animal");
 
+    public final NumberPath<Long> backgroundId = createNumber("backgroundId", Long.class);
+
     public final StringPath backgroundUrl = createString("backgroundUrl");
 
     //inherited
@@ -38,6 +40,8 @@ public class QAdditionalInfo extends EntityPathBase<AdditionalInfo> {
     public final StringPath interest = createString("interest");
 
     public final StringPath introduce = createString("introduce");
+
+    public final NumberPath<Long> maskId = createNumber("maskId", Long.class);
 
     public final StringPath maskUrl = createString("maskUrl");
 
