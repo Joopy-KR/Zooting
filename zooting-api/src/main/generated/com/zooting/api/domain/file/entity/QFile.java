@@ -29,11 +29,17 @@ public class QFile extends EntityPathBase<File> {
 
     public final com.zooting.api.domain.dm.entity.QDM dm;
 
+    public final StringPath fileDir = createString("fileDir");
+
     public final StringPath fileName = createString("fileName");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath img_url = createString("img_url");
+    public final StringPath imgUrl = createString("imgUrl");
+
+    public final StringPath originFileName = createString("originFileName");
+
+    public final StringPath thumbnailUrl = createString("thumbnailUrl");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;

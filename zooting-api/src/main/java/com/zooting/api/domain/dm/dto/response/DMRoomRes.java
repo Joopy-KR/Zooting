@@ -11,7 +11,7 @@ public record DMRoomRes(
         @Schema(description = "발신자")
         List<DMDto> dmList,
         @Schema(description = "커서 값, DM의 ID")
-        Long    cursor
+        Long cursor
 
 ) {
 }
