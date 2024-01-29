@@ -40,6 +40,20 @@ async function updateIntroduceApi(body: any, success: any, fail: any) {
   local.defaults.headers["Authorization"] = `Bearer ${await localStorage.getItem("accessToken")}`;
   await local.put(`/api/members/introduce`, body).then(success).catch(fail);
 }
+// 이상형, 관심사 업데이트
+interface UpdateIdealAnimalsAndInterests {
+  interest: string[];
+  idealAnimal: string[];
+}
+async function updateIdealAnimalAndInterestsApi(
+  body: UpdateIdealAnimalsAndInterests,
+  success: any,
+  fail: any
+) {
+  local.defaults.headers["Authorization"] = `Bearer ${await localStorage.getItem("accessToken")}`;
+  await local.put(`/api/members/interests`, body).then(success).catch(fail);
+}
+
 export {
   loadMyInfoApi,
   updateMyInfoApi,
@@ -48,4 +62,5 @@ export {
   updateIntroduceApi,
   checkNicknameApi,
   updateNicknameApi,
+  updateIdealAnimalAndInterestsApi,
 };

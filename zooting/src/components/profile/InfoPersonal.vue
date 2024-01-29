@@ -54,7 +54,7 @@
           {{ interest }}
         </div>
       </div>
-      <button class="submit-button" type="button" @click.prevent="saveAdditionalInfo">
+      <button class="submit-button" type="button" @click.prevent="updateIdealAnimalAndInterests">
         수정하기
       </button>
     </div>
@@ -66,6 +66,7 @@ import { computed, ref, watch, onMounted } from "vue";
 import VueTailwindDatepicker from "vue-tailwind-datepicker";
 import { useAccessTokenStore } from "@/stores/store";
 import { useRouter } from "vue-router";
+import { updateIdealAnimalAndInterestsApi } from "@/api/profile";
 
 const store = useAccessTokenStore();
 const router = useRouter();
@@ -144,6 +145,26 @@ const parsingGroupedList = (groupedStr: string) => {
   }
 };
 
+const updateIdealAnimalAndInterests = async () => {
+  // value check
+  if (!interestSet.value || !idealAnimalSet.value) {
+    return;
+  }
+  // 이상형 동물의 개수는 1개 이상
+  if (idealAnimalSet.value.size <= 0) {
+    return;
+  }
+
+  await updateIdealAnimalAndInterestsApi(
+    {
+      interest: interestSet.value.size <= 0 ? [] : Array.from(interestSet.value),
+      idealAnimal: Array.from(idealAnimalSet.value),
+    },
+    ({ data }: any) => store.getUserInfo(),
+    (error: any) => console.error(error)
+  );
+};
+
 watch(
   () => store.userInfo,
   (updateUser, oldUser) => {
@@ -151,10 +172,11 @@ watch(
   }
 );
 
-onMounted(() => {
-  console.log("onMounted");
-  console.log(userInfo.value);
-
+onMounted(async () => {
+  if (!store.userInfo) {
+    await store.getUserInfo();
+    userInfo.value = store.userInfo;
+  }
   // 성별 초기화
   if (userInfo.value && userInfo.value.gender) {
     gender.value = userInfo.value.gender;

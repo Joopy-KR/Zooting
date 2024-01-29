@@ -162,7 +162,9 @@ watch(
           <p class="">{{ userInfo!.animal }}</p>
         </div>
         <div class="flex items-end justify-center">
-          <div class="w-5/6 m-4 shadow-inner rounded-3xl shadow-pink-200 relative">
+          <div
+            class="w-5/6 m-4 overflow-auto max-h-56 shadow-inner rounded-3xl shadow-pink-200 relative"
+          >
             <div class="grid grid-cols-1 gap-6 p-8 sm:grid-cols-2">
               <div
                 v-for="interest in interests"
