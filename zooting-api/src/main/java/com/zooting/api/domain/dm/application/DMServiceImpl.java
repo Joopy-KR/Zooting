@@ -22,7 +22,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,16 +76,18 @@ public class DMServiceImpl implements DMService {
         dm.setSender(dmReq.sender());
         List<File> files = dmReq.files()
                 .stream()
-                .map(file ->{
-                        File savedFile = File.builder()
-                                .dm(dm)
-                                .fileName(file.fileName())
-                                .img_url(file.imgUrl())
-                                .fileDir(file.fileDir())
-                                .build();
-                        fileRepository.save(savedFile);
-                        return savedFile;
-                        }).toList();
+                .map(file -> {
+                    File savedFile = File.builder()
+                            .dm(dm)
+                            .fileName(file.fileName())
+                            .imgUrl(file.imgUrl())
+                            .fileDir(file.fileDir())
+                            .thumbnailUrl(file.thumbnailUrl())
+                            .originFileName(file.originFileName())
+                            .build();
+                    fileRepository.save(savedFile);
+                    return savedFile;
+                }).toList();
         dm.setFiles(files);
         dmRepository.save(dm);
     }

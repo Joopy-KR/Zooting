@@ -17,8 +17,10 @@ public interface DMRoomRepository extends JpaRepository<DMRoom, Long> {
             WHERE (dr.sender = :sender AND dr.receiver = :receiver) OR
             (dr.sender = :receiver AND dr.receiver = :sender)
             """
-            ) // sender, receiver 역방향도 검색
+    )
+        // sender, receiver 역방향도 검색
     DMRoom findBySenderAndReceiver(@Param("sender") Member sender, @Param("receiver") Member receiver);
+
     @Query("SELECT dm FROM DM dm WHERE dm.dmRoom.id = :id AND dm.id >= :startCursor")
     List<DM> findDmsById(@Param("id") Long id, @Param("startCursor") Long startCursor);
 }
