@@ -7,6 +7,8 @@ import com.zooting.api.domain.dm.dto.response.DMDto;
 import com.zooting.api.domain.dm.dto.response.DMRoomRes;
 import com.zooting.api.domain.dm.entity.DM;
 import com.zooting.api.domain.dm.entity.DMRoom;
+import com.zooting.api.domain.file.dao.FileRepository;
+import com.zooting.api.domain.file.entity.File;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.code.ErrorCode;
@@ -20,6 +22,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +33,7 @@ public class DMServiceImpl implements DMService {
     private final DMRepository dmRepository;
     private final DMRoomRepository dmRoomRepository;
     private final MemberRepository memberRepository;
+    private final FileRepository fileRepository;
 
     @Override
     public DMRoom getDMRoom(String sender, String receiver) {
@@ -71,6 +75,19 @@ public class DMServiceImpl implements DMService {
         dm.setDmRoom(dmRoom);
         dm.setMessage(dmReq.message());
         dm.setSender(dmReq.sender());
+        List<File> files = dmReq.files()
+                .stream()
+                .map(file ->{
+                        File savedFile = File.builder()
+                                .dm(dm)
+                                .fileName(file.fileName())
+                                .img_url(file.imgUrl())
+                                .fileDir(file.fileDir())
+                                .build();
+                        fileRepository.save(savedFile);
+                        return savedFile;
+                        }).toList();
+        dm.setFiles(files);
         dmRepository.save(dm);
     }
 
