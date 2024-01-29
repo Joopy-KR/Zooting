@@ -1,11 +1,38 @@
 <template>
-  <div class="container">
-    <video id="video" ref="video" autoplay playsinline></video>
+  <div style="overflow: hidden;">
+    <div class="container" v-show="is_loaded">
+      <video id="video" ref="video" autoplay playsinline></video>
+    </div>
+    
+    <div class="flex flex-col items-center justify-center w-screen h-screen" v-show="!is_loaded" style="background-color: black;">
+      <p class="mb-8 text-5xl font-bold text-white">가면 벗겨짐</p>
+      <h3 class="mb-5 text-white">카메라에 얼굴을 맞춰주세요</h3>
+      <div class="flex items-center justify-center" role="status">
+        <svg aria-hidden="true" class="inline w-3/12 text-gray-200 animate-spin dark:text-gray-600 fill-pink-400" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+          <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+        </svg>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts" type="module">
-import { ref, onMounted } from 'vue'
+/* Copyright 2023 The MediaPipe Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. */
+
+import { ref, onMounted, watch } from 'vue'
 
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
@@ -13,6 +40,8 @@ import { GLTFLoader, GLTF } from 'three/addons/loaders/GLTFLoader.js'
 import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3"
 const { FaceLandmarker, FilesetResolver } = vision
 
+// 로딩 되었는지 판단할 변수
+const is_loaded = ref(false)
 
 class BasicScene {
   scene: THREE.Scene
@@ -30,15 +59,13 @@ class BasicScene {
     this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 0.01, 5000)
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setSize(this.width, this.height)
-    THREE.ColorManagement.legacy = false
-    this.renderer.outputEncoding = THREE.sRGBEncoding
     document.body.appendChild(this.renderer.domElement)
 
     // 조명 추가
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2)
     this.scene.add(ambientLight)
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5)
-    directionalLight.position.set(0, 1, 0)
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 2)
+    directionalLight.position.set(0, 10, 0)
     this.scene.add(directionalLight)
 
     // 카메라 설정
@@ -53,38 +80,47 @@ class BasicScene {
     // 재생되는 비디오로 백그라운드 설정
     const video = document.getElementById("video") as HTMLVideoElement
     const inputFrameTexture = new THREE.VideoTexture(video)
-    inputFrameTexture.encoding = THREE.sRGBEncoding
+    inputFrameTexture.colorSpace = THREE.SRGBColorSpace
     const inputFramesDepth = 500  // 카메라와 3D 평면의 거리
     const inputFramesPlane = createCameraPlaneMesh(
       this.camera,
       inputFramesDepth,
       new THREE.MeshBasicMaterial({ map: inputFrameTexture })
-    );
+    )
     this.scene.add(inputFramesPlane)
-
-    // 장면 렌더하기
     this.render()
-
+    
+    // 가면이 벗겨지면 카메라 끄기
+    const canvas: any = document.querySelector("canvas")
+    watch(is_loaded, () => {
+      if (is_loaded.value === false) {
+        canvas.style.visibility = "hidden"
+      } else {
+        canvas.style.visibility = "visible"
+      }
+    })
+    
     window.addEventListener("resize", this.resize.bind(this))
-  }
-
-  // 화면 크기 변경 따른 크기 조정
-  resize() {
-    this.width = window.innerWidth
-    this.height = window.innerHeight
-    this.camera.aspect = this.width / this.height
-    this.camera.updateProjectionMatrix()
-
-    this.renderer.setSize(this.width, this.height)
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-    this.renderer.render(this.scene, this.camera)
-  }
-
-  render(time: number = this.lastTime): void {
-    this.lastTime = time
-    this.renderer.render(this.scene, this.camera)
-    requestAnimationFrame((t) => this.render(t))
+    }
+        
+    // 화면 크기 변경 따른 크기 조정
+    resize() {
+      this.width = window.innerWidth
+      this.height = window.innerHeight
+      this.camera.aspect = this.width / this.height
+      this.camera.updateProjectionMatrix()
+      
+      this.renderer.setSize(this.width, this.height)
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+      
+      this.renderer.render(this.scene, this.camera)
+    }
+    
+    // 실제 랜더 함수
+    render(time: number = this.lastTime): void {
+      this.lastTime = time
+      this.renderer.render(this.scene, this.camera)
+      requestAnimationFrame((t) => this.render(t))
   }
 }
 
@@ -92,6 +128,7 @@ interface MatrixRetargetOptions {
   decompose?: boolean
   scale?: number
 }
+
 
 // 아바타 설정
 class Avatar {
@@ -124,12 +161,12 @@ class Avatar {
       },
       (progress) =>
         console.log(
-          "Loading model...",
+          "가면 로딩중",
           100.0 * (progress.loaded / progress.total),
           "%"
         ),
       (error) => console.error(error)
-    );
+    )
   }
 
   // gltf 객체 순회 및 초기화
@@ -141,7 +178,7 @@ class Avatar {
       if (!(object as THREE.Mesh).isMesh) {
         return
       }
-
+      
       const mesh = object as THREE.Mesh
       mesh.frustumCulled = false
 
@@ -181,32 +218,14 @@ class Avatar {
     this.gltf.scene.matrixAutoUpdate = false
     this.gltf.scene.matrix.copy(matrix)
   }
-
-  // 아바타 위치 조절
-  offsetRoot(offset: THREE.Vector3, rotation?: THREE.Vector3): void {
-    if (this.root) {
-      // 현재 루트의 위치를 가져와서 offset을 더해줌
-      const currentOffset = this.root.position.clone()
-      this.root.position.copy(currentOffset.add(offset))
-
-      console.log(rotation)
-      if (rotation) {
-        console.log(1111111)
-        let offsetQuat = new THREE.Quaternion().setFromEuler(
-          new THREE.Euler(rotation.x, rotation.y, rotation.z)
-        )
-        this.root.quaternion.copy(offsetQuat)
-      }
-    }
-  }
 }
 
-let faceLandmarker: FaceLandmarker | null = null;
-let video: HTMLVideoElement | null = null;
-let avatar: Avatar | null = null;
+let faceLandmarker: FaceLandmarker | null = null
+let video: HTMLVideoElement | null = null
+let avatar: Avatar | null = null
 
 onMounted(() => {
-  init();
+  init()
 });
 
 // 각각의 가면들 주소 할당
@@ -221,50 +240,22 @@ const raccoon = "src/assets/animal_mask/raccoon_head.glb"
 
 
 async function init() {
-  const scene = ref<BasicScene | null>(null);
-  scene.value = new BasicScene();
+  const scene = ref<BasicScene | null>(null)
+  scene.value = new BasicScene()
 
-  avatar = ref<Avatar | null>(null); // 전역 avatar에 할당
+  avatar = ref<Avatar | null>(null)
 
   const maskURL = ref<any>('')
 
   // 가면 바꾸는 변수
-  maskURL.value = raccoon 
-  
-  
+  maskURL.value = dog 
+
   avatar.value = new Avatar(
     maskURL.value,
     scene.value.scene
-  );
+  )
 
-  video = document.getElementById("video") as HTMLVideoElement | null;
-
-  if (!video) {
-    throw new Error("Video element not found");
-  }
-
-
-  const inputFrameTexture = new THREE.VideoTexture(video);
-  if (!inputFrameTexture) {
-    throw new Error("Failed to get the 'input_frame' texture!");
-  }
-  inputFrameTexture.encoding = THREE.sRGBEncoding;
-
-  const inputFramesDepth = 500;
-  const inputFramesPlane = createCameraPlaneMesh(
-    scene.value.camera,
-    inputFramesDepth,
-    new THREE.MeshBasicMaterial({ map: inputFrameTexture })
-  );
-  scene.value.scene.add(inputFramesPlane);
-
-  video.onloadedmetadata = () => {
-    video?.play();
-  };
-
-  window.addEventListener("resize", scene.value?.resize.bind(scene.value));
-
-  runDemo();
+  runDemo()
 }
 
 async function runDemo() {
@@ -283,25 +274,23 @@ async function runDemo() {
     runningMode: "VIDEO",
     outputFaceBlendshapes: true,
     outputFacialTransformationMatrixes: true,
-  });
+  })
 }
 
+// 평면 mesh 생성
 function createCameraPlaneMesh(
   camera: THREE.PerspectiveCamera,
   depth: number,
   material: THREE.Material
 ): THREE.Mesh {
-  if (camera.near > depth || depth > camera.far) {
-    console.warn("Camera plane geometry will be clipped by the `camera`!");
-  }
-  const viewportSize = getViewportSizeAtDepth(camera, depth);
+  const viewportSize = getViewportSizeAtDepth(camera, depth)
   const cameraPlaneGeometry = new THREE.PlaneGeometry(
     viewportSize.width,
     viewportSize.height
-  );
-  cameraPlaneGeometry.translate(0, 0, -depth);
+  )
+  cameraPlaneGeometry.translate(0, 6, -depth);
 
-  return new THREE.Mesh(cameraPlaneGeometry, material);
+  return new THREE.Mesh(cameraPlaneGeometry, material)
 }
 
 function getViewportSizeAtDepth(
@@ -309,72 +298,82 @@ function getViewportSizeAtDepth(
   depth: number
 ): THREE.Vector2 {
   const viewportHeightAtDepth =
-    2 * depth * Math.tan(THREE.MathUtils.degToRad(0.5 * camera.fov));
-  const viewportWidthAtDepth = viewportHeightAtDepth * camera.aspect;
-  return new THREE.Vector2(viewportWidthAtDepth, viewportHeightAtDepth);
+    2 * depth * Math.tan(THREE.MathUtils.degToRad(0.5 * camera.fov))
+  const viewportWidthAtDepth = viewportHeightAtDepth * camera.aspect
+  return new THREE.Vector2(viewportWidthAtDepth, viewportHeightAtDepth)
 }
 
 function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
   if (!faceLandmarker || !avatar) {
-    return;
+    return
   }
-  const landmarks = faceLandmarker.detectForVideo(video, time);
+  const landmarks = faceLandmarker.detectForVideo(video, time)
 
-  const transformationMatrices = landmarks.facialTransformationMatrixes;
+  const transformationMatrices = landmarks.facialTransformationMatrixes
   if (transformationMatrices && transformationMatrices.length > 0) {
     let matrix = new THREE.Matrix4().fromArray(
       transformationMatrices[0].data
-    )
-
-    avatar.value?.offsetRoot(new THREE.Vector3(0, 0, -10));
-    avatar.value?.applyMatrix(matrix, { scale: 40 });
+      )
+      
+      // 가면 위아래 위치 
+      // 너구리 가면은 적용되지 않음.
+      if (avatar.value.url !== 'src/assets/animal_mask/raccoon_head.glb' ) {
+        avatar.value.scene.position.y = -6
+      }
+      
+      avatar.value?.applyMatrix(matrix, { scale: 50 })
   }
+  const blendshapes = landmarks.faceBlendshapes
 
-  const blendshapes = landmarks.faceBlendshapes;
+  is_loaded.value = false
+  
   if (blendshapes && blendshapes.length > 0) {
+    is_loaded.value = true
     const coefsMap = retarget(blendshapes);
     avatar.value?.updateBlendshapes(coefsMap);
   }
 }
 
+// 표정 변화 (현재는 너구리 가면만 적용)
 function retarget(blendshapes: Classifications[]) {
-  const categories = blendshapes[0].categories;
-  let coefsMap = new Map<string, number>();
+  const categories = blendshapes[0].categories
+  let coefsMap = new Map<string, number>()
   for (let i = 0; i < categories.length; ++i) {
-    const blendshape = categories[i];
+    const blendshape = categories[i]
     switch (blendshape.categoryName) {
       case "browOuterUpLeft":
-        blendshape.score *= 1.2;
-        break;
+        blendshape.score *= 1.2
+        break
       case "browOuterUpRight":
-        blendshape.score *= 1.2;
-        break;
+        blendshape.score *= 1.2
+        break
       case "eyeBlinkLeft":
-        blendshape.score *= 1.2;
-        break;
+        blendshape.score *= 1.2
+        break
       case "eyeBlinkRight":
-        blendshape.score *= 1.2;
-        break;
+        blendshape.score *= 1.2
+        break
       default:
     }
-    coefsMap.set(categories[i].categoryName, categories[i].score);
+    coefsMap.set(categories[i].categoryName, categories[i].score)
   }
-  return coefsMap;
+  return coefsMap
 }
 
 function onVideoFrame(time: DOMHighResTimeStamp): void {
-  detectFaceLandmarks(time);
-  video?.requestVideoFrameCallback(onVideoFrame);
+  detectFaceLandmarks(time)
+  video?.requestVideoFrameCallback(onVideoFrame)
 }
 
+// video 요소 할당 후 플레이
 async function streamWebcamThroughFaceLandmarker(): Promise<void> {
-  video = document.getElementById("video") as HTMLVideoElement | null;
+  video = document.getElementById("video") as HTMLVideoElement | null
 
   function onAcquiredUserMedia(stream: MediaStream): void {
-    video!.srcObject = stream;
+    video!.srcObject = stream
     video!.onloadedmetadata = () => {
-      video!.play();
-    };
+      video!.play()
+    }
   }
 
   try {
@@ -385,13 +384,15 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
         width: 1280,
         height: 720
       }
-    });
-    onAcquiredUserMedia(evt);
-    video!.requestVideoFrameCallback(onVideoFrame);
+    })
+    onAcquiredUserMedia(evt)
+    video!.requestVideoFrameCallback(onVideoFrame)
   } catch (e: unknown) {
-    console.error(`Failed to acquire camera feed: ${e}`);
+      window.alert('비디오 접근 권한을 허용해주세요')
   }
 }
+
+
 </script>
 
 <style>
