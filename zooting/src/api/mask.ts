@@ -8,6 +8,7 @@ interface MaskReq {
   size: number;
 }
 
+// 서버의 마스크 리스트 가져오기
 async function getMaskListApi(params: MaskReq, success: any, fail: any) {
   local.defaults.headers["Authorization"] = `Bearer ${await localStorage.getItem("accessToken")}`;
   await local
@@ -20,6 +21,7 @@ async function getMaskListApi(params: MaskReq, success: any, fail: any) {
   //   .catch(fail);
 }
 
+// 나의 마스크 정보 가져오기
 async function getMyMaskListApi(param: string, success: any, fail: any) {
   local.defaults.headers["Authorization"] = `Bearer ${await localStorage.getItem("accessToken")}`;
   await local.get("/api/mask").then(success).catch(fail);

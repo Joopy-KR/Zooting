@@ -120,14 +120,12 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <div>
-    <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
-      <div class="w-1/3 h-full">
-        <InfoSideBar :user-info="userInfo" :is-my-profile="isMyProfile" />
-      </div>
-      <div class="w-2/3 h-full">
-        <router-view :user-info="userInfo" :is-my-profile="isMyProfile" />
-      </div>
+  <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
+    <div class="w-1/3">
+      <InfoSideBar :user-info="userInfo" :is-my-profile="isMyProfile" />
+    </div>
+    <div class="w-2/3">
+      <router-view :user-info="userInfo" :is-my-profile="isMyProfile" />
     </div>
   </div>
 </template>
