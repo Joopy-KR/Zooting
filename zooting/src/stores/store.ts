@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
+const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
   const personality: Personality = {
@@ -171,7 +172,7 @@ export const useStore = defineStore("store", () => {
 });
 
 export const useAccessTokenStore = defineStore("access-token", () => {
-  const API_URL: string = "https://i10a702.p.ssafy.io";
+  const API_URL: string = VITE_SERVER_API_URL;
   const router = useRouter();
 
   const state = ref<TokenState>({
