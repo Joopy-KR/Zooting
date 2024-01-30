@@ -1,8 +1,6 @@
 <template>
   <div id="main-container" class="container">
     <div id="join" v-if="!session">
-      <div id="img-div">
-      </div>
       <div id="join-dialog" class="jumbotron vertical-center">
         <h1>Join a video session</h1>
         <div class="form-group">
@@ -33,9 +31,9 @@
         <user-video :stream-manager="mainStreamManager" />
       </div>
       <div id="video-container" class="col-md-6">
-        <user-video :stream-manager="publisher" @click.native="updateMainVideoStreamManager(publisher)" />
+        <user-video :stream-manager="publisher" @click="updateMainVideoStreamManager(publisher)" />
         <user-video v-for="sub in subscribers" :key="sub.stream.connection.connectionId" :stream-manager="sub"
-          @click.native="updateMainVideoStreamManager(sub)" />
+          @click="updateMainVideoStreamManager(sub)" />
       </div>
     </div>
   </div>
@@ -44,7 +42,7 @@
 <script>
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
-import UserVideo from './UserVideo.vue'
+import UserVideo from './UserVideo.vue' 
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
