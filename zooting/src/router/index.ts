@@ -134,7 +134,6 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   const store = useAccessTokenStore();
-  console.log("redirecting to 11111111");
   console.log(to.name, store.isLogin);
   console.log(
     (to.name === "home" ||

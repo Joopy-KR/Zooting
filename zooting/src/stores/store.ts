@@ -236,7 +236,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       ({ data }: any) => {
         console.log("Load my info api", data);
         userInfo.value = data.result;
-        console.log(userInfo.value);
         if (!isCompletedSignUp) {
           router.push({ name: "signup" });
         } else if (!userInfo.value?.animal) {
@@ -674,6 +673,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     
     // DM 방 입장
     const isDmOpen = ref<boolean>(false);
+    const currentDm = ref<string>('');
     const entryDmRoom = function (params: string) {
       const receiver = params
       axios({

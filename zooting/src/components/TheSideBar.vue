@@ -44,7 +44,7 @@
       >
       
       <!-- Profile menu -->
-      <div id="userDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44" v-if="isLoggedIn">
+      <div id="userDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
           <ul class="py-2 text-sm text-gray-700" aria-labelledby="avatarButton">
             <li>
               <RouterLink :to="getProfileLink()" class="block px-4 py-2 hover:bg-gray-100" @click="closeTab">프로필</RouterLink>
@@ -91,6 +91,12 @@ const isCompletedTest = computed(() => store.isCompletedTest)
 const isSideTabOpen = ref(false)
 const currentSideTab = ref<string | null>(null)
 
+const userInfo = ref(store.userInfo)
+
+watch(()=> store.userInfo, (UpdateUser)=>{
+  userInfo.value = UpdateUser
+})
+
 const getHomeLink = () => {
   return isLoggedIn.value ? '/' : '/signin'
 }
@@ -130,12 +136,6 @@ const isActivenotificationsTab = () => {
     return false
   }
 }
-
-const userInfo = ref(store.userInfo)
-
-watch(()=> store.userInfo, (UpdateUser)=>{
-  userInfo.value = UpdateUser
-})
 
 const getProfileLink = () => {
   return `/profile/${userInfo.value?.nickname}`
