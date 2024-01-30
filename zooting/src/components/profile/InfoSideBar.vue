@@ -161,11 +161,11 @@ watch(
           {{ userInfo?.address }}
         </div>
       </div>
-      <div class="flex justify-center px-4 py-2 text-3xl font-bold tracking-tight text-rose-600">
+      <div class="flex justify-center px-4 py-2 lg:text-3xl font-bold tracking-tight text-rose-600">
         <p class="">{{ userInfo!.animal }}</p>
       </div>
     </div>
-    <div class="w-full h-1/2 overflow-auto">
+    <div class="interest__container">
       <div class="flex items-end justify-center h-max-full">
         <div class="relative w-2/3 m-4 shadow-inner rounded-3xl shadow-pink-200">
           <div class="grid grid-cols-1 gap-4 py-6 px-8 sm:grid-cols-2">
@@ -174,7 +174,7 @@ watch(
               :key="interest"
               class="flex items-center justify-center px-4 py-2 space-x-6 bg-white rounded-lg shadow-lg border-rose-300 shadow-rose-200"
             >
-              <p class="text-xl font-semibold text-center text-gray-900 truncate hover:text-wrap">
+              <p class="lg:text-xl font-semibold text-center text-gray-900 truncate hover:text-wrap">
                 # {{ interest }}
               </p>
             </div>
@@ -197,4 +197,19 @@ watch(
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.interest__container {
+  @apply w-full h-1/2 overflow-y-auto;
+}
+.interest__container::-webkit-scrollbar {
+  width: 6px;
+  background-color: white;
+}
+.interest__container::-webkit-scrollbar-thumb {
+  background-color: #d6d6d6;
+  border-radius: 4px;
+}
+.interest__container::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+</style>

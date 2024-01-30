@@ -29,8 +29,8 @@
       </svg>
       <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
     </div>
-    <p class="lg:px-12 lg:pt-16 lg:pb-4 text-3xl font-bold tracking-tighter text-center">
-      아바타 동물상 선택
+    <p class="lg:px-12 lg:pt-16 lg:pb-4 lg:text-3xl font-bold tracking-tighter text-center">
+      이상형 & 관심사 수정
     </p>
     <!-- 추가 정보 (관심사, 이상형) -->
     <div class="input__section">

@@ -150,7 +150,7 @@ onMounted(async () => {
       </svg>
       <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
     </div>
-    <p class="lg:px-12 lg:pt-24 lg:pb-16 m-4 text-4xl font-bold tracking-tighter text-center">
+    <p class="lg:px-12 lg:pt-16 lg:pb-10 lg:text-4xl font-bold tracking-tighter text-center">
       아바타 동물상 선택
     </p>
     <div>
@@ -159,11 +159,11 @@ onMounted(async () => {
         <span
           class="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-11"
         >
-          <div class="flex items-center justify-center">
-            <p class="pl-4 pr-2 py-2 text-2xl font-semibold text-center font-sans">
+          <div class="flex items-center justify-center tracking-tighter">
+            <p class="pl-4 pr-2 py-2 lg:text-xl font-semibold text-center font-sans text-gray-900">
               {{ userInfo?.point ? userInfo.point : 0 }}
             </p>
-            <p class="text-2xl pr-4 py-2 font-medium text-center font-sans">Point</p>
+            <p class="text-xl pr-4 py-2 font-medium text-center font-sans">Point</p>
           </div>
         </span>
       </div>

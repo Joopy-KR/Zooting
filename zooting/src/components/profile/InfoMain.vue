@@ -60,7 +60,7 @@ onMounted(() => {
     </div>
     <div class="flex flex-row w-full h-1/2">
       <div class="flex w-1/2 justify-center items-center">
-        <div class="m-4 max-h-full overflow-auto">
+        <div class="introduce__container">
           <div class="relative">
             <article
               class="text-3xl font-semibold tracking-tight text-center shadow-md rounded-3xl shadow-pink-200 px-6 py-12 m-4"
@@ -84,7 +84,7 @@ onMounted(() => {
       </div>
       <div class="flex w-1/2 justify-center items-center">
         <div class="relative mx-16 rounded-3xl shadow-md shadow-pink-200">
-          <p class="truncate text-3xl font-bold tracking-tight text-center">이런 사람이 좋아요</p>
+          <p class="mt-3 truncate lg:text-3xl font-bold tracking-tight text-center">이런 사람이 좋아요</p>
           <div class="flex flex-wrap mx-6 mt-4 mb-8 justify-center">
             <div
               v-for="idealAnimal in idealAnimals"
@@ -117,4 +117,19 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.introduce__container {
+  @apply m-4 max-h-full overflow-auto;
+}
+.introduce__container::-webkit-scrollbar {
+  width: 6px;
+  background-color: white;
+}
+.introduce__container::-webkit-scrollbar-thumb {
+  background-color: #d6d6d6;
+  border-radius: 4px;
+}
+.introduce__container::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+</style>
