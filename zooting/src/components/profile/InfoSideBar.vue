@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { checkIsMyProfileApi } from "@/api/profile";
-import { ref, defineProps, onMounted, watch } from "vue";
-import { useRouter } from "vue-router";
+import {defineProps, ref, watch} from "vue";
+import {useRouter} from "vue-router";
 
 const router = useRouter();
 

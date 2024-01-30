@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import InfoSideBar from "@/components/profile/InfoSideBar.vue";
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import { loadMyInfoApi, loadUserInfoApi, checkIsMyProfileApi } from "@/api/profile";
-import { useAccessTokenStore } from "@/stores/store";
+import {onMounted, ref} from "vue";
+import {useRoute} from "vue-router";
+import {checkIsMyProfileApi, loadMyInfoApi, loadUserInfoApi} from "@/api/profile";
+import {useAccessTokenStore} from "@/stores/store";
 
 const store = useAccessTokenStore();
-
 const route = useRoute();
 
-interface Info {
+interface UserInfo {
   email: string | null;
   gender: string | null;
   nickname: string | null;
@@ -25,7 +24,7 @@ interface Info {
   maskImgUrl: string | null;
 }
 
-const userInfo = ref<Info>({
+const userInfo = ref<UserInfo>({
   email: null,
   gender: null,
   nickname: null,
@@ -85,9 +84,7 @@ const convertDate = (inputDate: string) => {
   originalDate.setDate(originalDate.getDate() + 1);
 
   // 날짜를 원하는 형식으로 포맷
-  const formattedDate = originalDate.toISOString().split("T")[0];
-
-  return formattedDate;
+  return originalDate.toISOString().split("T")[0];
 };
 
 const isMyProfile = ref<boolean>(false);
@@ -96,7 +93,7 @@ const checkIsMyProfile = async (nickname: string) => {
   await checkIsMyProfileApi(
     nickname,
     ({ data }: any) => {
-      const myProfile = data?.result?.myProfile;
+      const myProfile: boolean = data["result"].myProfile;
 
       if (myProfile !== undefined) {
         isMyProfile.value = myProfile;
@@ -112,13 +109,16 @@ onMounted(async () => {
     await checkIsMyProfile(nickname);
 
     if (!isMyProfile.value) {
-      await loadUserInfo(nickname); // 다른 사람 프로필 조회
+      loadUserInfo(nickname); // 다른 사람 프로필 조회
     } else {
-      await loadMyInfo(); // 내 정보 조회
+      loadMyInfo(); // 내 정보 조회
     }
+  } else {
+    loadMyInfo();
   }
 });
 </script>
+
 <template>
   <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
     <div class="w-1/3">
