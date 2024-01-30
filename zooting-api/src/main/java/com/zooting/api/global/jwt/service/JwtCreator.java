@@ -1,5 +1,6 @@
 package com.zooting.api.global.jwt.service;
 
+import com.zooting.api.global.security.userdetails.CustomUserDetails;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -9,7 +10,6 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,7 +30,7 @@ public class JwtCreator {
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    public JwtBuilder createToken(UserDetails userDetails, long expirationTime) {
+    public JwtBuilder createToken(CustomUserDetails userDetails, long expirationTime) {
         Date date = new Date();
         Date expirationDate = new Date(date.getTime() + expirationTime);
 
@@ -38,10 +38,11 @@ public class JwtCreator {
                 .signWith(secretKey, Jwts.SIG.HS256)
                 .issuer(issuer)
                 .expiration(expirationDate)
-                .subject(userDetails.getUsername());
+                .subject(userDetails.getUsername())
+                .claim("nickname", userDetails.getNickname());
     }
 
-    public String createAccessToken(UserDetails userDetails) {
+    public String createAccessToken(CustomUserDetails userDetails) {
         return createToken(userDetails, accessTokenExpiration)
                 .claim("Privilege",
                         userDetails
@@ -52,7 +53,7 @@ public class JwtCreator {
                 )
                 .compact();
     }
-    public String createRefreshToken(UserDetails userDetails) {
+    public String createRefreshToken(CustomUserDetails userDetails) {
         return createToken(userDetails, refreshTokenExpiration).compact();
     }
 

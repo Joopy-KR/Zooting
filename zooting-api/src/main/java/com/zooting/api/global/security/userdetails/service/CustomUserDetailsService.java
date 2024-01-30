@@ -5,48 +5,38 @@ import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.security.userdetails.CustomUserDetails;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 
 @Component
 @Transactional
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
+
     private final MemberRepository memberRepository;
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserDetails userDetails;
+    public CustomUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<Member> optionalMember = memberRepository.findMemberByEmail(email);
+        Member member = optionalMember.orElseGet(() -> registerMember(email));
 
-        Optional<Member> member = memberRepository.findMemberByEmail(email);
+        return CustomUserDetails.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .authorities(mapPrivilegeToAuthorities(member))
+                .build();
+    }
 
-        if(member.isPresent()) {
-            Member registeredMember = member.get();
-            userDetails = CustomUserDetails.builder()
-                    .email(registeredMember.getEmail())
-                    .nickname(registeredMember.getNickname())
-                    .authorities(mapPrivilegeToAuthorities(registeredMember))
-                    .build();
-        } else { // 최초 등록하는 유저일 경우 DB에 저장 후 userDetails 매핑
-            Member newMember = memberRepository.save(Member.builder()
-                            .email(email)
-                            .role(List.of(Privilege.ANONYMOUS))
-                            .build());
-
-            userDetails = CustomUserDetails.builder()
-                    .email(newMember.getEmail())
-                    .authorities(mapPrivilegeToAuthorities(newMember))
-                    .build();
-        }
-        return userDetails;
+    private Member registerMember(String email){
+        return memberRepository.save(Member.builder()
+                .email(email)
+                .role(List.of(Privilege.ANONYMOUS))
+                .build());
     }
 
     protected Collection<? extends GrantedAuthority> mapPrivilegeToAuthorities(Member member){

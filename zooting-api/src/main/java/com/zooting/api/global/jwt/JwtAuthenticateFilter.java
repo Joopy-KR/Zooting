@@ -41,14 +41,14 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
         }
 
         log.info("1. 유저 Request로부터 Access Token을 가져옵니다");
-        String accessToken = tokenProcessor(request, ACCESS_HEADER_AUTHORIZATION);
+        String accessToken = tokenProcessor(request);
         log.info("2. 유저 Request로부터 Access Token을 가져왔습니다: " + accessToken);
 
         try {
             log.info("3. Access Token 인증을 시작합니다.");
             Authentication authentication = jwtService.authenticateToken(accessToken);
+
             log.info("4. 인증이 성공적으로 완료되었습니다.");
-            log.info("5. 유저의 Access Token 인증 정보를 SecurityContextHolder에 저장했습니다.");
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
@@ -60,8 +60,8 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
         }
     }
 
-    public String tokenProcessor(HttpServletRequest request, String header) {
-        String token = request.getHeader(header);
+    public String tokenProcessor(HttpServletRequest request) {
+        String token = request.getHeader(ACCESS_HEADER_AUTHORIZATION);
         if (token != null && token.startsWith(TOKEN_PREFIX)) {
             return token.substring(7);
         }
@@ -71,6 +71,7 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
         Gson gson = new Gson();
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+        response.setStatus(errorCode.getStatus());
         gson.toJson(ErrorResponse.of().code(errorCode).build(), response.getWriter());
         log.info(errorCode.getMessage());
     }

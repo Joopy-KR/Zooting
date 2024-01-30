@@ -27,8 +27,8 @@ public class JwtController {
     private final JwtCreator jwtCreator;
     @Operation(summary = "액세스 토큰 재발급 요청하기", description = "액세스 토큰 없거나 만료됐으면 재발급 요청하기")
     @PostMapping("/refresh")
-    public ResponseEntity<BaseResponse<TokenDto>> sendRefreshRequest(@Valid @NotNull @CookieValue(value = "refresh-token") String refreshToken){
-        TokenDto tokenDto = jwtService.getJwtTokens(refreshToken);
+    public ResponseEntity<BaseResponse<TokenDto>> rotateJwtTokensRequest(@Valid @NotNull @CookieValue(value = "refresh-token") String refreshToken){
+        TokenDto tokenDto = jwtService.rotateJwtTokens(refreshToken);
         ResponseCookie responseCookie = jwtCreator.buildResponseCookie(tokenDto.refreshToken());
 
         SuccessCode code = SuccessCode.CHECK_SUCCESS;
