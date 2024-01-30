@@ -234,9 +234,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const getUserInfo = async function () {
     await loadMyInfoApi(
       ({ data }: any) => {
-        console.log("Load my info api", data);
         userInfo.value = data.result;
-        console.log(userInfo.value);
+
         if (!isCompletedSignUp) {
           router.push({ name: "signup" });
         } else if (!userInfo.value?.animal) {
@@ -248,7 +247,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         }
       },
       (error: any) => {
-        console.log(error);
         router.replace({ name: "signin" });
       }
     );

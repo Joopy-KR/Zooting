@@ -74,11 +74,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onMounted } from "vue";
-import VueTailwindDatepicker from "vue-tailwind-datepicker";
-import { useAccessTokenStore } from "@/stores/store";
-import { useRouter } from "vue-router";
-import { updateIdealAnimalAndInterestsApi } from "@/api/profile";
+import {computed, onMounted, ref, watch} from "vue";
+import {useAccessTokenStore} from "@/stores/store";
+import {useRouter} from "vue-router";
+import {updateIdealAnimalAndInterestsApi} from "@/api/profile";
 import SuccessDialog from "@/components/profile/SuccessDialog.vue";
 import FailDialog from "@/components/profile/FailDialog.vue";
 
@@ -125,7 +124,7 @@ const setFailAlert = (isOpen: boolean) => {
 
 const moveToMyPage = () => {
   if (!userInfo) return;
-  router.push({ name: "profile-check", params: { nickname: userInfo.value?.nickname } });
+  router.push({ name: "profile-check", params: { nickname: userInfo.value?.nickname }, force: true });
 };
 
 const pushidealAnimal = (value: string) => {

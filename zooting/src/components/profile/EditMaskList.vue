@@ -86,6 +86,10 @@ const getMyMaskList = (type: string) => {
   );
 };
 
+const redoAnimalTest = () => {
+  router.replace({name: "animal_test"}); // TODO: 동작이 안됨 확인 필요
+}
+
 const setAnimalType = (animal: string) => {
   animalType.value = animal;
 };
@@ -177,6 +181,7 @@ onMounted(async () => {
       <button
         type="button"
         class="rounded-full bg-indigo-600 px-4 py-2.5 w-1/2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        @click="redoAnimalTest"
       >
         동물상 다시 검사하기
       </button>
