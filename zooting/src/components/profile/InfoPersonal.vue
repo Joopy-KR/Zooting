@@ -1,4 +1,16 @@
 <template>
+  <FailDialog
+    title="업데이트 실패!"
+    message="이상형 & 관심사 정보 업데이트에 실패하였습니다."
+    :fail-alert="failAlert"
+    @set-fail-alert="setFailAlert"
+  />
+  <SuccessDialog
+    title="업데이트 성공!"
+    message="회원정보 업데이트 완료!"
+    :success-alert="successAlert"
+    @set-success-alert="setSuccessAlert"
+  />
   <div class="input__container relative">
     <div @click="moveToMyPage()" class="flex flex-col items-center ml-4 absolute top-5 left-5">
       <svg
@@ -17,7 +29,7 @@
       </svg>
       <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
     </div>
-    <p class="lg:px-12 lg:pt-24 lg:pb-10 m-4 text-4xl font-bold tracking-tighter text-center">
+    <p class="lg:px-12 lg:pt-16 lg:pb-4 text-3xl font-bold tracking-tighter text-center">
       아바타 동물상 선택
     </p>
     <!-- 추가 정보 (관심사, 이상형) -->
@@ -67,6 +79,8 @@ import VueTailwindDatepicker from "vue-tailwind-datepicker";
 import { useAccessTokenStore } from "@/stores/store";
 import { useRouter } from "vue-router";
 import { updateIdealAnimalAndInterestsApi } from "@/api/profile";
+import SuccessDialog from "@/components/profile/SuccessDialog.vue";
+import FailDialog from "@/components/profile/FailDialog.vue";
 
 const store = useAccessTokenStore();
 const router = useRouter();
@@ -74,6 +88,8 @@ const userInfo = ref(store.userInfo);
 const gender = ref<string>("man");
 const idealAnimalSet = ref(new Set<string>());
 const interestSet = ref(new Set<string>());
+const successAlert = ref<boolean>(false);
+const failAlert = ref<boolean>(false);
 
 const interestList: string[] = [
   "개발",
@@ -99,13 +115,17 @@ const interestList: string[] = [
   "학문",
 ];
 
+const setSuccessAlert = (isOpen: boolean) => {
+  successAlert.value = isOpen;
+};
+
+const setFailAlert = (isOpen: boolean) => {
+  failAlert.value = isOpen;
+};
+
 const moveToMyPage = () => {
   if (!userInfo) return;
   router.push({ name: "profile-check", params: { nickname: userInfo.value?.nickname } });
-};
-
-const getGenderLabel = (value: string) => {
-  return value === "man" ? "남자" : "여자";
 };
 
 const pushidealAnimal = (value: string) => {
@@ -160,8 +180,14 @@ const updateIdealAnimalAndInterests = async () => {
       interest: interestSet.value.size <= 0 ? [] : Array.from(interestSet.value),
       idealAnimal: Array.from(idealAnimalSet.value),
     },
-    ({ data }: any) => store.getUserInfo(),
-    (error: any) => console.error(error)
+    ({ data }: any) => {
+      store.getUserInfo();
+      setSuccessAlert(true);
+    },
+    (error: any) => {
+      setFailAlert(true);
+      console.error(error);
+    }
   );
 };
 

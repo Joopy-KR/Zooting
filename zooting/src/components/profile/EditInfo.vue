@@ -315,7 +315,6 @@ onMounted(() => {
   <FailDialog
     title="업데이트 실패!"
     :message="failMessage"
-    :introduce="userInfo.nickname"
     :fail-alert="failAlert"
     @set-fail-alert="setFailAlert"
   />
@@ -327,9 +326,9 @@ onMounted(() => {
   />
   <div class="flex flex-col px-12 py-8">
     <div class="flex flex-row justify-between">
-      <div class="flex flex-row items-center">
+      <div class="flex flex-row">
         <span
-          class="inline-flex items-center px-10 py-3 text-xl font-bold text-blue-500 rounded-full bg-blue-50 ring-1 ring-inset ring-blue-700/10"
+          class="flex items-center px-6 py-3 text-lg font-bold text-blue-500 rounded-full bg-blue-50 ring-1 ring-inset ring-blue-700/10"
           >설정</span
         >
         <div @click="moveToMyPage()" class="flex flex-col items-center ml-4">
@@ -347,9 +346,7 @@ onMounted(() => {
               d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
             />
           </svg>
-          <p class="font-sans font-semibold text-xs tracking-tight text-center">
-            마이페이지
-          </p>
+          <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
         </div>
       </div>
       <span
@@ -357,21 +354,19 @@ onMounted(() => {
         >탈퇴</span
       >
     </div>
-    <div class="flex flex-col items-start w-full px-16 py-20 mx-10 my-4">
-      <div class="w-2/3">
+    <div class="flex justify-center items-center w-full">
+      <div class="flex flex-col items-center lg:py-14 lg:px-10 w-full">
         <div class="relative input__div">
           <label
             for="nickname"
-            class="absolute inline-block px-1 bg-white input__label -top-5 left-2"
+            class="absolute inline-block bg-transparent input__label -top-7 left-10"
             >닉네임</label
           >
           <input
             type="text"
             name="nickname"
             id="nickname"
-            :class="
-              isNicknameUpdatable ? 'input__nickname_enabled' : 'input__nickname_disabled'
-            "
+            :class="isNicknameUpdatable ? 'input__nickname_enabled' : 'input__nickname_disabled'"
             :value="nickname"
             @input="updateNicknameValue"
             :disabled="!isNicknameUpdatable"
@@ -404,11 +399,7 @@ onMounted(() => {
               class="btn__nickname_disabled"
               @click="executeUpdateNickname()"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="m4.5 12.75 6 6 9-13.5"
-              />
+              <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
             </svg>
             <svg
               v-if="!isNicknameVerify"
@@ -420,11 +411,7 @@ onMounted(() => {
               class="btn__nickname_disabled"
               @click="cancelUpdateNickname()"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M6 18 18 6M6 6l12 12"
-              />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
             </svg>
 
             <p v-if="!isNicknameVerify" class="absolute -bottom-7 right-0 text-red-600">
@@ -449,9 +436,7 @@ onMounted(() => {
                     'gender__option',
                   ]"
                 >
-                  <RadioGroupLabel as="span">{{
-                    getGenderLabel(gender)
-                  }}</RadioGroupLabel>
+                  <RadioGroupLabel as="span">{{ getGenderLabel(gender) }}</RadioGroupLabel>
                 </div>
               </RadioGroupOption>
             </div>
@@ -465,7 +450,7 @@ onMounted(() => {
             as-single
             :formatter="formatter"
             weekdays-size="min"
-            class="text-xl font-bold text-center hover:bg-gray-200"
+            class="text-lg font-bold text-center hover:bg-gray-200"
             :disabled="true"
           />
         </div>
@@ -505,25 +490,25 @@ onMounted(() => {
 
 <style scoped>
 .input__nickname_enabled {
-  @apply block w-full px-8 py-2 text-2xl font-bold text-center text-gray-900 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6;
+  @apply block w-full px-8 py-2 text-lg font-bold text-center text-gray-900 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6;
 }
 .input__nickname_disabled {
-  @apply block w-full px-8 py-2 text-2xl font-bold text-center text-gray-900 bg-gray-100 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6;
+  @apply block w-full px-8 py-2 text-lg font-bold text-center text-gray-900 bg-gray-100 border-0 rounded-md shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6;
 }
 .btn__nickname_enabled {
-  @apply w-8 h-8 absolute bottom-2 right-3 hover:stroke-indigo-600;
+  @apply w-8 h-8 absolute bottom-1 right-12 hover:stroke-indigo-600;
 }
 .btn__nickname_disabled {
-  @apply w-8 h-8 absolute bottom-2 right-3 fill-orange-300 hover:stroke-orange-700;
+  @apply w-8 h-8 absolute bottom-1 right-12 fill-orange-300 hover:stroke-orange-700;
 }
 .input__div {
-  @apply w-full mx-4 my-3;
+  @apply w-5/6 px-10;
 }
 .input__label {
-  @apply text-xl font-semibold text-gray-900;
+  @apply font-semibold text-gray-900;
 }
 .input__div select {
-  @apply border border-gray-300 text-gray-900 text-xl font-semibold rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full px-4 py-3;
+  @apply border border-gray-300 text-gray-900 text-lg font-semibold rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full px-4 py-3;
 }
 .gender {
   @apply grid grid-cols-2 gap-3;
@@ -552,9 +537,9 @@ onMounted(() => {
 }
 
 .btn__save {
-  @apply w-1/6 py-3 px-4 mx-3 text-2xl font-medium text-white bg-orange-400 rounded-full shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300;
+  @apply w-1/6 py-3 px-4 mx-3 text-xl font-semibold text-white bg-orange-400 rounded-full shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300;
 }
 .btn__cancel {
-  @apply w-1/6 py-3 px-4 mx-3 text-2xl font-medium text-white bg-indigo-600 rounded-full shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500;
+  @apply w-1/6 py-3 px-4 mx-3 text-xl font-semibold text-white bg-indigo-600 rounded-full shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500;
 }
 </style>
