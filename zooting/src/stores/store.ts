@@ -2,6 +2,7 @@ import axios from "axios";
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
+import { loadMyInfoApi } from "@/api/profile";
 
 export const useStore = defineStore("store", () => {
   const personality: Personality = {
@@ -230,15 +231,11 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const userInfo = ref<UserInfo | null>(null);
 
   const getUserInfo = async function () {
-    await axios({
-      method: "get",
-      url: `${API_URL}/api/members`,
-      headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
-      },
-    })
-      .then((res) => {
-        userInfo.value = res.data.result;
+    await loadMyInfoApi(
+      ({ data }: any) => {
+        console.log("Load my info api", data);
+        userInfo.value = data.result;
+        console.log(userInfo.value);
         if (!isCompletedSignUp) {
           router.push({ name: "signup" });
         } else if (!userInfo.value?.animal) {
@@ -248,10 +245,36 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         } else {
           isCompletedTest.value = true;
         }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      },
+      (error: any) => {
+        console.log(error);
+        router.replace({ name: "signin" });
+      }
+    );
+    // await axios({
+    //   method: "get",
+    //   url: `${API_URL}/api/members`,
+    //   headers: {
+    //     Authorization: `Bearer ${getAccessToken()}`,
+    //   },
+    // })
+    //   .then((res) => {
+    //     console.log(res);
+    //     userInfo.value = res.data.result;
+    //     console.log(userInfo.value);
+    //     if (!isCompletedSignUp) {
+    //       router.push({ name: "signup" });
+    //     } else if (!userInfo.value?.animal) {
+    //       router.push({ name: "animal_test" });
+    //     } else if (!userInfo.value?.personality) {
+    //       router.push({ name: "personality_test" });
+    //     } else {
+    //       isCompletedTest.value = true;
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
   };
 
   // 로그인 상태 판별
