@@ -1,4 +1,4 @@
-import axios, { HttpStatusCode } from "axios";
+import axios from "axios";
 import { httpStatusCode } from "./http-status";
 
 const { VITE_SERVER_API_URL } = import.meta.env;
@@ -60,10 +60,14 @@ function localAxios() {
           isTokenRefreshing = true;
 
           const refreshToken = await localStorage.getItem("refreshToken");
-          const { data } = await axios.post(VITE_SERVER_API_URL + "/api/refresh/token", {
+          // refreshToken이 없는 경우 로그인 페이지로 리다이렉트
+          if (refreshToken) {
+            return Promise.reject(error);
+          }
+          const { data } = await axios.post(VITE_SERVER_API_URL + "/api/token/refresh", {
             refreshToken: refreshToken,
           });
-          console.log(data);
+          console.log("리프레시 토큰 요청 결과", data);
 
           const { accessToken: newAccessToken, refreshToken: newRefreshToken } = data;
 

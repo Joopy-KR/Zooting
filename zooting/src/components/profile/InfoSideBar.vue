@@ -30,6 +30,13 @@ const moveToMaskList = () => {
     });
   }
 };
+const moveToPersonal = () => {
+  if (!props.userInfo) return;
+  router.push({
+    name: "profile-personal-info",
+    params: { nickname: props.userInfo.nickname },
+  });
+};
 
 const getAgeGroup = (birth: string) => {
   const birthDate: Date = new Date(birth);
@@ -134,7 +141,11 @@ watch(
       </div>
       <div class="mx-8">
         <div class="flex justify-center items-center p-2">
-          <p class="text-4xl font-medium">{{ userInfo?.nickname }}</p>
+          <p
+            class="text-4xl font-medium text-stone-800 decoration-pink-300 decoration-wavy underline"
+          >
+            {{ userInfo?.nickname }}
+          </p>
         </div>
         <div class="flex flex-row p-2 my-4">
           <div class="flex items-center justify-center w-1/3 text-3xl font-medium">
@@ -147,20 +158,36 @@ watch(
             {{ userInfo?.address }}
           </div>
         </div>
-        <div class="flex justify-center mx-4 my-8 text-5xl font-bold tracking-tight">
+        <div class="flex justify-center mx-4 my-8 text-4xl font-bold tracking-tight">
           <p class="">{{ userInfo!.animal }}</p>
         </div>
-        <div class="flex items-end justify-center min-w-max">
-          <div class="w-2/3 m-4 border-t-4 shadow-inner rounded-3xl">
+        <div class="flex items-end justify-center">
+          <div
+            class="w-5/6 m-4 overflow-auto max-h-56 shadow-inner rounded-3xl shadow-pink-200 relative"
+          >
             <div class="grid grid-cols-1 gap-6 p-8 sm:grid-cols-2">
               <div
                 v-for="interest in interests"
                 :key="interest"
-                class="relative flex items-center px-3 py-3 space-x-3 bg-white border-gray-300 rounded-lg shadow-lg justify-center"
+                class="flex items-center px-3 py-3 space-x-3 bg-white border-rose-300 rounded-lg shadow-lg shadow-rose-200 justify-center"
               >
-                <p class="text-2xl font-medium text-center text-gray-900"># {{ interest }}</p>
+                <p class="truncate hover:text-wrap text-2xl font-medium text-center text-gray-900">
+                  # {{ interest }}
+                </p>
                 <!-- <p class="text-sm text-gray-500 truncate">{{ interest }}</p> -->
               </div>
+            </div>
+            <div v-if="isMyProfile" class="absolute bottom-1 right-1" @click="moveToPersonal">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-8 h-8 fill-rose-500 hover:fill-amber-400"
+              >
+                <path
+                  d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z"
+                />
+              </svg>
             </div>
           </div>
         </div>

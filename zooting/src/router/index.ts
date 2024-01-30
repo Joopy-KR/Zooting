@@ -133,28 +133,46 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-  const store = useAccessTokenStore()
+  const store = useAccessTokenStore();
+  console.log("redirecting to 11111111");
+  console.log(to.name, store.isLogin);
+  console.log(
+    (to.name === "home" ||
+      to.name === "signup" ||
+      to.name === "animal_test" ||
+      to.name === "personality_test") &&
+      !store.isLogin
+  );
 
-  if ((to.name === 'home' || to.name === 'signup' || to.name === 'animal_test' || to.name === 
-  'personality_test') && !store.isLogin) {
-    return { name: 'signin' }
+  if (
+    (to.name === "home" ||
+      to.name === "signup" ||
+      to.name === "animal_test" ||
+      to.name === "personality_test") &&
+    !store.isLogin
+  ) {
+    console.log("redirecting to 222222222");
+    return { name: "signin" };
   }
 
-  if (to.name === 'signin' && store.isLogin) {
-    return { name: 'home' }
+  if (to.name === "signin" && store.isLogin) {
+    console.log("redirecting to 33333333");
+    return { name: "home" };
   }
-  
+
   // if (to.name === 'signup' && store.isCompletedSignUp) {
   //   return { name: 'home' }
   // }
-  
-  if (to.name === 'animal_test' && store.userInfo?.animal){
-    return { name: 'home' }
-  }
-  
-  if (to.name === 'personality_test' && store.userInfo?.personality) {
-    return { name: 'home' }
-  }
-})
 
-export default router
+  if (to.name === "animal_test" && store.userInfo?.animal) {
+    console.log("redirecting to 444444");
+    return { name: "home" };
+  }
+
+  if (to.name === "personality_test" && store.userInfo?.personality) {
+    console.log("redirecting to 55555555");
+    return { name: "home" };
+  }
+});
+
+export default router;
