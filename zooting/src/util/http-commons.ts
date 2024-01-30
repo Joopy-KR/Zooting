@@ -61,7 +61,7 @@ function localAxios() {
         if (!isTokenRefreshing) {
           isTokenRefreshing = true;
 
-          const refreshToken = await localStorage.getItem("refreshToken");
+          const refreshToken = localStorage.getItem("refreshToken");
           // refreshToken이 없는 경우 로그인 페이지로 리다이렉트
           if (!refreshToken) {
             return Promise.reject(error);
@@ -74,10 +74,10 @@ function localAxios() {
           const newRefreshToken = await data["result"].refreshToken;
 
           if (newAccessToken) {
-            await localStorage.setItem("accessToken", newAccessToken);
+            localStorage.setItem("accessToken", newAccessToken);
           }
           if (newRefreshToken) {
-            await localStorage.setItem("refreshToken", newRefreshToken);
+            localStorage.setItem("refreshToken", newRefreshToken);
           }
 
           isTokenRefreshing = false;
