@@ -174,12 +174,12 @@ export const useAccessTokenStore = defineStore(
   () => {
     const API_URL: string = "https://i10a702.p.ssafy.io";
     const router = useRouter();
-
+    
     const state = ref<TokenState>({
       accessToken: localStorage.getItem("accessToken") || null,
       refreshToken: localStorage.getItem("refreshToken") || null,
     });
-
+    
     const setAccessToken = function (token: string | null) {
       if (token) {
         localStorage.setItem("accessToken", token);
@@ -188,7 +188,7 @@ export const useAccessTokenStore = defineStore(
       }
       state.value.accessToken = token;
     };
-
+    
     const getAccessToken = function () {
       if (state.value.accessToken) {
         return state.value.accessToken;
@@ -203,7 +203,7 @@ export const useAccessTokenStore = defineStore(
         }
       }
     };
-
+    
     const setRefreshToken = function (token: string | null) {
       if (token) {
         localStorage.setItem("refreshToken", token);
@@ -212,7 +212,7 @@ export const useAccessTokenStore = defineStore(
       }
       state.value.refreshToken = token;
     };
-
+    
     const getRefreshToken = function () {
       if (state.value.refreshToken) {
         return state.value.refreshToken;
@@ -226,11 +226,11 @@ export const useAccessTokenStore = defineStore(
         }
       }
     };
-
+    
     // 유저 정보
     const isCompletedTest = ref<boolean>(false);
     const userInfo = ref<UserInfo | null>(null);
-
+    
     const getUserInfo = function () {
       axios({
         method: "get",
@@ -239,24 +239,24 @@ export const useAccessTokenStore = defineStore(
           Authorization: `Bearer ${getAccessToken()}`,
         },
       })
-        .then((res) => {
-          console.log(res);
-          userInfo.value = res.data.result;
-          if (!isCompletedSignUp) {
-            router.push({ name: "signup" });
-          } else if (!userInfo.value?.animal) {
-            router.push({ name: "animal_test" });
-          } else if (!userInfo.value?.personality) {
-            router.push({ name: "personality_test" });
-          } else {
-            isCompletedTest.value = true;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .then((res) => {
+        console.log(res);
+        userInfo.value = res.data.result;
+        if (!isCompletedSignUp) {
+          router.push({ name: "signup" });
+        } else if (!userInfo.value?.animal) {
+          router.push({ name: "animal_test" });
+        } else if (!userInfo.value?.personality) {
+          router.push({ name: "personality_test" });
+        } else {
+          isCompletedTest.value = true;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     };
-
+    
     // 로그인 상태 판별
     const isLogin = computed(() => {
       if (state.value.accessToken) {
@@ -265,13 +265,13 @@ export const useAccessTokenStore = defineStore(
         return false;
       }
     });
-
+    
     // 로그아웃
     const signOut = function () {
       window.localStorage.clear();
       state.value.accessToken = null;
     };
-
+    
     // 추가 정보 저장 여부 확인
     const isCompletedSignUp = ref<boolean>(false);
     const checkCompletedSignUp = function () {
@@ -283,18 +283,18 @@ export const useAccessTokenStore = defineStore(
           Authorization: `Bearer ${getAccessToken()}`,
         },
       })
-        .then((res) => {
-          console.log(res);
-          isCompletedSignUp.value = res.data.result;
-          if (!isCompletedSignUp) {
-            router.push({ name: "signup" });
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .then((res) => {
+        console.log(res);
+        isCompletedSignUp.value = res.data.result;
+        if (!isCompletedSignUp) {
+          router.push({ name: "signup" });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     };
-
+    
     // 추가 정보 저장
     const saveAdditionalInfo = function (payload: {
       nickname: string;
@@ -321,15 +321,15 @@ export const useAccessTokenStore = defineStore(
           Authorization: `Bearer ${getAccessToken()}`,
         },
       })
-        .then((res) => {
-          console.log(res);
-          router.push({ name: "animal_test" });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .then((res) => {
+        console.log(res);
+        router.push({ name: "animal_test" });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     };
-
+    
     // 닉네임 중복 검사
     const isDuplication = ref<boolean>(false);
     const checkNicknameDuplication = function (params: string) {
@@ -343,15 +343,15 @@ export const useAccessTokenStore = defineStore(
           Authorization: `Bearer ${getAccessToken()}`,
         },
       })
-        .then((res) => {
-          console.log(res);
-          isDuplication.value = res.data.result;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .then((res) => {
+        console.log(res);
+        isDuplication.value = res.data.result;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     };
-
+    
     // 성격 테스트 결과 저장
     const setPersonality = function (payload: string) {
       const personality = payload;
@@ -366,15 +366,15 @@ export const useAccessTokenStore = defineStore(
           Authorization: `Bearer ${getAccessToken()}`,
         },
       })
-        .then((res) => {
-          console.log(res);
-          router.push({ name: "home" });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .then((res) => {
+        console.log(res);
+        router.push({ name: "home" });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     };
-
+    
     // 동물상 테스트 결과 저장
     const setAnimalFace = function (payload: number[]) {
       const animalFaceList = payload;
@@ -389,14 +389,14 @@ export const useAccessTokenStore = defineStore(
           Authorization: `Bearer ${getAccessToken()}`,
         },
       })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     };
-
+    
     // 친구 리스트
     const friendList = ref<Friend[]>([]);
     const getFriendList = function () {
@@ -415,8 +415,8 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-
-  // 친구 요청 받은 리스트
+    
+    // 친구 요청 받은 리스트
     const requestFromList = ref<Friend[]>([]);
     const getRequestFromList = function () {
       axios({
@@ -434,7 +434,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-
+    
     // 친구 요청 보낸 리스트
     const requestToList = ref<Friend[]>([]);
     const getRequestToList = function () {
@@ -453,7 +453,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-
+    
     // 차단 리스트
     const blockList = ref<Friend[]>([]);
     const getBlockList = function () {
@@ -471,7 +471,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-
+    
     // 친구 요청
     const friendRequest = function (payload: {
       email: string;
@@ -497,7 +497,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-
+    
     // 친구 요청 수락
     const friendAccept = function (payload: {
       email: string;
@@ -524,7 +524,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-
+    
     // 친구 요청 거절
     const friendReject = function (payload: {
       email: string;
@@ -550,7 +550,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-
+    
     // 친구 요청 취소
     const friendRequestCancel = function (payload: {
       email: string;
@@ -576,7 +576,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-
+    
     // 차단 해제
     const blockCancel = function (payload: string) {
       const nickname = payload;
@@ -598,7 +598,7 @@ export const useAccessTokenStore = defineStore(
         console.log(err);
       })
     };
-
+    
     // 친구 삭제
     const friendDelete = function (payload: {
       email: string;
@@ -626,7 +626,7 @@ export const useAccessTokenStore = defineStore(
     };
 
     const searchResult = ref<Friend[]>([])
-
+    
     // 친구 검색
     const friendSearch = function (params: string) {
       axios({
@@ -640,14 +640,14 @@ export const useAccessTokenStore = defineStore(
         },
       })
       .then((res) => {
-          searchResult.value = res.data.result;
-          // console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      };
-      
+        searchResult.value = res.data.result;
+        // console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    };
+    
     // 유저 검색
     const userSearch = function (params: string) {
       const nickname = params
@@ -661,17 +661,39 @@ export const useAccessTokenStore = defineStore(
           Authorization: `Bearer ${getAccessToken()}`,
         },
       })
-        .then((res) => {
-          searchResult.value = res.data.result;
-          // console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .then((res) => {
+        searchResult.value = res.data.result;
+        // console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     };
-
-    // DM 방 최초 생성
-    const createDmRoom = function (params: string) {
+    
+    // DM 방 번호 조회
+    const checkDmRoom = function (params: string) {
+      const receiver = params
+      axios({
+        method: "get",
+        url: `${API_URL}/api/dm`,
+        params: {
+          receiver,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    };
+    
+    // DM 방 입장
+    const isDmOpen = ref<boolean>(false);
+    const entryDmRoom = function (params: string) {
       const receiver = params
       axios({
         method: "get",
@@ -725,7 +747,8 @@ export const useAccessTokenStore = defineStore(
       friendSearch,
       userSearch,
       searchResult,
-      createDmRoom,
+      checkDmRoom,
+      entryDmRoom
     };
   },
 );

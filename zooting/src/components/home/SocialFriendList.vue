@@ -19,7 +19,7 @@
           </div>
         </RouterLink>
         <div class="flex items-center">
-          <button class="me-2" @click="createDmRoom(item.email)">DM</button>
+          <button class="me-2" @click="checkDmRoom(item.email)">DM</button>
           <button @click="friendDelete(item)">삭제</button>
         </div>
       </li>
@@ -44,13 +44,6 @@ const getProfileLink = (value: string) => {
   return `/profile/${value}`
 }
 
-interface Friend {
-  email: string;
-  nickname: string;
-  gender: string;
-  animal: string;
-};
-
 const friendDelete = (item: Friend) => {
   const payload = {
     nickname: item.nickname,
@@ -67,9 +60,16 @@ const getProfileImage = (animal: string) => {
   return `/images/${animal}.png`
 }
 
-const createDmRoom = (email: string) => {
-  store.createDmRoom(email)
+const checkDmRoom = (email: string) => {
+  store.checkDmRoom(email)
 } 
+
+interface Friend {
+  email: string;
+  nickname: string;
+  gender: string;
+  animal: string;
+};
 </script>
 
 <style scoped>
