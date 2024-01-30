@@ -5,7 +5,16 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useAccessTokenStore } from "../stores/store"
 
+const store = useAccessTokenStore()
+
+const DmInfo = ref()
+
+onMounted(async () => {
+  DmInfo.value = store.entryDmRoom()
+})
 </script>
 
 <style scoped>

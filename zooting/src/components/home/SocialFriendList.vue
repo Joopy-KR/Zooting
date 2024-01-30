@@ -19,7 +19,7 @@
           </div>
         </RouterLink>
         <div class="flex items-center">
-          <button class="me-2" @click="checkDmRoom(item.email)">DM</button>
+          <button class="me-2" @click="entryChat(item.email)">DM</button>
           <button @click="friendDelete(item)">삭제</button>
         </div>
       </li>
@@ -33,6 +33,7 @@ import { useAccessTokenStore } from '@/stores/store'
 import { RouterLink } from 'vue-router'
 
 const store = useAccessTokenStore()
+const emit = defineEmits(['entryChat'])
 
 const friendList = ref(store.friendList)
 
@@ -60,8 +61,8 @@ const getProfileImage = (animal: string) => {
   return `/images/${animal}.png`
 }
 
-const checkDmRoom = (email: string) => {
-  store.checkDmRoom(email)
+const entryChat = (email: string) => {
+  store.receiver = email
 } 
 
 interface Friend {

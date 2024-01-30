@@ -228,7 +228,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 유저 정보
-  const isCompletedTest = ref<boolean>(false);
   const userInfo = ref<UserInfo | null>(null);
 
   const getUserInfo = async function () {
@@ -242,8 +241,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           router.push({ name: "animal_test" });
         } else if (!userInfo.value?.personality) {
           router.push({ name: "personality_test" });
-        } else {
-          isCompletedTest.value = true;
         }
       },
       (error: any) => {
@@ -650,32 +647,10 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       });
     };
     
-    // DM 방 번호 조회
-    const checkDmRoom = function (params: string) {
-      const receiver = params
-      axios({
-        method: "get",
-        url: `${API_URL}/api/dm`,
-        params: {
-          receiver,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    };
-    
     // DM 방 입장
-    const isDmOpen = ref<boolean>(false);
-    const currentDm = ref<string>('');
-    const entryDmRoom = function (params: string) {
-      const receiver = params
+    const receiver = ref<string>('')
+    // const DmInfo = ref<DM | null>(null)
+    const entryDmRoom = function () {
       axios({
         method: "get",
         url: `${API_URL}/api/dm/room`,
@@ -688,6 +663,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
         .then((res) => {
           console.log(res);
+          return res.data.result
         })
         .catch((err) => {
           console.log(err);
@@ -704,7 +680,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       isLogin,
       signOut,
       isCompletedSignUp,
-      isCompletedTest,
       checkCompletedSignUp,
       setPersonality,
       saveAdditionalInfo,
@@ -728,8 +703,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       friendSearch,
       userSearch,
       searchResult,
-      checkDmRoom,
-      entryDmRoom
+      entryDmRoom,
+      receiver,
+      // DmInfo,
     };
   },
 );
@@ -769,4 +745,16 @@ interface Friend {
   nickname: string;
   animal: string;
   gender: string;
+}
+
+interface DM {
+  dmRoomId: number;
+  dmList: DmItem[];
+  cursor: number;
+}
+
+interface DmItem {
+  dmRoomId: number;
+  sender: string;
+  message: string;
 }

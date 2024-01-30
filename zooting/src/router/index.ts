@@ -7,6 +7,7 @@ import AnimalTestView from "@/views/AnimalTestView.vue";
 import PersonalityTestView from "@/views/PersonalityTestView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import Login from "@/views/LoginView.vue";
+import ChatTestView from "@/views/ChatTestView.vue";
 
 interface UserInfo {
   email: string | null;
@@ -88,6 +89,11 @@ const router = createRouter({
       path: "/personality_test",
       name: "personality_test",
       component: PersonalityTestView,
+    },
+    {
+      path: "/chat",
+      name: "chat",
+      component: ChatTestView,
     },
     {
       path: "/profile/:nickname?",
