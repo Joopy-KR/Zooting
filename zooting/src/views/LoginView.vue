@@ -8,13 +8,13 @@ const store = useAccessTokenStore();
 
 const handleSocialLoginRedirect = async () => {
   try {
-    const token = await getTokenFromURL();
+    const token = getTokenFromURL();
     if (token["accessToken"]) {
-      await store.setAccessToken(token["accessToken"]);
+      store.setAccessToken(token["accessToken"]);
       if (token["refreshToken"]) {
         store.setRefreshToken(token["refreshToken"]);
       }
-      store.getUserInfo();
+      await store.getUserInfo();
       router.push({ name: "home" });
     }
   } catch (error) {
