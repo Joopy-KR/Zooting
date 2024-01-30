@@ -4,7 +4,6 @@ import { useRouter } from "vue-router";
 import EditMaskItem from "@/components/profile/EditMaskItem.vue";
 import IconMaskDropDown from "./IconMaskDropDown.vue";
 import { getMyMaskListApi, getMaskListApi } from "@/api/mask";
-import { checkNicknameApi } from "@/api/profile";
 
 const router = useRouter();
 const props = defineProps({
@@ -98,48 +97,6 @@ const moveToMyPage = () => {
   });
 };
 
-const masks: Mask[] = [
-  {
-    id: 1,
-    title: "개구쟁이 시바",
-    imageUrl: "/src/assets/images/mask/dog1.png",
-    price: 30,
-    status: true,
-    isSelected: false,
-  },
-  {
-    id: 2,
-    title: "멍뭉이",
-    imageUrl: "/src/assets/images/mask/dog2.png",
-    price: 30,
-    status: true,
-    isSelected: false,
-  },
-  {
-    id: 3,
-    title: "퇴근 시바",
-    imageUrl: "/src/assets/images/mask/dog3.png",
-    price: 30,
-    status: false,
-    isSelected: false,
-  },
-  {
-    id: 4,
-    title: "순댕이",
-    imageUrl: "/src/assets/images/mask/dog4.png",
-    price: 30,
-    status: false,
-    isSelected: false,
-  },
-  {
-    id: 5,
-    title: "금쪽이",
-    imageUrl: "/src/assets/images/mask/dog5.png",
-    price: 30,
-    status: true,
-    isSelected: true,
-  },
-];
 watch(myMaskList, (newMyMaskList, oldMyMaskList) => {
   if (!maskList.value) return;
   if (!newMyMaskList || !oldMyMaskList) {
@@ -176,10 +133,7 @@ onMounted(async () => {
 
 <template>
   <div class="flex flex-col relative">
-    <div
-      @click="moveToMyPage()"
-      class="flex flex-col items-center ml-4 absolute top-5 left-5"
-    >
+    <div @click="moveToMyPage()" class="flex flex-col items-center ml-4 absolute top-5 left-5">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
@@ -196,16 +150,12 @@ onMounted(async () => {
       </svg>
       <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
     </div>
-    <p class="p-12 m-4 text-5xl font-bold tracking-tighter text-center">
+    <p class="lg:px-12 lg:pt-24 lg:pb-16 m-4 text-4xl font-bold tracking-tighter text-center">
       아바타 동물상 선택
     </p>
     <div>
       <div class="flex flex-row justify-between px-12 mr-4">
-        <IconMaskDropDown
-          :animal-type="animalType"
-          @set-animal-type="setAnimalType"
-          class="z-30"
-        />
+        <IconMaskDropDown :animal-type="animalType" @set-animal-type="setAnimalType" class="z-30" />
         <span
           class="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-11"
         >
@@ -220,11 +170,7 @@ onMounted(async () => {
     </div>
     <div class="flex items-center content-center justify-center w-2/3 mx-auto">
       <div class="grid grid-cols-3 gap-3 px-12 py-8 m-4">
-        <EditMaskItem
-          v-for="mask in filterMaskByAnimal"
-          :key="mask.maskId"
-          :mask="mask"
-        />
+        <EditMaskItem v-for="mask in filterMaskByAnimal" :key="mask.maskId" :mask="mask" />
       </div>
     </div>
     <div class="flex justify-center">

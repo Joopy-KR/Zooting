@@ -1,4 +1,4 @@
-import axios, { HttpStatusCode } from "axios";
+import axios from "axios";
 import { httpStatusCode } from "./http-status";
 
 const { VITE_SERVER_API_URL } = import.meta.env;
@@ -54,21 +54,31 @@ function localAxios() {
         response: { status },
       } = error;
 
+      console.log("에러 발생!!!!@!!!!!!!!!!!");
+
       const originalRequest = config;
       if (status === httpStatusCode.UNAUTHORIZED) {
         if (!isTokenRefreshing) {
           isTokenRefreshing = true;
 
-          const refreshToken = await localStorage.getItem("refreshToken");
-          const { data } = await axios.post(VITE_SERVER_API_URL + "/api/refresh/token", {
+          const refreshToken = localStorage.getItem("refreshToken");
+          // refreshToken이 없는 경우 로그인 페이지로 리다이렉트
+          if (!refreshToken) {
+            return Promise.reject(error);
+          }
+          const { data } = await axios.post(VITE_SERVER_API_URL + "/api/token/refresh", {
             refreshToken: refreshToken,
           });
-          console.log(data);
 
-          const { accessToken: newAccessToken, refreshToken: newRefreshToken } = data;
+          const newAccessToken = await data["result"].accessToken;
+          const newRefreshToken = await data["result"].refreshToken;
 
-          await localStorage.setItem("accessToken", newAccessToken);
-          await localStorage.setItem("refreshToken", newRefreshToken);
+          if (newAccessToken) {
+            localStorage.setItem("accessToken", newAccessToken);
+          }
+          if (newRefreshToken) {
+            localStorage.setItem("refreshToken", newRefreshToken);
+          }
 
           isTokenRefreshing = false;
 
