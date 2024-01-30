@@ -251,30 +251,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         router.replace({ name: "signin" });
       }
     );
-    // await axios({
-    //   method: "get",
-    //   url: `${API_URL}/api/members`,
-    //   headers: {
-    //     Authorization: `Bearer ${getAccessToken()}`,
-    //   },
-    // })
-    //   .then((res) => {
-    //     console.log(res);
-    //     userInfo.value = res.data.result;
-    //     console.log(userInfo.value);
-    //     if (!isCompletedSignUp) {
-    //       router.push({ name: "signup" });
-    //     } else if (!userInfo.value?.animal) {
-    //       router.push({ name: "animal_test" });
-    //     } else if (!userInfo.value?.personality) {
-    //       router.push({ name: "personality_test" });
-    //     } else {
-    //       isCompletedTest.value = true;
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
   };
 
   // 로그인 상태 판별
