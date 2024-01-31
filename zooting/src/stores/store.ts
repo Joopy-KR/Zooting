@@ -2,6 +2,8 @@ import axios from "axios";
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
+import { loadMyInfoApi } from "@/api/profile";
+const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
   const personality: Personality = {
@@ -169,546 +171,544 @@ export const useStore = defineStore("store", () => {
   return { personality };
 });
 
-export const useAccessTokenStore = defineStore(
-  "access-token",
-  () => {
-    const API_URL: string = "https://i10a702.p.ssafy.io";
-    const router = useRouter();
-    
-    const state = ref<TokenState>({
-      accessToken: localStorage.getItem("accessToken") || null,
-      refreshToken: localStorage.getItem("refreshToken") || null,
-    });
+export const useAccessTokenStore = defineStore("access-token", () => {
+  const API_URL: string = VITE_SERVER_API_URL;
+  const router = useRouter();
 
-    const setAccessToken = function (token: string | null) {
-      if (token) {
-        localStorage.setItem("accessToken", token);
+  const state = ref<TokenState>({
+    accessToken: localStorage.getItem("accessToken") || null,
+    refreshToken: localStorage.getItem("refreshToken") || null,
+  });
+
+  const setAccessToken = function (token: string | null) {
+    if (token) {
+      localStorage.setItem("accessToken", token);
+    } else {
+      localStorage.removeItem("accessToken");
+    }
+    state.value.accessToken = token;
+  };
+
+  const getAccessToken = function () {
+    if (state.value.accessToken) {
+      return state.value.accessToken;
+    } else {
+      const accessToken = localStorage.getItem("accessToken");
+      if (accessToken) {
+        state.value.accessToken = accessToken;
+        return accessToken;
       } else {
-        localStorage.removeItem("accessToken");
+        router.push({ name: "signin" });
+        alert("Access token not found");
       }
-      state.value.accessToken = token;
-    };
+    }
+  };
 
-    const getAccessToken = function () {
-      if (state.value.accessToken) {
-        return state.value.accessToken;
+  const setRefreshToken = function (token: string | null) {
+    if (token) {
+      localStorage.setItem("refreshToken", token);
+    } else {
+      localStorage.removeItem("refreshToken");
+    }
+    state.value.refreshToken = token;
+  };
+
+  const getRefreshToken = function () {
+    if (state.value.refreshToken) {
+      return state.value.refreshToken;
+    } else {
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (refreshToken) {
+        state.value.refreshToken = refreshToken;
+        return refreshToken;
       } else {
-        const accessToken = localStorage.getItem("accessToken");
-        if (accessToken) {
-          state.value.accessToken = accessToken;
-          return accessToken;
-        } else {
-          router.push({ name: "signin" });
-          alert("Access token not found");
-        }
+        console.log("Refresh Token not exists!");
       }
-    };
+    }
+  };
 
-    const setRefreshToken = function (token: string | null) {
-      if (token) {
-        localStorage.setItem("refreshToken", token);
-      } else {
-        localStorage.removeItem("refreshToken");
-      }
-      state.value.refreshToken = token;
-    };
+  // 유저 정보
+  const isCompletedTest = ref<boolean>(false);
+  const userInfo = ref<UserInfo | null>(null);
 
-    const getRefreshToken = function () {
-      if (state.value.refreshToken) {
-        return state.value.refreshToken;
-      } else {
-        const refreshToken = localStorage.getItem("refreshToken");
-        if (refreshToken) {
-          state.value.refreshToken = refreshToken;
-          return refreshToken;
-        } else {
-          console.log("Refresh Token not exists!");
-        }
-      }
-    };
-
-    // 유저 정보
-    const isCompletedTest = ref<boolean>(false);
-    const userInfo = ref<UserInfo | null>(null);
-
-    const getUserInfo = function () {
-      axios({
-        method: "get",
-        url: `${API_URL}/api/members`,
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-        .then((res) => {
-          console.log(res);
-          userInfo.value = res.data.result;
-          if (!isCompletedSignUp) {
-            router.push({ name: "signup" });
-          } else if (!userInfo.value?.animal) {
-            router.push({ name: "animal_test" });
-          } else if (!userInfo.value?.personality) {
-            router.push({ name: "personality_test" });
-          } else {
-            isCompletedTest.value = true;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-
-    // 로그인 상태 판별
-    const isLogin = computed(() => {
-      if (state.value.accessToken) {
-        return true;
-      } else {
-        return false;
-      }
-    });
-
-    // 로그아웃
-    const signOut = function () {
-      window.localStorage.clear();
-      state.value.accessToken = null;
-    };
-
-    // 추가 정보 저장 여부 확인
-    const isCompletedSignUp = ref<boolean>(false);
-    const checkCompletedSignUp = function () {
-      axios({
-        method: "get",
-        url: `${API_URL}/api/members/privilege/check`,
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-        .then((res) => {
-          console.log(res);
-          isCompletedSignUp.value = res.data.result;
-          if (!isCompletedSignUp) {
-            router.push({ name: "signup" });
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-
-    // 추가 정보 저장
-    const saveAdditionalInfo = function (payload: {
-      nickname: string;
-      gender: string;
-      birth: string;
-      address: string;
-      interest: string[];
-      idealAnimal: string[];
-    }) {
-      const { nickname, gender, birth, address, interest, idealAnimal } = payload;
-      console.log(payload);
-      axios({
-        method: "put",
-        url: `${API_URL}/api/members`,
-        data: {
-          nickname,
-          gender,
-          birth,
-          address,
-          interest,
-          idealAnimal,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-        .then((res) => {
-          console.log(res);
+  const getUserInfo = async function () {
+    await loadMyInfoApi(
+      ({ data }: any) => {
+        console.log("Load my info api", data);
+        userInfo.value = data.result;
+        console.log(userInfo.value);
+        if (!isCompletedSignUp) {
+          router.push({ name: "signup" });
+        } else if (!userInfo.value?.animal) {
           router.push({ name: "animal_test" });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
+        } else if (!userInfo.value?.personality) {
+          router.push({ name: "personality_test" });
+        } else {
+          isCompletedTest.value = true;
+        }
+      },
+      (error: any) => {
+        console.log(error);
+        router.replace({ name: "signin" });
+      }
+    );
+  };
 
-    // 닉네임 중복 검사
-    const isDuplication = ref<boolean>(false);
-    const checkNicknameDuplication = function (params: string) {
-      axios({
-        method: "get",
-        url: `${API_URL}/api/members/nickname/check`,
-        params: {
-          nickname: params,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-        .then((res) => {
-          console.log(res);
-          isDuplication.value = res.data.result;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
+  // 로그인 상태 판별
+  const isLogin = computed(() => {
+    if (state.value.accessToken) {
+      return true;
+    } else {
+      return false;
+    }
+  });
 
-    // 성격 테스트 결과 저장
-    const setPersonality = function (payload: string) {
-      const personality = payload;
-      axios({
-        method: "put",
-        url: `${API_URL}/api/members/characters`,
-        data: {
-          personality,
-        },
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-        .then((res) => {
-          console.log(res);
-          router.push({ name: "home" });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
+  // 로그아웃
+  const signOut = function () {
+    window.localStorage.clear();
+    state.value.accessToken = null;
+  };
 
-    // 동물상 테스트 결과 저장
-    const setAnimalFace = function (payload: number[]) {
-      const animalFaceList = payload;
-      axios({
-        method: "post",
-        url: `${API_URL}/api/animalface`,
-        data: {
-          animalFaceList,
-        },
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-
-    // 친구 리스트
-    const friendList = ref<Friend[]>([]);
-    const getFriendList = function () {
-      axios({
-        method: 'get',
-        url: `${API_URL}/api/friends`,
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`
+  // 추가 정보 저장 여부 확인
+  const isCompletedSignUp = ref<boolean>(false);
+  const checkCompletedSignUp = function () {
+    axios({
+      method: "get",
+      url: `${API_URL}/api/members/privilege/check`,
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
+        isCompletedSignUp.value = res.data.result;
+        if (!isCompletedSignUp) {
+          router.push({ name: "signup" });
         }
       })
-      .then(res => {
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // 추가 정보 저장
+  const saveAdditionalInfo = function (payload: {
+    nickname: string;
+    gender: string;
+    birth: string;
+    address: string;
+    interest: string[];
+    idealAnimal: string[];
+  }) {
+    const { nickname, gender, birth, address, interest, idealAnimal } = payload;
+    console.log(payload);
+    axios({
+      method: "put",
+      url: `${API_URL}/api/members`,
+      data: {
+        nickname,
+        gender,
+        birth,
+        address,
+        interest,
+        idealAnimal,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        router.push({ name: "animal_test" });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // 닉네임 중복 검사
+  const isDuplication = ref<boolean>(false);
+  const checkNicknameDuplication = function (params: string) {
+    axios({
+      method: "get",
+      url: `${API_URL}/api/members/nickname/check`,
+      params: {
+        nickname: params,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        isDuplication.value = res.data.result;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // 성격 테스트 결과 저장
+  const setPersonality = function (payload: string) {
+    const personality = payload;
+    axios({
+      method: "put",
+      url: `${API_URL}/api/members/characters`,
+      data: {
+        personality,
+      },
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        router.push({ name: "home" });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // 동물상 테스트 결과 저장
+  const setAnimalFace = function (payload: number[]) {
+    const animalfaceList = payload;
+    axios({
+      method: "post",
+      url: `${API_URL}/api/animalface`,
+      data: {
+        animalfaceList,
+      },
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // 친구 리스트
+  const friendList = ref<Friend[]>([]);
+  const getFriendList = function () {
+    axios({
+      method: "get",
+      url: `${API_URL}/api/friends`,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
         // console.log(res);
         friendList.value = res.data.result;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-      })
-    };
-  
+      });
+  };
+
   // 친구 요청 받은 리스트
-    const requestFromList = ref<Friend[]>([]);
-    const getRequestFromList = function () {
-      axios({
-        method: 'get',
-        url: `${API_URL}/api/friends/request/from`,
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`
-        }
-      })
-      .then(res => {
+  const requestFromList = ref<Friend[]>([]);
+  const getRequestFromList = function () {
+    axios({
+      method: "get",
+      url: `${API_URL}/api/friends/request/from`,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
         // console.log(res);
         requestFromList.value = res.data.result;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-      })
-    };
-  
-    // 친구 요청 보낸 리스트
-    const requestToList = ref<Friend[]>([]);
-    const getRequestToList = function () {
-      axios({
-        method: 'get',
-        url: `${API_URL}/api/friends/request/to`,
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`
-        }
-      })
-      .then(res => {
+      });
+  };
+
+  // 친구 요청 보낸 리스트
+  const requestToList = ref<Friend[]>([]);
+  const getRequestToList = function () {
+    axios({
+      method: "get",
+      url: `${API_URL}/api/friends/request/to`,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
         // console.log(res);
         requestToList.value = res.data.result;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-      })
-    };
+      });
+  };
 
-    // 차단 리스트
-    const blockList = ref<Friend[]>([]);
-    const getBlockList = function () {
-      axios({
-        method: 'get',
-        url: `${API_URL}/api/members/blocklist`,
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`
-        }
-      })
-      .then(res => {
+  // 차단 리스트
+  const blockList = ref<Friend[]>([]);
+  const getBlockList = function () {
+    axios({
+      method: "get",
+      url: `${API_URL}/api/members/blocklist`,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
         blockList.value = res.data.result;
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-      })
-    };
-    
-    // 친구 요청
-    const friendRequest = function (payload: {
-      email: string;
-      nickname: string;
-    }) {
-      const {email, nickname} = payload;
-      axios({
-        method: 'post',
-        url: `${API_URL}/api/friends`,
-        data: {
-          email,
-          nickname
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`
-        }
-      })
-      .then(res => {
+      });
+  };
+
+  // 친구 요청
+  const friendRequest = function (payload: { email: string; nickname: string }) {
+    const { email, nickname } = payload;
+    axios({
+      method: "post",
+      url: `${API_URL}/api/friends`,
+      data: {
+        email,
+        nickname,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
         console.log(res);
         getRequestToList();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-      })
-    };
+      });
+  };
 
-    // 친구 요청 수락
-    const friendAccept = function (payload: {
-      email: string;
-      nickname: string;
-    }) {
-      const {email, nickname} = payload;
-      axios({
-        method: 'post',
-        url: `${API_URL}/api/friends/accept`,
-        data: {
-          email,
-          nickname
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`
-        }
-      })
-      .then(res => {
+  // 친구 요청 수락
+  const friendAccept = function (payload: { email: string; nickname: string }) {
+    const { email, nickname } = payload;
+    axios({
+      method: "post",
+      url: `${API_URL}/api/friends/accept`,
+      data: {
+        email,
+        nickname,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
         console.log(res);
         getRequestFromList();
         getFriendList();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-      })
-    };
-    
-    // 친구 요청 거절
-    const friendReject = function (payload: {
-      email: string;
-      nickname: string;
-    }) {
-      const {email, nickname} = payload;
-      axios({
-        method: 'delete',
-        url: `${API_URL}/api/friends/request/reject`,
-        data: {
-          email,
-          nickname
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`
-        }
-      })
-      .then(res => {
+      });
+  };
+
+  // 친구 요청 거절
+  const friendReject = function (payload: { email: string; nickname: string }) {
+    const { email, nickname } = payload;
+    axios({
+      method: "delete",
+      url: `${API_URL}/api/friends/request/reject`,
+      data: {
+        email,
+        nickname,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
         console.log(res);
         getRequestFromList();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-      })
-    };
-    
-    // 친구 요청 취소
-    const friendRequestCancel = function (payload: {
-      email: string;
-      nickname: string;
-    }) {
-      const {email, nickname} = payload;
-      axios({
-        method: 'delete',
-        url: `${API_URL}/api/friends/request/cancel`,
-        data: {
-          email,
-          nickname,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`
-        }
-      })
-      .then(res => {
+      });
+  };
+
+  // 친구 요청 취소
+  const friendRequestCancel = function (payload: { email: string; nickname: string }) {
+    const { email, nickname } = payload;
+    axios({
+      method: "delete",
+      url: `${API_URL}/api/friends/request/cancel`,
+      data: {
+        email,
+        nickname,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
         console.log(res);
         getRequestToList();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-      })
-    };
+      });
+  };
 
-    // 차단 해제
-    const blockCancel = function (payload: string) {
-      const nickname = payload;
-      axios({
-        method: 'delete',
-        url: `${API_URL}/api/block`,
-        data: {
-          nickname,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`
-        }
-      })
-      .then(res => {
+  // 차단 해제
+  const blockCancel = function (payload: string) {
+    const nickname = payload;
+    axios({
+      method: "delete",
+      url: `${API_URL}/api/block`,
+      data: {
+        nickname,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
         console.log(res);
         getBlockList();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-      })
-    };
+      });
+  };
 
-    // 친구 삭제
-    const friendDelete = function (payload: {
-      email: string;
-      nickname: string;
-    }) {
-      const {email, nickname} = payload;
-      axios({
-        method: 'delete',
-        url: `${API_URL}/api/friends/delete`,
-        data: {
-          email,
-          nickname,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`
-        }
-      })
-      .then(res => {
+  // 친구 삭제
+  const friendDelete = function (payload: { email: string; nickname: string }) {
+    const { email, nickname } = payload;
+    axios({
+      method: "delete",
+      url: `${API_URL}/api/friends/delete`,
+      data: {
+        email,
+        nickname,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
         console.log(res);
         getFriendList();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-      })
-    };
+      });
+  };
 
-    const searchResult = ref<Friend[]>([])
+  const searchResult = ref<Friend[]>([]);
 
-    // 친구 검색
-    const friendSearch = function (params: string) {
-      axios({
-        method: "get",
-        url: `${API_URL}/api/friends/search`,
-        params: {
-          nickname: params,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
+  // 친구 검색
+  const friendSearch = function (params: string) {
+    axios({
+      method: "get",
+      url: `${API_URL}/api/friends/search`,
+      params: {
+        nickname: params,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
       .then((res) => {
-          searchResult.value = res.data.result;
-          // console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      };
-      
-      // 유저 검색
-    const userSearch = function (params: string) {
-      const nickname = params
-      axios({
-        method: "get",
-        url: `${API_URL}/api/members/searchlist`,
-        params: {
-          nickname,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
+        searchResult.value = res.data.result;
+        // console.log(res);
       })
-        .then((res) => {
-          searchResult.value = res.data.result;
-          // console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
+  // 유저 검색
+  const userSearch = function (params: string) {
+    const nickname = params;
+    axios({
+      method: "get",
+      url: `${API_URL}/api/members/searchlist`,
+      params: {
+        nickname,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
+        searchResult.value = res.data.result;
+        // console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
-    return {
-      setAccessToken,
-      getAccessToken,
-      setRefreshToken,
-      getRefreshToken,
-      userInfo,
-      getUserInfo,
-      isLogin,
-      signOut,
-      isCompletedSignUp,
-      isCompletedTest,
-      checkCompletedSignUp,
-      setPersonality,
-      saveAdditionalInfo,
-      isDuplication,
-      checkNicknameDuplication,
-      setAnimalFace,
-      friendList,
-      getFriendList,
-      requestFromList,
-      getRequestFromList,
-      requestToList,
-      getRequestToList,
-      blockList,
-      getBlockList,
-      friendRequest,
-      friendAccept,
-      friendReject,
-      friendRequestCancel,
-      blockCancel,
-      friendDelete,
-      friendSearch,
-      userSearch,
-      searchResult,
-    };
-  },
-  { persist: true }
-);
+  // // DM방 입장
+  // const enterDmRoom = function (params: string) {
+  //   const email = params
+  //   axios({
+  //     method: "get",
+  //     url: `${API_URL}/api/dm/room`,
+  //     params: {
+  //       email,
+  //     },
+  //     headers: {
+  //       Authorization: `Bearer ${getAccessToken()}`,
+  //     },
+  //   })
+  //     .then((res) => {
+  //       searchResult.value = res.data.result;
+  //       // console.log(res);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
+
+  return {
+    setAccessToken,
+    getAccessToken,
+    setRefreshToken,
+    getRefreshToken,
+    userInfo,
+    getUserInfo,
+    isLogin,
+    signOut,
+    isCompletedSignUp,
+    isCompletedTest,
+    checkCompletedSignUp,
+    setPersonality,
+    saveAdditionalInfo,
+    isDuplication,
+    checkNicknameDuplication,
+    setAnimalFace,
+    friendList,
+    getFriendList,
+    requestFromList,
+    getRequestFromList,
+    requestToList,
+    getRequestToList,
+    blockList,
+    getBlockList,
+    friendRequest,
+    friendAccept,
+    friendReject,
+    friendRequestCancel,
+    blockCancel,
+    friendDelete,
+    friendSearch,
+    userSearch,
+    searchResult,
+  };
+});
 
 interface TokenState {
   accessToken: string | null;
@@ -724,16 +724,20 @@ interface Personality {
 }
 
 interface UserInfo {
-  email: string;
+  email: string | null;
   gender: string | null;
-  nickname: string;
+  nickname: string | null;
   birth: string | null;
   address: string | null;
-  idealAnimal: string[] | null;
-  interest: string[] | null;
-  animal: string | null;
-  personality: string | null;
   point: Number | null;
+  personality: string | null;
+  animal: string | null;
+  interest: string | null;
+  introduce: string | null;
+  idealAnimal: string;
+  backgroundImgUrl: string | null;
+  mbti: string | null;
+  maskImgUrl: string | null;
 }
 
 interface Friend {

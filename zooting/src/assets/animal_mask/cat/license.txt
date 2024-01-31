@@ -1,0 +1,8 @@
+Model Information:
+* title:	Prop128 Cat Head
+* source:	https://sketchfab.com/3d-models/prop128-cat-head-e8d3427a65be4590893c34b28a46a297
+* author:	BaluCG (https://sketchfab.com/BaluCG)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works
