@@ -3,8 +3,6 @@
       <div class="title">
         <h1>자유 대화 시간</h1>
       </div>
-
-
     </div>
 </template>
 
@@ -19,7 +17,7 @@
 }
 
 .title {
-  @apply flex flex-col justify-start items-center mt-5 border-2 border-solid
+  @apply flex flex-col justify-start items-center mt-5 border-2 border-solids
 }
 
 </style>
