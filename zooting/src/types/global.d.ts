@@ -16,6 +16,7 @@ declare interface UserInfo {
     maskImgUrl: string | undefined;
     mbti: string | undefined;
 }
+
 declare interface Mask {
     maskId: number;
     animal: string;
@@ -27,4 +28,42 @@ declare interface Mask {
     isSelected: boolean;
 }
 
-export { UserInfo, Mask };
+declare interface TokenState {
+    accessToken: string | null;
+    refreshToken: string | null;
+}
+
+declare interface Personality {
+    [key: string]: {
+        title: string;
+        match: string;
+        content: string[];
+    };
+}
+
+declare interface Friend {
+    email: string;
+    nickname: string;
+    animal: string;
+    gender: string;
+}
+
+declare interface MaskReq {
+    page: number;
+    size: number;
+    animal: string | undefined;
+}
+
+declare interface ReportUserReq {
+    nickname: string | undefined;
+    reason: string | undefined;
+}
+
+declare interface BlockUserReq {
+    nickname: string | undefined;
+}
+
+export {
+    UserInfo, Mask, TokenState, BlockUserReq,
+    Personality, Friend, MaskReq, ReportUserReq
+};
