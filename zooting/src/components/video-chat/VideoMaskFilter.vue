@@ -51,10 +51,10 @@ class BasicScene {
   renderer: THREE.WebGLRenderer
   controls: OrbitControls
   lastTime: number = 0
-
+ 
   constructor() {
-    this.height = window.innerHeight;
-    this.width = (this.height * 1280  ) / 720
+    this.height = document.body.clientHeight
+    this.width = (this.height * 1280) / 720
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 0.01, 5000)
     this.renderer = new THREE.WebGLRenderer({ antialias: true })

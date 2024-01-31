@@ -2,7 +2,7 @@
   <div class="flex">
     <TheSideBar/>
     <!-- <RouterView class="ms-14"/> -->
-    <test />
+    <test class="ms-14"/>
     <!-- <VideoMaskFilter class="ms-14"/>/ -->
   </div>
 </template>

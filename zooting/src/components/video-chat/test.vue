@@ -27,10 +27,10 @@
         <input class="btn btn-large btn-danger" type="button" id="buttonLeaveSession" @click="leaveSession"
           value="Leave session" />
       </div>
-      <div id="main-video" class="col-md-6">
-        <user-video :stream-manager="mainStreamManager" />
-      </div>
-      <div id="video-container" class="col-md-6">
+      <!-- <div id="main-video">
+        <user-video :stream-manager="mainStreamManager" /> 
+      </div> -->
+      <div id="video-container">
         <user-video :stream-manager="publisher" @click="updateMainVideoStreamManager(publisher)" />
         <user-video v-for="sub in subscribers" :key="sub.stream.connection.connectionId" :stream-manager="sub"
           @click="updateMainVideoStreamManager(sub)" />
@@ -119,7 +119,7 @@ export default {
               publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
               publishVideo: true, // Whether you want to start publishing with your video enabled or not
               resolution: "640x480", // The resolution of your video
-              frameRate: 30, // The frame rate of your video
+              frameRate: 60, // The frame rate of your video
               insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
               mirror: false, // Whether to mirror your local video or not
             });
