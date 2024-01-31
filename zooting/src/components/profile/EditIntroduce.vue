@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {defineEmits, defineProps, ref} from "vue";
+import {defineEmits, defineProps, onMounted, ref} from "vue";
 import {Dialog, DialogPanel, TransitionChild, TransitionRoot,} from "@headlessui/vue";
 import {updateIntroduceApi} from "@/api/profile";
 
@@ -12,7 +12,7 @@ const props = defineProps({
   introduce: String,
 });
 
-const introduceValue = ref<string | null>();
+const introduceValue = ref<string>("");
 
 const closeDialog = () => {
   emits("closeEditIntroduce");
@@ -33,12 +33,19 @@ const updateIntroduce = () => {
       },
       ({data}: any) => {
         emits("loadMyInfo")
-        introduceValue.value = null;
+        introduceValue.value = "";
       },
       (error: any) => console.error(error)
   );
   emits("closeEditIntroduce");
 };
+
+onMounted(() => {
+  console.log("!!!!!introduce: ", props.introduce);
+  if (props.introduce) {
+    introduceValue.value = props.introduce;
+  }
+})
 </script>
 
 <template>
@@ -74,7 +81,7 @@ const updateIntroduce = () => {
             >
               <div class="bg-white shadow sm:rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                  <h3 class="font-semibold pb-3 leading-6 text-lg text-gray-900">
+                  <h3 class="font-semibold pb-3 leading-6 lg:text-lg text-gray-900">
                     자기소개 수정
                   </h3>
                   <div class="w-full">
@@ -83,7 +90,7 @@ const updateIntroduce = () => {
                       <textarea
                           name="introduce"
                           id="introduce"
-                          class="block w-full rounded-md border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-xl sm:leading-6 resize-none"
+                          class="block w-full rounded-md border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:text-lg sm:leading-6 resize-none"
                           :placeholder="introduce"
                           style="height: calc(3.5rem + 50px)"
                           v-model="introduceValue"

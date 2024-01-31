@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from "vue-router";
-import {useAccessTokenStore} from "../stores/store";
+import {useAccessTokenStore} from "@/stores/store";
 import HomeView from "@/views/HomeView.vue";
 import SignInView from "@/views/SignInView.vue";
 import SignUpView from "@/views/SignUpView.vue";
@@ -137,9 +137,9 @@ router.beforeEach((to, from) => {
   //   return { name: 'home' }
   // }
 
-  if (to.name === "animal_test" && store.userInfo?.animal) {
-    return { name: "home" };
-  }
+  // if (to.name === "animal_test" && store.userInfo?.animal) {
+  //   return { name: "home" };
+  // }
 
   if (to.name === "personality_test" && store.userInfo?.personality) {
     return { name: "home" };

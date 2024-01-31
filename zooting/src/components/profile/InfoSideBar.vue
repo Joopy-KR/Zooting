@@ -2,6 +2,8 @@
 import {defineProps, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import type {UserInfo} from "@/types/global";
+import ReportMessage from "@/components/profile/ReportMessage.vue";
+import UserMenu from "@/components/profile/UserMenu.vue";
 
 const router = useRouter();
 
@@ -12,6 +14,7 @@ const props = defineProps({
 
 const interests = ref<string[]>([]);
 const ageGroup = ref<string>();
+const isOpenReportDialog = ref<boolean>(false);
 
 const moveToSetting = () => {
   if (props.isMyProfile) {
@@ -37,6 +40,10 @@ const moveToPersonal = () => {
     params: {nickname: props.userInfo.nickname},
   });
 };
+
+const setIsOpenReportDialog = (status: boolean) => {
+  isOpenReportDialog.value = status;
+}
 
 const getAgeGroup = (birth: string) => {
   const birthDate: Date = new Date(birth);
@@ -80,6 +87,11 @@ watch(
 </script>
 
 <template>
+  <ReportMessage
+      :is-open-report-dialog="isOpenReportDialog"
+      :nickname="userInfo!.nickname"
+      @set-is-open-report-dialog="setIsOpenReportDialog"
+  />
   <div class="flex flex-col h-screen">
     <div class="w-full h-1/2">
       <div class="flex justify-end px-8 pt-4">
@@ -105,22 +117,6 @@ watch(
             />
           </svg>
         </div>
-        <div v-if="!isMyProfile">
-          <div class="flex flex-col">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                class="w-8 h-8 fill-red-700 hover:fill-red-500"
-            >
-              <path
-                  fill-rule="evenodd"
-                  d="M3 2.25a.75.75 0 0 1 .75.75v.54l1.838-.46a9.75 9.75 0 0 1 6.725.738l.108.054A8.25 8.25 0 0 0 18 4.524l3.11-.732a.75.75 0 0 1 .917.81 47.784 47.784 0 0 0 .005 10.337.75.75 0 0 1-.574.812l-3.114.733a9.75 9.75 0 0 1-6.594-.77l-.108-.054a8.25 8.25 0 0 0-5.69-.625l-2.202.55V21a.75.75 0 0 1-1.5 0V3A.75.75 0 0 1 3 2.25Z"
-                  clip-rule="evenodd"
-              />
-            </svg>
-            <p class="text-xs font-semibold text-center">신고</p>
-          </div>
-        </div>
       </div>
       <!-- 나의 동물상 마스크 -->
       <div class="flex justify-center p-4">
@@ -143,11 +139,17 @@ watch(
     </div>
     <div class="mx-8">
       <div class="flex items-center justify-center p-2">
-        <p
-            class="lg:text-2xl font-semibold underline text-stone-800 decoration-pink-300 decoration-wavy"
+        <div
+            class="lg:text-2xl relative font-semibold underline text-stone-800 decoration-pink-300 decoration-wavy"
         >
           {{ userInfo?.nickname }}
-        </p>
+          <div class="absolute text-xs bottom-0.5 -right-10" v-if="!isMyProfile">
+            <UserMenu
+                :nickname="userInfo?.nickname"
+                @set-is-open-report-dialog="setIsOpenReportDialog"
+            />
+          </div>
+        </div>
       </div>
       <div class="flex flex-row px-2 py-3">
         <div class="flex items-center justify-center w-1/3 lg:text-xl font-medium">

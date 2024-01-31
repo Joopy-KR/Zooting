@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {UserInfo} from "@/types/global";
+import type {Friend, Personality, TokenState, UserInfo} from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -255,11 +255,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 로그인 상태 판별
   const isLogin = computed(() => {
-    if (state.value.accessToken) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!state.value.accessToken;
   });
 
   // 로그아웃
@@ -708,23 +704,3 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     searchResult,
   };
 });
-
-interface TokenState {
-  accessToken: string | null;
-  refreshToken: string | null;
-}
-
-interface Personality {
-  [key: string]: {
-    title: string;
-    match: string;
-    content: string[];
-  };
-}
-
-interface Friend {
-  email: string;
-  nickname: string;
-  animal: string;
-  gender: string;
-}

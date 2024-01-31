@@ -1,30 +1,30 @@
 <template>
   <FailDialog
-    title="업데이트 실패!"
-    message="이상형 & 관심사 정보 업데이트에 실패하였습니다."
-    :fail-alert="failAlert"
-    @set-fail-alert="setFailAlert"
+      title="업데이트 실패!"
+      message="이상형 & 관심사 정보 업데이트에 실패하였습니다."
+      :fail-alert="failAlert"
+      @set-fail-alert="setFailAlert"
   />
   <SuccessDialog
-    title="업데이트 성공!"
-    message="회원정보 업데이트 완료!"
-    :success-alert="successAlert"
-    @set-success-alert="setSuccessAlert"
+      title="업데이트 성공!"
+      message="회원정보 업데이트 완료!"
+      :success-alert="successAlert"
+      @set-success-alert="setSuccessAlert"
   />
   <div class="input__container relative">
     <div @click="moveToMyPage()" class="flex flex-col items-center ml-4 absolute top-5 left-5">
       <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="w-10 h-10 stroke-orange-500 fill-rose-100 mx-auto hover:fill-rose-300"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-10 h-10 stroke-orange-500 fill-rose-100 mx-auto hover:fill-rose-300"
       >
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
         />
       </svg>
       <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
@@ -38,11 +38,11 @@
       <div class="ideal-type__div">
         <!-- 선택한 성별에 따라 이상형 동물 목록 출력 -->
         <div
-          class="ideal-type__item"
-          v-for="(value, index) in idealAnimalList"
-          :key="index"
-          @click="pushIdealAnimal(value)"
-          :class="{
+            class="ideal-type__item"
+            v-for="(value, index) in idealAnimalList"
+            :key="index"
+            @click="pushIdealAnimal(value)"
+            :class="{
             'ideal-type__item--checked': idealAnimalSet.has(value),
             'ideal-type__item--no-checked': !idealAnimalSet.has(value),
           }"
@@ -54,11 +54,11 @@
       <label for="" class="input__label">관심사 (최대 6개 선택)</label>
       <div class="interest__div">
         <div
-          class="interest__item"
-          v-for="(interest, index) in interestList"
-          :key="index"
-          @click="pushInterest(interest)"
-          :class="{
+            class="interest__item"
+            v-for="(interest, index) in interestList"
+            :key="index"
+            @click="pushInterest(interest)"
+            :class="{
             'interest__item--checked': interestSet.has(interest),
             'interest__item--no-checked': !interestSet.has(interest),
           }"
@@ -83,6 +83,12 @@ import FailDialog from "@/components/profile/FailDialog.vue";
 
 const store = useAccessTokenStore();
 const router = useRouter();
+const emits = defineEmits([
+  "loadMyInfo"
+])
+const props = defineProps({
+  isMyProfile: Boolean,
+});
 const userInfo = ref(store.userInfo);
 const gender = ref<string>("man");
 const idealAnimalSet = ref(new Set<string>());
@@ -124,7 +130,7 @@ const setFailAlert = (isOpen: boolean) => {
 
 const moveToMyPage = () => {
   if (!userInfo) return;
-  router.push({ name: "profile-check", params: { nickname: userInfo.value?.nickname }, force: true });
+  router.push({name: "profile-check", params: {nickname: userInfo.value?.nickname}, force: true});
 };
 
 const pushIdealAnimal = (value: string) => {
@@ -175,26 +181,31 @@ const updateIdealAnimalAndInterests = async () => {
   }
 
   await updateIdealAnimalAndInterestsApi(
-    {
-      interest: interestSet.value.size <= 0 ? [] : Array.from(interestSet.value),
-      idealAnimal: Array.from(idealAnimalSet.value),
-    },
-    ({ data }: any) => {
-      store.getUserInfo();
-      setSuccessAlert(true);
-    },
-    (error: any) => {
-      setFailAlert(true);
-      console.error(error);
-    }
+      {
+        interest: interestSet.value.size <= 0 ? [] : Array.from(interestSet.value),
+        idealAnimal: Array.from(idealAnimalSet.value),
+      },
+      ({data}: any) => {
+        store.getUserInfo();
+        setSuccessAlert(true);
+
+        if (props.isMyProfile) {
+          emits("loadMyInfo");
+        }
+        moveToMyPage();
+      },
+      (error: any) => {
+        setFailAlert(true);
+        console.error(error);
+      }
   );
 };
 
 watch(
-  () => store.userInfo,
-  (updateUser, oldUser) => {
-    userInfo.value = updateUser;
-  }
+    () => store.userInfo,
+    (updateUser, oldUser) => {
+      userInfo.value = updateUser;
+    }
 );
 
 onMounted(async () => {
@@ -237,55 +248,72 @@ onMounted(async () => {
 .input__container {
   @apply bg-white border border-gray-200 shadow lg:h-full;
 }
+
 .input__section {
   @apply lg:px-32 md:px-16 py-4;
 }
+
 .input__title {
   @apply mb-10;
 }
+
 .input__title p {
   @apply text-3xl font-bold mb-1;
 }
+
 .input__div {
   @apply mb-8;
 }
+
 .input__label {
   @apply block mb-2 text-sm font-medium text-gray-900;
 }
+
 .input__div input {
   @apply border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full h-10 p-2.5;
 }
+
 .input__div select {
   @apply border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-violet-500 focus:border-violet-500 block w-full h-10;
 }
+
 .submit-button {
   @apply text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl font-medium rounded-lg text-sm px-5 py-2 text-center me-2 my-2 w-full;
 }
+
 .gender {
   @apply grid grid-cols-2 gap-3 h-10;
 }
+
 .gender__option {
   @apply flex items-center justify-center rounded-lg p-2 text-sm uppercase cursor-pointer;
 }
+
 .gender__option--checked {
   @apply text-violet-600 ring-2 ring-inset ring-violet-600 font-bold hover:bg-gray-50;
 }
+
 .gender__option--no-checked {
   @apply ring-1 ring-inset ring-gray-300  text-gray-900 hover:bg-gray-50;
 }
+
 .ideal-type__div {
   @apply mb-10 grid grid-cols-5 gap-3;
   height: 80px;
 }
+
 .ideal-type__item {
   @apply flex border rounded-md justify-center items-center cursor-pointer;
 }
+
 .ideal-type__item--checked {
   @apply text-violet-600 ring-2 ring-inset ring-violet-600 font-bold hover:bg-gray-50;
 }
+
 .ideal-type__item--no-checked {
   @apply border-gray-300 hover:bg-gray-50;
 }
+
 .interest__div {
   @apply mb-10 rounded-md grid grid-cols-4 gap-4 p-3;
   height: 270px;
@@ -293,29 +321,37 @@ onMounted(async () => {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
+
 .interest__div::-webkit-scrollbar {
   width: 7px;
 }
+
 .interest__div::-webkit-scrollbar-thumb {
   background-color: #d6d6d6;
   border-radius: 4px;
 }
+
 .interest__div::-webkit-scrollbar-track {
   background-color: transparent;
 }
+
 .interest__item {
   @apply flex justify-center items-center bg-white hover:bg-gray-50 border border-gray-300 rounded-md cursor-pointer;
   height: 50px;
 }
+
 .interest__item--checked {
   @apply text-violet-600 ring-2 ring-inset ring-violet-600 font-bold hover:bg-gray-50;
 }
+
 .interest__item--no-checked {
   @apply border-gray-300 hover:bg-gray-50;
 }
+
 .nickname {
   position: relative;
 }
+
 .duplication-check {
   @apply rounded-md text-white text-sm bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl h-7 w-20;
   position: absolute;
@@ -324,9 +360,11 @@ onMounted(async () => {
   right: 5px;
   margin: auto 2px;
 }
+
 .error-message {
   @apply text-red-500 text-sm mt-1;
 }
+
 .correct-message {
   @apply text-blue-500 text-sm mt-1;
 }

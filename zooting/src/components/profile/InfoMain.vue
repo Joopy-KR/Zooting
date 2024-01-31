@@ -7,7 +7,7 @@ import type {UserInfo} from "@/types/global";
 const router = useRouter();
 const emits = defineEmits([
     "loadMyInfo"
-])
+]);
 
 const props = defineProps({
   userInfo: Object as () => UserInfo,
@@ -60,6 +60,7 @@ onMounted(() => {
 <template>
   <EditIntroduce
       :is-open-edit-Introduce="isOpenEditIntroduce"
+      :introduce="userInfo?.introduce"
       @close-edit-introduce="closeEditIntroduce"
       @load-my-info="loadMyInfo"
   />
@@ -72,7 +73,7 @@ onMounted(() => {
         <div class="introduce__container">
           <div class="relative">
             <article
-                class="text-3xl font-semibold tracking-tight text-center shadow-md rounded-3xl shadow-pink-200 px-6 py-12 m-4"
+                class="lg:text-2xl font-semibold tracking-tight text-center shadow-md rounded-3xl shadow-pink-200 px-6 py-12 m-4"
             >
               {{ userInfo!.introduce ? userInfo!.introduce : "안녕하세요!" }}
             </article>
@@ -93,7 +94,7 @@ onMounted(() => {
       </div>
       <div class="flex w-1/2 justify-center items-center">
         <div class="relative mx-16 my-4 rounded-3xl shadow-md shadow-pink-200">
-          <p class="m-3 truncate lg:text-3xl font-bold tracking-tight text-center">이런 사람이 좋아요</p>
+          <p class="m-3 truncate lg:text-2xl font-bold tracking-tight text-center">이런 사람이 좋아요</p>
           <div class="flex flex-wrap mx-6 mt-4 mb-8 justify-center">
             <div
                 v-for="idealAnimal in idealAnimals"
