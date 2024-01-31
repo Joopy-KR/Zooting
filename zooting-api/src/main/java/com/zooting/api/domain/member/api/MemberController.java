@@ -223,6 +223,32 @@ public class MemberController {
         );
     }
 
+    @Operation(summary = "내 마스크 변경")
+    @PreAuthorize("hasAnyRole('USER')")
+    @PutMapping("/mask")
+    public ResponseEntity<BaseResponse<String>> changeMask(
+            @RequestBody MaskInventoryReq maskInventoryReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        memberService.changeMask(userDetails.getUsername(), maskInventoryReq);
+        return BaseResponse.success(
+                SuccessCode.SELECT_SUCCESS,
+                "마스크 변경 완료"
+        );
+    }
+
+
+    @Operation(summary = "내 배경이미지 변경")
+    @PreAuthorize("hasAnyRole('USER')")
+    @PutMapping("/background")
+    public ResponseEntity<BaseResponse<String>> changeBackground(
+            @RequestBody BackgroundInventoryReq backgroundInventoryReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        memberService.changeBackground(userDetails.getUsername(), backgroundInventoryReq);
+        return BaseResponse.success(
+                SuccessCode.SELECT_SUCCESS,
+                "배경 변경 완료"
+        );
+    }
     @Operation(
             summary = "매칭 인원 추출",
             description = "차단 목록 유저 제외" +

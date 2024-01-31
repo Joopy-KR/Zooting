@@ -22,6 +22,7 @@ public class MemberAndMaskUsecase {
     final private MemberRepository memberRepository;
     final private MaskRepository maskRepository;
     final private MaskInventoryRepository maskInventoryRepository;
+    public static final Long DEFAULT_MASK_ID = 99L;
 
     @Transactional
     public Boolean buyMask(String userId, MemberAndMaskReq maskReq) {
@@ -62,4 +63,5 @@ public class MemberAndMaskUsecase {
                         myMask.getMask().getFile().getImgUrl()
                          )).toList();
     }
+
 }

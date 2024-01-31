@@ -14,9 +14,9 @@ public class WithCustomMockUserSecurityContextFactory implements WithSecurityCon
         String email = annotation.email();
         Privilege role = annotation.role();
 
-        Authentication auth = new UsernamePasswordAuthenticationToken(email, "", List)
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication();
+//        Authentication auth = new UsernamePasswordAuthenticationToken(email, "",);
+//        SecurityContext context = SecurityContextHolder.getContext();
+//        context.setAuthentication();
 
         return null;
     }

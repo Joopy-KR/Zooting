@@ -178,6 +178,34 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
+    @Override
+    public void changeMask(String memberId, MaskInventoryReq maskInventoryReq) {
+        Member member = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        for (var myMask : member.getMyMasks()) {
+            if (myMask.getId() == maskInventoryReq.maskInventoryId()){
+                member.getAdditionalInfo().setMaskId(myMask.getMask().getId());
+                member.getAdditionalInfo().setMaskUrl(myMask.getMask().getFile().getImgUrl());
+                memberRepository.save(member);
+                return ;
+            }
+        }
+    }
+
+    @Override
+    public void changeBackground(String memberId, BackgroundInventoryReq backgroundInventoryReq) {
+        Member member = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        for (var myBackground : member.getMyBackgrounds()) {
+            if (myBackground.getId() == backgroundInventoryReq.backgroundInventoryId()){
+                member.getAdditionalInfo().setBackgroundId(myBackground.getBackground().getId());
+                member.getAdditionalInfo().setBackgroundUrl(myBackground.getBackground().getFile().getImgUrl());
+                memberRepository.save(member);
+                return ;
+            }
+        }
+    }
+
     @Transactional
     @Override
     public boolean modifyNickname(String memberId, NicknameReq nicknameReq) {
@@ -194,6 +222,7 @@ public class MemberServiceImpl implements MemberService {
         }
         return false;
     }
+
 
     @Transactional(readOnly = true)
     @Override

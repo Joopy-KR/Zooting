@@ -12,9 +12,13 @@ public record MaskRes(
         String description,
         @Schema(description = "가격")
         Long price,
+        @Schema(description = "파일 폴더")
+        String fileDir,
         @Schema(description = "이미지 파일 이름")
         String fileName,
         @Schema(description = "이미지 url")
-        String imgUrl
+        String imgUrl,
+        @Schema(description = "썸네일 url")
+        String thumbnailUrl
 ) {
 }
