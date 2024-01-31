@@ -62,7 +62,8 @@ const getProfileImage = (animal: string) => {
 }
 
 const entryChat = (email: string) => {
-  store.receiver = email
+  store.entryDmRoom(email)
+
 } 
 
 interface Friend {

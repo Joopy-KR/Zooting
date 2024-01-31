@@ -156,26 +156,22 @@ router.beforeEach((to, from) => {
       to.name === "personality_test") &&
     !store.isLogin
   ) {
-    console.log("redirecting to 222222222");
     return { name: "signin" };
   }
 
   if (to.name === "signin" && store.isLogin) {
-    console.log("redirecting to 33333333");
     return { name: "home" };
   }
 
-  // if (to.name === 'signup' && store.isCompletedSignUp) {
-  //   return { name: 'home' }
-  // }
+  if (to.name === 'signup' && store.isCompletedSignUp) {
+    return { name: 'home' }
+  }
 
   if (to.name === "animal_test" && store.userInfo?.animal) {
-    console.log("redirecting to 444444");
     return { name: "home" };
   }
 
   if (to.name === "personality_test" && store.userInfo?.personality) {
-    console.log("redirecting to 55555555");
     return { name: "home" };
   }
 });

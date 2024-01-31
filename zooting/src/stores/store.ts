@@ -648,9 +648,10 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     };
     
     // DM 방 입장
-    const receiver = ref<string>('')
-    // const DmInfo = ref<DM | null>(null)
-    const entryDmRoom = function () {
+    const isEntryDmRoom = ref<boolean>(false)
+    const DmInfo = ref<DM | null>(null)
+    const entryDmRoom = function (params: string) {
+      const receiver = params
       axios({
         method: "get",
         url: `${API_URL}/api/dm/room`,
@@ -663,7 +664,10 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
         .then((res) => {
           console.log(res);
-          return res.data.result
+          DmInfo.value = res.data.result
+        })
+        .then((res) => {
+          isEntryDmRoom.value = true
         })
         .catch((err) => {
           console.log(err);
@@ -704,8 +708,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       userSearch,
       searchResult,
       entryDmRoom,
-      receiver,
-      // DmInfo,
+      isEntryDmRoom,
+      DmInfo,
     };
   },
 );

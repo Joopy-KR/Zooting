@@ -100,9 +100,11 @@ const getHomeLink = () => {
   return isLoggedIn.value ? '/' : '/signin'
 }
 
-watch(()=> store.receiver, ()=>{
-  isSideTabOpen.value = true
-  currentSideTab.value = 'messagesTab'
+watch(()=> store.isEntryDmRoom, ()=>{
+  if (store.isEntryDmRoom) {
+    isSideTabOpen.value = true
+    currentSideTab.value = 'messagesTab'
+  }
 })
 
 // const toggleMessagesTab = () => {
@@ -118,20 +120,23 @@ watch(()=> store.receiver, ()=>{
 const toggleNotificationsTab = () => {
   if (isSideTabOpen.value === true && currentSideTab.value === 'notificationsTab') {
     isSideTabOpen.value = false
+    store.isEntryDmRoom = false
   }
   else if (isSideTabOpen.value === false) {
     isSideTabOpen.value = true
+    store.isEntryDmRoom = false
+    
   }
   currentSideTab.value = 'notificationsTab'
 }
 
-const isActiveMessageTab = () => {
-  if (isSideTabOpen.value === true && currentSideTab.value === 'messagesTab') {
-    return true
-  } else {
-    return false
-  }
-} 
+// const isActiveMessageTab = () => {
+//   if (isSideTabOpen.value === true && currentSideTab.value === 'messagesTab') {
+//     return true
+//   } else {
+//     return false
+//   }
+// } 
 
 const isActivenotificationsTab = () => {
   if (isSideTabOpen.value === true && currentSideTab.value === 'notificationsTab') {
