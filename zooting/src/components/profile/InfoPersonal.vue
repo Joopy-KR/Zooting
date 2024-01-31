@@ -41,7 +41,7 @@
           class="ideal-type__item"
           v-for="(value, index) in idealAnimalList"
           :key="index"
-          @click="pushidealAnimal(value)"
+          @click="pushIdealAnimal(value)"
           :class="{
             'ideal-type__item--checked': idealAnimalSet.has(value),
             'ideal-type__item--no-checked': !idealAnimalSet.has(value),
@@ -127,7 +127,7 @@ const moveToMyPage = () => {
   router.push({ name: "profile-check", params: { nickname: userInfo.value?.nickname }, force: true });
 };
 
-const pushidealAnimal = (value: string) => {
+const pushIdealAnimal = (value: string) => {
   if (idealAnimalSet.value.has(value)) {
     idealAnimalSet.value.delete(value);
   } else {
@@ -216,7 +216,7 @@ onMounted(async () => {
 
     for (const animal of idealAnimals) {
       if (idealAnimalList.value.includes(animal)) {
-        pushidealAnimal(animal);
+        pushIdealAnimal(animal);
       }
     }
   }

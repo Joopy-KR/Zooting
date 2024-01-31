@@ -3,41 +3,27 @@ import InfoSideBar from "@/components/profile/InfoSideBar.vue";
 import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 import {checkIsMyProfileApi, loadMyInfoApi, loadUserInfoApi} from "@/api/profile";
-import {useAccessTokenStore} from "@/stores/store";
+import type {UserInfo} from "@/types/global";
 
-const store = useAccessTokenStore();
 const route = useRoute();
 
-interface UserInfo {
-  email: string | null;
-  gender: string | null;
-  nickname: string | null;
-  birth: string | null;
-  address: string | null;
-  point: number | null;
-  personality: string | null;
-  animal: string | null;
-  interest: string | null;
-  introduce: string | null;
-  idealAnimal: string;
-  backgroundImgUrl: string | null;
-  maskImgUrl: string | null;
-}
-
 const userInfo = ref<UserInfo>({
-  email: null,
-  gender: null,
-  nickname: null,
-  birth: null,
-  address: null,
-  point: null,
-  personality: null,
-  animal: null,
-  interest: null,
-  introduce: null,
+  address: undefined,
+  animal: undefined,
+  backgroundId: undefined,
+  backgroundImgUrl: undefined,
+  birth: undefined,
+  email: undefined,
+  gender: undefined,
   idealAnimal: "[]",
-  backgroundImgUrl: null,
-  maskImgUrl: null,
+  interest: undefined,
+  introduce: undefined,
+  maskId: undefined,
+  maskImgUrl: undefined,
+  mbti: undefined,
+  nickname: undefined,
+  personality: undefined,
+  point: undefined,
 });
 
 const setUserInfo = (data: any) => {
@@ -52,8 +38,11 @@ const setUserInfo = (data: any) => {
   userInfo.value!.introduce = data["result"].introduce;
   userInfo.value!.interest = data["result"].interest;
   userInfo.value!.idealAnimal = data["result"].idealAnimal;
+  userInfo.value!.backgroundId = data["result"].backgroundId
   userInfo.value!.backgroundImgUrl = data["result"].backgroundImgUrl;
+  userInfo.value!.maskId = data["result"].maskId;
   userInfo.value!.maskImgUrl = data["result"].maskImgUrl;
+  userInfo.value!.mbti = data["result"].mbti;
 };
 
 const loadUserInfo = (nickname: string) => {
@@ -122,10 +111,10 @@ onMounted(async () => {
 <template>
   <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
     <div class="w-1/3">
-      <InfoSideBar :user-info="userInfo" :is-my-profile="isMyProfile" />
+      <InfoSideBar :user-info="userInfo" :is-my-profile="isMyProfile" @load-my-info="loadMyInfo" />
     </div>
     <div class="w-2/3">
-      <router-view :user-info="userInfo" :is-my-profile="isMyProfile" />
+      <router-view :user-info="userInfo" :is-my-profile="isMyProfile" @load-my-info="loadMyInfo"/>
     </div>
   </div>
 </template>

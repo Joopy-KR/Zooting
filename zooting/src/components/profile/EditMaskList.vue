@@ -4,26 +4,16 @@ import { useRouter } from "vue-router";
 import EditMaskItem from "@/components/profile/EditMaskItem.vue";
 import IconMaskDropDown from "./IconMaskDropDown.vue";
 import { getMyMaskListApi, getMaskListApi } from "@/api/mask";
+import type {Mask, UserInfo} from "@/types/global";
 
 const router = useRouter();
 const props = defineProps({
-  userInfo: Object,
+  userInfo: Object as () => UserInfo,
 });
 
 const maskList = ref<Mask[]>([]);
 const myMaskList = ref<Mask[]>([]);
 const animalType = ref<string>("강아지");
-
-interface Mask {
-  maskId: number;
-  animal: string;
-  description: string;
-  price: number;
-  fileName: string;
-  imgUrl: string;
-  status: boolean;
-  isSelected: boolean;
-}
 
 const filterMaskByAnimal = computed(() => {
   return maskList.value.filter((mask) => mask.animal === animalType.value);
@@ -130,8 +120,8 @@ watch(myMaskList, (newMyMaskList, oldMyMaskList) => {
 });
 
 onMounted(async () => {
-  await getMaskList("강아지", 0);
-  await getMyMaskList("");
+  getMaskList("강아지", 0);
+  getMyMaskList("");
 });
 </script>
 

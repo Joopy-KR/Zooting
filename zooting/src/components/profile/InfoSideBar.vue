@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import {defineProps, ref, watch} from "vue";
 import {useRouter} from "vue-router";
+import type {UserInfo} from "@/types/global";
 
 const router = useRouter();
 
 const props = defineProps({
-  userInfo: Object,
+  userInfo: Object as () => UserInfo,
   isMyProfile: Boolean,
 });
 
-const interests = ref([]);
-const ageGroup = ref();
+const interests = ref<string[]>([]);
+const ageGroup = ref<string>();
 
 const moveToSetting = () => {
   if (props.isMyProfile) {
     router.push({
       name: "profile-info",
-      params: { nickname: props.userInfo!.nickname },
+      params: {nickname: props.userInfo!.nickname},
     });
   }
 };
@@ -25,7 +26,7 @@ const moveToMaskList = () => {
   if (props.isMyProfile) {
     router.push({
       name: "profile-mask-list",
-      params: { nickname: props.userInfo!.nickname },
+      params: {nickname: props.userInfo!.nickname},
     });
   }
 };
@@ -33,7 +34,7 @@ const moveToPersonal = () => {
   if (!props.userInfo) return;
   router.push({
     name: "profile-personal-info",
-    params: { nickname: props.userInfo.nickname },
+    params: {nickname: props.userInfo.nickname},
   });
 };
 
@@ -57,25 +58,24 @@ const getAgeGroup = (birth: string) => {
   }
 };
 watch(
-  () => props.userInfo?.birth,
-  (newValue, oldValue) => {
-    if (newValue) {
-      ageGroup.value = getAgeGroup(newValue);
+    () => props.userInfo?.birth,
+    (newValue) => {
+      if (newValue) {
+        ageGroup.value = getAgeGroup(newValue);
+      }
     }
-  }
 );
 watch(
-  () => props.userInfo?.interest,
-  (newValue, oldValue) => {
-    if (newValue) {
-      const interestsArray = newValue.replace("[", "").replace("]", "").split(", ");
-
-      // Populate the interests array with trimmed values
-      interests.value = interestsArray.map((interest: string) => interest.trim());
-    } else {
-      interests.value = [];
+    () => props.userInfo?.interest,
+    (newValue) => {
+      if (newValue) {
+        const interestsArray = newValue.replace("[", "").replace("]", "").split(", ");
+        // Populate the interests array with trimmed values
+        interests.value = interestsArray.map((interest: string) => interest.trim());
+      } else {
+        interests.value = [];
+      }
     }
-  }
 );
 </script>
 
@@ -86,36 +86,36 @@ watch(
         <!-- 설정 버튼 -->
         <div v-if="isMyProfile" @click="moveToSetting">
           <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2.0"
-            stroke="currentColor"
-            class="w-8 h-8 hover:fill-slate-400"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="2.0"
+              stroke="currentColor"
+              class="w-8 h-8 hover:fill-slate-400"
           >
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
             />
             <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
             />
           </svg>
         </div>
         <div v-if="!isMyProfile">
           <div class="flex flex-col">
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              class="w-8 h-8 fill-red-700 hover:fill-red-500"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                class="w-8 h-8 fill-red-700 hover:fill-red-500"
             >
               <path
-                fill-rule="evenodd"
-                d="M3 2.25a.75.75 0 0 1 .75.75v.54l1.838-.46a9.75 9.75 0 0 1 6.725.738l.108.054A8.25 8.25 0 0 0 18 4.524l3.11-.732a.75.75 0 0 1 .917.81 47.784 47.784 0 0 0 .005 10.337.75.75 0 0 1-.574.812l-3.114.733a9.75 9.75 0 0 1-6.594-.77l-.108-.054a8.25 8.25 0 0 0-5.69-.625l-2.202.55V21a.75.75 0 0 1-1.5 0V3A.75.75 0 0 1 3 2.25Z"
-                clip-rule="evenodd"
+                  fill-rule="evenodd"
+                  d="M3 2.25a.75.75 0 0 1 .75.75v.54l1.838-.46a9.75 9.75 0 0 1 6.725.738l.108.054A8.25 8.25 0 0 0 18 4.524l3.11-.732a.75.75 0 0 1 .917.81 47.784 47.784 0 0 0 .005 10.337.75.75 0 0 1-.574.812l-3.114.733a9.75 9.75 0 0 1-6.594-.77l-.108-.054a8.25 8.25 0 0 0-5.69-.625l-2.202.55V21a.75.75 0 0 1-1.5 0V3A.75.75 0 0 1 3 2.25Z"
+                  clip-rule="evenodd"
               />
             </svg>
             <p class="text-xs font-semibold text-center">신고</p>
@@ -125,16 +125,16 @@ watch(
       <!-- 나의 동물상 마스크 -->
       <div class="flex justify-center p-4">
         <div class="relative p-2 bg-gray-100 rounded-full w-2/5">
-          <img :src="userInfo!.maskImgUrl" class="w-full p-2" />
+          <img :src="userInfo!.maskImgUrl" class="w-full p-2" :alt="userInfo!.maskImgUrl"/>
           <div v-if="isMyProfile" class="absolute bottom-1 right-1" @click="moveToMaskList">
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="w-8 h-8 fill-rose-500 hover:fill-amber-400"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-8 h-8 fill-rose-500 hover:fill-amber-400"
             >
               <path
-                d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z"
+                  d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z"
               />
             </svg>
           </div>
@@ -144,7 +144,7 @@ watch(
     <div class="mx-8">
       <div class="flex items-center justify-center p-2">
         <p
-          class="lg:text-2xl font-semibold underline text-stone-800 decoration-pink-300 decoration-wavy"
+            class="lg:text-2xl font-semibold underline text-stone-800 decoration-pink-300 decoration-wavy"
         >
           {{ userInfo?.nickname }}
         </p>
@@ -169,9 +169,9 @@ watch(
         <div class="relative w-2/3 m-4 shadow-inner rounded-3xl shadow-pink-200">
           <div class="grid grid-cols-1 gap-4 py-6 px-8 sm:grid-cols-2">
             <div
-              v-for="interest in interests"
-              :key="interest"
-              class="flex items-center justify-center px-4 py-2 space-x-6 bg-white rounded-lg shadow-lg border-rose-300 shadow-rose-200"
+                v-for="interest in interests"
+                :key="interest"
+                class="flex items-center justify-center px-4 py-2 space-x-6 bg-white rounded-lg shadow-lg border-rose-300 shadow-rose-200"
             >
               <p class="lg:text-xl font-semibold text-center text-gray-900 truncate hover:text-wrap">
                 # {{ interest }}
@@ -180,13 +180,13 @@ watch(
           </div>
           <div v-if="isMyProfile" class="absolute bottom-1 right-1" @click="moveToPersonal">
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="w-8 h-8 fill-rose-500 hover:fill-amber-400"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-8 h-8 fill-rose-500 hover:fill-amber-400"
             >
               <path
-                d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z"
+                  d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z"
               />
             </svg>
           </div>
@@ -200,14 +200,17 @@ watch(
 .interest__container {
   @apply w-full h-1/2 overflow-y-auto;
 }
+
 .interest__container::-webkit-scrollbar {
   width: 6px;
   background-color: white;
 }
+
 .interest__container::-webkit-scrollbar-thumb {
   background-color: #d6d6d6;
   border-radius: 4px;
 }
+
 .interest__container::-webkit-scrollbar-track {
   background-color: transparent;
 }

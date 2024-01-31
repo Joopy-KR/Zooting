@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
+import type {UserInfo} from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -719,23 +720,6 @@ interface Personality {
     match: string;
     content: string[];
   };
-}
-
-interface UserInfo {
-  email: string | null;
-  gender: string | null;
-  nickname: string | null;
-  birth: string | null;
-  address: string | null;
-  point: Number | null;
-  personality: string | null;
-  animal: string | null;
-  interest: string | null;
-  introduce: string | null;
-  idealAnimal: string;
-  backgroundImgUrl: string | null;
-  mbti: string | null;
-  maskImgUrl: string | null;
 }
 
 interface Friend {

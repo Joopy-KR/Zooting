@@ -10,6 +10,12 @@ import {checkNicknameApi, updateMyInfoApi, updateNicknameApi,} from "@/api/profi
 
 const store = useAccessTokenStore();
 const router = useRouter();
+const emits = defineEmits([
+  "loadMyInfo",
+]);
+const props = defineProps({
+  isMyProfile: Boolean,
+});
 
 const address = ref<string | null>();
 const nickname = ref<string | null>();
@@ -32,7 +38,7 @@ const toggleNicknameUpdateStatus = () => {
 const updateMyInfo = async () => {
   // 유효성 검증
   if (!myInfo.value!.address) {
-    failMessage.value = "정확한 주소를 입력해 주세요";
+    failMessage.value = "정확한 지역을 입력해 주세요";
     failAlert.value = true;
     return;
   }
@@ -43,7 +49,7 @@ const updateMyInfo = async () => {
   }
 
   const data = {
-    address: myInfo.value!.address,
+    address: address.value,
     idealAnimal: Array.from(idealTypeSet.value),
   };
 
@@ -53,6 +59,11 @@ const updateMyInfo = async () => {
         successAlert.value = true;
         await store.getUserInfo();
         updateChanges();
+
+        // sidebar가 내 정보 인 경우 수정
+        if (props.isMyProfile) {
+          emits("loadMyInfo");
+        }
       },
       (error: any) => console.log(error)
   );
@@ -71,6 +82,11 @@ const executeUpdateNickname = () => {
         // 유저 정보 업데이트
         await store.getUserInfo();
         updateChanges();
+        // sidebar가 내 정보 인 경우 수정
+        if (props.isMyProfile) {
+          emits("loadMyInfo");
+        }
+
         // 마이페이지로 리다이렉트
         await router.replace({
           name: "home",
@@ -127,9 +143,11 @@ const updateChanges = () => {
   if (myInfo.value.gender) {
     gender.value = myInfo.value.gender;
   }
+  if (myInfo.value.birth) {
+    birth.value = convertDate(myInfo.value.birth);
+  }
   nickname.value = myInfo.value.nickname;
   address.value = myInfo.value.address;
-  birth.value = convertDate(myInfo.value.birth);
   idealTypeSet.value = parseStringToSet(myInfo.value!.idealAnimal);
 };
 
@@ -205,9 +223,7 @@ const convertDate = (inputDate: string | null) => {
   originalDate.setDate(originalDate.getDate() + 1);
 
   // 날짜를 원하는 형식으로 포맷
-  const formattedDate = originalDate.toISOString().split("T")[0];
-
-  return formattedDate;
+  return originalDate.toISOString().split("T")[0];
 };
 
 const moveToMyPage = () => {

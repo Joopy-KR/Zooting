@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from "vue-router";
-import { useAccessTokenStore } from "../stores/store";
+import {createRouter, createWebHistory} from "vue-router";
+import {useAccessTokenStore} from "../stores/store";
 import HomeView from "@/views/HomeView.vue";
 import SignInView from "@/views/SignInView.vue";
 import SignUpView from "@/views/SignUpView.vue";
@@ -7,23 +7,7 @@ import AnimalTestView from "@/views/AnimalTestView.vue";
 import PersonalityTestView from "@/views/PersonalityTestView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import Login from "@/views/LoginView.vue";
-
-interface UserInfo {
-  email: string | null;
-  gender: string | null;
-  nickname: string | null;
-  birth: string | null;
-  address: string | null;
-  point: number | null;
-  personality: string | null;
-  animal: string | null;
-  interest: string | null;
-  introduce: string | null;
-  idealAnimal: string;
-  backgroundImgUrl: string | null;
-  mbti: string | null;
-  maskImgUrl: string | null;
-}
+import type {UserInfo} from "@/types/global";
 
 function getNickname(): string | null {
   const userInfoString = localStorage.getItem("myInfo");
@@ -31,7 +15,7 @@ function getNickname(): string | null {
   if (userInfoString) {
     try {
       const userInfo: UserInfo = JSON.parse(userInfoString);
-      const nickname = userInfo.nickname;
+      const nickname: string | undefined = userInfo.nickname;
 
       if (!nickname) {
         return null;

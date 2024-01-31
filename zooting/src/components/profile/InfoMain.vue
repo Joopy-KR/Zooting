@@ -1,17 +1,25 @@
 <script setup lang="ts">
-import { ref, defineProps, watch, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import {defineProps, onMounted, ref, watch} from "vue";
+import {useRouter} from "vue-router";
 import EditIntroduce from "@/components/profile/EditIntroduce.vue";
+import type {UserInfo} from "@/types/global";
 
 const router = useRouter();
+const emits = defineEmits([
+    "loadMyInfo"
+])
 
 const props = defineProps({
-  userInfo: Object,
+  userInfo: Object as () => UserInfo,
   isMyProfile: Boolean,
 });
 
 const idealAnimals = ref<string[]>([]);
 const isOpenEditIntroduce = ref<boolean>(false);
+
+const loadMyInfo = () => {
+  emits("loadMyInfo");
+}
 
 const parsingIdealAnimals = (idealAnimalStr: string) => {
   if (idealAnimalStr) {
@@ -39,7 +47,7 @@ const closeEditIntroduce = () => {
 
 watch(
     () => props.userInfo!.idealAnimal,
-    (newValue, oldValue) => {
+    (newValue) => {
       parsingIdealAnimals(newValue);
     }
 );
@@ -53,6 +61,7 @@ onMounted(() => {
   <EditIntroduce
       :is-open-edit-Introduce="isOpenEditIntroduce"
       @close-edit-introduce="closeEditIntroduce"
+      @load-my-info="loadMyInfo"
   />
   <div class="flex flex-col h-screen">
     <div class="w-full h-1/2">
@@ -92,7 +101,7 @@ onMounted(() => {
                 class="px-4 py-2 mx-3 my-3 rounded-lg shadow-lg shadow-rose-200"
             >
               <p
-                  class="truncate hover:text-wrap lg:text-xl font-semibold text-center text-gray-900 font-medium"
+                  class="truncate hover:text-wrap lg:text-xl font-semibold text-center text-gray-900"
               >
                 # {{ idealAnimal }}
               </p>
