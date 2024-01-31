@@ -648,10 +648,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     };
     
     // DM 방 입장
-    const isEntryDmRoom = ref<boolean>(false)
-    const DmInfo = ref<DM | null>(null)
-    const entryDmRoom = function (params: string) {
-      const receiver = params
+    const isEntryDmRoom = ref<boolean>(false);
+    const DmInfo = ref<DM | null>(null);
+    const receiverInfo = ref<Friend | null>(null);
+
+    const entryDmRoom = function (params: Friend) {
+      const receiver = params.email
       axios({
         method: "get",
         url: `${API_URL}/api/dm/room`,
@@ -664,10 +666,32 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
         .then((res) => {
           console.log(res);
-          DmInfo.value = res.data.result
+          DmInfo.value = res.data.result;
+          receiverInfo.value = params;
         })
         .then((res) => {
           isEntryDmRoom.value = true
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    const cursorDmRoom = function (params: {dmRoomId: number; cursor: number;}) {
+      const {dmRoomId, cursor} = params
+      axios({
+        method: "get",
+        url: `${API_URL}/api/dm/room/prev`,
+        params: {
+          dmRoomId,
+          cursor
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          console.log(res);
         })
         .catch((err) => {
           console.log(err);
@@ -710,6 +734,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       entryDmRoom,
       isEntryDmRoom,
       DmInfo,
+      receiverInfo,
+      cursorDmRoom,
     };
   },
 );

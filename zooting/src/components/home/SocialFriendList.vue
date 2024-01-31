@@ -19,7 +19,7 @@
           </div>
         </RouterLink>
         <div class="flex items-center">
-          <button class="me-2" @click="entryChat(item.email)">DM</button>
+          <button class="me-2" @click="entryChat(item)">DM</button>
           <button @click="friendDelete(item)">삭제</button>
         </div>
       </li>
@@ -61,8 +61,8 @@ const getProfileImage = (animal: string) => {
   return `/images/${animal}.png`
 }
 
-const entryChat = (email: string) => {
-  store.entryDmRoom(email)
+const entryChat = (item: Friend) => {
+  store.entryDmRoom(item)
 
 } 
 

@@ -51,16 +51,14 @@
     <!-- Side tab -->
     <transition name="side-tab-transition">
       <div class="side-tab" v-show="isSideTabOpen" v-click-outside="ClickOustsideTab">
-        <section v-show="currentSideTab == 'messagesTab'">
-          <div class="side-tab__content">
-            <DM />
-          </div>
+        <section v-show="currentSideTab == 'messagesTab'" class="h-full">
+            <DM 
+              @close-tab="closeTab()"  
+            />
         </section>
 
-        <section v-show="currentSideTab == 'notificationsTab'">
-          <div class="side-tab__content">
-            <Notifications />
-          </div>
+        <section v-show="currentSideTab == 'notificationsTab'" class="h-full">
+          <Notifications />
         </section>
       </div>
     </transition>
@@ -145,7 +143,7 @@ const openProfileMenu = () => (
   isOpenProfileMenu.value = !isOpenProfileMenu.value
 )
 
-const profileRef = ref()
+const profileRef =  ref<HTMLElement | null>(null)
 
 const ClickOustsideProfileMenu = (isOutSide: boolean, e: Event) => {
   if (isOutSide) {
@@ -155,7 +153,7 @@ const ClickOustsideProfileMenu = (isOutSide: boolean, e: Event) => {
   }
 }
 
-const tabRef = ref()
+const tabRef =  ref<HTMLElement | null>(null)
 
 const ClickOustsideTab = (isOutSide: boolean, e: Event) => {
   if (isOutSide) {
@@ -185,9 +183,6 @@ const ClickOustsideTab = (isOutSide: boolean, e: Event) => {
 .side-tab {
     @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 rounded-tr-3xl rounded-br-3xl z-20;
     width: 450px;
-}
-section {
-    @apply px-4 py-6;
 }
 .side-tab-transition-enter-active,
 .side-tab-transition-leave-active {
