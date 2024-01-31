@@ -5,7 +5,7 @@
       <video id="video" ref="videoRef" autoplay playsinline></video>
     </div>
     
-    <div class="flex flex-col items-center justify-center" id="loading" v-show="!is_loaded" style="background-color: black; width: 472px; height: 300px;">
+    <div class="flex flex-col items-center justify-center" id="loading" v-show="!is_loaded" style="background-color: black; width: 533px; height: 300px;">
       <p class="mb-8 text-5xl font-bold text-white">가면 벗겨짐</p>
       <h3 class="mb-5 text-white">카메라에 얼굴을 맞춰주세요</h3>
       <div class="flex items-center justify-center" role="status">
@@ -48,7 +48,7 @@ class BasicScene {
     // const containerElement = document.getElementById("conatiner")
     // this.height = window.innerHeight;
     this.height = 300 
-    this.width = (this.height * 1700) / 1080
+    this.width = (this.height * 1920) / 1080
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 0.01, 5000)
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
