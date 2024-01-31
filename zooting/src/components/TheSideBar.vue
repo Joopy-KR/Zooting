@@ -8,16 +8,9 @@
       </div>
       <div class="side-bar__item">
         
-        <!-- Messages button -->
-        <!-- <button @click="toggleMessagesTab" v-if="isLoggedIn && isCompletedTest">
-          <svg :class="[isActiveMessageTab() ? 'text-violet-800' : 'text-gray-400', 'w-5 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20" transform="rotate(45)">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m9 17 8 2L9 1 1 19l8-2Zm0 0V9"/>
-          </svg>
-        </button> -->
-        
         <!-- Notifications button -->
         <button @click="toggleNotificationsTab">
-          <svg :class="[isActivenotificationsTab() ? 'text-violet-800 hover:text-violet-600' : 'text-gray-400 hover:text-gray-500', 'w-6 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="20" fill="none" viewBox="0 0 14 20">
+          <svg ref="tabRef" :class="[isActivenotificationsTab() ? 'text-violet-800 hover:text-violet-600' : 'text-gray-400 hover:text-gray-500', 'w-6 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="20" fill="none" viewBox="0 0 14 20">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7a3 3 0 0 1 3-3M5 19h4m0-3c0-4.1 4-4.9 4-9A6 6 0 1 0 1 7c0 4 4 5 4 9h4Z"/>
           </svg>
         </button>
@@ -35,17 +28,16 @@
       <!-- Profile image -->
       <img 
         v-if="isLoggedIn && store.isCompletedSignUp"
-        id="avatarButton" 
         type="button" 
-        data-dropdown-toggle="userDropdown" 
-        data-dropdown-placement="bottom-start" 
+        @click="openProfileMenu()"
         class="user-profile" 
+        ref="profileRef"
         :src="getProfileImage()" alt="User dropdown"
       >
       
       <!-- Profile menu -->
-      <div id="userDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
-          <ul class="py-2 text-sm text-gray-700" aria-labelledby="avatarButton">
+      <div class="profile-menu" v-show="isOpenProfileMenu" v-click-outside="ClickOustsideProfileMenu">
+          <ul class="py-2 text-sm text-gray-700">
             <li>
               <RouterLink :to="getProfileLink()" class="block px-4 py-2 hover:bg-gray-100" @click="closeTab">프로필</RouterLink>
             </li>
@@ -58,7 +50,7 @@
 
     <!-- Side tab -->
     <transition name="side-tab-transition">
-      <div class="side-tab" v-show="isSideTabOpen">
+      <div class="side-tab" v-show="isSideTabOpen" v-click-outside="ClickOustsideTab">
         <section v-show="currentSideTab == 'messagesTab'">
           <div class="side-tab__content">
             <DM />
@@ -107,16 +99,6 @@ watch(()=> store.isEntryDmRoom, ()=>{
   }
 })
 
-// const toggleMessagesTab = () => {
-//   if (isSideTabOpen.value === true && currentSideTab.value === 'messagesTab') {
-//     isSideTabOpen.value = false
-//   }
-//   else if (isSideTabOpen.value === false) {
-//     isSideTabOpen.value = true
-//   }
-//   currentSideTab.value = 'messagesTab'
-// }
-
 const toggleNotificationsTab = () => {
   if (isSideTabOpen.value === true && currentSideTab.value === 'notificationsTab') {
     isSideTabOpen.value = false
@@ -125,18 +107,9 @@ const toggleNotificationsTab = () => {
   else if (isSideTabOpen.value === false) {
     isSideTabOpen.value = true
     store.isEntryDmRoom = false
-    
   }
   currentSideTab.value = 'notificationsTab'
 }
-
-// const isActiveMessageTab = () => {
-//   if (isSideTabOpen.value === true && currentSideTab.value === 'messagesTab') {
-//     return true
-//   } else {
-//     return false
-//   }
-// } 
 
 const isActivenotificationsTab = () => {
   if (isSideTabOpen.value === true && currentSideTab.value === 'notificationsTab') {
@@ -156,14 +129,41 @@ const getProfileImage = () => {
 
 const closeTab = () => {
   isSideTabOpen.value = false
+  store.isEntryDmRoom = false
+  isOpenProfileMenu.value = false
 }
 
 const logout = () => {
-  isSideTabOpen.value = false
+  closeTab()
   store.signOut()
   router.push({ name: 'signin' })
 }
 
+const isOpenProfileMenu = ref<boolean>(false)
+
+const openProfileMenu = () => (
+  isOpenProfileMenu.value = !isOpenProfileMenu.value
+)
+
+const profileRef = ref()
+
+const ClickOustsideProfileMenu = (isOutSide: boolean, e: Event) => {
+  if (isOutSide) {
+    if (e.target !== profileRef.value) {
+      isOpenProfileMenu.value = false
+    }
+  }
+}
+
+const tabRef = ref()
+
+const ClickOustsideTab = (isOutSide: boolean, e: Event) => {
+  if (isOutSide) {
+    if ((e.target !== tabRef.value) && (e.target !== profileRef.value)) {
+      closeTab()
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -177,7 +177,10 @@ const logout = () => {
     @apply flex flex-col items-center flex-1 p-4 space-y-8;
 }
 .user-profile {
-    @apply w-10 h-10 rounded-full cursor-pointer;
+    @apply w-10 h-10 rounded-full cursor-pointer relative;
+}
+.profile-menu {
+  @apply z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 absolute bottom-14 left-8;
 }
 .side-tab {
     @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 rounded-tr-3xl rounded-br-3xl z-20;
