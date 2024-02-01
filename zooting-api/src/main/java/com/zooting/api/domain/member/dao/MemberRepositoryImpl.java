@@ -4,6 +4,7 @@ package com.zooting.api.domain.member.dao;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zooting.api.domain.member.entity.Member;
+import com.zooting.api.domain.member.entity.Privilege;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -26,7 +27,9 @@ public class  MemberRepositoryImpl implements MemberRepositoryCustom {
                         // 이미 친구라면 매칭이 되지 않는다
                         notInFriendList(extractObj.getFriendList()),
                         // 2~10살 차이 사람 조회
-                        betweenRangeYear(extractObj.getRangeYear())
+                        betweenRangeYear(extractObj.getRangeYear()),
+                        // 멤버 role이 USER
+                        member.role.contains(Privilege.USER)
                         // 다른 성별
 //                        member.gender.ne(extractObj.getGender()) // todo:  1: 3 매칭을 하게 할시 booleanexpression으로 수정
                 ).orderBy(
