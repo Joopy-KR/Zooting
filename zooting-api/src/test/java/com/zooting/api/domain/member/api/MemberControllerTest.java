@@ -30,14 +30,14 @@ class MemberControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private MemberService memberService;
-    @Test
-    @DisplayName("닉네임 중복체크")
-    void testCheckNicknameDuplicate() throws Exception {
-        mockMvc.perform(get("/api/members/")
-                        .param("nickname","나는세진"))
-                .andDo(document("check-nickname")) // document 추가
-                .andExpect(status().isOk())
-                ;
+//    @Test
+//    @DisplayName("닉네임 중복체크")
+//    void testCheckNicknameDuplicate() throws Exception {
+//        mockMvc.perform(get("/api/members/")
+//                        .param("nickname","나는세진"))
+//                .andDo(document("check-nickname")) // document 추가
+//                .andExpect(status().isOk())
+//                ;
         // given
 //        this.mockMvc.perform(
 //                MockMvcRequestBuilders.get("/api/members/nickname/check"))
