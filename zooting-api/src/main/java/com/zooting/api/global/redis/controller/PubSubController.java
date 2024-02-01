@@ -25,7 +25,7 @@ import java.util.UUID;
 
 @Log4j2
 @RequiredArgsConstructor
-@RequestMapping("/pubsub")
+@RequestMapping("/match")
 @RestController
 public class PubSubController {
     // topic에 메시지 발행을 기다리는 Listner
@@ -39,15 +39,37 @@ public class PubSubController {
     private RedisTemplate<String, Object> redisTemplate;
     private MemberRepository memberRepository;
 
-
     // 유효한 Topic 리스트 반환
     @GetMapping("/room")
     public Set<String> findAllRoom() {
         return redisTemplate.keys("room:*");
     }
 
+//    @GetMapping("/room/enter")
+//    public String findRoom(@AuthenticationPrincipal UserDetails userDetails) {
+////        if(redisTemplate.hasKey(userDetails.getUsername())){
+////            return (String) redisTemplate.opsForValue().get(userDetails.getUsername());
+////        }
+//        Set<String> waitRooms = redisTemplate.keys("room:*");k
+//        /* 매칭 로직 */
+//        for (String waitRoom : waitRooms) {
+//            Long listSize = redisTemplate.opsForList().size(waitRoom);
+//            if (listSize < 4) {
+//                log.info("findRoom: {}", waitRoom);
+//                redisTemplate.opsForList().rightPush(waitRoom, userDetails.getUsername());
+//                redisTemplate.opsForValue().set(userDetails.getUsername(), waitRoom);
+//                redisPublisher.publish(waitRoom, userDetails.getUsername() + "님이 입장하셨습니다.");
+//                return waitRoom;
+//            }
+//        }
+//        /* 매칭 실패시 */
+//        createRoom(userDetails.getUsername());
+//        return null;
+//    }
+
+    /*TEST 입장*/
     @GetMapping("/room/enter")
-    public String findRoom(@AuthenticationPrincipal UserDetails userDetails) {
+    public String findRoom(@RequestParam String loginEmail) {
 //        if(redisTemplate.hasKey(userDetails.getUsername())){
 //            return (String) redisTemplate.opsForValue().get(userDetails.getUsername());
 //        }
@@ -57,17 +79,16 @@ public class PubSubController {
             Long listSize = redisTemplate.opsForList().size(waitRoom);
             if (listSize < 4) {
                 log.info("findRoom: {}", waitRoom);
-                redisTemplate.opsForList().rightPush(waitRoom, userDetails.getUsername());
-                redisTemplate.opsForValue().set(userDetails.getUsername(), waitRoom);
-                redisPublisher.publish(waitRoom, userDetails.getUsername() + "님이 입장하셨습니다.");
+                redisTemplate.opsForList().rightPush(waitRoom, loginEmail);
+                redisTemplate.opsForValue().set(loginEmail, waitRoom);
+                redisPublisher.publish(waitRoom, loginEmail + "님이 입장하셨습니다.");
                 return waitRoom;
             }
         }
         /* 매칭 실패시 */
-        createRoom(userDetails.getUsername());
+        createRoom(loginEmail);
         return null;
     }
-
     // 신규 Topic을 생성하고 Listener등록
     @PutMapping("/room")
     public void createRoom(String loginEmail) {
@@ -77,9 +98,7 @@ public class PubSubController {
         redisTemplate.opsForList().rightPush("room:" + randomUUID, loginEmail);
         redisTemplate.opsForValue().set(loginEmail, "room:" + randomUUID);
         redisPublisher.publish(channel.getTopic(), randomUUID.toString());
-
     }
-
     // 특정 Topic에 메시지 발행
     @PostMapping("/room/{roomId}")
     public void pushMessage(@RequestParam String message, @PathVariable String roomId) {
@@ -88,9 +107,8 @@ public class PubSubController {
 
     // Topic 삭제 후 Listener 해제, Topic Map에서 삭제
     @DeleteMapping("/room/{roomId}")
-    public void deleteRoom(@PathVariable String roomId) {
-        ChannelTopic channel = channels.get(roomId);
-        redisMessageListener.removeMessageListener(redisSubscriber, channel);
-        channels.remove(roomId);
+    public void cancelMatching(@PathVariable String roomId, @AuthenticationPrincipal UserDetails userDetails) {
+        redisTemplate.delete(userDetails.getUsername());
+        redisTemplate.opsForList().remove(roomId, 1, userDetails.getUsername());
     }
 }
