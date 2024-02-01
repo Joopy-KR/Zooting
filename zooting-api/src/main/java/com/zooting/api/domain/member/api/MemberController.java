@@ -57,6 +57,7 @@ public class MemberController {
                 result
         );
     }
+
     @PreAuthorize("hasAnyRole('USER')")
     @Operation(
             summary = "프로필 확인",
@@ -65,7 +66,7 @@ public class MemberController {
     )
     @GetMapping("/myprofile/check")
     public ResponseEntity<BaseResponse<MyProfileReq>> checkMyProfile(
-            @Valid @NotNull @Size(min = 2, max = 16)  @RequestParam(name = "nickname") String nickname,
+            @Valid @NotNull @Size(min = 2, max = 16) @RequestParam(name = "nickname") String nickname,
             @AuthenticationPrincipal UserDetails userDetails) {
         var result = memberService.checkMyProfile(userDetails.getUsername(), nickname);
         return BaseResponse.success(
@@ -113,29 +114,33 @@ public class MemberController {
                 memberRes
         );
     }
+
     @PreAuthorize("hasAnyRole('USER')")
     @Operation(summary = "차단 리스트 조회")
     @GetMapping("/blocklist")
     public ResponseEntity<BaseResponse<List<MemberSearchRes>>> findMyBlockList(
             @AuthenticationPrincipal UserDetails userDetails) {
-            var result = memberService.findMyBlockList(userDetails.getUsername());
+        var result = memberService.findMyBlockList(userDetails.getUsername());
 
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 result
         );
     }
+
     @Operation(summary = "닉네임으로 유저 정보 조회")
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping("/info")
     public ResponseEntity<BaseResponse<MemberRes>> findMemberInfoByNickname(
-            @Valid @NotNull @Size(min = 2, max = 16)@RequestParam(name="nickname") String nickname){
-        MemberRes memberRes = memberService.findMemberInfoByNickname(nickname);
+            @Valid @NotNull @Size(min = 2, max = 16) @RequestParam(name = "nickname") String nickname,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        MemberRes memberRes = memberService.findMemberInfoByNickname(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.SELECT_SUCCESS,
                 memberRes
         );
     }
+
     @Operation(summary = "포인트 차감 후 닉네임 변경")
     @PreAuthorize("hasAnyRole('USER')")
     @PutMapping("/nickname")

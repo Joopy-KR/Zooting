@@ -30,6 +30,7 @@ public class MemberServiceImpl implements MemberService {
     public static final Long DEFAULT_BACKGROUND_ID = 99L;
     public static final Long DEFAULT_POINT = 0L;
     public static final Long CHANGE_NICKNAME_PRICE = 10L;
+
     @Override
     public boolean existNickname(String nickname) {
         return memberRepository.existsByNickname(nickname);
@@ -51,7 +52,7 @@ public class MemberServiceImpl implements MemberService {
     public MyProfileReq checkMyProfile(String userId, String nickname) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        if (member.getNickname().equals(nickname) ) {
+        if (member.getNickname().equals(nickname)) {
             return new MyProfileReq(true);
         }
         return new MyProfileReq(false);
@@ -78,21 +79,27 @@ public class MemberServiceImpl implements MemberService {
                 member.getAdditionalInfo().getBackgroundId(),
                 member.getAdditionalInfo().getBackgroundUrl(),
                 member.getAdditionalInfo().getMaskId(),
-                member.getAdditionalInfo().getMaskUrl()
+                member.getAdditionalInfo().getMaskUrl(),
+                null // 나 자신 조회의 경우 상태 관리 필요 없음
         );
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public MemberRes findMemberInfoByNickname(String nickname) {
+    public MemberRes findMemberInfoByNickname(String userId, String nickname) {
+        // 상대방 확인
         Member member = memberRepository.findMemberByNickname(nickname).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        // 내 객체 생성
+        var me = Member.builder().email(userId).build();
+
         return new MemberRes(
                 member.getEmail(),
                 member.getGender(),
                 member.getNickname(),
                 member.getBirth(),
                 member.getAddress(),
-                null,
+                null, // 상대방 조회의 경우 포인트 조회 X
                 member.getAdditionalInfo().getIntroduce(),
                 member.getAdditionalInfo().getPersonality(),
                 member.getAdditionalInfo().getAnimal(),
@@ -101,7 +108,8 @@ public class MemberServiceImpl implements MemberService {
                 member.getAdditionalInfo().getBackgroundId(),
                 member.getAdditionalInfo().getBackgroundUrl(),
                 member.getAdditionalInfo().getMaskId(),
-                member.getAdditionalInfo().getMaskUrl()
+                member.getAdditionalInfo().getMaskUrl(),
+                memberRepository.findByNicknameWithStatus(me, member)
         );
     }
 
@@ -184,11 +192,11 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByEmail(memberId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         // 닉네임 중복 체크 && 잔여 포인트 확인
-        if (! memberRepository.existsByNickname(nicknameReq.nickname()) && member.getPoint() >= CHANGE_NICKNAME_PRICE) {
+        if (!memberRepository.existsByNickname(nicknameReq.nickname()) && member.getPoint() >= CHANGE_NICKNAME_PRICE) {
             // 닉네임 변경
             member.setNickname(nicknameReq.nickname());
             // 포인트 차감
-            member.setPoint(member.getPoint()- CHANGE_NICKNAME_PRICE);
+            member.setPoint(member.getPoint() - CHANGE_NICKNAME_PRICE);
             memberRepository.save(member);
             return true;
         }
@@ -250,21 +258,22 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
         return true;
     }
+
     @Override
     public List<MemberSearchRes> extractMembers(String userId, ExtractingReq extractingReq) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         ExtractObj extractObj = new ExtractObj();
         extractObj.setUserId(userId);
-        extractObj.setBlockToList(member.getBlockToList().stream().map(block-> block.getFrom().getEmail()).toList());
-        extractObj.setBlockFromList(member.getBlockFromList().stream().map(block-> block.getTo().getEmail()).toList());
-        extractObj.setFriendList(member.getFriendList().stream().map(fr-> fr.getFollowing().getEmail()).toList());
+        extractObj.setBlockToList(member.getBlockToList().stream().map(block -> block.getFrom().getEmail()).toList());
+        extractObj.setBlockFromList(member.getBlockFromList().stream().map(block -> block.getTo().getEmail()).toList());
+        extractObj.setFriendList(member.getFriendList().stream().map(fr -> fr.getFollowing().getEmail()).toList());
         extractObj.setMemberInterests(member.getAdditionalInfo().getInterest().lines().toList());
         extractObj.setMemberIdeals(member.getAdditionalInfo().getIdealAnimal().lines().toList());
         extractObj.setMemberBirth(member.getBirth());
         extractObj.setRangeYear(extractingReq.rangeYear());
         System.out.println(extractObj.getMemberIdeals());
-        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(),mem.getNickname(), mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
+        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(), mem.getNickname(), mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
     }
 
     @Override
@@ -273,7 +282,7 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         return member.getBlockFromList().stream()
                 .map(block -> new MemberSearchRes(block.getTo().getEmail(), block.getTo().getNickname()
-                        ,block.getTo().getGender().toString(), block.getTo().getAdditionalInfo().getAnimal())).toList();
+                        , block.getTo().getGender().toString(), block.getTo().getAdditionalInfo().getAnimal())).toList();
 
 
     }

@@ -12,7 +12,7 @@ public interface MemberService {
     boolean checkMemberPrivilege(String userId);
     MyProfileReq checkMyProfile(String userId, String nickname);
     MemberRes findMemberInfo(String userId);
-    MemberRes findMemberInfoByNickname(String nickname);
+    MemberRes findMemberInfoByNickname(String userId, String nickname);
     void updateMemberInfo(String memberId, MemberReq memberReq) throws ParseException;
     void updateMemberInfo(String memberId, MemberModifyReq memberModifyReq);
     void updateInterests(String memberId, InterestsReq additionalReq);

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
 
-@Schema(description="회원 정보 조회시 응답 DTO")
+@Schema(description = "회원 정보 조회시 응답 DTO")
 public record MemberRes(
         @Schema(description = "이메일")
         String email,
@@ -37,7 +37,8 @@ public record MemberRes(
         @Schema(description = "마스크 id")
         Long maskId,
         @Schema(description = "마스크 이미지 url")
-        String maskImgUrl
-
+        String maskImgUrl,
+        @Schema(description = "멤버 상태 관리")
+        MemberStatus memberStatus
 ) {
 }
