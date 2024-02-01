@@ -1,8 +1,36 @@
-version: "4"
+version: "3"
 services:
+  nginx:
+    container_name: zooting-nginx
+    image: nginx
+    restart: always
+    volumes:
+      - ./nginx/prod:/etc/nginx/conf.d
+      - /letsencrypt/certbot/conf:/etc/letsencrypt
+      - /letsencrypt/certbot/www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - zooting_net
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+
+  certbot:
+    container_name: certbot
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - /letsencrypt/certbot/conf:/etc/letsencrypt
+      - /letsencrypt/certbot/www:/var/www/certbot
+    depends_on:
+      - nginx
+    networks:
+      - zooting_net
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
   springboot:
-    image: duckbill413/zooting-docker-api:latest
     container_name: zooting-api
+    image: duckbill413/zooting-docker-api:latest
     ports:
       - "8080:8080"
     environment:
@@ -11,37 +39,6 @@ services:
       - zooting_net
     volumes:
       - /home/ec2-user/logs:/logs
-
-  nginx:
-    restart: always
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    image: duckbill413/zooting-docker-nginx:latest
-    container_name: zooting-nginx
-    volumes:
-      - ./nginx/:/etc/nginx/
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - springboot
-    networks:
-      - zooting_net
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    restart: unless-stopped
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    networks:
-      - zooting_net
 
   redis:
     image: redis:alpine
@@ -57,5 +54,3 @@ services:
 networks:
   zooting_net:
     driver: bridge
-volumes:
-  logs:
