@@ -25,9 +25,6 @@
 
     <!-- 대화 내용 -->
     <div class="dm__chat" ref="chatRef" @scroll="handleChatScroll">
-      <div class="refresh-button" @click="firstRefreshChat">
-        <font-awesome-icon :icon="['fas', 'rotate-right']"/>
-      </div>
       <div v-for="(item, index) in DmInfo?.dmList" :key="index">
         <div :class="[isSender(item.sender) ? 'justify-end': '', 'flex mb-4']">
           <div :class="[isSender(item.sender) ? 'bg-violet-200 rounded-s-xl rounded-b-xl': 'bg-gray-100 rounded-e-xl rounded-es-xl', 'dm__chat-item']">
@@ -40,13 +37,18 @@
 
     <div class="dm__input">
         <!-- 파일 첨부 버튼 -->
-        <!-- <input type="file" class="file-input"> -->
 
         <!-- 텍스트 입력창 -->
-        <input type="text" placeholder="Type your message..." class="text-input">
+        <input 
+          class="text-input"
+          v-model="message" 
+          type="text" 
+          placeholder="Type your message..."
+          @keyup.enter="sendMessage"
+        >
 
         <!-- 전송 버튼 -->
-        <button class="send-button">
+        <button class="send-button" @click="sendMessage">
           <svg class="w-6 h-6 text-white transform rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/>
           </svg>
@@ -64,6 +66,10 @@ const emit = defineEmits(['closeTab'])
 
 const DmInfo = ref<DM | null>(store.DmInfo)
 const receiverInfo = ref<Friend | null>(store.receiverInfo)
+
+const chatRef = ref<any>(null)
+
+const message = ref<string>('')
 
 watch(()=> store.DmInfo, (UpdateUser)=>{
   DmInfo.value = UpdateUser
@@ -92,8 +98,6 @@ const isSender = (sender: string) => {
   return false
 }
 
-const chatRef = ref<any>(null)
-
 const handleChatScroll = () => {
   if (chatRef.value) {
     const isAtBottom = chatRef.value.clientHeight - chatRef.value.scrollHeight === chatRef.value.scrollTop
@@ -101,18 +105,24 @@ const handleChatScroll = () => {
       refreshChat()
     }
   }
-};
-
-const refreshChat = () => {
-  console.log("Refreshing chat...")
 }
 
-const firstRefreshChat = () => {
-  const params = {
-    dmRoomId: DmInfo.value?.dmRoomId,
-    cursor: DmInfo.value?.cursor
+const refreshChat = () => {
+  // console.log("Refreshing chat...")
+  if (DmInfo.value) {
+    const params = {
+      dmRoomId: DmInfo.value.dmRoomId,
+      cursor: DmInfo.value.cursor
+    }
+    store.cursorDmRoom(params)
   }
-  store.cursorDmRoom(params)
+}
+
+const sendMessage = () => {
+  if (message) {
+
+    message.value = ''
+  }
 }
 
 interface DM {

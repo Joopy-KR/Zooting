@@ -666,12 +666,21 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         },
       })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           DmInfo.value = res.data.result;
           receiverInfo.value = params;
         })
         .then((res) => {
           isEntryDmRoom.value = true
+        })
+        .then((res) => {
+          if (DmInfo.value) {
+            const params = {
+              dmRoomId: DmInfo.value.dmRoomId,
+              cursor: DmInfo.value.cursor
+            }
+            cursorDmRoom(params)
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -693,11 +702,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         },
       })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
+          if (DmInfo.value) {
+            DmInfo.value.cursor = res.data.result.cursor
+            DmInfo.value.dmList = [...DmInfo.value.dmList, ...res.data.result.dmList]
+          }
         })
-          .then((res) => {
-            isEntryDmRoom.value = true
-          })
         .catch((err) => {
           console.log(err);
         });
