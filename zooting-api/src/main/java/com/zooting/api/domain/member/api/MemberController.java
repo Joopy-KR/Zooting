@@ -223,17 +223,27 @@ public class MemberController {
         );
     }
 
-    @Operation(summary = "내 마스크 변경")
+    @Operation(
+            summary = "내 마스크 변경",
+            description = "유저의 동물상과 일치할때만 마스크 변경 가능"
+    )
     @PreAuthorize("hasAnyRole('USER')")
     @PutMapping("/mask")
     public ResponseEntity<BaseResponse<String>> changeMask(
-            @RequestBody MaskInventoryReq maskInventoryReq,
+            @RequestBody MaskReq maskReq,
             @AuthenticationPrincipal UserDetails userDetails) {
-        memberService.changeMask(userDetails.getUsername(), maskInventoryReq);
+        if (memberService.changeMask(userDetails.getUsername(), maskReq))
+        {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    "마스크 변경 완료"
+            );
+        }
         return BaseResponse.success(
-                SuccessCode.SELECT_SUCCESS,
-                "마스크 변경 완료"
+                SuccessCode.CHECK_SUCCESS,
+                "동물상 변경 실패 - 유저의 동물상과 불일치 / 잘못된 마스크 id 접근"
         );
+
     }
 
 
@@ -241,11 +251,11 @@ public class MemberController {
     @PreAuthorize("hasAnyRole('USER')")
     @PutMapping("/background")
     public ResponseEntity<BaseResponse<String>> changeBackground(
-            @RequestBody BackgroundInventoryReq backgroundInventoryReq,
+            @RequestBody BackgroundReq backgroundReq,
             @AuthenticationPrincipal UserDetails userDetails) {
-        memberService.changeBackground(userDetails.getUsername(), backgroundInventoryReq);
+        memberService.changeBackground(userDetails.getUsername(), backgroundReq);
         return BaseResponse.success(
-                SuccessCode.SELECT_SUCCESS,
+                SuccessCode.UPDATE_SUCCESS,
                 "배경 변경 완료"
         );
     }

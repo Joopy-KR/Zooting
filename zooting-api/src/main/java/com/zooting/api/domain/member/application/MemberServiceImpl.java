@@ -179,25 +179,26 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void changeMask(String memberId, MaskInventoryReq maskInventoryReq) {
+    public boolean changeMask(String memberId, MaskReq maskReq) {
         Member member = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         for (var myMask : member.getMyMasks()) {
-            if (myMask.getId() == maskInventoryReq.maskInventoryId()){
+            if (myMask.getMask().getId().equals(maskReq.maskId())  && member.getAdditionalInfo().getAnimal().equals(myMask.getMask().getAnimal())) {
                 member.getAdditionalInfo().setMaskId(myMask.getMask().getId());
                 member.getAdditionalInfo().setMaskUrl(myMask.getMask().getFile().getImgUrl());
                 memberRepository.save(member);
-                return ;
+                return true;
             }
         }
+        return false;
     }
 
     @Override
-    public void changeBackground(String memberId, BackgroundInventoryReq backgroundInventoryReq) {
+    public void changeBackground(String memberId, BackgroundReq backgroundReq) {
         Member member = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         for (var myBackground : member.getMyBackgrounds()) {
-            if (myBackground.getId() == backgroundInventoryReq.backgroundInventoryId()){
+            if (myBackground.getBackground().getId() == backgroundReq.backgroundId()){
                 member.getAdditionalInfo().setBackgroundId(myBackground.getBackground().getId());
                 member.getAdditionalInfo().setBackgroundUrl(myBackground.getBackground().getFile().getImgUrl());
                 memberRepository.save(member);

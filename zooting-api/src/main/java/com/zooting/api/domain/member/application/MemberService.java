@@ -17,9 +17,9 @@ public interface MemberService {
     void updateMemberInfo(String memberId, MemberModifyReq memberModifyReq);
     void updateInterests(String memberId, InterestsReq additionalReq);
     void updateIntroduce(String memberId, IntroduceReq introduceReq);
-    void changeMask(String memberId, MaskInventoryReq maskInventoryReq);
+    boolean changeMask(String memberId, MaskReq maskInventoryReq);
 
-    void changeBackground(String memberId, BackgroundInventoryReq backgroundInventoryReq);
+    void changeBackground(String memberId, BackgroundReq backgroundInventoryReq);
     boolean modifyNickname(String memberId, NicknameReq nicknameReq);
     List<MemberSearchRes> findMemberList(String userId, String nickname);
     void updatePersonality(String userId, PersonalityReq personalityReq);
