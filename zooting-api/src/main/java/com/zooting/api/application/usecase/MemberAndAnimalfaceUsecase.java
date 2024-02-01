@@ -25,7 +25,7 @@ public class MemberAndAnimalfaceUsecase {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         // 동물상 변경하는 유저 - 잔여 포인트 확인
-        if (member.getRole().equals(Privilege.USER)) {
+        if (member.getRole().contains(Privilege.USER)) {
             if (member.getPoint() < DEFAULT_ANIMAL_MODIFY_PRICE) {
                 return false;
             }
@@ -40,13 +40,13 @@ public class MemberAndAnimalfaceUsecase {
         Long maxAnimal = 0L;
         String memberAnimal = "";
         for (var af : animalfaceReq.animalFaceReqList()) {
-            if (af.animal() == "강아지") {
+            if (af.animal().equals("강아지")) {
                 animalFace.setAnimal1(af.percentage());
-            }else if (af.animal() == "고양이") {
+            }else if (af.animal().equals("고양이")) {
                 animalFace.setAnimal2(af.percentage());
-            }else if (af.animal() == "토끼") {
+            }else if (af.animal().equals("토끼")) {
                 animalFace.setAnimal3(af.percentage());
-            }else if (af.animal() =="사슴" || af.animal() =="곰") {
+            }else if (af.animal().equals("사슴") || af.animal().equals("곰")) {
                 animalFace.setAnimal4(af.percentage());
             }else {
                 animalFace.setAnimal5(af.percentage());
@@ -56,9 +56,9 @@ public class MemberAndAnimalfaceUsecase {
                 memberAnimal = af.animal();
             }
         }
+
         // 가장 닮은 동물상 저장
         member.getAdditionalInfo().setAnimal(memberAnimal);
-//        System.out.println(member.getRole());
         // 멤버의 권한 수정 Anonymous 삭제하고 User 권한 부여
         if (member.getRole().contains(Privilege.ANONYMOUS)) {
             member.getRole().remove(Privilege.ANONYMOUS);
