@@ -41,7 +41,7 @@
         <!-- 텍스트 입력창 -->
         <input 
           class="text-input"
-          v-model="message" 
+          v-model="messageInput" 
           type="text" 
           placeholder="Type your message..."
           @keyup.enter="sendMessage"
@@ -60,16 +60,34 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAccessTokenStore } from "../stores/store"
+// import SockJS from 'sockjs-client'
+// import Stomp from 'stompjs'
 
 const store = useAccessTokenStore()
 const emit = defineEmits(['closeTab'])
+
+// const socket = new SockJS("http://localhost:8080/ws/dm")
+// const stompClient = ref<any>(null)
+// stompClient.value = Stomp.over(socket)
+
+// stompClient.value.connect(
+//   {
+//     "Authorization": `Bearer ${store.getAccessToken()}`,
+//   }, 
+//   () => {
+//     console.log('Connected to WebSocket')
+// })
 
 const DmInfo = ref<DM | null>(store.DmInfo)
 const receiverInfo = ref<Friend | null>(store.receiverInfo)
 
 const chatRef = ref<any>(null)
 
-const message = ref<string>('')
+const messageInput = ref<string>('')
+const fileInput = ref<string>('')
+const sender = ref<string | undefined>(receiverInfo.value?.email)
+const receiver = ref<string | null | undefined>(store.userInfo?.email)
+const dmRoomId = ref<number | undefined>(DmInfo.value?.dmRoomId)
 
 watch(()=> store.DmInfo, (UpdateUser)=>{
   DmInfo.value = UpdateUser
@@ -98,17 +116,19 @@ const isSender = (sender: string) => {
   return false
 }
 
+
 const handleChatScroll = () => {
-  if (chatRef.value) {
-    const isAtBottom = chatRef.value.clientHeight - chatRef.value.scrollHeight === chatRef.value.scrollTop
+  if (chatRef.value && !store.isRefreshing) {
+    const threshold = 0.6
+    const isAtBottom = Math.abs(chatRef.value.clientHeight - chatRef.value.scrollHeight - chatRef.value.scrollTop) < threshold
     if (isAtBottom) {
+      store.isRefreshing = true
       refreshChat()
     }
   }
 }
 
 const refreshChat = () => {
-  // console.log("Refreshing chat...")
   if (DmInfo.value) {
     const params = {
       dmRoomId: DmInfo.value.dmRoomId,
@@ -118,10 +138,28 @@ const refreshChat = () => {
   }
 }
 
-const sendMessage = () => {
-  if (message) {
+// const socket = new SockJS("/ws/dm")
+// const stompClient = Stomp.over(socket)
 
-    message.value = ''
+// stompClient.connect({}, () => {
+//     console.log('Connected to WebSocket')
+
+//     // Subscribe to the WebSocket topic
+//     stompClient.subscribe('/api/sub/dm/' + sender, (message) => {
+//         const dmReq = JSON.parse(message.body) // 받은 메시지를 처리
+//         console.log('Received DM:', dmReq)
+
+//         // // 출력할 메시지를 추가
+//         // const messagesDiv = document.getElementById('messages')
+//         // messagesDiv.innerHTML += `<p>${dmReq.sender}: ${dmReq.message}</p>`
+
+//     })
+// })
+
+const sendMessage = () => {
+  if (messageInput.value) {
+
+    messageInput.value = ''
   }
 }
 
@@ -150,7 +188,7 @@ interface Friend {
   @apply h-full flex flex-col;
 }
 .dm__receiver-info {
-  @apply h-14 border-b-2 flex px-4 py-10;
+  @apply h-14 border-b border-gray-200 flex px-4 py-10;
 }
 .dm__chat {
 @apply flex-grow mx-10 flex flex-col-reverse relative;

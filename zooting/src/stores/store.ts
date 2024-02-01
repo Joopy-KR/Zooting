@@ -628,7 +628,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     
     // 유저 검색
     const userSearch = function (params: string) {
-      const nickname = params
+      const nickname = params;
       axios({
         method: "get",
         url: `${API_URL}/api/members/searchlist`,
@@ -654,7 +654,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     const receiverInfo = ref<Friend | null>(null);
 
     const entryDmRoom = function (params: Friend) {
-      const receiver = params.email
+      const receiver = params.email;
       axios({
         method: "get",
         url: `${API_URL}/api/dm/room`,
@@ -671,16 +671,16 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           receiverInfo.value = params;
         })
         .then((res) => {
-          isEntryDmRoom.value = true
-        })
-        .then((res) => {
           if (DmInfo.value) {
             const params = {
               dmRoomId: DmInfo.value.dmRoomId,
               cursor: DmInfo.value.cursor
-            }
-            cursorDmRoom(params)
+            };
+            cursorDmRoom(params);
           }
+        })
+        .then((res) => {
+          isEntryDmRoom.value = true;
         })
         .catch((err) => {
           console.log(err);
@@ -688,8 +688,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     };
 
     // DM 커서
+    const isRefreshing = ref<boolean>(false)
     const cursorDmRoom = function (params: { cursor: number | undefined; dmRoomId: number | undefined }) {
-      const {dmRoomId, cursor} = params
+      const {dmRoomId, cursor} = params;
       axios({
         method: "get",
         url: `${API_URL}/api/dm/room/prev`,
@@ -704,9 +705,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         .then((res) => {
           // console.log(res);
           if (DmInfo.value) {
-            DmInfo.value.cursor = res.data.result.cursor
-            DmInfo.value.dmList = [...DmInfo.value.dmList, ...res.data.result.dmList]
+            DmInfo.value.cursor = res.data.result.cursor;
+            DmInfo.value.dmList = [...DmInfo.value.dmList, ...res.data.result.dmList];
           }
+        })
+        .then((res) => {
+          isRefreshing.value = false
         })
         .catch((err) => {
           console.log(err);
@@ -751,6 +755,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       DmInfo,
       receiverInfo,
       cursorDmRoom,
+      isRefreshing,
     };
   },
 );
