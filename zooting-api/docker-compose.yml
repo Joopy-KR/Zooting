@@ -4,29 +4,15 @@ services:
     container_name: zooting-nginx
     image: nginx
     restart: always
-    volumes:
-      - ./nginx/prod:/etc/nginx/conf.d
-      - /letsencrypt/certbot/conf:/etc/letsencrypt
-      - /letsencrypt/certbot/www:/var/www/certbot
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
     ports:
       - "80:80"
       - "443:443"
     networks:
       - zooting_net
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
-
-  certbot:
-    container_name: certbot
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - /letsencrypt/certbot/conf:/etc/letsencrypt
-      - /letsencrypt/certbot/www:/var/www/certbot
-    depends_on:
-      - nginx
-    networks:
-      - zooting_net
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
   springboot:
     container_name: zooting-api
