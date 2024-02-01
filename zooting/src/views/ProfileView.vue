@@ -8,12 +8,13 @@ import type {UserInfo} from "@/types/global";
 const route = useRoute();
 
 const userInfo = ref<UserInfo>({
+  email: undefined,
+  nickname: undefined,
   address: undefined,
   animal: undefined,
   backgroundId: undefined,
   backgroundImgUrl: undefined,
   birth: undefined,
-  email: undefined,
   gender: undefined,
   idealAnimal: "[]",
   interest: undefined,
@@ -21,7 +22,6 @@ const userInfo = ref<UserInfo>({
   maskId: undefined,
   maskImgUrl: undefined,
   mbti: undefined,
-  nickname: undefined,
   personality: undefined,
   point: undefined,
 });
@@ -45,23 +45,23 @@ const setUserInfo = (data: any) => {
   userInfo.value!.mbti = data["result"].mbti;
 };
 
-const loadUserInfo = (nickname: string) => {
-  loadUserInfoApi(
-    nickname,
-    ({ data }: any) => setUserInfo(data),
-    (error: any) => {
-      console.log(error);
-    }
+const loadUserInfo = async (nickname: string) => {
+  await loadUserInfoApi(
+      nickname,
+      ({data}: any) => setUserInfo(data),
+      (error: any) => {
+        console.log(error);
+      }
   );
 };
 
 // 나의 정보 불러오기
-const loadMyInfo = () => {
-  loadMyInfoApi(
-    ({ data }: any) => setUserInfo(data),
-    (error: any) => {
-      console.log(error);
-    }
+const loadMyInfo = async () => {
+  await loadMyInfoApi(
+      ({data}: any) => setUserInfo(data),
+      (error: any) => {
+        console.log(error);
+      }
   );
 };
 
@@ -80,15 +80,15 @@ const isMyProfile = ref<boolean>(false);
 
 const checkIsMyProfile = async (nickname: string) => {
   await checkIsMyProfileApi(
-    nickname,
-    ({ data }: any) => {
-      const myProfile: boolean = data["result"].myProfile;
+      nickname,
+      ({data}: any) => {
+        const myProfile: boolean = data["result"].myProfile;
 
-      if (myProfile !== undefined) {
-        isMyProfile.value = myProfile;
-      }
-    },
-    (error: any) => console.log(error)
+        if (myProfile !== undefined) {
+          isMyProfile.value = myProfile;
+        }
+      },
+      (error: any) => console.log(error)
   );
 };
 
@@ -98,12 +98,12 @@ onMounted(async () => {
     await checkIsMyProfile(nickname);
 
     if (!isMyProfile.value) {
-      loadUserInfo(nickname); // 다른 사람 프로필 조회
+      await loadUserInfo(nickname); // 다른 사람 프로필 조회
     } else {
-      loadMyInfo(); // 내 정보 조회
+      await loadMyInfo(); // 내 정보 조회
     }
   } else {
-    loadMyInfo();
+    await loadMyInfo();
   }
 });
 </script>
@@ -111,7 +111,7 @@ onMounted(async () => {
 <template>
   <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
     <div class="w-1/3">
-      <InfoSideBar :user-info="userInfo" :is-my-profile="isMyProfile" @load-my-info="loadMyInfo" />
+      <InfoSideBar :user-info="userInfo" :is-my-profile="isMyProfile" @load-my-info="loadMyInfo"/>
     </div>
     <div class="w-2/3">
       <router-view :user-info="userInfo" :is-my-profile="isMyProfile" @load-my-info="loadMyInfo"/>
