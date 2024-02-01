@@ -12,21 +12,6 @@ services:
     volumes:
       - /home/ec2-user/logs:/logs
 
-  nginx:
-    container_name: zooting-nginx
-    image: nginx:latest
-    build:
-      context: .
-      dockerfile: nginx.Dockerfile
-    ports:
-      - "80:80"
-    depends_on:
-      - springboot
-    networks:
-      - zooting_net
-    restart: always
-
-
   redis:
     image: redis:alpine
     container_name: zooting-redis
