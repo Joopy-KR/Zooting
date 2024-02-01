@@ -42,5 +42,5 @@ class MemberControllerTest {
 //        this.mockMvc.perform(
 //                MockMvcRequestBuilders.get("/api/members/nickname/check"))
 //        given(memberService.)
-    }
+//    }
 }
