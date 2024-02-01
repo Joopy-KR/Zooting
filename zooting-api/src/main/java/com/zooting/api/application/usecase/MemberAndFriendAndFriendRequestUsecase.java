@@ -27,10 +27,10 @@ public class MemberAndFriendAndFriendRequestUsecase {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void acceptFriend(FriendReq friendReq, UserDetails userDetails) {
+    public void acceptFriend(String loginUserEmail, String nickname) {
         //양방향 저장
-        Member member1 = Member.builder().email(userDetails.getUsername()).build();
-        Member member2 = memberRepository.findByEmail(friendReq.email())
+        Member member1 = Member.builder().email(loginUserEmail).build();
+        Member member2 = memberRepository.findMemberByNickname(nickname)
                 .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
         Friend friend1 = new Friend(member1, member2);
@@ -41,6 +41,7 @@ public class MemberAndFriendAndFriendRequestUsecase {
         }
         friendRepository.saveAll(List.of(friend1, friend2));
         friendRequestRepository.deleteFriendRequestByFromAndTo(member2, member1);
+        friendRequestRepository.deleteFriendRequestByFromAndTo(member1, member2);
     }
     @Transactional
     public void deleteFriend(String loginUserEmail, String nickname) {

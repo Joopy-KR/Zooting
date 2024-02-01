@@ -41,8 +41,8 @@ public class MemberAndFriendController {
 
     @Operation(summary = "친구 수락", description = "로그인 한 사람 기준 요청 온 친구 수락")
     @PostMapping("/accept")
-    public ResponseEntity<BaseResponse<String>> acceptFriend(@Valid @NotNull @RequestBody FriendReq friendReq, @AuthenticationPrincipal UserDetails userDetails){
-        memberAndFriendAndFriendRequestUsecase.acceptFriend(friendReq, userDetails);
+    public ResponseEntity<BaseResponse<String>> acceptFriend(@Valid @NotNull @RequestBody String nickname, @AuthenticationPrincipal UserDetails userDetails){
+        memberAndFriendAndFriendRequestUsecase.acceptFriend(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 "친구 수락 성공"

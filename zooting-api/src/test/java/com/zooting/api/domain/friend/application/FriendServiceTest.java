@@ -64,7 +64,7 @@ class FriendServiceTest {
 
         FriendReq friendReq = new FriendReq(toEmail, toEmail);
         // When
-        acceptUsecase.acceptFriend(friendReq, userDetails);
+        acceptUsecase.acceptFriend(userDetails.getUsername(), toEmail);
 
         // Then
         List<Friend> friendList = friendRepository.findAll();
