@@ -13,6 +13,10 @@ services:
       - /home/ec2-user/logs:/logs
 
   nginx:
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     image: duckbill413/zooting-docker-nginx:latest
     container_name: zooting-nginx
     volumes:
