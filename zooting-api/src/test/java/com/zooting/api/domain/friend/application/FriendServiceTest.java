@@ -54,8 +54,8 @@ class FriendServiceTest {
         // Given
         String fromEmail = "x";
         String toEmail = "y";
-        memberRepository.save(Member.builder().email(fromEmail).build());
-        memberRepository.save(Member.builder().email(toEmail).build());
+        memberRepository.save(Member.builder().email(fromEmail).nickname(fromEmail).build());
+        memberRepository.save(Member.builder().email(toEmail).nickname(toEmail).build());
         memberAndFriendRequestUsecase.sendFriendRequest(fromEmail, toEmail);
 
         UserDetails userDetails = getRoleUser(fromEmail);
@@ -64,7 +64,7 @@ class FriendServiceTest {
 
         FriendReq friendReq = new FriendReq(toEmail, toEmail);
         // When
-        acceptUsecase.acceptFriend(friendReq, userDetails);
+        acceptUsecase.acceptFriend(userDetails.getUsername(), toEmail);
 
         // Then
         List<Friend> friendList = friendRepository.findAll();
