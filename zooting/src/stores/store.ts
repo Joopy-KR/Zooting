@@ -606,11 +606,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     
     // 친구 검색
     const friendSearch = function (params: string) {
+      const nickname = params
       axios({
         method: "get",
         url: `${API_URL}/api/friends/search`,
         params: {
-          nickname: params,
+          nickname,
         },
         headers: {
           Authorization: `Bearer ${getAccessToken()}`,
@@ -677,7 +678,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         });
     };
 
-    const cursorDmRoom = function (params: {dmRoomId: number; cursor: number;}) {
+    // DM 커서
+    const cursorDmRoom = function (params: { cursor: number | undefined; dmRoomId: number | undefined }) {
       const {dmRoomId, cursor} = params
       axios({
         method: "get",
@@ -693,6 +695,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         .then((res) => {
           console.log(res);
         })
+          .then((res) => {
+            isEntryDmRoom.value = true
+          })
         .catch((err) => {
           console.log(err);
         });

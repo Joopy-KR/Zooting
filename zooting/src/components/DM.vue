@@ -25,6 +25,9 @@
 
     <!-- 대화 내용 -->
     <div class="dm__chat" ref="chatRef" @scroll="handleChatScroll">
+      <div class="refresh-button" @click="firstRefreshChat">
+        <font-awesome-icon :icon="['fas', 'rotate-right']"/>
+      </div>
       <div v-for="(item, index) in DmInfo?.dmList" :key="index">
         <div :class="[isSender(item.sender) ? 'justify-end': '', 'flex mb-4']">
           <div :class="[isSender(item.sender) ? 'bg-violet-200 rounded-s-xl rounded-b-xl': 'bg-gray-100 rounded-e-xl rounded-es-xl', 'dm__chat-item']">
@@ -32,7 +35,6 @@
           </div>
         </div>
       </div>
-      
     </div>
 
 
@@ -105,6 +107,14 @@ const refreshChat = () => {
   console.log("Refreshing chat...")
 }
 
+const firstRefreshChat = () => {
+  const params = {
+    dmRoomId: DmInfo.value?.dmRoomId,
+    cursor: DmInfo.value?.cursor
+  }
+  store.cursorDmRoom(params)
+}
+
 interface DM {
   dmRoomId: number;
   dmList: DmItem[];
@@ -133,7 +143,7 @@ interface Friend {
   @apply h-14 border-b-2 flex px-4 py-10;
 }
 .dm__chat {
-@apply flex-grow mx-10 flex flex-col-reverse;
+@apply flex-grow mx-10 flex flex-col-reverse relative;
 overflow-y: auto;
 }
 .dm__chat::-webkit-scrollbar {
@@ -155,5 +165,8 @@ overflow-y: auto;
 }
 .exit-button {
   @apply text-gray-500 cursor-pointer w-7 h-7 hover:text-gray-700;
+}
+.refresh-button {
+  @apply  absolute top-5 left-1/2 flex text-gray-400 text-lg hover:text-gray-500 cursor-pointer;
 }
 </style>
