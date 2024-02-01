@@ -1,7 +1,7 @@
 version: "3"
 services:
   nginx:
-    container_name: zooting-nginx
+    container_name: duckbill413/zooting-nginx:latest
     image: nginx
     restart: always
     build:
@@ -10,6 +10,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    depends_on:
+      - springboot
     networks:
       - zooting_net
 
