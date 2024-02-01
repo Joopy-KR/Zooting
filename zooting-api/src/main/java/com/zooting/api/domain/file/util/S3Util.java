@@ -104,10 +104,10 @@ public class S3Util {
         return amazonS3.getUrl(bucket, thumbnailKey).toString();
     }
 
-    public byte[] downloadFile(String fileDir) throws IOException {
+    public byte[] downloadFile(String fileKey) throws IOException {
         // bucket 와 fileDir 을 사용해서 S3 에 있는 객체 - object - 를 가져온다.
         // TODO: fileDataUrl 가 맞는지 체크
-        S3Object object = amazonS3.getObject(new GetObjectRequest(bucket, fileDir));
+        S3Object object = amazonS3.getObject(new GetObjectRequest(bucket, fileKey));
 
         // object 를 S3ObjectInputStream 형태로 변환한다.
         S3ObjectInputStream objectInputStream = object.getObjectContent();

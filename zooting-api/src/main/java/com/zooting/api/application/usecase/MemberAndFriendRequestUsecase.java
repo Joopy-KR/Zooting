@@ -23,7 +23,7 @@ public class MemberAndFriendRequestUsecase {
     @Transactional
     public void sendFriendRequest(String requestFrom, String requestTo) {
         Member fromMember = Member.builder().email(requestFrom).build();
-        Member toMember = memberRepository.findByEmail(requestTo)
+        Member toMember = memberRepository.findMemberByNickname(requestTo)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         if(friendRequestRepository.existsByFromAndTo(fromMember, toMember)) {
             throw new BaseExceptionHandler(ErrorCode.ALREADY_EXIST_FRIEND_REQUEST);
