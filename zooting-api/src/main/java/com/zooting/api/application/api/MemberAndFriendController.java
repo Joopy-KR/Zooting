@@ -31,8 +31,8 @@ public class MemberAndFriendController {
     //친구 요청 보내기
     @Operation(summary = "친구 요청 보내기", description = "로그인 한 사람이 친구 요청 보내기")
     @PostMapping("")
-    public ResponseEntity<BaseResponse<String>> sendFriendRequest(@Valid @NotNull @RequestBody FriendReq friendReq, @AuthenticationPrincipal UserDetails userDetails){
-        memberAndFriendRequestUsecase.sendFriendRequest(userDetails.getUsername(), friendReq.email());
+    public ResponseEntity<BaseResponse<String>> sendFriendRequest(@Valid @NotNull @RequestBody String nickname, @AuthenticationPrincipal UserDetails userDetails){
+        memberAndFriendRequestUsecase.sendFriendRequest(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 "친구 요청 성공"

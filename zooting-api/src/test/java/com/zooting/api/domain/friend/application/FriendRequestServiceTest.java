@@ -31,8 +31,8 @@ class FriendRequestServiceTest {
     @WithMockUser(username = "x", roles = "USER")
     void rejectFriendRequestTest() {
         // Given
-        Member loginMember = Member.builder().email("x").build();
-        Member deleteMember = Member.builder().email("y").build();
+        Member loginMember = Member.builder().email("x").nickname("x").build();
+        Member deleteMember = Member.builder().email("y").nickname("y").build();
         memberRepository.save(loginMember);
         memberRepository.save(deleteMember);
 
