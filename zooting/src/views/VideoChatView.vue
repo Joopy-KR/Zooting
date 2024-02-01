@@ -1,19 +1,33 @@
 <template>
   <div class="video__container">
-    <VideoChatTalk class="col-span-8 col-start-1"/>
-    <VideoChatSideBarVue />
+    <!-- <VideoChatTalk class="left-component"/> -->
+    <VideoChatCatchMind class="left-component"/>
+    <VideoChatSideBarVue class="right-component"/> 
   </div>
 </template>
 
 <script setup lang="ts">
+// 자유대화 페이지
 import VideoChatTalk from '@/components/VideoChatTalk.vue'
+// 캐치마인드 페이지
+import VideoChatCatchMind from '@/components/VideoChatCatchMind.vue'
+// 사이드바
 import VideoChatSideBarVue from '@/components/VideoChatSideBar.vue'
+
 
 </script>
 
 <style scoped>
 .video__container {
-  @apply grid grid-cols-2 gap-12 w-screen;
+  @apply flex w-screen h-screen;
+  min-width: 1420px;
 }
 
+.left-component {
+  @apply flex-grow;
+}
+
+.right-component {
+  width: 380px;
+}
 </style>
