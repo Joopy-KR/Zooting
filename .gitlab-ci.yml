@@ -83,7 +83,11 @@ deploy: # JOB 이름
     - docker-compose down # docker-compose 내리기
     - docker-compose pull # docker images pull
     - docker-compose up --build -d # docker-compose 빌드 및 백그라운드 실행
+    - pwd
+    - ls
     - chmod +x init-letsencrypt.sh
+    - pwd
+    - ls
     - init-letsencrypt.sh # certbot-nginx script 실행 https 적용 완료후 주석 처리
   # script가 실행된 후 수행 될 script
   after_script:
