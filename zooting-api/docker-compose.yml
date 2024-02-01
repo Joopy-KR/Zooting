@@ -9,7 +9,37 @@ services:
       TZ: "Asia/Seoul"
     networks:
       - zooting_net
-    restart: "always"
+    volumes:
+      - /home/ec2-user/logs:/logs
+
+  nginx:
+    image: duckbill413/zooting-docker-nginx:latest
+    container_name: zooting-nginx
+    volumes:
+      - ./nginx/:/etc/nginx/
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - springboot
+    networks:
+      - zooting_net
+    command:
+      - "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint:
+      - "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - zooting_net
 
   redis:
     image: redis:alpine
@@ -22,19 +52,8 @@ services:
       - zooting_net
     restart: always
 
-#  nginx:
-#    image: duckbill413/zooting-docker-nginx:latest
-#    container_name: zooting-nginx
-#    ports:
-#      - "80:80"
-#    build:
-#      - ./nginx
-#    depends_on:
-#      - springboot
-#    networks:
-#      - zooting_net
-#    restart: "always"
-
 networks:
   zooting_net:
     driver: bridge
+volumes:
+  logs:
