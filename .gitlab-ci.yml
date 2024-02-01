@@ -36,7 +36,6 @@ build: # JOB 이름
     - master
     - release
     - develop
-    - feat/docker-certbot-nginx
 
 package:
   image: docker:latest
@@ -64,7 +63,6 @@ package:
     - master
     - release
     - develop
-    - feat/docker-certbot-nginx
 
 deploy: # JOB 이름
   image: docker:latest
@@ -78,12 +76,14 @@ deploy: # JOB 이름
     - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD # GitLab Container Registry에 로그인
   # 실행될 script 설정
   script:
+    - pwd
     - cd ./zooting-api
+    - ls
     - docker system prune --volumes -f # 사용되지 않는 컨테이너, 이미지 삭제 및 볼륨 정리
     - docker-compose down # docker-compose 내리기
     - docker-compose pull # docker images pull
     - docker-compose up --build -d # docker-compose 빌드 및 백그라운드 실행
-    - chmod +x ./init-letsencrypt.sh
+    - chmod +x init-letsencrypt.sh
     - ./init-letsencrypt.sh # certbot-nginx script 실행 https 적용 완료후 주석 처리
   # script가 실행된 후 수행 될 script
   after_script:
