@@ -1,20 +1,5 @@
 version: "3"
 services:
-  nginx:
-    container_name: zooting-nginx
-    image: nginx
-    restart: always
-    build:
-      context: .
-      dockerfile: nginx.Dockerfile
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - springboot
-    networks:
-      - zooting_net
-
   springboot:
     container_name: zooting-api
     image: duckbill413/zooting-docker-api:latest
@@ -26,6 +11,21 @@ services:
       - zooting_net
     volumes:
       - /home/ec2-user/logs:/logs
+
+  nginx:
+    container_name: zooting-nginx
+    image: nginx:latest
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - springboot
+    networks:
+      - zooting_net
+    restart: always
+
 
   redis:
     image: redis:alpine
