@@ -50,4 +50,18 @@ public class MemberAndFriendAndFriendRequestUsecase {
                 .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         friendRepository.deleteFriendByFollowerAndFollowingOrFollowingAndFollower(member1, member2, member1, member2);
     }
+    @Transactional
+    public void rejectFriendRequest(String requestFrom, String requestTo) {
+        Member from = Member.builder().email(requestFrom).build(); // x
+        Member to = memberRepository.findMemberByNickname(requestTo)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        friendRequestRepository.deleteFriendRequestByFromAndTo(to, from);
+    }
+    @Transactional
+    public void cancelFriendRequest(String requestFrom, String requestTo) {
+        Member from = Member.builder().email(requestFrom).build();
+        Member to = memberRepository.findMemberByNickname(requestTo)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        friendRequestRepository.deleteFriendRequestByFromAndTo(from, to);
+    }
 }

@@ -58,4 +58,26 @@ public class MemberAndFriendController {
                 "친구 삭제 성공"
         );
     }
+
+    //받은 친구요청 거절
+    @Operation(summary = "친구 요청 거절", description = "로그인 한 사람이 친구 요청 거절")
+    @DeleteMapping("reject")
+    public ResponseEntity<BaseResponse<String>> rejectFriendRequest(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails){
+        memberAndFriendAndFriendRequestUsecase.rejectFriendRequest(userDetails.getUsername(), nickname);
+        return BaseResponse.success(
+                SuccessCode.CHECK_SUCCESS,
+                "친구 요청 거절 성공"
+        );
+    }
+    //보낸 친구요청 취소
+
+    @Operation(summary = "친구 요청 취소", description = "로그인 한 사람이 보낸 친구 요청 취소")
+    @DeleteMapping("cancel")
+    public ResponseEntity<BaseResponse<String>> cancelFriendRequest(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails){
+        memberAndFriendAndFriendRequestUsecase.cancelFriendRequest(userDetails.getUsername(), nickname);
+        return BaseResponse.success(
+                SuccessCode.CHECK_SUCCESS,
+                "친구 요청 취소 성공"
+        );
+    }
 }
