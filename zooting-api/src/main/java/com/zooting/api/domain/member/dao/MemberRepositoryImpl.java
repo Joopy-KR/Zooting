@@ -2,11 +2,16 @@ package com.zooting.api.domain.member.dao;
 
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.DateTemplate;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.entity.Privilege;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import static com.zooting.api.domain.member.entity.QMember.member;
@@ -27,7 +32,7 @@ public class  MemberRepositoryImpl implements MemberRepositoryCustom {
                         // 이미 친구라면 매칭이 되지 않는다
                         notInFriendList(extractObj.getFriendList()),
                         // 2~10살 차이 사람 조회
-                        betweenRangeYear(extractObj.getRangeYear()),
+                        betweenRangeYear(extractObj.getMemberBirthYear(), extractObj.getRangeYear()),
                         // 멤버 role이 USER
                         member.role.contains(Privilege.USER)
                         // 다른 성별
@@ -43,7 +48,6 @@ public class  MemberRepositoryImpl implements MemberRepositoryCustom {
     }
 
     private BooleanExpression notInBlockToList(List<String> blockToList) {
-
         if (blockToList != null || !blockToList.isEmpty()) {
             return member.email.notIn(blockToList);
         }
@@ -64,9 +68,11 @@ public class  MemberRepositoryImpl implements MemberRepositoryCustom {
         return null;
     }
 
-    private BooleanExpression betweenRangeYear(Integer rangeYear) {
-        if (rangeYear != null) {
-            return member.birth.year().between(member.birth.year().subtract(rangeYear), member.birth.year().add(rangeYear));
+    private BooleanExpression betweenRangeYear(Integer memberBirthYear, Integer rangeYear) {
+        int minYear = memberBirthYear - rangeYear;
+        int maxYear = memberBirthYear + rangeYear;
+        if (member.birth != null && rangeYear != null) {
+            return member.birth.year().between(minYear, maxYear);
         }
         return null;
     }

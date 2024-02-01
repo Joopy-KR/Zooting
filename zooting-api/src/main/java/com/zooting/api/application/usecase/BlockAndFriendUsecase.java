@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class MemberAndBlockAndFriendUsecase {
+public class BlockAndFriendUsecase {
     private final MemberRepository memberRepository;
     private final FriendRepository friendRepository;
     private final BlockRepository blockRepository;
@@ -39,14 +39,12 @@ public class MemberAndBlockAndFriendUsecase {
 
     }
     @Transactional
-    public void deleteBlock(String userId, MemberAndBlockReq blockReq) {
+    public void deleteBlock(String userId, String nickname) {
         Member me = new Member();
         me.setEmail(userId);
         // 차단 당한 사람
-        Member blockedMember = memberRepository.findMemberByNickname(blockReq.nickname())
+        Member blockedMember = memberRepository.findMemberByNickname(nickname)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        System.out.println(me.getNickname());
-        System.out.println(blockedMember.getEmail());
         blockRepository.deleteBlockByFromAndTo(me, blockedMember);
 
     }

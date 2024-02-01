@@ -3,7 +3,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
-@Schema(description = "전체 배경 이미지 조회 요청시 응답 DTO")
+@Schema(description = "전체 배경 이미지 조회 요청시 페이지 정보가 포함된 응답 DTO")
 public record BackgroundPageRes(
         @Schema(description = "배경이미지 리스트")
         List<BackgroundRes> backgroundRes,

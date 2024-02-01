@@ -18,11 +18,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MemberAndMaskUsecase {
+public class MaskAndMaskInventoryUsecase {
     final private MemberRepository memberRepository;
     final private MaskRepository maskRepository;
     final private MaskInventoryRepository maskInventoryRepository;
-    public static final Long DEFAULT_MASK_ID = 99L;
 
     @Transactional
     public Boolean buyMask(String userId, MemberAndMaskReq maskReq) {
@@ -47,21 +46,6 @@ public class MemberAndMaskUsecase {
         maskInventoryRepository.save(maskInventory);
         return true;
 
-    }
-
-    @Transactional
-    public List<MemberAndMaskRes> findAllMaskInventory(String userId) {
-        Member member = memberRepository.findMemberByEmail(userId).orElseThrow(()->
-                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        return maskInventoryRepository.findAllByMember(member)
-                .stream().map(myMask-> new MemberAndMaskRes(
-                        myMask.getId(),
-                        myMask.getMask().getAnimal(),
-                        myMask.getMask().getDescription(),
-                        myMask.getMask().getPrice(),
-                        myMask.getMask().getFile().getFileName(),
-                        myMask.getMask().getFile().getImgUrl()
-                         )).toList();
     }
 
 }

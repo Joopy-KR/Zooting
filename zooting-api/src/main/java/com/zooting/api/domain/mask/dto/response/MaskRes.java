@@ -2,7 +2,7 @@ package com.zooting.api.domain.mask.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "전체마스크 조회 응답시 DTO")
+@Schema(description = "전체마스크 조회 시, 해금마스크 조회 시 응답 DTO")
 public record MaskRes(
         @Schema(description = "마스크 id")
         Long maskId,
