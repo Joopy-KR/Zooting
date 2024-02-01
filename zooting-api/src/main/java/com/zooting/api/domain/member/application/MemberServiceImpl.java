@@ -1,6 +1,14 @@
 package com.zooting.api.domain.member.application;
 
+import com.zooting.api.domain.background.dao.BackgroundInventoryRepository;
+import com.zooting.api.domain.background.entity.Background;
+import com.zooting.api.domain.background.entity.BackgroundInventory;
 import com.zooting.api.domain.block.entity.Block;
+import com.zooting.api.domain.mask.application.MaskInventoryService;
+import com.zooting.api.domain.mask.dao.MaskInventoryRepository;
+import com.zooting.api.domain.mask.dao.MaskRepository;
+import com.zooting.api.domain.mask.entity.Mask;
+import com.zooting.api.domain.mask.entity.MaskInventory;
 import com.zooting.api.domain.member.dao.ExtractObj;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.request.*;
@@ -19,11 +27,15 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 
+import static com.zooting.api.domain.member.entity.QMember.member;
+
 
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
+    private final MaskInventoryRepository maskInventoryRepository;
+    private final BackgroundInventoryRepository backgroundInventoryRepository;
     public static final String DEFAULT_MASK = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/default_animal.png";
     public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/zooting-background-default.jpg";
     public static final Long DEFAULT_MASK_ID = 99L;
@@ -40,10 +52,8 @@ public class MemberServiceImpl implements MemberService {
     public boolean checkMemberPrivilege(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        for (var role : member.getRole()) {
-            if (role.equals(Privilege.USER)) {
-                return true;
-            }
+        if(member.getRole().contains("USER")){
+            return true;
         }
         return false;
     }
@@ -186,6 +196,30 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
+    @Override
+    public boolean changeMask(String memberId, MaskReq maskReq) {
+        AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER)).getAdditionalInfo();
+        Mask myMask = maskInventoryRepository.findByMask_Id(maskReq.maskId()).orElseThrow(()->
+                        new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR)).getMask();
+        if (myMask.getAnimal().equals(memberInfo.getAnimal())) {
+            memberInfo.setMaskId(myMask.getId());
+            memberInfo.setMaskUrl(myMask.getFile().getImgUrl());
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void changeBackground(String memberId, BackgroundReq backgroundReq) {
+        AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER)).getAdditionalInfo();
+        Background myBackground = backgroundInventoryRepository.findBackgroundInventoryByBackground_Id(backgroundReq.backgroundId()).orElseThrow(()->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR)).getBackground();
+        memberInfo.setBackgroundId(myBackground.getId());
+        memberInfo.setBackgroundUrl(myBackground.getFile().getImgUrl());
+    }
+
     @Transactional
     @Override
     public boolean modifyNickname(String memberId, NicknameReq nicknameReq) {
@@ -202,6 +236,7 @@ public class MemberServiceImpl implements MemberService {
         }
         return false;
     }
+
 
     @Transactional(readOnly = true)
     @Override
@@ -239,8 +274,8 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Override
-    public PointRes findPoints(String userId) {
-        Member member = memberRepository.findMemberByEmail(userId)
+    public PointRes findPoints(String memberId) {
+        Member member = memberRepository.findMemberByEmail(memberId)
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
         return new PointRes(member.getPoint());
     }
@@ -264,13 +299,14 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         ExtractObj extractObj = new ExtractObj();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        extractObj.setMemberBirthYear(member.getBirth().getYear()+1900);
         extractObj.setUserId(userId);
         extractObj.setBlockToList(member.getBlockToList().stream().map(block -> block.getFrom().getEmail()).toList());
         extractObj.setBlockFromList(member.getBlockFromList().stream().map(block -> block.getTo().getEmail()).toList());
         extractObj.setFriendList(member.getFriendList().stream().map(fr -> fr.getFollowing().getEmail()).toList());
         extractObj.setMemberInterests(member.getAdditionalInfo().getInterest().lines().toList());
         extractObj.setMemberIdeals(member.getAdditionalInfo().getIdealAnimal().lines().toList());
-        extractObj.setMemberBirth(member.getBirth());
         extractObj.setRangeYear(extractingReq.rangeYear());
         System.out.println(extractObj.getMemberIdeals());
         return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(), mem.getNickname(), mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();

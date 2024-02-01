@@ -48,7 +48,6 @@ public class AdditionalInfo extends BaseEntity {
 
     public void setMember(Member member) {
         this.member = member;
-
         if (Objects.isNull(member.getAdditionalInfo()) ||
                 member.getAdditionalInfo() != this) {
             member.setAdditionalInfo(this);

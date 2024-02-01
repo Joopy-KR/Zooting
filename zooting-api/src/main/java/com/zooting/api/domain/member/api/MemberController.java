@@ -229,6 +229,42 @@ public class MemberController {
     }
 
     @Operation(
+            summary = "내 마스크 변경",
+            description = "유저의 동물상과 일치할때만 마스크 변경 가능"
+    )
+    @PreAuthorize("hasAnyRole('USER')")
+    @PutMapping("/mask")
+    public ResponseEntity<BaseResponse<String>> changeMask(
+            @RequestBody MaskReq maskReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        if (memberService.changeMask(userDetails.getUsername(), maskReq))
+        {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    "마스크 변경 완료"
+            );
+        }
+        return BaseResponse.success(
+                SuccessCode.CHECK_SUCCESS,
+                "동물상 변경 실패 - 유저의 동물상과 불일치 / 잘못된 마스크 id 접근"
+        );
+
+    }
+
+
+    @Operation(summary = "내 배경이미지 변경")
+    @PreAuthorize("hasAnyRole('USER')")
+    @PutMapping("/background")
+    public ResponseEntity<BaseResponse<String>> changeBackground(
+            @RequestBody BackgroundReq backgroundReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        memberService.changeBackground(userDetails.getUsername(), backgroundReq);
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                "배경 변경 완료"
+        );
+    }
+    @Operation(
             summary = "매칭 인원 추출",
             description = "차단 목록 유저 제외" +
                     "친구인 유저 제외" +
