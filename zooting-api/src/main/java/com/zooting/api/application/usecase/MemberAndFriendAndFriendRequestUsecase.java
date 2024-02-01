@@ -43,9 +43,9 @@ public class MemberAndFriendAndFriendRequestUsecase {
         friendRequestRepository.deleteFriendRequestByFromAndTo(member2, member1);
     }
     @Transactional
-    public void deleteFriend(String username, String email) {
-        Member member1 = Member.builder().email(username).build();
-        Member member2 = memberRepository.findByEmail(email)
+    public void deleteFriend(String loginUserEmail, String nickname) {
+        Member member1 = Member.builder().email(loginUserEmail).build();
+        Member member2 = memberRepository.findMemberByNickname(nickname)
                 .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         friendRepository.deleteFriendByFollowerAndFollowingOrFollowingAndFollower(member1, member2, member1, member2);
     }

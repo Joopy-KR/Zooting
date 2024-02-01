@@ -51,8 +51,8 @@ public class MemberAndFriendController {
 
     @Operation(summary = "친구 삭제", description = "로그인 한 사람 기준 친구 삭제")
     @DeleteMapping("/delete")
-    public ResponseEntity<BaseResponse<String>> deleteFriend(@Valid @NotNull @RequestBody FriendReq friendReq, @AuthenticationPrincipal UserDetails userDetails){
-        memberAndFriendAndFriendRequestUsecase.deleteFriend(userDetails.getUsername(), friendReq.email());
+    public ResponseEntity<BaseResponse<String>> deleteFriend(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails){
+        memberAndFriendAndFriendRequestUsecase.deleteFriend(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 "친구 삭제 성공"
