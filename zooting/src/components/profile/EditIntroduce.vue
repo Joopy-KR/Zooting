@@ -41,7 +41,6 @@ const updateIntroduce = () => {
 };
 
 onMounted(() => {
-  console.log("!!!!!introduce: ", props.introduce);
   if (props.introduce) {
     introduceValue.value = props.introduce;
   }

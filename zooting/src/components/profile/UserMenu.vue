@@ -11,7 +11,7 @@
         <div
             class="w-screen max-w-44 flex-auto overflow-hidden rounded-3xl bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
           <div class="p-4">
-            <div v-for="item in items" :key="item.name"
+            <div v-for="item in activatedItems" :key="item.name"
                  class="group relative flex gap-x-2 rounded-lg p-2 hover:bg-gray-50"
                  @click="item.onclick">
               <div
@@ -37,15 +37,20 @@ import {Popover, PopoverButton, PopoverPanel} from '@headlessui/vue'
 import {ChevronDownIcon, PhoneIcon} from '@heroicons/vue/20/solid'
 import {blockUserApi, disableBlockUserApi} from "@/api/block.js";
 import {ChartPieIcon, CursorArrowRaysIcon, FingerPrintIcon, SquaresPlusIcon,} from '@heroicons/vue/24/outline'
-import {ref} from "vue";
+import {useAccessTokenStore} from "@/stores/store"
+import {computed, onMounted, ref, watch} from "vue";
+import type {UserInfo} from "@/types/global";
 
+const store = useAccessTokenStore();
 const props = defineProps({
-  nickname: string,
+  userInfo: Object as () => UserInfo,
 })
 const emits = defineEmits([
   "setIsOpenReportDialog"
 ]);
 
+const friendList = ref(store.friendList);
+const blockList = ref(store.blockList);
 const isFriend = ref<boolean>(false);
 const isBlock = ref<boolean>(false);
 
@@ -55,12 +60,12 @@ const setIsOpenReportDialog = () => {
 
 // 유저 차단
 const blockUser = () => {
-  if (!props.nickname) {
+  if (!props.userInfo?.nickname) {
     return;
   }
   blockUserApi(
       {
-        nickname: props.nickname
+        nickname: props.userInfo.nickname
       },
       ({data}: any) => {
       },
@@ -69,12 +74,12 @@ const blockUser = () => {
 }
 // 유저 차단 해제
 const disableBlockUser = () => {
-  if (!props.nickname) {
+  if (!props.userInfo?.nickname) {
     return;
   }
   disableBlockUserApi(
       {
-        nickname: props.nickname
+        nickname: props.userInfo.nickname
       },
       ({data}: any) => console.log(data),
       (error: any) => console.log(error),
@@ -82,10 +87,85 @@ const disableBlockUser = () => {
 }
 
 const items = [
-  {name: '친구추가', icon: ChartPieIcon, status: "not-friend"},
-  {name: '친구해제', icon: PhoneIcon, status: "friend"},
-  {name: '차단하기', icon: CursorArrowRaysIcon, onclick: () => blockUser(), status: "non-block"},
-  {name: '차단해제', icon: FingerPrintIcon, status: "block"},
-  {name: '신고하기', icon: SquaresPlusIcon, onclick: () => setIsOpenReportDialog(), status: "common"},
+  {name: '친구추가', icon: ChartPieIcon, status: undefined},
+  {name: '친구해제', icon: PhoneIcon, status: undefined},
+  {name: '차단하기', icon: CursorArrowRaysIcon, onclick: () => blockUser(), status: undefined},
+  {name: '차단해제', icon: FingerPrintIcon, status: undefined},
+  {name: '신고하기', icon: SquaresPlusIcon, onclick: () => setIsOpenReportDialog(), status: true},
 ]
+
+const activatedItems = computed(() => {
+  console.log("ITEM!!!!!!!", items.filter(item => item.status === true));
+  return items.filter(item => item.status === true);
+})
+
+watch(() => store.friendList,
+    (newValue) => {
+      isFriend.value = newValue.some(friend => friend.nickname === props.userInfo?.nickname);
+    });
+watch(() => store.blockList,
+    (newValue) => {
+      isBlock.value = newValue.some(block => block.nickname === props.userInfo?.nickname);
+    });
+watch(isFriend,
+    (newValue) => {
+      if (newValue) {
+        items[0].status = false;
+        items[1].status = true;
+      } else {
+        items[0].status = true;
+        items[1].status = false;
+      }
+    }, {deep: true});
+watch(isBlock,
+    (newValue) => {
+      if (newValue) {
+        items[2].status = false;
+        items[3].status = true;
+      } else {
+        items[2].status = true;
+        items[3].status = false;
+      }
+    }, {deep: true});
+
+onMounted(() => {
+  watch(() => props.userInfo, (newUserInfo, oldUserInfo) => {
+    if (!props.userInfo?.nickname) {
+      console.error("ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ");
+      return;
+    }
+    console.log(props);
+    console.log("friendList", friendList.value);
+    console.log("blockList", blockList.value);
+    console.log("isFriend", isFriend.value);
+    console.log("isBlock", isBlock.value);
+    console.log("userinfo", props.userInfo?.nickname)
+    if (newUserInfo && newUserInfo.nickname) {
+      isFriend.value = friendList.value.some(friend => friend.nickname === newUserInfo.nickname);
+      isBlock.value = blockList.value.some(block => block.nickname === newUserInfo.nickname);
+    }
+  }, { immediate: true });
+});
+
+//
+// onMounted(() => {
+//
+//   console.log(props);
+//   console.log("friendList", friendList.value);
+//   console.log("blockList", blockList.value);
+//   console.log("isFriend", isFriend.value);
+//   console.log("isBlock", isBlock.value);
+//   console.log("userinfo", props.userInfo?.nickname)
+//   if (!props.userInfo?.nickname) {
+//     console.log("FAILEDbbbbbbbbbbbbbb")
+//     return;
+//   }
+//   isFriend.value = friendList.value.some(friend => friend.nickname === props.userInfo?.nickname);
+//   isBlock.value = blockList.value.some(block => block.nickname === props.userInfo?.nickname);
+//
+//   console.log("friendList", friendList.value);
+//   console.log("blockList", blockList.value);
+//   console.log("isFriend", isFriend.value);
+//   console.log("isBlock", isBlock.value);
+// })
 </script>

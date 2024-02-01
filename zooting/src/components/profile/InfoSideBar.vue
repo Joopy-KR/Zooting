@@ -89,7 +89,7 @@ watch(
 <template>
   <ReportMessage
       :is-open-report-dialog="isOpenReportDialog"
-      :nickname="userInfo!.nickname"
+      :nickname="userInfo?.nickname"
       @set-is-open-report-dialog="setIsOpenReportDialog"
   />
   <div class="flex flex-col h-screen">
@@ -145,7 +145,7 @@ watch(
           {{ userInfo?.nickname }}
           <div class="absolute text-xs bottom-0.5 -right-10" v-if="!isMyProfile">
             <UserMenu
-                :nickname="userInfo?.nickname"
+                :user-info="userInfo"
                 @set-is-open-report-dialog="setIsOpenReportDialog"
             />
           </div>

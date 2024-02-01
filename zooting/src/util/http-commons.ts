@@ -54,8 +54,6 @@ function localAxios() {
         response: { status },
       } = error;
 
-      console.log("에러 발생!!!!@!!!!!!!!!!!");
-
       const originalRequest = config;
       if (status === httpStatusCode.UNAUTHORIZED) {
         if (!isTokenRefreshing) {
