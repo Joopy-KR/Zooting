@@ -1,7 +1,6 @@
 package com.zooting.api.domain.notice.api;
 
 import com.zooting.api.domain.notice.application.NoticeService;
-import com.zooting.api.domain.notice.dto.request.NoticeDeleteReq;
 import com.zooting.api.domain.notice.dto.request.NoticeSaveReq;
 import com.zooting.api.domain.notice.dto.request.NoticeUpdateReq;
 import com.zooting.api.domain.notice.dto.response.NoticeRes;
@@ -66,8 +65,8 @@ public class NoticeController {
     @DeleteMapping
     @Operation(summary = "공지사항 삭제")
     public ResponseEntity<BaseResponse<String>> deleteBlockMember(
-            @Valid @RequestBody NoticeDeleteReq noticeDeleteReq) {
-        noticeService.deleteNotice(noticeDeleteReq);
+            @Valid @RequestParam(name="noticeId") Long noticeId) {
+        noticeService.deleteNotice(noticeId);
         return BaseResponse.success(
                 SuccessCode.DELETE_SUCCESS,
                 "공지사항 삭제 완료"

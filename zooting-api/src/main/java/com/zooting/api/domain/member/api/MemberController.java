@@ -45,7 +45,7 @@ public class MemberController {
 
     @PreAuthorize("permitAll()")
     @Operation(
-            summary = "로그인 후 추가 정보가 저장 여부 확인",
+            summary = "로그인 후 추가 정보(유저 동물상 정보 기준)가 저장 여부 확인",
             description = "previlege로 판단. " +
                     "false - 추가 정보 저장되지 않음" +
                     "true - 추가 정보 저장되어 있음")
@@ -57,6 +57,7 @@ public class MemberController {
                 result
         );
     }
+
     @PreAuthorize("hasAnyRole('USER')")
     @Operation(
             summary = "프로필 확인",
@@ -65,7 +66,7 @@ public class MemberController {
     )
     @GetMapping("/myprofile/check")
     public ResponseEntity<BaseResponse<MyProfileReq>> checkMyProfile(
-            @Valid @NotNull @Size(min = 2, max = 16)  @RequestParam(name = "nickname") String nickname,
+            @Valid @NotNull @Size(min = 2, max = 16) @RequestParam(name = "nickname") String nickname,
             @AuthenticationPrincipal UserDetails userDetails) {
         var result = memberService.checkMyProfile(userDetails.getUsername(), nickname);
         return BaseResponse.success(
@@ -113,29 +114,33 @@ public class MemberController {
                 memberRes
         );
     }
+
     @PreAuthorize("hasAnyRole('USER')")
     @Operation(summary = "차단 리스트 조회")
     @GetMapping("/blocklist")
     public ResponseEntity<BaseResponse<List<MemberSearchRes>>> findMyBlockList(
             @AuthenticationPrincipal UserDetails userDetails) {
-            var result = memberService.findMyBlockList(userDetails.getUsername());
+        var result = memberService.findMyBlockList(userDetails.getUsername());
 
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 result
         );
     }
+
     @Operation(summary = "닉네임으로 유저 정보 조회")
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping("/info")
     public ResponseEntity<BaseResponse<MemberRes>> findMemberInfoByNickname(
-            @Valid @NotNull @Size(min = 2, max = 16)@RequestParam(name="nickname") String nickname){
-        MemberRes memberRes = memberService.findMemberInfoByNickname(nickname);
+            @Valid @NotNull @Size(min = 2, max = 16) @RequestParam(name = "nickname") String nickname,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        MemberRes memberRes = memberService.findMemberInfoByNickname(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.SELECT_SUCCESS,
                 memberRes
         );
     }
+
     @Operation(summary = "포인트 차감 후 닉네임 변경")
     @PreAuthorize("hasAnyRole('USER')")
     @PutMapping("/nickname")
@@ -223,6 +228,42 @@ public class MemberController {
         );
     }
 
+    @Operation(
+            summary = "내 마스크 변경",
+            description = "유저의 동물상과 일치할때만 마스크 변경 가능"
+    )
+    @PreAuthorize("hasAnyRole('USER')")
+    @PutMapping("/mask")
+    public ResponseEntity<BaseResponse<String>> changeMask(
+            @RequestBody MaskReq maskReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        if (memberService.changeMask(userDetails.getUsername(), maskReq))
+        {
+            return BaseResponse.success(
+                    SuccessCode.UPDATE_SUCCESS,
+                    "마스크 변경 완료"
+            );
+        }
+        return BaseResponse.success(
+                SuccessCode.CHECK_SUCCESS,
+                "동물상 변경 실패 - 유저의 동물상과 불일치 / 잘못된 마스크 id 접근"
+        );
+
+    }
+
+
+    @Operation(summary = "내 배경이미지 변경")
+    @PreAuthorize("hasAnyRole('USER')")
+    @PutMapping("/background")
+    public ResponseEntity<BaseResponse<String>> changeBackground(
+            @RequestBody BackgroundReq backgroundReq,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        memberService.changeBackground(userDetails.getUsername(), backgroundReq);
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                "배경 변경 완료"
+        );
+    }
     @Operation(
             summary = "매칭 인원 추출",
             description = "차단 목록 유저 제외" +

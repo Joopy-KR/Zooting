@@ -12,11 +12,13 @@ public interface MemberService {
     boolean checkMemberPrivilege(String userId);
     MyProfileReq checkMyProfile(String userId, String nickname);
     MemberRes findMemberInfo(String userId);
-    MemberRes findMemberInfoByNickname(String nickname);
+    MemberRes findMemberInfoByNickname(String userId, String nickname);
     void updateMemberInfo(String memberId, MemberReq memberReq) throws ParseException;
     void updateMemberInfo(String memberId, MemberModifyReq memberModifyReq);
     void updateInterests(String memberId, InterestsReq additionalReq);
     void updateIntroduce(String memberId, IntroduceReq introduceReq);
+    boolean changeMask(String memberId, MaskReq maskReq);
+    void changeBackground(String memberId, BackgroundReq backgroundReq);
     boolean modifyNickname(String memberId, NicknameReq nicknameReq);
     List<MemberSearchRes> findMemberList(String userId, String nickname);
     void updatePersonality(String userId, PersonalityReq personalityReq);

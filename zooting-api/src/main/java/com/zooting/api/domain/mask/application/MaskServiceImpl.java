@@ -28,8 +28,10 @@ public class MaskServiceImpl implements MaskService{
                     mask.getAnimal(),
                     mask.getDescription(),
                     mask.getPrice(),
+                    mask.getFile().getFileDir(),
                     mask.getFile().getFileName(),
-                    mask.getFile().getImgUrl())).toList();
+                    mask.getFile().getImgUrl(),
+                    mask.getFile().getThumbnailUrl())).toList();
             return new MaskPageRes(maskResList, pageable.getPageNumber(), result.getTotalPages());
         }
         else {
@@ -40,8 +42,10 @@ public class MaskServiceImpl implements MaskService{
                     mask.getAnimal(),
                     mask.getDescription(),
                     mask.getPrice(),
+                    mask.getFile().getFileDir(),
                     mask.getFile().getFileName(),
-                    mask.getFile().getImgUrl())).toList();
+                    mask.getFile().getImgUrl(),
+                    mask.getFile().getThumbnailUrl())).toList();
             return new MaskPageRes(maskResList, pageable.getPageNumber(), result.getTotalPages());
         }
 

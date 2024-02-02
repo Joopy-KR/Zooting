@@ -13,4 +13,5 @@ public interface MaskRepository extends JpaRepository<Mask, Long> {
     Page<Mask> findMasksBy(Pageable pageable);
     Page<Mask> findMasksByAnimal(Pageable pageable, String animal);
     Optional<Mask> findById(Long maskId);
+
 }

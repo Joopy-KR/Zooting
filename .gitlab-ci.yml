@@ -51,7 +51,7 @@ package:
     - cd ./zooting-api
     - echo [INFO] Start package stage
     - echo [INFO] SPRING_IMAGE_NAME      $SPRING_IMAGE_NAME
-    # - echo [INFO] NGINX_IMAGE_NAME       $NGINX_IMAGE_NAME
+    - echo [INFO] NGINX_IMAGE_NAME       $NGINX_IMAGE_NAME
     - echo [INFO] Spring docker project build
     - docker build -t $DOCKER_REGISTRY_USER/$SPRING_IMAGE_NAME . # Dockerfile로 build
     - docker push $DOCKER_REGISTRY_USER/$SPRING_IMAGE_NAME:latest # Container Registry에 image push
@@ -80,8 +80,14 @@ deploy: # JOB 이름
     - docker system prune --volumes -f # 사용되지 않는 컨테이너, 이미지 삭제 및 볼륨 정리
     - docker-compose down # docker-compose 내리기
     - docker-compose pull # docker images pull
-    - docker-compose build # docker-compose 빌드
-    - docker-compose up -d # docker-compose 백그라운드 실행
+    - docker-compose up --build -d # docker-compose 빌드 및 백그라운드 실행
+    # - pwd
+    # - ls
+    # - cd /builds/s10-webmobile1-sub2/S10P12A702/zooting-api
+    # - chmod +x init-letsencrypt.sh
+    # - pwd
+    # - ls
+    # - ./init-letsencrypt.sh # certbot-nginx script 실행 https 적용 완료후 주석 처리
   # script가 실행된 후 수행 될 script
   after_script:
     - docker logout # GitLab Container Registry 로그아웃

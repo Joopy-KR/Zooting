@@ -23,7 +23,6 @@ import java.util.List;
 @Tag(name="멤버와 배경", description = "멤버와 배경이미지 관련 API")
 public class MemberAndBackgroundController {
     private final MemberAndBackgroundUsecase memberAndBackgroundUsecase;
-
     @Operation(
             summary = "배경 이미지 구매",
             description = "포인트가 부족하거나 이미 보유한 배경이라면 구매 불가")
@@ -43,17 +42,5 @@ public class MemberAndBackgroundController {
                 "구매 실패 - 잔여 포인트 부족 혹은 이미 보유한 배경이미지"
         );
 
-    }
-    @Operation(summary = "해금 배경 조회")
-    @PreAuthorize("hasAnyRole('USER')")
-    @GetMapping
-    public ResponseEntity<BaseResponse<List<MemberAndBackgroundRes>>> findAllBackgroundInventory(
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        List<MemberAndBackgroundRes> result = memberAndBackgroundUsecase.findAllBackgroundInventory(userDetails.getUsername());
-        return BaseResponse.success(
-                SuccessCode.SELECT_SUCCESS,
-                result
-        );
     }
 }
