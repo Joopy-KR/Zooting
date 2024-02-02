@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
-// @ts-ignore
 import VueTailwindDatepicker from "vue-tailwind-datepicker";
 import SuccessDialog from "@/components/profile/SuccessDialog.vue";
 import FailDialog from "@/components/profile/FailDialog.vue";

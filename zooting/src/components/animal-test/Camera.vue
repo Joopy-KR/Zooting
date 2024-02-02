@@ -316,13 +316,11 @@ const initializeAnimalModel = async () => {
 
   // 모델 및 메타데이터 로드
   // "tmImage" 객체는 라이브러리로부터 추가되어있는 상태임 (window.tmImage)
-  // @ts-ignore
   model = await tmImage.load(modelURL, metadataURL);
 };
 
 const setupWebcam = async () => {
   const flip = true;
-  // @ts-ignore
   const webcam = new tmImage.Webcam(500, 500, flip);
 
   try {

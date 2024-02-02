@@ -34,13 +34,9 @@ limitations under the License. */
 
 import { ref, onMounted, watch } from 'vue'
 
-// @ts-ignore
 import * as THREE from 'three'
-// @ts-ignore
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
-// @ts-ignore
 import { GLTFLoader, GLTF } from 'three/addons/loaders/GLTFLoader.js'
-// @ts-ignore
 import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3"
 const { FaceLandmarker, FilesetResolver } = vision
 
