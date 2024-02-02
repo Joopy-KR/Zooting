@@ -1,5 +1,5 @@
 <template>
-  <div class="friend__container">
+  <div class="interest__container">
     <ul role="list" class="friend-list">
       <li v-for="(item, index) in friendList" :key="index" class="friend-list__item">
         <RouterLink :to="getProfileLink(item.nickname)" class="friend-list__item__link">
@@ -68,19 +68,19 @@ const getProfileImage = (animal: string) => {
 </script>
 
 <style scoped>
-.friend__container {
+.interest__container {
   @apply flex-grow;
   overflow-y: auto;
 }
-.friend__container::-webkit-scrollbar {
+.interest__container::-webkit-scrollbar {
   width: 6px;
   background-color: white;
 }
-.friend__container::-webkit-scrollbar-thumb {
+.interest__container::-webkit-scrollbar-thumb {
   background-color: #d6d6d6;
   border-radius: 4px;
 }
-.friend__container::-webkit-scrollbar-track {
+.interest__container::-webkit-scrollbar-track {
   background-color: transparent;
 }
 .friend-list {
