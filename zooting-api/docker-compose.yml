@@ -18,7 +18,7 @@ services:
     command: redis-server --port 6379
     hostname: redis
     ports:
-      - "6800:6379"
+      - "6800:6800"
     networks:
       - zooting_net
     restart: always
