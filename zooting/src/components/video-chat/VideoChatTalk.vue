@@ -1,34 +1,8 @@
 <template>
-  <div id="main-container" class="container">
-    <div id="join" v-if="!session">
-      <div id="join-dialog" class="jumbotron vertical-center">
-        <h1>Join a video session</h1>
-        <div class="form-group">
-          <p>
-            <label>Participant</label>
-            <input v-model="myUserName" class="form-control" type="text" required />
-          </p>
-          <p>
-            <label>Session</label>
-            <input v-model="mySessionId" class="form-control" type="text" required />
-          </p>
-          <p class="text-center">
-            <button class="btn btn-lg btn-success" @click="joinSession()">
-              매칭이 완료되었어요
-            </button>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div id="session" v-if="session">
-      <div id="session-header">
-        <h1 id="session-title">{{ mySessionId }}</h1>
-        <input class="btn btn-large btn-danger" type="button" id="buttonLeaveSession" @click="leaveSession"
-          value="Leave session" />
-      </div>
-      <!-- <div id="main-video">
-        <user-video :stream-manager="mainStreamManager" /> 
+  <div class="flex flex-col items-center justify-center h-screen">
+    <div class="grid grid-cols-2 gap-8">
+      <!-- <div v-for="(item, index) in 4" :key="index" class="camera-box">
+        <h1 class="flex flex-col items-start justify-end h-full">{{item}}: nickname</h1>
       </div> -->
       <div id="video-container">
         <user-video :stream-manager="publisher" @click="updateMainVideoStreamManager(publisher)" />
@@ -36,15 +10,19 @@
           @click="updateMainVideoStreamManager(sub)" />
       </div>
     </div>
+    <button class="btn btn-lg btn-success" @click="joinSession()">
+              매칭이 완료되었어요
+            </button>
+    <input class="btn btn-large btn-danger" type="button" id="buttonLeaveSession" @click="leaveSession"
+      value="Leave session" />
   </div>
 </template>
 
-
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
-import UserVideo from './UserVideo.vue' 
+import UserVideo from '@/components/video-chat/UserVideo.vue' 
 import { useAccessTokenStore } from '@/stores/store.ts'
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -175,3 +153,13 @@ const createToken = async (sessionId) => {
   return response.data; // The token
 };
 </script>
+
+<style scoped>
+.camera-box {
+  @apply bg-slate-400;
+  width: 462px; 
+  height: 260px;
+}
+
+
+</style>  

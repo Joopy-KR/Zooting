@@ -75,7 +75,6 @@ function setColor(e){
 </script>
 
 
-
 <style scoped>
 .camera-box {
   @apply bg-slate-400;
@@ -109,4 +108,4 @@ function setColor(e){
   .color-btn[data-color="blue"]{
     background: blue;
   }
-</style>  
+</style> 

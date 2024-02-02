@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useAccessTokenStore } from "../stores/store"
+import { useAccessTokenStore } from "@/stores/store"
 
 const store = useAccessTokenStore()
 const receiverInfo = ref<any>(store.receiverInfo)

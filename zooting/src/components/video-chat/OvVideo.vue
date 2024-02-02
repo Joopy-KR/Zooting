@@ -19,12 +19,18 @@
 </template>
 
 <script setup lang="ts" type="module">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted,watch } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { GLTFLoader, GLTF } from 'three/addons/loaders/GLTFLoader.js'
 import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3"
 const { FaceLandmarker, FilesetResolver } = vision
+
+// 라우터 떠날때 캔버스 초기화 하기
+onUnmounted(() => {
+  const canvas: any = document.querySelector("canvas")
+  canvas.remove()
+})
 
 const props = defineProps<{
   streamManager: any
@@ -47,7 +53,7 @@ class BasicScene {
   constructor() {
     // const containerElement = document.getElementById("conatiner")
     // this.height = window.innerHeight;
-    this.height = 300 
+    this.height = 140
     this.width = (this.height * 1920) / 1080
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 0.01, 5000)
@@ -55,6 +61,18 @@ class BasicScene {
     this.renderer.setSize(this.width, this.height)
     document.body.appendChild(this.renderer.domElement)
 
+    // 부모 엘리먼트.. 이 부분 다시 자세하게 봐보자!
+    // // 부모 엘리먼트 찾기
+    // let containerElement: any = document.getElementById("conatiner");
+    // let parentElement = this.renderer.domElement.parentElement;
+
+    // if (parentElement) {
+    //   containerElement = parentElement;
+    //   console.log(containerElement);
+    // } else {
+    //   console.error("부모 엘리먼트를 찾을 수 없습니다.");
+    // }
+    
     // 조명 추가
     const ambientLight = new THREE.AmbientLight(0xffffff, 2)
     this.scene.add(ambientLight)
@@ -371,15 +389,15 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
       window.alert('비디오 접근 권한을 허용해주세요')
   }
 }
-
-
 </script>
+
+
 
 <style>
 canvas {
   transform: scaleX(-1);
-  z-index: 0;
-  margin-inline-start: 3.5rem;
+  /* z-index: 0; */
+  /* margin-inline-start: 3.5rem; */
 }
 </style>
 
