@@ -52,7 +52,7 @@ public class MemberServiceImpl implements MemberService {
     public boolean checkMemberPrivilege(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        if(member.getRole().contains("USER")){
+        if(member.getRole().contains(Privilege.USER)){
             return true;
         }
         return false;
