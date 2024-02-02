@@ -36,7 +36,11 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        log.info(request.getRequestURI());
         if (PatternMatchUtils.simpleMatch(URL_WHITE_LIST, request.getRequestURI())) {
+            if (request.getRequestURI().startsWith("/dm/ws")) {
+                log.info("소켓 연결 Passed");
+            }
             filterChain.doFilter(request, response);
             return;
         }
