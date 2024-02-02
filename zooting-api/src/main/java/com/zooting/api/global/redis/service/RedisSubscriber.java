@@ -8,7 +8,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,7 @@ public class RedisSubscriber implements MessageListener {
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisMessageListenerContainer redisMessageListener;
-
+    private final SimpMessageSendingOperations webSocketTemplate;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
@@ -28,11 +30,19 @@ public class RedisSubscriber implements MessageListener {
             String key = new String(message.getChannel());
             log.info("[onMessage] key: {}", key);
             Long listSize = redisTemplate.opsForList().size(key);
-            if (listSize >= 4) {
+            if (listSize >= 4) { // 매칭완료 조건
                 log.info("[onMessage] key: {}, listSize: {} 매칭성공", key, listSize);
-                //send token
-                //destory room
-                deleteKeys(key, message);
+                for (int i = 0; i < 4; i++) {
+                    String email = (String) redisTemplate.opsForList().leftPop(key);
+                    log.info("[onMessage] email: {}", email);
+                    //send token
+                    String ovToken = "ItsaToken"; // temp Token
+                    webSocketTemplate.convertAndSend("api/sub/dm/" + email, ovToken);
+                    //delete matched users
+                    redisTemplate.delete(email);
+                }
+                //destroy room
+                deleteRoom(key);
             }
             String body = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
 //            RedisWaitRoom waitRoom = objectMapper.readValue(body, RedisWaitRoom.class);
@@ -43,14 +53,9 @@ public class RedisSubscriber implements MessageListener {
         }
     }
 
-    public void deleteKeys(String key, Message message){
-        for(int i = 0; i < 4; i++){
-            String email = (String) redisTemplate.opsForList().leftPop(key);
-            redisTemplate.delete(email);
-        }
+    public void deleteRoom(String key) {
+        ChannelTopic channelTopic = new ChannelTopic(key);
+        redisMessageListener.removeMessageListener(this, channelTopic);
         redisTemplate.delete(key);
-        //remove listener
-        // Remove itself from the listener container
-        redisMessageListener.removeMessageListener(this);
     }
 }

@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class DMWebSocketController {
 
     private final SimpMessageSendingOperations template;
-    //    private final RedisTemplate<String, Object> redisTemplate;
     private final DMService dmService;
 
     /**

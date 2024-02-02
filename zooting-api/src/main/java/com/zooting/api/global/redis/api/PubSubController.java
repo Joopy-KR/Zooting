@@ -1,13 +1,12 @@
-package com.zooting.api.global.redis.controller;
+package com.zooting.api.global.redis.api;
 
 import com.zooting.api.domain.member.dao.MemberRepository;
-import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
-import com.zooting.api.global.redis.dto.RedisWaitRoom;
+import com.zooting.api.global.redis.service.RedisPubSubService;
 import com.zooting.api.global.redis.service.RedisPublisher;
 import com.zooting.api.global.redis.service.RedisSubscriber;
-import jakarta.annotation.PostConstruct;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,18 +31,20 @@ public class PubSubController {
     private final RedisPublisher redisPublisher;
     // 구독자
     private final RedisSubscriber redisSubscriber;
+    private final RedisPubSubService redisPubSubService;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-    private MemberRepository memberRepository;
+//    @Autowired
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final MemberRepository memberRepository;
 
+    @Operation(summary = "대기방 조회", description = "대기방 조회")
     // 유효한 Topic 리스트 반환
     @GetMapping("/room")
     public Set<String> findAllRoom() {
         return redisTemplate.keys("room:*");
     }
 
-//    @GetMapping("/room/enter")
+//    @GetMapping("/matching/start")
 //    public String findRoom(@AuthenticationPrincipal UserDetails userDetails) {
 ////        if(redisTemplate.hasKey(userDetails.getUsername())){
 ////            return (String) redisTemplate.opsForValue().get(userDetails.getUsername());
@@ -67,9 +66,11 @@ public class PubSubController {
 //        return null;
 //    }
 
+    @Operation(summary = "대기방 찾기", description = "대기방 찾기")
     /*TEST 입장*/
-    @GetMapping("/room/enter")
-    public String findRoom(@RequestParam String loginEmail) {
+    @GetMapping("/matching/start")
+    public String startMatching(@RequestParam String loginEmail) {
+
 //        if(redisTemplate.hasKey(userDetails.getUsername())){
 //            return (String) redisTemplate.opsForValue().get(userDetails.getUsername());
 //        }
@@ -89,6 +90,7 @@ public class PubSubController {
         createRoom(loginEmail);
         return null;
     }
+    @Operation(summary = "대기방 생성", description = "대기방 생성")
     // 신규 Topic을 생성하고 Listener등록
     @PutMapping("/room")
     public void createRoom(String loginEmail) {
@@ -99,15 +101,21 @@ public class PubSubController {
         redisTemplate.opsForValue().set(loginEmail, "room:" + randomUUID);
         redisPublisher.publish(channel.getTopic(), randomUUID.toString());
     }
+    @Operation(summary = "메세지전송", description = "메세지전송")
     // 특정 Topic에 메시지 발행
     @PostMapping("/room/{roomId}")
     public void pushMessage(@RequestParam String message, @PathVariable String roomId) {
         redisPublisher.publish(roomId, message);
     }
 
+    @Operation(summary = "매칭 취소", description = "매칭취소")
     // Topic 삭제 후 Listener 해제, Topic Map에서 삭제
-    @DeleteMapping("/room/{roomId}")
-    public void cancelMatching(@PathVariable String roomId, @AuthenticationPrincipal UserDetails userDetails) {
+    @DeleteMapping("/matching/cancel")
+    public void cancelMatching(@AuthenticationPrincipal UserDetails userDetails) {
+        String roomId = (String) redisTemplate.opsForValue().get(userDetails.getUsername());
+        if (roomId == null) {
+            throw new BaseExceptionHandler(ErrorCode.NOT_MATCHING);
+        }
         redisTemplate.delete(userDetails.getUsername());
         redisTemplate.opsForList().remove(roomId, 1, userDetails.getUsername());
     }
