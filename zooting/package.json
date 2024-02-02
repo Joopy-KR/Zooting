@@ -26,9 +26,12 @@
     "openvidu-browser": "^2.29.1",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
+    "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3",
     "three": "^0.160.1",
     "tw-elements": "^1.1.0",
     "vue": "^3.4.15",
+    "v3-click-outside": "^1.1.0",
     "vue-router": "^4.2.5",
     "vue-tailwind-datepicker": "^1.6.1"
   },

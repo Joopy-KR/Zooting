@@ -17,6 +17,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(fas)
 app.component('font-awesome-icon', FontAwesomeIcon)
 
+// click outside
+import clickOutside from 'v3-click-outside'
+app.use(clickOutside)
+
 app.config.globalProperties.$axios = axios
 app.use(router)
 app.use(pinia)

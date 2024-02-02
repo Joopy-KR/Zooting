@@ -28,7 +28,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useStore, useAccessTokenStore } from '@/stores/store'
-import { useRouter } from 'vue-router'
 
 const props = defineProps<{
   testResult: string

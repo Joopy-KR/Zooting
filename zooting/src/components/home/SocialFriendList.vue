@@ -19,7 +19,8 @@
           </div>
         </RouterLink>
         <div class="flex items-center">
-          <button @click="friendDelete(item)">삭제</button>
+          <button class="me-2" @click="entryChat(item)">DM</button>
+          <button @click="friendDelete(item.nickname)">삭제</button>
         </div>
       </li>
     </ul>
@@ -32,6 +33,7 @@ import { useAccessTokenStore } from '@/stores/store'
 import { RouterLink } from 'vue-router'
 
 const store = useAccessTokenStore()
+const emit = defineEmits(['entryChat'])
 
 const friendList = ref(store.friendList)
 
@@ -43,19 +45,8 @@ const getProfileLink = (value: string) => {
   return `/profile/${value}`
 }
 
-interface Friend {
-  email: string;
-  nickname: string;
-  gender: string;
-  animal: string;
-};
-
-const friendDelete = (item: Friend) => {
-  const payload = {
-    nickname: item.nickname,
-    email: item.email,
-  }
-  store.friendDelete(payload)
+const friendDelete = (nickname: string) => {
+  store.friendDelete(nickname)
 } 
 
 const getHeartClass = (gender: string) => {
@@ -65,6 +56,18 @@ const getHeartClass = (gender: string) => {
 const getProfileImage = (animal: string) => {
   return `/images/${animal}.png`
 }
+
+const entryChat = (item: Friend) => {
+  store.entryDmRoom(item)
+
+} 
+
+interface Friend {
+  email: string;
+  nickname: string;
+  gender: string;
+  animal: string;
+};
 </script>
 
 <style scoped>

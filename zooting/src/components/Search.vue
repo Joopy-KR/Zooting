@@ -77,7 +77,7 @@
               <RouterLink :to="getProfileLink(result.nickname)" class="hover:font-semibold ms-1">
               {{ result.nickname }}
               </RouterLink>
-              <button v-if="!isRequestInList(result) && isGlobal && !(result.nickname===store.userInfo?.nickname)" @click="sendFriendRequest(result)">
+              <button v-if="!isRequestInList(result) && !isFriendInList(result) && !(result.nickname===store.userInfo?.nickname)" @click="sendFriendRequest(result)">
                 <!-- 친구 신청 아이콘 -->
                 <svg
                   class="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700 me-1"
@@ -166,6 +166,10 @@ const sendFriendRequest = (result: Result) => {
 
 const isRequestInList = (result: Result) => {
   return store.requestToList.some(item => item.nickname === result.nickname) || store.requestFromList.some(item => item.nickname === result.nickname)
+}
+
+const isFriendInList = (result: Result) => {
+  return store.friendList.some(item => item.nickname === result.nickname)
 }
 
 const getProfileLink = (value: string) => {
