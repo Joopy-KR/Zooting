@@ -51,7 +51,7 @@ public class NoticeController {
     }
 
     @Operation(summary = "공지사항 조회")
-    @PreAuthorize("hasAnyRole(permitAll())")
+    @PreAuthorize("permitAll()")
     @GetMapping
     public ResponseEntity<BaseResponse<List<NoticeRes>>> selectNotice(
             @PageableDefault(sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable) {

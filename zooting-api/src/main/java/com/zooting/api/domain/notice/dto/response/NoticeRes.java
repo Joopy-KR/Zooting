@@ -10,5 +10,7 @@ public record NoticeRes(
         String title,
         @Schema(description = "글 내용")
         String content
+//        @Schema(description = "작성일")
+//        String createdAt
 ) {
 }
