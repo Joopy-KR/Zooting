@@ -1,8 +1,9 @@
 package com.zooting.api.global.redis.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zooting.api.global.redis.dto.RedisWaitRoom;
+import io.openvidu.java.client.Connection;
+import io.openvidu.java.client.OpenVidu;
+import io.openvidu.java.client.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.connection.Message;
@@ -11,8 +12,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -23,6 +22,7 @@ public class RedisSubscriber implements MessageListener {
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisMessageListenerContainer redisMessageListener;
     private final SimpMessageSendingOperations webSocketTemplate;
+    private final OpenVidu openVidu;
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
@@ -31,13 +31,16 @@ public class RedisSubscriber implements MessageListener {
             log.info("[onMessage] key: {}", key);
             Long listSize = redisTemplate.opsForList().size(key);
             if (listSize >= 4) { // 매칭완료 조건
+                /*매칭이 완료되면 OpenVidu Session Create*/
+                Session session = openVidu.createSession();
                 log.info("[onMessage] key: {}, listSize: {} 매칭성공", key, listSize);
                 for (int i = 0; i < 4; i++) {
                     String email = (String) redisTemplate.opsForList().leftPop(key);
                     log.info("[onMessage] email: {}", email);
+                    Connection connection = session.createConnection();
+                    log.info("[onMessage] connection: {}, token: {}", connection, connection.getToken());
                     //send token
-                    String ovToken = "ItsaToken"; // temp Token
-                    webSocketTemplate.convertAndSend("api/sub/dm/" + email, ovToken);
+                    webSocketTemplate.convertAndSend("api/sub/dm/" + email, connection);
                     //delete matched users
                     redisTemplate.delete(email);
                 }

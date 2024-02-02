@@ -80,6 +80,9 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
     implementation 'net.coobird:thumbnailator:0.4.8'
 
+    // OpenVidu
+    implementation 'io.openvidu:openvidu-java-client:2.29.0'
+
 }
 
 tasks.named('test') {

@@ -23,7 +23,7 @@ public class RedisPubSubService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    String startMatching(String loginEmail) {
+    public String startMatching(String loginEmail) {
         Set<String> waitRooms = redisTemplate.keys("room:*");
         /* 매칭 로직 */
         for (String waitRoom : waitRooms) {
@@ -37,16 +37,16 @@ public class RedisPubSubService {
             }
         }
         /* 매칭 실패시 */
-        createRoom(loginEmail);
-        return "startMatching";
+        return createRoom(loginEmail);
     }
 
-    public void createRoom(String loginEmail) {
+    public String createRoom(String loginEmail) {
         UUID randomUUID = UUID.randomUUID();
         ChannelTopic channel = new ChannelTopic("room:" + randomUUID);
         redisMessageListener.addMessageListener(redisSubscriber, channel);
         redisTemplate.opsForList().rightPush("room:" + randomUUID, loginEmail);
         redisTemplate.opsForValue().set(loginEmail, "room:" + randomUUID);
         redisPublisher.publish(channel.getTopic(), randomUUID.toString());
+        return "room:" + randomUUID;
     }
 }
