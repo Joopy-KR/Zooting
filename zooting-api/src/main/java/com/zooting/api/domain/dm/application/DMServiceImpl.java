@@ -138,7 +138,7 @@ public class DMServiceImpl implements DMService {
         return new DMRoomRes(
                 dmRoomId,
                 dmDtoList,
-                !dmDtoList.isEmpty() ? dmDtoList.get(dmDtoList.size() - 1).dmRoomId() : 0
+                !dmDtoList.isEmpty() ? dmDtoList.get(dmDtoList.size() - 1).dmId() : 0
         );
     }
 
