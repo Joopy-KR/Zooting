@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineProps, onMounted, watch, computed } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import EditMaskItem from "@/components/profile/EditMaskItem.vue";
 import IconMaskDropDown from "./IconMaskDropDown.vue";
@@ -132,15 +132,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex flex-col relative">
-    <div @click="moveToMyPage()" class="flex flex-col items-center ml-4 absolute top-5 left-5">
+  <div class="relative flex flex-col">
+    <div @click="moveToMyPage()" class="absolute flex flex-col items-center ml-4 top-5 left-5">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         stroke-width="1.5"
         stroke="currentColor"
-        class="w-10 h-10 stroke-orange-500 fill-rose-100 mx-auto hover:fill-rose-300"
+        class="w-10 h-10 mx-auto stroke-orange-500 fill-rose-100 hover:fill-rose-300"
       >
         <path
           stroke-linecap="round"
@@ -148,9 +148,9 @@ onMounted(async () => {
           d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
         />
       </svg>
-      <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
+      <p class="font-sans text-xs font-semibold tracking-tight text-center">마이페이지</p>
     </div>
-    <p class="lg:px-12 lg:pt-24 lg:pb-16 m-4 text-4xl font-bold tracking-tighter text-center">
+    <p class="m-4 text-4xl font-bold tracking-tighter text-center lg:px-12 lg:pt-24 lg:pb-16">
       아바타 동물상 선택
     </p>
     <div>
@@ -160,10 +160,10 @@ onMounted(async () => {
           class="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-11"
         >
           <div class="flex items-center justify-center">
-            <p class="pl-4 pr-2 py-2 text-2xl font-semibold text-center font-sans">
+            <p class="py-2 pl-4 pr-2 font-sans text-2xl font-semibold text-center">
               {{ userInfo?.point ? userInfo.point : 0 }}
             </p>
-            <p class="text-2xl pr-4 py-2 font-medium text-center font-sans">Point</p>
+            <p class="py-2 pr-4 font-sans text-2xl font-medium text-center">Point</p>
           </div>
         </span>
       </div>

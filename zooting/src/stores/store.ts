@@ -661,7 +661,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         },
       })
         .then((res) => {
-          // console.log(res);
+          console.log(res);
           dmInfo.value = res.data.result;
           receiverInfo.value = params;
         })
@@ -697,6 +697,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         },
       })
         .then((res) => {
+          console.log(res)
           if (dmInfo.value) {
             dmInfo.value.cursor = res.data.result.cursor;
             dmInfo.value.dmList = [...dmInfo.value.dmList, ...res.data.result.dmList];
@@ -794,6 +795,13 @@ interface DM {
 
 interface DmItem {
   dmRoomId: number;
+  id: number;
   sender: string;
   message: string;
+  dmFiles: File[];
+}
+
+interface File {
+  fileId: number;
+  thumbnailUrl: string;
 }

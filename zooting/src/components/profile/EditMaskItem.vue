@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ListBulletIcon } from "@heroicons/vue/16/solid";
-import { defineProps } from "vue";
 
 interface Mask {
   maskId: number;

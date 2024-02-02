@@ -111,7 +111,6 @@ watch(() => props.open, () => {
   if (!props.open) {
     isOpenFileInput.value = false
     fileInput.value = null
-    dmInfo.value = null
   } else {
     connect()
   }
@@ -137,7 +136,7 @@ const isSender = (sender: string) => {
 
 const handleChatScroll = () => {
   if (chatRef.value) {
-    const threshold = 0.6 
+    const threshold = 0.8
     const isAtBottom = Math.abs(chatRef.value.clientHeight - chatRef.value.scrollHeight - chatRef.value.scrollTop) < threshold
     if (isAtBottom) {
       refreshChat()
@@ -199,50 +198,50 @@ interface Friend {
   gender: string;
 }
 
-// // Web socket -----------------------------------------------
-// const socket = ref<any>(null)
-// const stompClient = ref<any>(null)
-// const connection = ref<boolean>(false)
+// Web socket -----------------------------------------------
+const socket = ref<any>(null)
+const stompClient = ref<any>(null)
+const connection = ref<boolean>(false)
 
-// // 소켓 통신 연결 요청
-// const connect = () => {
-//   if (!store.getAccessToken()) {
-//     console.log("not found access token")
-//     return
-//   }
-//   socket.value = new SockJS(`http://localhost:8080/ws/dm`)
-//   stompClient.value = Stomp.over(socket.value)
+// 소켓 통신 연결 요청
+const connect = () => {
+  if (!store.getAccessToken()) {
+    console.log("not found access token")
+    return
+  }
+  socket.value = new SockJS(`https://i10a702.p.ssafy.io/ws/dm`)
+  stompClient.value = Stomp.over(socket.value)
 
-//   var headers = {
-//     "Authorization": `Bearer ${store.getAccessToken()}`,
-//   };
-//   stompClient.value.connect(
-//       headers,
-//       () => {
-//         console.log("OKOKOKO");
-//         // onConnected(dmRoomId.value)
-//       },
-//       () => {
-//         console.log("Could not WebSocket server. Retry!")
-//       }
-//   )
-// }
+  var headers = {
+    "Authorization": `Bearer ${store.getAccessToken()}`,
+  };
+  stompClient.value.connect(
+      headers,
+      () => {
+        console.log("OKOKOKO")
+        // onConnected(dmRoomId.value)
+      },
+      () => {
+        console.log("Could not WebSocket server. Retry!")
+      }
+  )
+}
 
-// // 소켓 클라이언트 Subscribe 요청
-// const onConnected = () => {
-//   stompClient.value.subscribe("/api/sub", "zyo0720@kakao.com")
-//   console.log("111111111111111")
-//   // connection.value = true;
-//   // stompClient.value.send(
-//   //     "/pub/chat/enter",
-//   //     {},
-//   //     JSON.stringify({
-//   //       roomId: roomId,
-//   //       sender: me.value.nickname,
-//   //       senderId: me.value.id,
-//   //     })
-//   // );
-// }
+// 소켓 클라이언트 Subscribe 요청
+const onConnected = () => {
+  stompClient.value.subscribe("/api/sub", "zyo0720@kakao.com")
+  console.log("111111111111111")
+  // connection.value = true;
+  // stompClient.value.send(
+  //     "/pub/chat/enter",
+  //     {},
+  //     JSON.stringify({
+  //       roomId: roomId,
+  //       sender: me.value.nickname,
+  //       senderId: me.value.id,
+  //     })
+  // );
+}
 </script>
 
 <style scoped>
@@ -255,6 +254,7 @@ interface Friend {
 .dm__chat {
 @apply flex-grow mx-10 flex flex-col-reverse relative;
 overflow-y: auto;
+min-height: 300px;
 }
 .dm__chat::-webkit-scrollbar {
   @apply hidden;

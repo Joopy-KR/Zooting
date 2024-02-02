@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { checkIsMyProfileApi } from "@/api/profile";
-import { ref, defineProps, onMounted, watch } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -125,7 +125,7 @@ watch(
       </div>
       <!-- 나의 동물상 마스크 -->
       <div class="flex justify-center p-4">
-        <div class="relative p-2 bg-gray-100 rounded-full w-2/5">
+        <div class="relative w-2/5 p-2 bg-gray-100 rounded-full">
           <img :src="userInfo!.maskImgUrl" class="w-full p-2" />
           <div v-if="isMyProfile" class="absolute bottom-1 right-1" @click="moveToMaskList">
             <svg
@@ -145,19 +145,19 @@ watch(
     <div class="mx-8">
       <div class="flex items-center justify-center p-2">
         <p
-          class="lg:text-2xl font-semibold underline text-stone-800 decoration-pink-300 decoration-wavy"
+          class="font-semibold underline lg:text-2xl text-stone-800 decoration-pink-300 decoration-wavy"
         >
           {{ userInfo?.nickname }}
         </p>
       </div>
       <div class="flex flex-row px-2 py-3">
-        <div class="flex items-center justify-center w-1/3 lg:text-xl font-medium">
+        <div class="flex items-center justify-center w-1/3 font-medium lg:text-xl">
           {{ userInfo!.gender === "man" ? "남자" : "여자" }}
         </div>
-        <div class="flex items-center justify-center w-1/3 lg:text-xl font-medium">
+        <div class="flex items-center justify-center w-1/3 font-medium lg:text-xl">
           {{ ageGroup }}
         </div>
-        <div class="flex items-center justify-center w-1/3 lg:text-xl font-medium">
+        <div class="flex items-center justify-center w-1/3 font-medium lg:text-xl">
           {{ userInfo?.address }}
         </div>
       </div>
@@ -165,10 +165,10 @@ watch(
         <p class="">{{ userInfo!.animal }}</p>
       </div>
     </div>
-    <div class="w-full h-1/2 overflow-auto">
+    <div class="w-full overflow-auto h-1/2">
       <div class="flex items-end justify-center h-max-full">
         <div class="relative w-2/3 m-4 shadow-inner rounded-3xl shadow-pink-200">
-          <div class="grid grid-cols-1 gap-4 py-6 px-8 sm:grid-cols-2">
+          <div class="grid grid-cols-1 gap-4 px-8 py-6 sm:grid-cols-2">
             <div
               v-for="interest in interests"
               :key="interest"

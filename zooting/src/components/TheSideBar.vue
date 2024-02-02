@@ -128,8 +128,9 @@ const getProfileImage = () => {
 
 const closeTab = () => {
   isSideTabOpen.value = false
-  store.isEntryDmRoom = false
   isOpenProfileMenu.value = false
+  store.isEntryDmRoom = false
+  store.dmInfo = null
 }
 
 const logout = () => {

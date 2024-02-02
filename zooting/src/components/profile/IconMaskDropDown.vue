@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from "vue";
+import { ref } from "vue";
 
 const props = defineProps({
   animalType: String,
@@ -43,7 +43,7 @@ const toggleShowAllBadge = () => {
   <div class="relative">
     <div class="absolute top-0 left-3">
       <div class="flex flex-row">
-        <div class="flex justify-center items-start px-2 py-1">
+        <div class="flex items-start justify-center px-2 py-1">
           <font-awesome-icon
             :icon="['fas', allowDirection]"
             size="2x"
