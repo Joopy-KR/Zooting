@@ -44,8 +44,8 @@ public class FileController {
     @Transactional
     @Operation(summary = "파일 삭제", description = "파일 삭제")
     @DeleteMapping("/delete")
-    public ResponseEntity<BaseResponse<String>> deleteFile(@RequestBody FileReq fileReq) {
-        fileService.removeFile(fileReq.fileName(), fileReq.fileDir());
+    public ResponseEntity<BaseResponse<String>> deleteFile(@RequestParam Long fileId) {
+        fileService.removeFile(fileId);
         return BaseResponse.success(
                 SuccessCode.DELETE_SUCCESS,
                 "파일 삭제 성공"
@@ -53,9 +53,9 @@ public class FileController {
     }
 
     @Operation(summary = "파일 다운로드", description = "파일 다운로드")
-    @GetMapping("/download/{fileName}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String fileName) throws IOException {
-        var downloadFile = fileService.downloadFile(fileName);
+    @GetMapping("/download/{fileId}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable Long fileId) throws IOException {
+        var downloadFile = fileService.downloadFile(fileId);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         httpHeaders.setContentDispositionFormData("attachment", (String) downloadFile[1]);

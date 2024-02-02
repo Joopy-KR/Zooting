@@ -46,17 +46,6 @@ public class MemberAndBackgroundUsecase {
         bgInventory.setMember(member);
         backgroundInventoryRepository.save(bgInventory);
         return true;
-
-
     }
-    public List<MemberAndBackgroundRes> findAllBackgroundInventory(String userId) {
-        Member member = memberRepository.findMemberByEmail(userId).orElseThrow(()->
-                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        return backgroundInventoryRepository.findAllByMember(member)
-                .stream().map(back-> new MemberAndBackgroundRes(
-                        back.getId(),
-                        back.getBackground().getFile().getFileName(),
-                        back.getBackground().getFile().getImgUrl(),
-                        back.getBackground().getPrice()) ).toList();
-    }
+
 }

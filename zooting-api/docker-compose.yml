@@ -1,15 +1,16 @@
-version: "4"
+version: "3"
 services:
   springboot:
-    image: duckbill413/zooting-docker-api:latest
     container_name: zooting-api
+    image: duckbill413/zooting-docker-api:latest
     ports:
       - "8080:8080"
     environment:
       TZ: "Asia/Seoul"
     networks:
       - zooting_net
-    restart: "always"
+    volumes:
+      - /home/ec2-user/logs:/logs
 
   redis:
     image: redis:alpine
@@ -21,19 +22,6 @@ services:
     networks:
       - zooting_net
     restart: always
-
-#  nginx:
-#    image: duckbill413/zooting-docker-nginx:latest
-#    container_name: zooting-nginx
-#    ports:
-#      - "80:80"
-#    build:
-#      - ./nginx
-#    depends_on:
-#      - springboot
-#    networks:
-#      - zooting_net
-#    restart: "always"
 
 networks:
   zooting_net:
