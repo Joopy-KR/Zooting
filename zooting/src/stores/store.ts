@@ -465,13 +465,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청
-  const friendRequest = function (payload: { email: string; nickname: string }) {
-    const { email, nickname } = payload;
+  const friendRequest = function (params: string) {
+    const nickname = params;
     axios({
       method: "post",
       url: `${API_URL}/api/friends`,
-      data: {
-        email,
+      params: {
         nickname,
       },
       headers: {
@@ -488,13 +487,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 수락
-  const friendAccept = function (payload: { email: string; nickname: string }) {
-    const { email, nickname } = payload;
+  const friendAccept = function (params: string) {
+    const nickname = params;
     axios({
       method: "post",
       url: `${API_URL}/api/friends/accept`,
-      data: {
-        email,
+      params: {
         nickname,
       },
       headers: {
@@ -512,13 +510,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 거절
-  const friendReject = function (payload: { email: string; nickname: string }) {
-    const { email, nickname } = payload;
+  const friendReject = function (params: string) {
+    const nickname = params;
     axios({
       method: "delete",
-      url: `${API_URL}/api/friends/request/reject`,
-      data: {
-        email,
+      url: `${API_URL}/api/friends/reject`,
+      params: {
         nickname,
       },
       headers: {
@@ -535,13 +532,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 취소
-  const friendRequestCancel = function (payload: { email: string; nickname: string }) {
-    const { email, nickname } = payload;
+  const friendRequestCancel = function (params: string) {
+    const nickname = params;
     axios({
       method: "delete",
-      url: `${API_URL}/api/friends/request/cancel`,
-      data: {
-        email,
+      url: `${API_URL}/api/friends/cancel`,
+      params: {
         nickname,
       },
       headers: {
@@ -558,12 +554,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 차단 해제
-  const blockCancel = function (payload: string) {
-    const nickname = payload;
+  const blockCancel = function (params: string) {
+    const nickname = params;
     axios({
       method: "delete",
       url: `${API_URL}/api/block`,
-      data: {
+      params: {
         nickname,
       },
       headers: {
@@ -580,13 +576,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 삭제
-  const friendDelete = function (payload: { email: string; nickname: string }) {
-    const { email, nickname } = payload;
+  const friendDelete = function (params: string) {
+    const nickname = params;
     axios({
       method: "delete",
       url: `${API_URL}/api/friends/delete`,
-      data: {
-        email,
+      params: {
         nickname,
       },
       headers: {

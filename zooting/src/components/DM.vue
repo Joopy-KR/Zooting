@@ -58,25 +58,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useAccessTokenStore } from "../stores/store"
-// import SockJS from 'sockjs-client'
-// import Stomp from 'stompjs'
 
 const store = useAccessTokenStore()
 const emit = defineEmits(['closeTab'])
-
-// const socket = new SockJS("http://localhost:8080/ws/dm")
-// const stompClient = ref<any>(null)
-// stompClient.value = Stomp.over(socket)
-
-// stompClient.value.connect(
-//   {
-//     "Authorization": `Bearer ${store.getAccessToken()}`,
-//   }, 
-//   () => {
-//     console.log('Connected to WebSocket')
-// })
 
 const DmInfo = ref<DM | null>(store.DmInfo)
 const receiverInfo = ref<Friend | null>(store.receiverInfo)
@@ -137,24 +123,6 @@ const refreshChat = () => {
     store.cursorDmRoom(params)
   }
 }
-
-// const socket = new SockJS("/ws/dm")
-// const stompClient = Stomp.over(socket)
-
-// stompClient.connect({}, () => {
-//     console.log('Connected to WebSocket')
-
-//     // Subscribe to the WebSocket topic
-//     stompClient.subscribe('/api/sub/dm/' + sender, (message) => {
-//         const dmReq = JSON.parse(message.body) // 받은 메시지를 처리
-//         console.log('Received DM:', dmReq)
-
-//         // // 출력할 메시지를 추가
-//         // const messagesDiv = document.getElementById('messages')
-//         // messagesDiv.innerHTML += `<p>${dmReq.sender}: ${dmReq.message}</p>`
-
-//     })
-// })
 
 const sendMessage = () => {
   if (messageInput.value) {

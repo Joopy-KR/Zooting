@@ -20,7 +20,7 @@
         </RouterLink>
         <div class="flex items-center">
           <button class="me-2" @click="entryChat(item)">DM</button>
-          <button @click="friendDelete(item)">삭제</button>
+          <button @click="friendDelete(item.nickname)">삭제</button>
         </div>
       </li>
     </ul>
@@ -45,12 +45,8 @@ const getProfileLink = (value: string) => {
   return `/profile/${value}`
 }
 
-const friendDelete = (item: Friend) => {
-  const payload = {
-    nickname: item.nickname,
-    email: item.email,
-  }
-  store.friendDelete(payload)
+const friendDelete = (nickname: string) => {
+  store.friendDelete(nickname)
 } 
 
 const getHeartClass = (gender: string) => {
