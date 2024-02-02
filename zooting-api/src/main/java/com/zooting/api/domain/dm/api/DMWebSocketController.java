@@ -30,6 +30,6 @@ public class DMWebSocketController {
     public void receiveAndSendMessage(DMReq dmReq, SimpMessageHeaderAccessor headerAccessor) {
         log.info("SEND_CHAT_SUCCESS (201 CREATED) ::");
         dmService.saveDM(dmReq);
-        template.convertAndSend("api/sub/dm/" + dmReq.receiver(), dmReq);
+        template.convertAndSend("/api/sub/dm/" + dmReq.receiver(), dmReq);
     }
 }
