@@ -1,7 +1,6 @@
 package com.zooting.api.application.usecase;
 
-import com.zooting.api.application.dto.request.ReportRejectReq;
-import com.zooting.api.application.dto.request.ReportAcceptReq;
+import com.zooting.api.application.dto.request.DisabledAndReportReq;
 import com.zooting.api.domain.disabled.dao.DisabledRepository;
 import com.zooting.api.domain.disabled.entity.DisabledMember;
 import com.zooting.api.domain.report.dao.ReportRepository;
@@ -18,12 +17,12 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
-public class DisabledAndReportAndMemberUsecase {
+public class DisabledAndReportUsecase {
     private final ReportRepository reportRepository;
     private final DisabledRepository disabledRepository;
 
     @Transactional
-    public void acceptReport(ReportAcceptReq reportReq) {
+    public void acceptReport(DisabledAndReportReq reportReq) {
         ReportList reportList = reportRepository.findById(reportReq.reportId())
                 .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_ERROR)));
 
@@ -47,11 +46,8 @@ public class DisabledAndReportAndMemberUsecase {
         disabledRepository.save(disabled);
     }
     @Transactional
-    public void rejectReport(ReportRejectReq reportReq) {
-        ReportList reportList = reportRepository.findById(reportReq.reportId())
-                .orElseThrow(() -> new BaseExceptionHandler((ErrorCode.NOT_FOUND_USER)));
+    public void rejectReport(Long reportId) {
         // 신고 수락 시 신고 목록 삭제
-        reportRepository.deleteById(reportReq.reportId());
-
+        reportRepository.deleteById(reportId);
     }
 }

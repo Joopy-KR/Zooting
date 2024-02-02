@@ -46,26 +46,4 @@ public class FriendRequestController {
                 friendResList
         );
     }
-
-    //받은 친구요청 거절
-    @Operation(summary = "친구 요청 거절", description = "로그인 한 사람이 친구 요청 거절")
-    @DeleteMapping("reject")
-    public ResponseEntity<BaseResponse<String>> rejectFriendRequest(@Valid @NotNull @RequestBody FriendReq friendReq, @AuthenticationPrincipal UserDetails userDetails){
-        friendRequestService.rejectFriendRequest(userDetails.getUsername(), friendReq.email());
-        return BaseResponse.success(
-                SuccessCode.CHECK_SUCCESS,
-                "친구 요청 거절 성공"
-        );
-    }
-    //보낸 친구요청 취소
-
-    @Operation(summary = "친구 요청 취소", description = "로그인 한 사람이 보낸 친구 요청 취소")
-    @DeleteMapping("cancel")
-    public ResponseEntity<BaseResponse<String>> cancelFriendRequest(@Valid @NotNull @RequestBody FriendReq friendReq, @AuthenticationPrincipal UserDetails userDetails){
-        friendRequestService.rejectFriendRequest(friendReq.email(), userDetails.getUsername()); // reject 매개변수를 거꾸로 주면 요청 취소
-        return BaseResponse.success(
-                SuccessCode.CHECK_SUCCESS,
-                "친구 요청 취소 성공"
-        );
-    }
 }

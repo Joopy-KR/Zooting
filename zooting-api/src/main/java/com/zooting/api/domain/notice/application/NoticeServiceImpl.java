@@ -1,7 +1,6 @@
 package com.zooting.api.domain.notice.application;
 
 import com.zooting.api.domain.notice.dao.NoticeRepository;
-import com.zooting.api.domain.notice.dto.request.NoticeDeleteReq;
 import com.zooting.api.domain.notice.dto.request.NoticeSaveReq;
 import com.zooting.api.domain.notice.dto.request.NoticeUpdateReq;
 import com.zooting.api.domain.notice.dto.response.NoticeRes;
@@ -44,9 +43,7 @@ public class NoticeServiceImpl implements NoticeService{
 
     @Override
     @Transactional
-    public void deleteNotice(NoticeDeleteReq noticeDeleteReq) {
-        noticeRepository.deleteNoticeById(noticeDeleteReq.noticeId());
+    public void deleteNotice(Long noticeId) {
+        noticeRepository.deleteNoticeById(noticeId);
     }
-
-
 }

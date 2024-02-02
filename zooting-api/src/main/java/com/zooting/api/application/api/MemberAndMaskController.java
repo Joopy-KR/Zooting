@@ -1,6 +1,6 @@
 package com.zooting.api.application.api;
 
-import com.zooting.api.application.usecase.MemberAndMaskUsecase;
+import com.zooting.api.application.usecase.MaskAndMaskInventoryUsecase;
 import com.zooting.api.application.dto.request.MemberAndMaskReq;
 import com.zooting.api.application.dto.response.MemberAndMaskRes;
 import com.zooting.api.global.common.BaseResponse;
@@ -20,9 +20,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/mask")
 @RequiredArgsConstructor
-@Tag(name="멤버, 마스크", description = "멤버와 마스크 관련 API")
+@Tag(name="멤버와 마스크", description = "멤버와 마스크 관련 API")
 public class MemberAndMaskController {
-    private final MemberAndMaskUsecase memberAndMaskUsecase;
+    private final MaskAndMaskInventoryUsecase memberAndMaskUsecase;
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping
     @Operation(summary = "마스크 구매",
@@ -45,17 +45,4 @@ public class MemberAndMaskController {
         );
 
     }
-    @PreAuthorize("hasAnyRole('USER')")
-    @GetMapping
-    @Operation(summary = "해금 마스크 조회")
-    public ResponseEntity<BaseResponse<List<MemberAndMaskRes>>> findAllMaskInventory(
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        List<MemberAndMaskRes> result = memberAndMaskUsecase.findAllMaskInventory(userDetails.getUsername());
-        return BaseResponse.success(
-                SuccessCode.SELECT_SUCCESS,
-                result
-        );
-    }
-
 }

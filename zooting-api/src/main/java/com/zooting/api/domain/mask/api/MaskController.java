@@ -29,7 +29,11 @@ import java.util.List;
 public class MaskController {
     final private MaskService maskService;
 
-    @Operation(summary = "모든 마스크 조회")
+    @Operation(
+            summary = "모든 마스크 조회",
+            description = "page, size 입력시 페이징된 정보 조회" +
+                    "animal 입력시 해당 동물 마스크 조회"
+    )
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping
     public ResponseEntity<BaseResponse<MaskPageRes>> findMasks(

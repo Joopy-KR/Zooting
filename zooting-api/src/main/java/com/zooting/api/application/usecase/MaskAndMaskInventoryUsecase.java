@@ -18,7 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MemberAndMaskUsecase {
+public class MaskAndMaskInventoryUsecase {
     final private MemberRepository memberRepository;
     final private MaskRepository maskRepository;
     final private MaskInventoryRepository maskInventoryRepository;
@@ -48,18 +48,4 @@ public class MemberAndMaskUsecase {
 
     }
 
-    @Transactional
-    public List<MemberAndMaskRes> findAllMaskInventory(String userId) {
-        Member member = memberRepository.findMemberByEmail(userId).orElseThrow(()->
-                new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        return maskInventoryRepository.findAllByMember(member)
-                .stream().map(myMask-> new MemberAndMaskRes(
-                        myMask.getId(),
-                        myMask.getMask().getAnimal(),
-                        myMask.getMask().getDescription(),
-                        myMask.getMask().getPrice(),
-                        myMask.getMask().getFile().getFileName(),
-                        myMask.getMask().getFile().getImgUrl()
-                         )).toList();
-    }
 }

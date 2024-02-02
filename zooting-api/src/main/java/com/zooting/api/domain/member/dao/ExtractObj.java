@@ -18,6 +18,6 @@ public class ExtractObj {
     List<String> blockFromList;
     List<String> friendList;
     List<String> memberIdeals;
-    Date memberBirth;
+    Integer memberBirthYear;
     Integer rangeYear;
 }
