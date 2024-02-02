@@ -32,7 +32,9 @@ public class WebSecurityConfig {
     private final JwtService jwtService;
     private static final String[] URL_WHITE_LIST = {"/error", "/login", "/favicon.ico",
             "/health", "/api-docs/**", "/swagger-ui/**",
-            "/swagger-resources/**", "/swagger-ui.html", "/api/token/**"};
+            "/swagger-resources/**", "/swagger-ui.html", "/api/token/**",
+            "/ws/dm/**", "/api/sub/**", "/api/pub/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

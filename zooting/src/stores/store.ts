@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
+import type {Friend, Personality, TokenState, UserInfo} from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -234,9 +235,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const getUserInfo = async function () {
     await loadMyInfoApi(
       ({ data }: any) => {
-        console.log("Load my info api", data);
         userInfo.value = data.result;
-        console.log(userInfo.value);
+
         if (!isCompletedSignUp) {
           router.push({ name: "signup" });
         } else if (!userInfo.value?.animal) {
@@ -248,7 +248,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         }
       },
       (error: any) => {
-        console.log(error);
         router.replace({ name: "signin" });
       }
     );
@@ -256,11 +255,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 로그인 상태 판별
   const isLogin = computed(() => {
-    if (state.value.accessToken) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!state.value.accessToken;
   });
 
   // 로그아웃
@@ -709,40 +704,3 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     searchResult,
   };
 });
-
-interface TokenState {
-  accessToken: string | null;
-  refreshToken: string | null;
-}
-
-interface Personality {
-  [key: string]: {
-    title: string;
-    match: string;
-    content: string[];
-  };
-}
-
-interface UserInfo {
-  email: string | null;
-  gender: string | null;
-  nickname: string | null;
-  birth: string | null;
-  address: string | null;
-  point: Number | null;
-  personality: string | null;
-  animal: string | null;
-  interest: string | null;
-  introduce: string | null;
-  idealAnimal: string;
-  backgroundImgUrl: string | null;
-  mbti: string | null;
-  maskImgUrl: string | null;
-}
-
-interface Friend {
-  email: string;
-  nickname: string;
-  animal: string;
-  gender: string;
-}

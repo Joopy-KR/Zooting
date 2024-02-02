@@ -1,7 +1,7 @@
-package com.zooting.api.application.api;
+package com.zooting.api.domain.report.api;
 
-import com.zooting.api.application.dto.request.MemberAndReportReq;
-import com.zooting.api.application.usecase.MemberAndReportUsecase;
+import com.zooting.api.domain.report.application.ReportService;
+import com.zooting.api.domain.report.dto.ReportReq;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,19 +18,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/reports")
+@RequestMapping("api/reports")
 @RequiredArgsConstructor
-@Tag(name="멤버와 신고", description = "멤버와 신고 관련 API")
-public class MemberAndReportController {
-    private final MemberAndReportUsecase memberAndReportUsecase;
+@Tag(name="신고", description = "신고 관련 API")
 
+public class ReportController {
+    final private ReportService reportService;
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping
     @Operation(summary = "멤버 신고")
     public ResponseEntity<BaseResponse<String>> insertReport(
-            @Valid @RequestBody MemberAndReportReq reportReq,
+            @Valid @RequestBody ReportReq reportReq,
             @AuthenticationPrincipal UserDetails userDetails) {
-        memberAndReportUsecase.insertReport(userDetails.getUsername(), reportReq);
+        reportService.insertReport(reportReq);
         return BaseResponse.success(
                 SuccessCode.INSERT_SUCCESS,
                 reportReq.email() + "에 대한 신고 완료"

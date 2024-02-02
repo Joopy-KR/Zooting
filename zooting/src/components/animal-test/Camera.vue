@@ -151,7 +151,8 @@
 <script setup type="text/javascript" lang="ts">
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import { ref, onMounted, nextTick, computed } from "vue";
-import { FaceDetector, FilesetResolver, Detection } from "@mediapipe/tasks-vision";
+import { FaceDetector, FilesetResolver } from "@mediapipe/tasks-vision";
+import type {Detection} from "@mediapipe/tasks-vision";
 import { useAccessTokenStore } from "@/stores/store";
 
 const emit = defineEmits(["workFinished"]);
@@ -159,7 +160,7 @@ const store = useAccessTokenStore()
 
 // 얼굴인식 변수
 let faceDetector: FaceDetector;
-let runningMode: string = "IMAGE";
+let runningMode: any = "IMAGE";
 const videoRef = ref <HTMLVideoElement | null> (null);
 
 const is_started = ref(false); // 카메라 로딩을 판단하는 변수 (false시 로딩중을 출력)
@@ -244,6 +245,8 @@ const predictWebcam = async () => {
 
   let startTimeMs = performance.now();
 
+  if (!videoRef.value) return;
+
   // detectForVideo 함수를 사용하여 얼굴 추적
   if (videoRef.value.currentTime !== lastVideoTime) {
     lastVideoTime = videoRef.value.currentTime;
@@ -268,7 +271,7 @@ const displayVideoDetections = async (detections: Detection[]) => {
   for (let detection of detections) {
     isPlaying.value = true;
     // 유사도가 89 이상이면 촬영 버튼 출력
-    if (Math.round(parseFloat(detection.categories[0].score) * 100) >= 90) {
+    if (Math.round(parseFloat(String(detection.categories[0].score)) * 100) >= 90) {
       // 유사도가 89 이상일때 촬영버튼 출력
       showButton.value = true;
     } else {
@@ -282,7 +285,7 @@ const displayVideoDetections = async (detections: Detection[]) => {
 };
 
 // 동물상 분석 모델
-let model, webcam;
+let model:any, webcam:any;
 
 // 남자는 강아지, 고양이, 토끼, 곰, 공룡
 // 여자는 강아지, 고양이, 토끼, 사슴, 꼬북이
@@ -384,6 +387,7 @@ const predict = async () => {
 
 // 촬영 버튼 클릭시 실행
 const stop = function () {
+  if (!videoRef.value) return;
   is_working = false;
   videoRef.value.pause();
 };

@@ -31,16 +31,18 @@ public class FileServiceImpl implements FileService {
 
     @Transactional
     @Override
-    public void removeFile(String fileName, String fileDir) {
-        fileRepository.deleteByFileName(fileName);
-        s3Util.remove(fileDir);
+    public void removeFile(Long fileId) {
+        File deleteFile = fileRepository.findById(fileId).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_S3FILE));
+        s3Util.remove(deleteFile.getFileDir());
+        fileRepository.deleteById(fileId);
     }
 
     @Override
-    public Object[] downloadFile(String fileName) throws IOException {
-        File file = fileRepository.findByFileName(fileName).orElseThrow(() ->
+    public Object[] downloadFile(Long fileId) throws IOException {
+        File file = fileRepository.findById(fileId).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_S3FILE));
-        return new Object[]{s3Util.downloadFile(file.getFileDir()),
+        return new Object[]{s3Util.downloadFile(file.getFileDir() + file.getFileName()),
                 file.getOriginFileName()};
     }
 }

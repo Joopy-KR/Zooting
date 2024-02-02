@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.1'
     id 'io.spring.dependency-management' version '1.1.4'
+    //restdoc - asciidoctor
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
 group = 'com.zooting'
@@ -10,8 +12,16 @@ version = '0.0.1-SNAPSHOT'
 java {
     sourceCompatibility = '17'
 }
+ext {
+    snippetsDir = file('./build/generated-snippets')
+}
+test {
+    useJUnitPlatform()
+    outputs.dir snippetsDir
+}
 
 configurations {
+    asciidoctorExt
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -80,9 +90,28 @@ dependencies {
     // aws s3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
     implementation 'net.coobird:thumbnailator:0.4.8'
-
+    // mockito - restdoc
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
+asciidoctor {
+    inputs.dir snippetsDir
+    // asciidoctor task 를 실행할 때, test task 를 먼저 실행한다.
+    dependsOn test
+}
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+task copyDocument(type: Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
+}
+build {
+    dependsOn copyDocument
+}
+

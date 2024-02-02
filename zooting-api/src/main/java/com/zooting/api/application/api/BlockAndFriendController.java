@@ -1,7 +1,7 @@
 package com.zooting.api.application.api;
 
 import com.zooting.api.application.dto.request.MemberAndBlockReq;
-import com.zooting.api.application.usecase.MemberAndBlockAndFriendUsecase;
+import com.zooting.api.application.usecase.BlockAndFriendUsecase;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/block")
 @RequiredArgsConstructor
-@Tag(name="멤버와 차단, 친구", description = "멤버, 차단, 친구 관련 API")
-public class MemberAndBlockAndFriendController {
+@Tag(name="차단과 친구", description = "차단, 친구 관련 API")
+public class BlockAndFriendController {
 
-    private final MemberAndBlockAndFriendUsecase memberAndBlockAndFriendUsecase;
+    private final BlockAndFriendUsecase memberAndBlockAndFriendUsecase;
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping
     @Operation(
@@ -40,9 +40,9 @@ public class MemberAndBlockAndFriendController {
     @DeleteMapping
     @Operation(summary = "차단 해제")
     public ResponseEntity<BaseResponse<String>> deleteBlockMember(
-            @Valid @RequestBody MemberAndBlockReq blockReq,
+            @Valid @RequestParam String nickname,
             @AuthenticationPrincipal UserDetails userDetails) {
-        memberAndBlockAndFriendUsecase.deleteBlock(userDetails.getUsername(), blockReq);
+        memberAndBlockAndFriendUsecase.deleteBlock(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.DELETE_SUCCESS,
                 "멤버 차단 해제 완료"
