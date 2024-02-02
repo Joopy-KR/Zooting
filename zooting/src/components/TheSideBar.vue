@@ -53,7 +53,8 @@
       <div class="side-tab" v-show="isSideTabOpen" v-click-outside="ClickOustsideTab">
         <section v-show="currentSideTab == 'messagesTab'" class="h-full">
             <DM 
-              @close-tab="closeTab()"  
+              @close-tab="closeTab()"
+              :open="isSideTabOpen"  
             />
         </section>
 
