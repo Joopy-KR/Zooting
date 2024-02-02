@@ -3,7 +3,6 @@ package com.zooting.api.global.jwt.controller;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import com.zooting.api.global.jwt.dto.TokenDto;
-import com.zooting.api.global.jwt.service.JwtCreator;
 import com.zooting.api.global.jwt.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -23,22 +22,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/token")
 @RequiredArgsConstructor
 public class JwtController {
+
     private final JwtService jwtService;
-    private final JwtCreator jwtCreator;
+
     @Operation(summary = "액세스 토큰 재발급 요청하기", description = "액세스 토큰 없거나 만료됐으면 재발급 요청하기")
     @PostMapping("/refresh")
-    public ResponseEntity<BaseResponse<TokenDto>> rotateJwtTokensRequest(@Valid @NotNull @CookieValue(value = "refresh-token") String refreshToken){
+    public ResponseEntity<BaseResponse<TokenDto>> rotateJwtTokensRequest(
+            @Valid @NotNull @CookieValue(value = "refresh-token") String refreshToken) {
         TokenDto tokenDto = jwtService.rotateJwtTokens(refreshToken);
-        ResponseCookie responseCookie = jwtCreator.buildResponseCookie(tokenDto.refreshToken());
-
+        ResponseCookie responseCookie = jwtService.buildResponseCookie(tokenDto.refreshToken());
         SuccessCode code = SuccessCode.CHECK_SUCCESS;
-        return ResponseEntity
-                    .status(code.getStatus())
-                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-                    .body(new BaseResponse<>(
-                            tokenDto,
-                            code.getStatus(),
-                            code.getMessage()
-                    ));
-        }
+        return ResponseEntity.status(code.getStatus()).header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                .body(new BaseResponse<>(tokenDto, code.getStatus(), code.getMessage()));
+    }
 }

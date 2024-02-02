@@ -1,9 +1,9 @@
 package com.zooting.api.global.security.handler;
+
 import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
-import com.zooting.api.global.jwt.service.JwtCreator;
-import com.zooting.api.global.jwt.service.JwtRepository;
+import com.zooting.api.global.jwt.service.JwtService;
 import com.zooting.api.global.security.userdetails.CustomUserDetails;
 import com.zooting.api.global.security.userdetails.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,10 +25,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 @RequiredArgsConstructor
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
-    private final JwtCreator jwtCreator;
-    private final JwtRepository jwtRepository;
 
-    private final CustomUserDetailsService customUserDetailsService;
+    private final JwtService jwtService;
+    private final CustomUserDetailsService userDetailsService;
 
     @Value("${client.redirect-url.success}")
     private String REDIRECT_URI_SUCCESS;
@@ -38,20 +37,16 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException {
+            Authentication authentication) throws IOException {
 
         log.info("5. 유저의 소셜 정보에서 이메일을 불러옵니다.");
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = (String) oAuth2User.getAttributes().get("email");
+        CustomUserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-        log.info("6. 유저 이메일을 통해 DB에서 유저 정보를 불러옵니다.");
-        CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-
-        log.info("7. 유저에게 Access Token과 Refresh Token을 발급합니다.");
-        String accessToken = jwtCreator.createAccessToken(userDetails);
-        String refreshToken = jwtCreator.createRefreshToken(userDetails);
-        jwtRepository.save(email, refreshToken); // Redis에 Refresh Token 저장
-
+        log.info("6. 유저에게 Access Token과 Refresh Token을 발급합니다.");
+        String accessToken = jwtService.createAccessToken(userDetails);
+        String refreshToken = jwtService.createRefreshToken(userDetails);
         UriComponentsBuilder uriComponentsBuilder;
 
         if (isAnonymousMember(userDetails)) {
@@ -62,12 +57,10 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             uriComponentsBuilder = UriComponentsBuilder.fromUriString(REDIRECT_URI_SUCCESS);
         }
 
-        String redirectURI = uriComponentsBuilder
-                .queryParam("access-token", accessToken)
-                .queryParam("refresh-token", refreshToken)
-                .toUriString();
+        String redirectURI = uriComponentsBuilder.queryParam("access-token", accessToken)
+                .queryParam("refresh-token", refreshToken).toUriString();
 
-        response.setHeader(HttpHeaders.SET_COOKIE, jwtCreator.buildResponseCookie(refreshToken).toString());
+        response.setHeader(HttpHeaders.SET_COOKIE, jwtService.buildResponseCookie(refreshToken).toString());
         response.sendRedirect(redirectURI);
     }
 

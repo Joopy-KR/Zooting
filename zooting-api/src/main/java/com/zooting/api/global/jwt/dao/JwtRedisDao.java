@@ -1,4 +1,4 @@
-package com.zooting.api.global.jwt.service;
+package com.zooting.api.global.jwt.dao;
 
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class JwtRedisRepository {
+public class JwtRedisDao {
     private final StringRedisTemplate redisTemplate;
     private static final String REFRESH_HASH = "refresh-token/";
 
