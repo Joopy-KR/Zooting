@@ -126,21 +126,17 @@ watch(isBlock,
       }
     }, {deep: true});
 
-onMounted(() => {
-  watch(() => props.userInfo, (newUserInfo, oldUserInfo) => {
-    if (!props.userInfo?.nickname) {
-      return;
-    }
-    console.log(props);
-    console.log("friendList", friendList.value);
-    console.log("blockList", blockList.value);
-    console.log("isFriend", isFriend.value);
-    console.log("isBlock", isBlock.value);
-    console.log("userinfo", props.userInfo?.nickname)
-    if (newUserInfo && newUserInfo.nickname) {
-      isFriend.value = friendList.value.some(friend => friend.nickname === newUserInfo.nickname);
-      isBlock.value = blockList.value.some(block => block.nickname === newUserInfo.nickname);
-    }
-  }, { immediate: true });
-});
+watch(() => props.userInfo,
+    (newUserInfo) => {
+      if (!newUserInfo) {
+        return;
+      }
+
+      console.log("new user info", newUserInfo);
+
+      if (newUserInfo && newUserInfo.nickname) {
+        isFriend.value = friendList.value.some(friend => friend.nickname === newUserInfo.nickname);
+        isBlock.value = blockList.value.some(block => block.nickname === newUserInfo.nickname);
+      }
+    });
 </script>

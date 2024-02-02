@@ -94,7 +94,7 @@ watch(
       @set-is-open-report-dialog="setIsOpenReportDialog"
   />
   <div class="flex flex-col h-screen">
-    <div class="w-full h-1/2">
+    <div class="w-full h-1/3">
       <div class="flex justify-end px-8 pt-4">
         <!-- 설정 버튼 -->
         <div v-if="isMyProfile" @click="moveToSetting">
@@ -121,7 +121,7 @@ watch(
       </div>
       <!-- 나의 동물상 마스크 -->
       <div class="flex justify-center p-4">
-        <div class="relative p-2 bg-gray-100 rounded-full w-2/5">
+        <div class="relative p-2 bg-gray-100 rounded-full w-2/5 min-w-52">
           <img :src="userInfo!.maskImgUrl" class="w-full p-2" :alt="userInfo!.maskImgUrl"/>
           <div v-if="isMyProfile" class="absolute bottom-1 right-1" @click="moveToMaskList">
             <svg
@@ -144,7 +144,7 @@ watch(
             class="lg:text-2xl relative font-semibold underline text-stone-800 decoration-pink-300 decoration-wavy"
         >
           {{ userInfo?.nickname }}
-          <div class="absolute text-xs bottom-0.5 -right-10" v-if="!isMyProfile">
+          <div class="absolute text-xs bottom-0.5 -right-10 rounded-full" v-if="!isMyProfile">
             <UserMenu
                 :user-info="userInfo"
                 @set-is-open-report-dialog="setIsOpenReportDialog"
@@ -201,7 +201,7 @@ watch(
 
 <style scoped>
 .interest__container {
-  @apply w-full h-1/2 overflow-y-auto;
+  @apply w-full overflow-y-auto;
 }
 
 .interest__container::-webkit-scrollbar {

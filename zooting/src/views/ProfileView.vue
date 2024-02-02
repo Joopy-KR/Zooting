@@ -107,6 +107,7 @@ onMounted(async () => {
   } else {
     await loadMyInfo();
   }
+  console.log(isMyProfile.value);
 });
 </script>
 
