@@ -10,6 +10,7 @@ import io.openvidu.java.client.SessionProperties;
 import jakarta.annotation.PostConstruct;
 import java.util.Map;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,8 +26,14 @@ public class MeetingController {
     private final String OPENVIDU_URL;
     private final String OPENVIDU_SECRET;
 
-    private OpenVidu openvidu;
+    private MeetingController(
+            @Value("${openvidu.url}") String url,
+            @Value("${openvidu.secret}") String secret){
+        OPENVIDU_URL = url;
+        OPENVIDU_SECRET = secret;
+    }
 
+    private OpenVidu openvidu;
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
@@ -34,8 +41,6 @@ public class MeetingController {
     @PostMapping("/api/sessions")
     public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
             throws OpenViduJavaClientException, OpenViduHttpException {
-        log.info("방만들어줘");
-        log.info(params.toString());
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = openvidu.createSession(properties);
         return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
