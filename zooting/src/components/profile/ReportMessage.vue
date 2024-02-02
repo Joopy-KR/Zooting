@@ -22,7 +22,8 @@ const updateMessage = (event: any) => {
 };
 
 // 유저 신고하기
-const reportUser = (nickname: string, reason: string) => {
+const reportUser = (nickname: string | undefined, reason: string) => {
+  if (!nickname) return;
   const reportUserReq: ReportUserReq = {
     nickname: nickname,
     reason: reason,

@@ -91,6 +91,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+// @ts-ignore
 import VueTailwindDatepicker from 'vue-tailwind-datepicker'
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue'
 import { useAccessTokenStore } from '@/stores/store'
