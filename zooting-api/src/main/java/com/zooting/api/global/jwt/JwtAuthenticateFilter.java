@@ -45,7 +45,8 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
             return;
         }
 
-        log.info("1. 유저 Request로부터 Access Token을 가져옵니다");
+        log.info("1. 유저 Request로부터 Access Token을 가져옵니다")
+        ;
         String accessToken = tokenProcessor(request, ACCESS_HEADER_AUTHORIZATION);
         log.info("2. 유저 Request로부터 Access Token을 가져왔습니다: " + accessToken);
 
