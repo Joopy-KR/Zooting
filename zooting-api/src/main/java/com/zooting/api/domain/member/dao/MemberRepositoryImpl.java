@@ -44,7 +44,6 @@ public class  MemberRepositoryImpl implements MemberRepositoryCustom {
                         member.additionalInfo.animal.in(extractObj.getMemberIdeals()).count().desc()
                 ).groupBy(member.additionalInfo.interest, member.additionalInfo.idealAnimal)
                 .fetch();
-
     }
 
     private BooleanExpression notInBlockToList(List<String> blockToList) {

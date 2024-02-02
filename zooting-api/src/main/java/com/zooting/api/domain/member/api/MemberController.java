@@ -45,7 +45,7 @@ public class MemberController {
 
     @PreAuthorize("permitAll()")
     @Operation(
-            summary = "로그인 후 추가 정보가 저장 여부 확인",
+            summary = "로그인 후 추가 정보(유저 동물상 정보 기준)가 저장 여부 확인",
             description = "previlege로 판단. " +
                     "false - 추가 정보 저장되지 않음" +
                     "true - 추가 정보 저장되어 있음")
