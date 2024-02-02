@@ -40,7 +40,7 @@ public class RedisSubscriber implements MessageListener {
                     Connection connection = session.createConnection();
                     log.info("[onMessage] connection: {}, token: {}", connection, connection.getToken());
                     //send token
-                    webSocketTemplate.convertAndSend("api/sub/dm/" + email, connection);
+                    webSocketTemplate.convertAndSend("/api/sub/dm/" + email, connection);
                     //delete matched users
                     redisTemplate.delete(email);
                 }
