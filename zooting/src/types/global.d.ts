@@ -15,6 +15,13 @@ declare interface UserInfo {
     maskId: number | undefined,
     maskImgUrl: string | undefined;
     mbti: string | undefined;
+    memberStatus: UserStatus | undefined;
+}
+
+declare interface UserStatus {
+    isBlock: boolean | undefined,
+    isFriend: boolean | undefined,
+    isReport: boolean | undefined,
 }
 
 declare interface Mask {

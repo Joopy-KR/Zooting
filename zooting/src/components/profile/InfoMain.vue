@@ -102,7 +102,7 @@ onMounted(() => {
                 class="px-4 py-2 mx-3 my-3 rounded-lg shadow-lg shadow-rose-200"
             >
               <p
-                  class="truncate hover:text-wrap lg:text-xl font-semibold text-center text-gray-900"
+                  class="truncate hover:text-wrap lg:text-lg font-semibold text-center text-gray-900"
               >
                 # {{ idealAnimal }}
               </p>

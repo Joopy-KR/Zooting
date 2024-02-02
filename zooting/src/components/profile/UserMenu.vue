@@ -129,7 +129,6 @@ watch(isBlock,
 onMounted(() => {
   watch(() => props.userInfo, (newUserInfo, oldUserInfo) => {
     if (!props.userInfo?.nickname) {
-      console.error("ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ");
       return;
     }
     console.log(props);
@@ -144,26 +143,4 @@ onMounted(() => {
     }
   }, { immediate: true });
 });
-
-//
-// onMounted(() => {
-//
-//   console.log(props);
-//   console.log("friendList", friendList.value);
-//   console.log("blockList", blockList.value);
-//   console.log("isFriend", isFriend.value);
-//   console.log("isBlock", isBlock.value);
-//   console.log("userinfo", props.userInfo?.nickname)
-//   if (!props.userInfo?.nickname) {
-//     console.log("FAILEDbbbbbbbbbbbbbb")
-//     return;
-//   }
-//   isFriend.value = friendList.value.some(friend => friend.nickname === props.userInfo?.nickname);
-//   isBlock.value = blockList.value.some(block => block.nickname === props.userInfo?.nickname);
-//
-//   console.log("friendList", friendList.value);
-//   console.log("blockList", blockList.value);
-//   console.log("isFriend", isFriend.value);
-//   console.log("isBlock", isBlock.value);
-// })
 </script>

@@ -10,6 +10,7 @@ const router = useRouter();
 const props = defineProps({
   userInfo: Object as () => UserInfo,
   isMyProfile: Boolean,
+  nickname: String,
 });
 
 const interests = ref<string[]>([]);
@@ -175,7 +176,7 @@ watch(
                 :key="interest"
                 class="flex items-center justify-center px-4 py-2 space-x-6 bg-white rounded-lg shadow-lg border-rose-300 shadow-rose-200"
             >
-              <p class="lg:text-xl font-semibold text-center text-gray-900 truncate hover:text-wrap">
+              <p class="lg:text-lg font-semibold text-center text-gray-900 truncate hover:text-wrap">
                 # {{ interest }}
               </p>
             </div>
