@@ -1,54 +1,45 @@
 <script setup lang="ts">
-import {defineEmits, defineProps, onMounted, ref} from "vue";
+import {defineEmits, defineProps, ref} from "vue";
 import {Dialog, DialogPanel, TransitionChild, TransitionRoot,} from "@headlessui/vue";
-import {updateIntroduceApi} from "@/api/profile";
+import type {ReportUserReq} from "@/types/global";
+import {reportUserApi} from "@/api/report";
 
 const emits = defineEmits([
-  "closeEditIntroduce",
-  "loadMyInfo",
+  "setIsOpenReportDialog",
 ]);
 const props = defineProps({
-  isOpenEditIntroduce: Boolean,
-  introduce: String,
+  isOpenReportDialog: Boolean,
+  nickname: String,
 });
 
-const introduceValue = ref<string>("");
+const message = ref<string>("");
 
 const closeDialog = () => {
-  emits("closeEditIntroduce");
+  emits("setIsOpenReportDialog", false);
 };
-const updateIntroduceValue = (event: any) => {
-  introduceValue.value = event.target.value;
-};
-
-const updateIntroduce = () => {
-  console.log(introduceValue);
-  if (!introduceValue.value) {
-    return;
-  }
-
-  updateIntroduceApi(
-      {
-        introduce: introduceValue.value,
-      },
-      ({data}: any) => {
-        emits("loadMyInfo")
-        introduceValue.value = "";
-      },
-      (error: any) => console.error(error)
-  );
-  emits("closeEditIntroduce");
+const updateMessage = (event: any) => {
+  message.value = event.target.value;
 };
 
-onMounted(() => {
-  if (props.introduce) {
-    introduceValue.value = props.introduce;
-  }
-})
+// 유저 신고하기
+const reportUser = (nickname: string | undefined, reason: string) => {
+  if (!nickname) return;
+  const reportUserReq: ReportUserReq = {
+    nickname: nickname,
+    reason: reason,
+  };
+  reportUserApi(
+      reportUserReq,
+      ({data}:any) => console.log(data),
+      (error: any) => console.log(error)
+  )
+  closeDialog();
+}
+
 </script>
 
 <template>
-  <TransitionRoot as="template" :show="isOpenEditIntroduce">
+  <TransitionRoot as="template" :show="isOpenReportDialog">
     <Dialog as="div" class="relative z-10" @close="closeDialog">
       <TransitionChild
           as="template"
@@ -80,20 +71,20 @@ onMounted(() => {
             >
               <div class="bg-white shadow sm:rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                  <h3 class="font-semibold pb-3 leading-6 lg:text-lg text-gray-900">
-                    자기소개 수정
+                  <h3 class="font-semibold pb-3 leading-6 text-base text-gray-900">
+                    `{{ nickname }}` 신고
                   </h3>
                   <div class="w-full">
                     <div>
-                      <label for="introduce" class="sr-only">introduce</label>
+                      <label for="introduce" class="sr-only">message</label>
                       <textarea
-                          name="introduce"
-                          id="introduce"
-                          class="block w-full rounded-md border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 lg:text-lg sm:leading-6 resize-none"
-                          :placeholder="introduce"
+                          name="report"
+                          id="report"
+                          class="block w-full rounded-md border-0 py-3.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-lg sm:leading-6 resize-none"
+                          placeholder="신고사유 입력"
                           style="height: calc(3.5rem + 50px)"
-                          v-model="introduceValue"
-                          @input="updateIntroduceValue"
+                          v-model="message"
+                          @input="updateMessage"
                       ></textarea>
                     </div>
                   </div>
@@ -105,9 +96,9 @@ onMounted(() => {
                 <button
                     type="button"
                     class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                    @click="updateIntroduce()"
+                    @click="reportUser(nickname, message)"
                 >
-                  저장
+                  신고하기
                 </button>
                 <button
                     type="button"

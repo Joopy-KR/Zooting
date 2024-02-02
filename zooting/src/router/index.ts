@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from "vue-router";
-import { useAccessTokenStore } from "../stores/store";
+import {createRouter, createWebHistory} from "vue-router";
+import {useAccessTokenStore} from "@/stores/store";
 import HomeView from "@/views/HomeView.vue";
 import SignInView from "@/views/SignInView.vue";
 import SignUpView from "@/views/SignUpView.vue";
@@ -7,23 +7,7 @@ import AnimalTestView from "@/views/AnimalTestView.vue";
 import PersonalityTestView from "@/views/PersonalityTestView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import Login from "@/views/LoginView.vue";
-
-interface UserInfo {
-  email: string | null;
-  gender: string | null;
-  nickname: string | null;
-  birth: string | null;
-  address: string | null;
-  point: number | null;
-  personality: string | null;
-  animal: string | null;
-  interest: string | null;
-  introduce: string | null;
-  idealAnimal: string;
-  backgroundImgUrl: string | null;
-  mbti: string | null;
-  maskImgUrl: string | null;
-}
+import type {UserInfo} from "@/types/global";
 
 function getNickname(): string | null {
   const userInfoString = localStorage.getItem("myInfo");
@@ -31,7 +15,7 @@ function getNickname(): string | null {
   if (userInfoString) {
     try {
       const userInfo: UserInfo = JSON.parse(userInfoString);
-      const nickname = userInfo.nickname;
+      const nickname: string | undefined = userInfo.nickname;
 
       if (!nickname) {
         return null;
@@ -134,15 +118,6 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   const store = useAccessTokenStore();
-  console.log("redirecting to 11111111");
-  console.log(to.name, store.isLogin);
-  console.log(
-    (to.name === "home" ||
-      to.name === "signup" ||
-      to.name === "animal_test" ||
-      to.name === "personality_test") &&
-      !store.isLogin
-  );
 
   if (
     (to.name === "home" ||
@@ -151,12 +126,10 @@ router.beforeEach((to, from) => {
       to.name === "personality_test") &&
     !store.isLogin
   ) {
-    console.log("redirecting to 222222222");
     return { name: "signin" };
   }
 
   if (to.name === "signin" && store.isLogin) {
-    console.log("redirecting to 33333333");
     return { name: "home" };
   }
 
@@ -164,13 +137,11 @@ router.beforeEach((to, from) => {
   //   return { name: 'home' }
   // }
 
-  if (to.name === "animal_test" && store.userInfo?.animal) {
-    console.log("redirecting to 444444");
-    return { name: "home" };
-  }
+  // if (to.name === "animal_test" && store.userInfo?.animal) {
+  //   return { name: "home" };
+  // }
 
   if (to.name === "personality_test" && store.userInfo?.personality) {
-    console.log("redirecting to 55555555");
     return { name: "home" };
   }
 });
