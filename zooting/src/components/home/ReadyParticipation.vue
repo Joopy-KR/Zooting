@@ -1,6 +1,6 @@
 <template>
   <div class="participation__container">
-    <img src="/images/logo_lg.png" alt="" style="width: 500px; margin-bottom: 2rem;" class="">
+    <h1>Matching</h1>
     <img src="/images/heart-matching.png" class="heart-matching animate__bounceIn" alt="">
   </div>
 </template>
@@ -12,7 +12,7 @@ import 'animate.css'
 
 <style scoped>
 .participation__container {
-  @apply h-screen w-full flex items-center justify-center flex-col;
+  @apply col-span-3 border border-black;
 }
 .heart-matching {
   @apply w-2/3 xl:w-1/3 cursor-pointer;
