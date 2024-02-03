@@ -80,6 +80,8 @@ import { ref, watch } from 'vue'
 import { useAccessTokenStore } from "../stores/store"
 import SockJS from "sockjs-client"
 import Stomp from "stompjs"
+import type { Friend, DM } from "@/types/global"
+const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
 const emit = defineEmits(['closeTab'])
@@ -179,25 +181,6 @@ const getPreviewUrl = (file: File) => {
   return URL.createObjectURL(file)
 }
 
-interface DM {
-  dmRoomId: number;
-  dmList: DmItem[];
-  cursor: number;
-}
-
-interface DmItem {
-  dmRoomId: number;
-  sender: string;
-  message: string;
-}
-
-interface Friend {
-  email: string;
-  nickname: string;
-  animal: string;
-  gender: string;
-}
-
 // Web socket -----------------------------------------------
 const socket = ref<any>(null)
 const stompClient = ref<any>(null)
@@ -209,7 +192,7 @@ const connect = () => {
     console.log("not found access token")
     return
   }
-  socket.value = new SockJS(`https://i10a702.p.ssafy.io/ws/dm`)
+  socket.value = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
   stompClient.value = Stomp.over(socket.value)
 
   var headers = {

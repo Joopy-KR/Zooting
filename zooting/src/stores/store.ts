@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
+import type { Friend, Personality, TokenState, UserInfo, DM } from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -228,13 +229,14 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 유저 정보
+  const isCompletedTest = ref<boolean>(false);
   const userInfo = ref<UserInfo | null>(null);
 
   const getUserInfo = async function () {
     await loadMyInfoApi(
       ({ data }: any) => {
-        console.log("Load my info api", data);
         userInfo.value = data.result;
+
         if (!isCompletedSignUp) {
           router.push({ name: "signup" });
         } else if (!userInfo.value?.animal) {
@@ -252,11 +254,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 로그인 상태 판별
   const isLogin = computed(() => {
-    if (state.value.accessToken) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!state.value.accessToken;
   });
 
   // 로그아웃
@@ -598,7 +596,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
     const searchResult = ref<Friend[]>([])
-    
+
     // 친구 검색
     const friendSearch = function (params: string) {
       const nickname = params
@@ -620,7 +618,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         console.log(err);
       });
     };
-    
+
     // 유저 검색
     const userSearch = function (params: string) {
       const nickname = params;
@@ -642,7 +640,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         console.log(err);
       });
     };
-    
+
     // DM 방 입장
     const isEntryDmRoom = ref<boolean>(false);
     const dmInfo = ref<DM | null>(null);
@@ -681,7 +679,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           console.log(err);
         });
     };
-
     // DM 커서
     const cursorDmRoom = function (params: { cursor: number | undefined; dmRoomId: number | undefined }) {
       const {dmRoomId, cursor} = params;
@@ -708,7 +705,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         });
     };
 
-    return {
+  return {
       setAccessToken,
       getAccessToken,
       setRefreshToken,
@@ -747,61 +744,4 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       receiverInfo,
       cursorDmRoom,
     };
-  },
-);
-
-interface TokenState {
-  accessToken: string | null;
-  refreshToken: string | null;
-}
-
-interface Personality {
-  [key: string]: {
-    title: string;
-    match: string;
-    content: string[];
-  };
-}
-
-interface UserInfo {
-  email: string | null;
-  gender: string | null;
-  nickname: string | null;
-  birth: string | null;
-  address: string | null;
-  point: Number | null;
-  personality: string | null;
-  animal: string | null;
-  interest: string | null;
-  introduce: string | null;
-  idealAnimal: string;
-  backgroundImgUrl: string | null;
-  mbti: string | null;
-  maskImgUrl: string | null;
-}
-
-interface Friend {
-  email: string;
-  nickname: string;
-  animal: string;
-  gender: string;
-}
-
-interface DM {
-  dmRoomId: number;
-  dmList: DmItem[];
-  cursor: number;
-}
-
-interface DmItem {
-  dmRoomId: number;
-  id: number;
-  sender: string;
-  message: string;
-  dmFiles: File[];
-}
-
-interface File {
-  fileId: number;
-  thumbnailUrl: string;
-}
+  });

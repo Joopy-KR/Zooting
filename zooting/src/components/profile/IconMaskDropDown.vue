@@ -41,7 +41,7 @@ const toggleShowAllBadge = () => {
 
 <template>
   <div class="relative">
-    <div class="absolute top-0 left-3">
+    <div class="absolute -top-1 left-3">
       <div class="flex flex-row">
         <div class="flex items-start justify-center px-2 py-1">
           <font-awesome-icon
@@ -80,7 +80,7 @@ const toggleShowAllBadge = () => {
   @apply flex flex-col gap-2;
 }
 .mask__selector {
-  @apply font-sans flex justify-center px-3 py-1 text-2xl font-semibold w-36 rounded-full;
+  @apply font-sans flex justify-center px-3 py-2 lg:text-xl font-semibold w-32 rounded-full;
 }
 
 .mask__selector-dog {

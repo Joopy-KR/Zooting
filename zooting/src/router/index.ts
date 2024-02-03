@@ -7,24 +7,8 @@ import AnimalTestView from "@/views/AnimalTestView.vue";
 import PersonalityTestView from "@/views/PersonalityTestView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import Login from "@/views/LoginView.vue";
+import type {UserInfo} from "@/types/global";
 import ChatTestView from "@/views/ChatTestView.vue";
-
-interface UserInfo {
-  email: string | null;
-  gender: string | null;
-  nickname: string | null;
-  birth: string | null;
-  address: string | null;
-  point: number | null;
-  personality: string | null;
-  animal: string | null;
-  interest: string | null;
-  introduce: string | null;
-  idealAnimal: string;
-  backgroundImgUrl: string | null;
-  mbti: string | null;
-  maskImgUrl: string | null;
-}
 
 function getNickname(): string | null {
   const userInfoString = localStorage.getItem("myInfo");
@@ -167,9 +151,9 @@ router.beforeEach((to, from) => {
     return { name: 'home' }
   }
 
-  if (to.name === "animal_test" && store.userInfo?.animal) {
-    return { name: "home" };
-  }
+  // if (to.name === "animal_test" && store.userInfo?.animal) {
+  //   return { name: "home" };
+  // }
 
   if (to.name === "personality_test" && store.userInfo?.personality) {
     return { name: "home" };

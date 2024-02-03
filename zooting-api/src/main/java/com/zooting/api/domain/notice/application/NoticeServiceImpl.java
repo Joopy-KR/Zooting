@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -38,7 +40,8 @@ public class NoticeServiceImpl implements NoticeService{
     @Override
     public List<NoticeRes> findNotice(Pageable pageable) {
         List<Notice> noticeList = noticeRepository.findNoticesBy(pageable).getContent();
-        return noticeList.stream().map(ntc -> new NoticeRes(ntc.getId(), ntc.getTitle(), ntc.getContent())).toList();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return noticeList.stream().map(ntc -> new NoticeRes(ntc.getId(), ntc.getTitle(), ntc.getContent(), DateTimeFormatter.ofPattern("yyyy-MM-dd").format(ntc.getCreatedAt()))).toList();
     }
 
     @Override

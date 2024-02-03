@@ -36,12 +36,17 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        log.info(request.getRequestURI());
         if (PatternMatchUtils.simpleMatch(URL_WHITE_LIST, request.getRequestURI())) {
+            if (request.getRequestURI().startsWith("/dm/ws")) {
+                log.info("소켓 연결 Passed");
+            }
             filterChain.doFilter(request, response);
             return;
         }
 
-        log.info("1. 유저 Request로부터 Access Token을 가져옵니다");
+        log.info("1. 유저 Request로부터 Access Token을 가져옵니다")
+        ;
         String accessToken = tokenProcessor(request, ACCESS_HEADER_AUTHORIZATION);
         log.info("2. 유저 Request로부터 Access Token을 가져왔습니다: " + accessToken);
 

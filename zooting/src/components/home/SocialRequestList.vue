@@ -1,5 +1,5 @@
 <template>
-  <div class="grid friend__container">
+  <div class="grid interest__container">
     <!-- 받은 요청 -->
     <div>
       <!-- Title -->
@@ -124,18 +124,18 @@ const getProfileImage = (animal: string) => {
 </script>
 
 <style scoped>
-.friend__container {
+.interest__container {
   @apply h-screen overflow-y-auto;
 }
-.friend__container::-webkit-scrollbar {
+.interest__container::-webkit-scrollbar {
   width: 6px;
   background-color: white;
 }
-.friend__container::-webkit-scrollbar-thumb {
+.interest__container::-webkit-scrollbar-thumb {
   background-color: #d6d6d6;
   border-radius: 4px;
 }
-.friend__container::-webkit-scrollbar-track {
+.interest__container::-webkit-scrollbar-track {
   background-color: transparent;
 }
 .friend-list {
