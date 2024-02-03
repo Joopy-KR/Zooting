@@ -33,7 +33,8 @@
     "v3-click-outside": "^1.1.0",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5",
-    "vue-tailwind-datepicker": "^1.6.1"
+    "vue-tailwind-datepicker": "^1.6.1",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
