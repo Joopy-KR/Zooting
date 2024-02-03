@@ -659,7 +659,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         },
       })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           DmInfo.value = res.data.result;
           receiverInfo.value = params;
         })
