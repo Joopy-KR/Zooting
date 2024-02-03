@@ -76,12 +76,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useAccessTokenStore } from "../stores/store"
-import SockJS from "sockjs-client"
-import Stomp from "stompjs"
 import type { Friend, DM } from "@/types/global"
-const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
 const emit = defineEmits(['closeTab'])
@@ -115,7 +112,7 @@ watch(() => props.open, () => {
     fileInput.value = null
   } 
   // else {
-  //   connect()
+    //   connect()
   // }
 })
 const getProfileImage = () => {
@@ -162,7 +159,7 @@ const refreshChat = () => {
 
 const sendMessage = () => {
   if (messageInput.value) {
-
+    
     messageInput.value = ''
   }
 }
@@ -174,7 +171,7 @@ const openFileInput = () => {
 
 const handleFileChange = (event: any) => {
   const selectedFiles = (event.target as HTMLInputElement).files
-
+  
   if (selectedFiles && selectedFiles.length > 0) {
     const allowedFileTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif']
     const selectedFileType = selectedFiles[0].type
@@ -194,56 +191,62 @@ const getPreviewUrl = (file: File) => {
 }
 
 // Web socket -----------------------------------------------
-// const socket = ref<any>(null)
-// const stompClient = ref<any>(null)
-// const connection = ref<boolean>(false)
+import SockJS from "sockjs-client"
+import Stomp from "stompjs"
+const { VITE_SERVER_API_URL } = import.meta.env
 
-// // 소켓 통신 연결 요청
-// const connect = () => {
-//   if (!store.getAccessToken()) {
-//     console.log("not found access token")
-//     return
-//   }
-//   socket.value = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
-//   stompClient.value = Stomp.over(socket.value)
-//   console.log(socket.value)
-//   var headers = {
-//     "Authorization": `Bearer ${store.getAccessToken()}`,
-//   }
-//   stompClient.value.connect(
-//       headers,
-//       () => {
-//         console.log("OKOKOKO")
-//         // onConnected(dmRoomId.value)
-//       },
-//       () => {
-//         console.log("Could not WebSocket server. Retry!")
-//       }
-//   )
-// }
+const socket = ref<any>(null)
+const stompClient = ref<any>(null)
+const connection = ref<boolean>(false)
 
-// // 소켓 클라이언트 Subscribe 요청
-// const onConnected = () => {
-//   stompClient.value.subscribe("/api/sub", "zyo0720@kakao.com")
-//   console.log("111111111111111")
-//   // connection.value = true;
-//   // stompClient.value.send(
-//   //     "/pub/chat/enter",
-//   //     {},
-//   //     JSON.stringify({
-//   //       roomId: roomId,
-//   //       sender: me.value.nickname,
-//   //       senderId: me.value.id,
-//   //     })
-//   // )
-// }
+// 소켓 통신 연결 요청
+const connect = () => {
+  console.log("Tring to open connection")
+  if (!store.getAccessToken()) {
+    console.log("not found access token")
+    return
+  }
+  socket.value = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
+  stompClient.value = Stomp.over(socket.value)
 
-const socket = new SockJS(`https://i10a702.p.ssafy.io//ws/dm`)
-const stompClient = Stomp.over(socket)
+  stompClient.value.connect(
+      () => {
+        console.log("Connection successful!")
+      },
+      () => {
+        console.log("Could not WebSocket server. Retry!")
+      }
+  )
+}
 
-stompClient.connect({}, () => {
-    console.log('Connected to WebSocket')
+onMounted(async () => {
+  if (store.isLogin) {
+    connect()
+  }
 })
+
+// 소켓 클라이언트 Subscribe 요청
+const onConnected = () => {
+  stompClient.value.subscribe("/api/sub", "zyo0720@kakao.com")
+  console.log("111111111111111")
+  // connection.value = true;
+  // stompClient.value.send(
+  //     "/pub/chat/enter",
+  //     {},
+  //     JSON.stringify({
+  //       roomId: roomId,
+  //       sender: me.value.nickname,
+  //       senderId: me.value.id,
+  //     })
+  // )
+}
+
+// const socket = new SockJS(`https://i10a702.p.ssafy.io/ws/dm`)
+// const stompClient = Stomp.over(socket)
+
+// stompClient.connect({}, () => {
+//     console.log('Connected to WebSocket')
+// })
 </script>
 
 <style scoped>
