@@ -659,7 +659,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         },
       })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           dmInfo.value = res.data.result;
           receiverInfo.value = params;
         })
@@ -679,7 +679,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           console.log(err);
         });
     };
+
     // DM 커서
+    const isRefreshing = ref<boolean>(false);
     const cursorDmRoom = function (params: { cursor: number | undefined; dmRoomId: number | undefined }) {
       const {dmRoomId, cursor} = params;
       axios({
@@ -694,11 +696,14 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         },
       })
         .then((res) => {
-          console.log(res)
+          // console.log(res)
           if (dmInfo.value) {
             dmInfo.value.cursor = res.data.result.cursor;
             dmInfo.value.dmList = [...dmInfo.value.dmList, ...res.data.result.dmList];
           }
+        })
+        .then((res) => {
+          isRefreshing.value = false
         })
         .catch((err) => {
           console.log(err);
@@ -743,5 +748,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       dmInfo,
       receiverInfo,
       cursorDmRoom,
+      isRefreshing,
     };
   });

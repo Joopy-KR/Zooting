@@ -152,7 +152,10 @@ const refreshChat = () => {
       dmRoomId: dmInfo.value.dmRoomId,
       cursor: dmInfo.value.cursor
     }
-    store.cursorDmRoom(params)
+    if (!store.isRefreshing) {
+      store.isRefreshing = true
+      store.cursorDmRoom(params)
+    }
   }
 }
 
@@ -172,8 +175,16 @@ const handleFileChange = (event: any) => {
   const selectedFiles = (event.target as HTMLInputElement).files
 
   if (selectedFiles && selectedFiles.length > 0) {
-    fileInput.value = selectedFiles[0]
-    console.log(fileInput.value)
+    const allowedFileTypes = ['image/svg+xml', 'image/jpeg', 'image/png', 'image/gif']
+    const selectedFileType = selectedFiles[0].type
+    
+    if (allowedFileTypes.includes(selectedFileType)) {
+      fileInput.value = selectedFiles[0]
+      console.log(fileInput.value)
+    } else {
+      window.alert('지원하지 않는 파일 형식입니다.')
+      fileInput.value = null
+    }
   }
 }
 

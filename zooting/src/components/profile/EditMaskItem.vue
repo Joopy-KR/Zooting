@@ -1,10 +1,6 @@
 <script setup lang="ts">
-<<<<<<< HEAD
-import { ListBulletIcon } from "@heroicons/vue/16/solid";
-=======
 import {defineProps} from "vue";
 import type {Mask} from "@/types/global";
->>>>>>> d95d4dc6a2c920a2509a3274aa2dca71febf7496
 
 const emits = defineEmits([
   "loadMyInfo",
