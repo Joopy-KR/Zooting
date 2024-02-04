@@ -5,20 +5,20 @@
         <transition name="fade">
             <p v-if="isDescription" class="text-4xl font-bold">가면으로 사용할 동물상을 분석할게요</p>
         </transition>
-    
+
         <!-- 동물상 테스트 출력 -->
         <transition name="fade">
-            <Camera 
+            <Camera
             v-if="isAnimal"
             @work-finished="isAnimalFinished"
             />
         </transition>
-  
+
       <!-- 설명 출력 -->
         <transition name="fade">
           <p v-if="isLoading" class="text-4xl font-bold">동물상을 분석하는 중이에요</p>
         </transition>
-  
+
         <!-- 결과 출력 -->
         <transition name="fade">
             <Result
@@ -39,7 +39,7 @@
   import { useAccessTokenStore } from "../stores/store"
 
   const store = useAccessTokenStore()
-  
+
   // 닮은 동물상
   const resultAnimal = ref('')
 
@@ -48,7 +48,7 @@
 
   // 설명 화면
   const isDescription = ref(false)
-  
+
   // 동물상 테스트 화면
   const isAnimal = ref(false)
 
@@ -64,7 +64,7 @@
         } else if (item === 'female') {
           gender.value = 'female'
         }
-        
+
         if (Number(item) > Number(maxVal.value)) {
             maxVal.value = Number(item)
             maxIdx.value = Number(index)
@@ -112,9 +112,9 @@
           resultAnimal.value = '토끼'
       }
     }
-    
+
     saveTestResult()
-    
+
     // 다음 컴포넌트로 이동
     await wait(0.5)
     isAnimal.value = false
@@ -125,14 +125,14 @@
     await wait(0.5)
     isResult.value = true
   }
-  
+
   // 로딩 화면
   const isLoading = ref(false)
 
 
   // 결과 화면
   const isResult = ref(false)
-  
+
   // 대기 함수
   function wait(sec) {
       return new Promise(resolve => setTimeout(resolve, sec * 1000));
@@ -150,19 +150,28 @@
     await wait(1)
     isAnimal.value = true
   }
-
+  const animalRatioReq = (animal, ratio) => {
+    return {
+      animal: animal,
+      percentage: Number(ratio),
+    }
+  }
+  // 동물상 비율 저장
   const saveTestResult = () => {
-    const payload = ref([Number(allAnimal.value["dog"]), Number(allAnimal.value["cat"]), Number(allAnimal.value["rabbit"]), 0, 0])
+    const animalFaceReqList = [];
+    animalFaceReqList.push("dog", allAnimal.value["dog"]);
+    animalFaceReqList.push("cat", allAnimal.value["cat"]);
+    animalFaceReqList.push("rabbit", allAnimal.value["rabbit"]);
 
     if (allAnimal.value["gender"] === 'female') {
-      payload.value[3] = Number(allAnimal.value["deer"])
-      payload.value[4] = Number(allAnimal.value["turtle"])
+      animalFaceReqList.push("deer", allAnimal.value["deer"]);
+      animalFaceReqList.push("turtle", allAnimal.value["turtle"]);
     } else {
-      payload.value[3] = Number(allAnimal.value["bear"])
-      payload.value[4] = Number(allAnimal.value["dino"])
+      animalFaceReqList.push("bear", allAnimal.value["bear"])
+      animalFaceReqList.push("dino", allAnimal.value["dino"]);
     }
 
-    store.setAnimalFace(payload.value)
+    store.setAnimalFace(animalFaceReqList);
   }
 </script>
 
@@ -181,7 +190,7 @@
   .fade-leave-active {
     transition: opacity 0.5s ease;
   }
-  
+
   .fade-enter-from,
   .fade-leave-to {
     opacity: 0;

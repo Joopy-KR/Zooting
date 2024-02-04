@@ -1,7 +1,7 @@
 <template>
   <Popover class="relative">
     <PopoverButton class="inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
-      <ChevronDownIcon class="h-5 w-5" aria-hidden="true"/>
+      <font-awesome-icon :icon="['fas', 'chevron-down']" style="font-size: 20px;"/>
     </PopoverButton>
 
     <transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 translate-y-1"
@@ -35,25 +35,26 @@
 <script setup lang="ts">
 import {Popover, PopoverButton, PopoverPanel} from '@headlessui/vue'
 import {blockUserApi, disableBlockUserApi} from "@/api/block.js";
+import {EyeIcon, EyeSlashIcon, FaceFrownIcon, FaceSmileIcon, MegaphoneIcon} from '@heroicons/vue/20/solid'
 import {useAccessTokenStore} from "@/stores/store"
 import {computed, onMounted, ref, watch} from "vue";
 import type {UserInfo} from "@/types/global";
+import {addFriendApi, disableFriendApi} from "@/api/friend";
 
 const store = useAccessTokenStore();
 const props = defineProps({
   userInfo: Object as () => UserInfo,
 })
 const emits = defineEmits([
-  "setIsOpenReportDialog"
+  "setIsOpenReportDialog",
+  "loadUserInfo",
 ]);
-
-const friendList = ref(store.friendList);
-const blockList = ref(store.blockList);
-const isFriend = ref<boolean>(false);
-const isBlock = ref<boolean>(false);
 
 const setIsOpenReportDialog = () => {
   emits("setIsOpenReportDialog", true);
+}
+const loadUserInfo = () => {
+  emits("loadUserInfo")
 }
 
 // 유저 차단
@@ -69,74 +70,86 @@ const blockUser = () => {
       },
       (error: any) => console.log(error)
   )
+  items.value[2].status = false;
+  items.value[3].status = true;
 }
 // 유저 차단 해제
 const disableBlockUser = () => {
   if (!props.userInfo?.nickname) {
     return;
   }
-  disableBlockUserApi(
-      {
-        nickname: props.userInfo.nickname
-      },
+  disableBlockUserApi(props.userInfo.nickname,
       ({data}: any) => console.log(data),
       (error: any) => console.log(error),
   )
+  items.value[2].status = true;
+  items.value[3].status = false;
 }
 
-const items = [
-  {name: '친구추가', icon: undefined, status: undefined},
-  {name: '친구해제', icon: undefined, status: undefined},
-  {name: '차단하기', icon: undefined, onclick: () => blockUser(), status: undefined},
-  {name: '차단해제', icon: undefined, status: undefined},
-  {name: '신고하기', icon: undefined, onclick: () => setIsOpenReportDialog(), status: true},
-]
+const addFriend = () => {
+  if (!props.userInfo?.nickname) {
+    return;
+  }
+
+  addFriendApi({nickname: props.userInfo.nickname},
+      ({data}: any) => console.log(data),
+      (error: any) => console.log(error)
+  );
+  items.value[0].status = false;
+  items.value[1].status = true;
+}
+
+const disableFriend = () => {
+  if (!props.userInfo?.nickname) {
+    return;
+  }
+
+  disableFriendApi(props.userInfo.nickname,
+      ({data}: any) => console.log(data),
+      (error: any) => console.log(error));
+  items.value[0].status = true;
+  items.value[1].status = false;
+}
+const items = ref([
+  {name: '친구추가', icon: FaceSmileIcon, onclick: () => addFriend(), status: false},
+  {name: '친구해제', icon: FaceFrownIcon, onclick: () => disableFriend(), status: false},
+  {name: '차단하기', icon: EyeSlashIcon, onclick: () => blockUser(), status: false},
+  {name: '차단해제', icon: EyeIcon, onclick: () => disableBlockUser(), status: false},
+  {name: '신고하기', icon: MegaphoneIcon, onclick: () => setIsOpenReportDialog(), status: true},
+]);
 
 const activatedItems = computed(() => {
-  console.log("ITEM!!!!!!!", items.filter(item => item.status === true));
-  return items.filter(item => item.status === true);
+  return items.value.filter(item => item.status === true);
 })
 
-watch(() => store.friendList,
-    (newValue) => {
-      isFriend.value = newValue.some(friend => friend.nickname === props.userInfo?.nickname);
-    });
-watch(() => store.blockList,
-    (newValue) => {
-      isBlock.value = newValue.some(block => block.nickname === props.userInfo?.nickname);
-    });
-watch(isFriend,
-    (newValue) => {
-      if (newValue) {
-        items[0].status = false;
-        items[1].status = true;
-      } else {
-        items[0].status = true;
-        items[1].status = false;
-      }
-    }, {deep: true});
-watch(isBlock,
-    (newValue) => {
-      if (newValue) {
-        items[2].status = false;
-        items[3].status = true;
-      } else {
-        items[2].status = true;
-        items[3].status = false;
-      }
-    }, {deep: true});
-
-watch(() => props.userInfo,
+watch(props.userInfo,
     (newUserInfo) => {
-      if (!newUserInfo) {
+      if (!newUserInfo?.memberStatus) {
+        items.value[0].status = false;
+        items.value[1].status = false;
+        items.value[2].status = false;
+        items.value[3].status = false;
         return;
       }
-
-      console.log("new user info", newUserInfo);
-
-      if (newUserInfo && newUserInfo.nickname) {
-        isFriend.value = friendList.value.some(friend => friend.nickname === newUserInfo.nickname);
-        isBlock.value = blockList.value.some(block => block.nickname === newUserInfo.nickname);
+      // 현재 친구 상태
+      if (newUserInfo.memberStatus.isFriend) {
+        items.value[0].status = false;
+        items.value[1].status = true;
+      } else {
+        items.value[0].status = true;
+        items.value[1].status = false;
       }
-    });
+      // 현재 차단 상태
+      if (newUserInfo.memberStatus.isBlock) {
+        items.value[2].status = false;
+        items.value[3].status = true;
+      } else {
+        items.value[2].status = true;
+        items.value[3].status = false;
+      }
+      // 현재 신고된 상태
+      if (newUserInfo.memberStatus.isReport) {
+        items.value[4].status = true;
+      }
+    }, {deep: true});
 </script>

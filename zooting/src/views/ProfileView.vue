@@ -21,7 +21,6 @@ const userInfo = ref<UserInfo>({
   introduce: undefined,
   maskId: undefined,
   maskImgUrl: undefined,
-  mbti: undefined,
   personality: undefined,
   point: undefined,
   memberStatus: undefined,
@@ -43,7 +42,6 @@ const setUserInfo = (data: any) => {
   userInfo.value!.backgroundImgUrl = data["result"].backgroundImgUrl;
   userInfo.value!.maskId = data["result"].maskId;
   userInfo.value!.maskImgUrl = data["result"].maskImgUrl;
-  userInfo.value!.mbti = data["result"].mbti;
   userInfo.value!.memberStatus = data["result"].memberStatus;
 };
 
@@ -114,7 +112,7 @@ onMounted(async () => {
 <template>
   <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
     <div class="w-1/3">
-      <InfoSideBar :user-info="userInfo" :nickname="route.params.nickname" :is-my-profile="isMyProfile" @load-my-info="loadMyInfo"/>
+      <InfoSideBar :user-info="userInfo" :nickname="route.params.nickname" :is-my-profile="isMyProfile" @load-user-info="loadUserInfo"/>
     </div>
     <div class="w-2/3">
       <router-view :user-info="userInfo" :nickname="route.params.nickname" :is-my-profile="isMyProfile" @load-my-info="loadMyInfo"/>

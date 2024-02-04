@@ -7,14 +7,14 @@
           </RouterLink>
       </div>
       <div class="side-bar__item">
-        
+
         <!-- Messages button -->
         <button @click="toggleMessagesTab" v-if="isLoggedIn && isCompletedTest">
           <svg :class="[isActiveMessageTab() ? 'text-violet-800' : 'text-gray-400', 'w-5 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20" transform="rotate(45)">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m9 17 8 2L9 1 1 19l8-2Zm0 0V9"/>
           </svg>
         </button>
-        
+
         <!-- Notifications button -->
         <button @click="toggleNotificationsTab">
           <svg :class="[isActivenotificationsTab() ? 'text-violet-800' : 'text-gray-400', 'w-6 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="20" fill="none" viewBox="0 0 14 20">
@@ -33,16 +33,16 @@
       </div>
 
       <!-- Profile image -->
-      <img 
+      <img
         v-if="isLoggedIn && store.isCompletedSignUp"
-        id="avatarButton" 
-        type="button" 
-        data-dropdown-toggle="userDropdown" 
-        data-dropdown-placement="bottom-start" 
-        class="user-profile" 
+        id="avatarButton"
+        type="button"
+        data-dropdown-toggle="userDropdown"
+        data-dropdown-placement="bottom-start"
+        class="user-profile"
         :src="getProfileImage()" alt="User dropdown"
       >
-      
+
       <!-- Profile menu -->
       <div id="userDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44" v-if="isLoggedIn">
           <ul class="py-2 text-sm text-gray-700" aria-labelledby="avatarButton">
@@ -121,7 +121,7 @@ const isActiveMessageTab = () => {
   } else {
     return false
   }
-} 
+}
 
 const isActivenotificationsTab = () => {
   if (isSideTabOpen.value === true && currentSideTab.value === 'notificationsTab') {
@@ -142,7 +142,18 @@ const getProfileLink = () => {
 }
 
 const getProfileImage = () => {
-  return `/images/${userInfo.value?.animal}.png`
+  if (!userInfo.value?.animal) return undefined;
+  const imageName: { [key:string]: string } = {
+    "펭귄": "penguin",
+    "곰": "bear",
+    "사슴": "deer",
+    "공룡": "dinosaur",
+    "강아지": "dog",
+    "토끼": "rabbit"
+  };
+
+  const name :string = imageName[userInfo.value?.animal];
+  return `/images/${name}.png`
 }
 
 const closeTab = () => {

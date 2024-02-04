@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import {defineProps, ref, watch} from "vue";
+import {defineProps, ref, watch, onMounted} from "vue";
 import {useRouter} from "vue-router";
 import type {UserInfo} from "@/types/global";
 import ReportMessage from "@/components/profile/ReportMessage.vue";
 import UserMenu from "@/components/profile/UserMenu.vue";
+import {useStore} from "@/stores/store";
 
 const router = useRouter();
 
@@ -13,10 +14,15 @@ const props = defineProps({
   nickname: String,
 });
 
+const emits = defineEmits(["loadUserInfo"]);
+
 const interests = ref<string[]>([]);
 const ageGroup = ref<string>();
 const isOpenReportDialog = ref<boolean>(false);
 
+const loadUserInfo = () => {
+  emits("loadUserInfo", props.nickname);
+}
 const moveToSetting = () => {
   if (props.isMyProfile) {
     router.push({
@@ -46,6 +52,18 @@ const setIsOpenReportDialog = (status: boolean) => {
   isOpenReportDialog.value = status;
 }
 
+const getPersonalityMsg = (animal: string | undefined, personality: string | undefined) => {
+  console.log("personality", animal, personality);
+  if (!animal && !personality) return undefined;
+  if (!animal) return personality;
+  if (!personality) return animal;
+
+  const store = useStore();
+  const mbti = store.personality[personality.toUpperCase()];
+
+  return mbti.title + " " + animal;
+}
+
 const getAgeGroup = (birth: string) => {
   const birthDate: Date = new Date(birth);
   const currentDate: Date = new Date();
@@ -65,16 +83,14 @@ const getAgeGroup = (birth: string) => {
     return `${ageGroup}대 후반`;
   }
 };
-watch(
-    () => props.userInfo?.birth,
+watch(() => props.userInfo?.birth,
     (newValue) => {
       if (newValue) {
         ageGroup.value = getAgeGroup(newValue);
       }
     }
 );
-watch(
-    () => props.userInfo?.interest,
+watch(() => props.userInfo?.interest,
     (newValue) => {
       if (newValue) {
         const interestsArray = newValue.replace("[", "").replace("]", "").split(", ");
@@ -121,7 +137,7 @@ watch(
       </div>
       <!-- 나의 동물상 마스크 -->
       <div class="flex justify-center p-4">
-        <div class="relative p-2 bg-gray-100 rounded-full w-2/5 min-w-52">
+        <div class="relative p-2 bg-gray-100 rounded-full w-2/5 min-w-48">
           <img :src="userInfo!.maskImgUrl" class="w-full p-2" :alt="userInfo!.maskImgUrl"/>
           <div v-if="isMyProfile" class="absolute bottom-1 right-1" @click="moveToMaskList">
             <svg
@@ -138,33 +154,34 @@ watch(
         </div>
       </div>
     </div>
-    <div class="mx-8">
+    <div class="mx-8 my-4">
       <div class="flex items-center justify-center p-2">
         <div
-            class="lg:text-2xl relative font-semibold underline text-stone-800 decoration-pink-300 decoration-wavy"
+            class="lg:text-2xl relative font-bold underline text-stone-800 decoration-pink-300 decoration-wavy"
         >
           {{ userInfo?.nickname }}
           <div class="absolute text-xs bottom-0.5 -right-10 rounded-full" v-if="!isMyProfile">
             <UserMenu
                 :user-info="userInfo"
                 @set-is-open-report-dialog="setIsOpenReportDialog"
+                @load-user-info="loadUserInfo"
             />
           </div>
         </div>
       </div>
       <div class="flex flex-row px-2 py-3">
-        <div class="flex items-center justify-center w-1/3 lg:text-xl font-medium">
+        <div class="flex items-center justify-center w-1/3 lg:text-xl font-semibold">
           {{ userInfo!.gender === "man" ? "남자" : "여자" }}
         </div>
-        <div class="flex items-center justify-center w-1/3 lg:text-xl font-medium">
+        <div class="flex items-center justify-center w-1/3 lg:text-xl font-semibold">
           {{ ageGroup }}
         </div>
-        <div class="flex items-center justify-center w-1/3 lg:text-xl font-medium">
+        <div class="flex items-center justify-center w-1/3 lg:text-xl font-semibold">
           {{ userInfo?.address }}
         </div>
       </div>
       <div class="flex justify-center px-4 py-2 lg:text-3xl font-bold tracking-tight text-rose-600">
-        <p class="">{{ userInfo!.animal }}</p>
+        <p class="">{{ getPersonalityMsg(userInfo.animal, userInfo.personality) }}</p>
       </div>
     </div>
     <div class="interest__container">
