@@ -1,8 +1,8 @@
 <template>
   <div class="match__container">
 
-    <div class="match__heart">
-      <img src="/images/heart-matching.png" class="animate__bounceIn" alt="">
+    <div class="match__page">
+      <!-- <img src="/images/heart-matching.png" class="animate__bounceIn" alt=""> -->
     </div>
 
     <div class="match__ready">
@@ -18,15 +18,15 @@ import 'animate.css'
 
 <style scoped>
 .match__container {
-  @apply flex flex-col items-center col-span-4 py-5;
+  @apply flex flex-col items-center col-span-5 py-5;
 }
-.match__heart {
+.match__page {
   @apply flex flex-grow justify-center;
 }
-.match__heart img {
+/* .match__page img {
   @apply cursor-pointer h-auto object-contain;
   width: 350px
-}
+} */
 .match__ready {
   @apply h-32 flex items-center;
 }
@@ -72,7 +72,8 @@ button {
   text-decoration: none;
   font-size: inherit;
   font-family: inherit;
-  width: 130px;
+  width: 300px;
+  height: 80px;
   &.learn-more {
     font-weight: 600;
     color: $text;

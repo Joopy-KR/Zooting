@@ -1,7 +1,9 @@
 <template>
   <div class="ready__container">
     <div class="ready__header">
-      <img src="/images/logo_lg.png" alt="">
+      <img src="/images/pupple_dog.png" alt="" class="hidden 2xl:block animate__bounceIn">
+      <img src="/images/logo_lg.png" alt="" class="animate__bounceIn">
+      <img src="/images/pupple_cat.png" alt="" class="hidden 2xl:block animate__bounceIn">
     </div>
     <div class="ready__main">
       <ReadyMatch />
@@ -22,12 +24,13 @@ import ReadyRecord from './ReadyRecord.vue'
   min-width: 700px;
 }
 .ready__header {
-  @apply flex flex-row justify-center items-center h-1/5 bg-white mb-5 rounded-xl; 
+  @apply flex flex-row justify-center items-center h-1/5 bg-white mb-5 rounded-2xl shadow-lg;
+  background-color: #bcb9ee;
 }
 .ready__header img {
   @apply h-5/6;
 }
 .ready__main {
-  @apply grid grid-cols-6 h-full gap-5;
+  @apply grid grid-cols-7 h-full gap-5;
 }
 </style>
