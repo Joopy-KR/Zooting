@@ -254,7 +254,11 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 로그인 상태 판별
   const isLogin = computed(() => {
-    return !!state.value.accessToken;
+    if (state.value.accessToken) {
+      return true;
+    } else {
+      return false;
+    }
   });
 
   // 로그아웃
@@ -659,7 +663,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         },
       })
         .then((res) => {
-          // console.log(res);
+          console.log(res);
           dmInfo.value = res.data.result;
           receiverInfo.value = params;
         })

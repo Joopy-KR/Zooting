@@ -91,5 +91,5 @@ declare interface DM {
   
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
-    Personality, Friend, MaskReq, ReportUserReq, DM
+    Personality, Friend, MaskReq, ReportUserReq, DM, DmItem
 };
