@@ -123,25 +123,26 @@ const getProfileLink = () => {
 
 const getProfileImage = () => {
   const imgUrl = ref<string>('')
-  if (userInfo.value?.animal === '강아지') {
+  const animal = userInfo.value?.animal
+  if (animal === '강아지') {
     imgUrl.value = 'src/assets/images/animal/dog.png'
   }
-  if (userInfo.value?.animal === '고양이') {
+  if (animal === '고양이') {
     imgUrl.value = 'src/assets/images/animal/cat.png'
   }
-  if (userInfo.value?.animal === '곰') {
+  if (animal === '곰') {
     imgUrl.value = 'src/assets/images/animal/bear.png'
   }
-  if (userInfo.value?.animal === '공룡') {
+  if (animal === '공룡') {
     imgUrl.value = 'src/assets/images/animal/dino.png'
   }
-  if (userInfo.value?.animal === '펭귄') {
+  if (animal === '펭귄') {
     imgUrl.value = 'src/assets/images/animal/penguin.png'
   }
-  if (userInfo.value?.animal === '토끼') {
+  if (animal === '토끼') {
     imgUrl.value = 'src/assets/images/animal/rabbit.png'
   }
-  if (userInfo.value?.animal === '사슴') {
+  if (animal === '사슴') {
     imgUrl.value = 'src/assets/images/animal/deer.png'
   }
   return imgUrl.value
