@@ -34,9 +34,7 @@
 
 <script setup lang="ts">
 import {Popover, PopoverButton, PopoverPanel} from '@headlessui/vue'
-import {ChevronDownIcon, PhoneIcon} from '@heroicons/vue/20/solid'
 import {blockUserApi, disableBlockUserApi} from "@/api/block.js";
-import {ChartPieIcon, CursorArrowRaysIcon, FingerPrintIcon, SquaresPlusIcon,} from '@heroicons/vue/24/outline'
 import {useAccessTokenStore} from "@/stores/store"
 import {computed, onMounted, ref, watch} from "vue";
 import type {UserInfo} from "@/types/global";
@@ -87,11 +85,11 @@ const disableBlockUser = () => {
 }
 
 const items = [
-  {name: '친구추가', icon: ChartPieIcon, status: undefined},
-  {name: '친구해제', icon: PhoneIcon, status: undefined},
-  {name: '차단하기', icon: CursorArrowRaysIcon, onclick: () => blockUser(), status: undefined},
-  {name: '차단해제', icon: FingerPrintIcon, status: undefined},
-  {name: '신고하기', icon: SquaresPlusIcon, onclick: () => setIsOpenReportDialog(), status: true},
+  {name: '친구추가', icon: undefined, status: undefined},
+  {name: '친구해제', icon: undefined, status: undefined},
+  {name: '차단하기', icon: undefined, onclick: () => blockUser(), status: undefined},
+  {name: '차단해제', icon: undefined, status: undefined},
+  {name: '신고하기', icon: undefined, onclick: () => setIsOpenReportDialog(), status: true},
 ]
 
 const activatedItems = computed(() => {
@@ -128,44 +126,17 @@ watch(isBlock,
       }
     }, {deep: true});
 
-onMounted(() => {
-  watch(() => props.userInfo, (newUserInfo, oldUserInfo) => {
-    if (!props.userInfo?.nickname) {
-      console.error("ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ");
-      return;
-    }
-    console.log(props);
-    console.log("friendList", friendList.value);
-    console.log("blockList", blockList.value);
-    console.log("isFriend", isFriend.value);
-    console.log("isBlock", isBlock.value);
-    console.log("userinfo", props.userInfo?.nickname)
-    if (newUserInfo && newUserInfo.nickname) {
-      isFriend.value = friendList.value.some(friend => friend.nickname === newUserInfo.nickname);
-      isBlock.value = blockList.value.some(block => block.nickname === newUserInfo.nickname);
-    }
-  }, { immediate: true });
-});
+watch(() => props.userInfo,
+    (newUserInfo) => {
+      if (!newUserInfo) {
+        return;
+      }
 
-//
-// onMounted(() => {
-//
-//   console.log(props);
-//   console.log("friendList", friendList.value);
-//   console.log("blockList", blockList.value);
-//   console.log("isFriend", isFriend.value);
-//   console.log("isBlock", isBlock.value);
-//   console.log("userinfo", props.userInfo?.nickname)
-//   if (!props.userInfo?.nickname) {
-//     console.log("FAILEDbbbbbbbbbbbbbb")
-//     return;
-//   }
-//   isFriend.value = friendList.value.some(friend => friend.nickname === props.userInfo?.nickname);
-//   isBlock.value = blockList.value.some(block => block.nickname === props.userInfo?.nickname);
-//
-//   console.log("friendList", friendList.value);
-//   console.log("blockList", blockList.value);
-//   console.log("isFriend", isFriend.value);
-//   console.log("isBlock", isBlock.value);
-// })
+      console.log("new user info", newUserInfo);
+
+      if (newUserInfo && newUserInfo.nickname) {
+        isFriend.value = friendList.value.some(friend => friend.nickname === newUserInfo.nickname);
+        isBlock.value = blockList.value.some(block => block.nickname === newUserInfo.nickname);
+      }
+    });
 </script>

@@ -12,7 +12,7 @@ async function blockUserApi(body: BlockUserReq, success: any, fail: any) {
 // 유저 차단 해제
 async function disableBlockUserApi(body: BlockUserReq, success:any, fail:any) {
     local.defaults.headers["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`;
-    await local.delete(`/api/reports`, body).then(success).catch(fail);
+    await local.delete(`/api/reports`).then(success).catch(fail);
 }
 
 export {blockUserApi, disableBlockUserApi};

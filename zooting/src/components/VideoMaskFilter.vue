@@ -3,7 +3,7 @@
     <div class="container" v-show="is_loaded">
       <video id="video" ref="video" autoplay playsinline></video>
     </div>
-    
+
     <div class="flex flex-col items-center justify-center w-screen h-screen" v-show="!is_loaded" style="background-color: black;">
       <p class="mb-8 text-5xl font-bold text-white">가면 벗겨짐</p>
       <h3 class="mb-5 text-white">카메라에 얼굴을 맞춰주세요</h3>
@@ -89,7 +89,7 @@ class BasicScene {
     )
     this.scene.add(inputFramesPlane)
     this.render()
-    
+
     // 가면이 벗겨지면 카메라 끄기
     const canvas: any = document.querySelector("canvas")
     watch(is_loaded, () => {
@@ -99,23 +99,23 @@ class BasicScene {
         canvas.style.visibility = "visible"
       }
     })
-    
+
     window.addEventListener("resize", this.resize.bind(this))
     }
-        
+
     // 화면 크기 변경 따른 크기 조정
     resize() {
       this.width = window.innerWidth
       this.height = window.innerHeight
       this.camera.aspect = this.width / this.height
       this.camera.updateProjectionMatrix()
-      
+
       this.renderer.setSize(this.width, this.height)
       this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-      
+
       this.renderer.render(this.scene, this.camera)
     }
-    
+
     // 실제 랜더 함수
     render(time: number = this.lastTime): void {
       this.lastTime = time
@@ -150,7 +150,7 @@ class Avatar {
     this.url = url
     this.loader.load(
       url,
-      (gltf) => {
+      (gltf: any) => {
         if (this.gltf) {
           this.gltf.scene.remove()
           this.morphTargetMeshes = []
@@ -159,26 +159,26 @@ class Avatar {
         this.scene.add(gltf.scene)
         this.init(gltf)
       },
-      (progress) =>
+      (progress: any) =>
         console.log(
           "가면 로딩중",
           100.0 * (progress.loaded / progress.total),
           "%"
         ),
-      (error) => console.error(error)
+      (error: any) => console.error(error)
     )
   }
 
   // gltf 객체 순회 및 초기화
   init(gltf: GLTF) {
-    gltf.scene.traverse((object) => {
+    gltf.scene.traverse((object: any) => {
       if ((object as THREE.Bone).isBone && !this.root) {
         this.root = object as THREE.Bone
       }
       if (!(object as THREE.Mesh).isMesh) {
         return
       }
-      
+
       const mesh = object as THREE.Mesh
       mesh.frustumCulled = false
 
@@ -220,9 +220,9 @@ class Avatar {
   }
 }
 
-let faceLandmarker: FaceLandmarker | null = null
+let faceLandmarker: typeof FaceLandmarker | null = null
 let video: HTMLVideoElement | null = null
-let avatar: Avatar | null = null
+let avatar: any = null
 
 onMounted(() => {
   init()
@@ -248,7 +248,7 @@ async function init() {
   const maskURL = ref<any>('')
 
   // 가면 바꾸는 변수
-  maskURL.value = dog 
+  maskURL.value = dog
 
   avatar.value = new Avatar(
     maskURL.value,
@@ -314,19 +314,19 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
     let matrix = new THREE.Matrix4().fromArray(
       transformationMatrices[0].data
       )
-      
-      // 가면 위아래 위치 
+
+      // 가면 위아래 위치
       // 너구리 가면은 적용되지 않음.
       if (avatar.value.url !== 'src/assets/animal_mask/raccoon_head.glb' ) {
         avatar.value.scene.position.y = -6
       }
-      
+
       avatar.value?.applyMatrix(matrix, { scale: 50 })
   }
   const blendshapes = landmarks.faceBlendshapes
 
   is_loaded.value = false
-  
+
   if (blendshapes && blendshapes.length > 0) {
     is_loaded.value = true
     const coefsMap = retarget(blendshapes);
@@ -335,7 +335,7 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
 }
 
 // 표정 변화 (현재는 너구리 가면만 적용)
-function retarget(blendshapes: Classifications[]) {
+function retarget(blendshapes: any) {
   const categories = blendshapes[0].categories
   let coefsMap = new Map<string, number>()
   for (let i = 0; i < categories.length; ++i) {
