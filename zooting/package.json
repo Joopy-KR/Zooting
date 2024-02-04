@@ -28,7 +28,8 @@
     "pinia-plugin-persistedstate": "^3.2.1",
     "three": "^0.160.1",
     "tw-elements": "^1.1.0",
-    "vue": "^3.3.11",
+    "v3-click-outside": "^1.1.0",
+    "vue": "^3.4.15",
     "vue-router": "^4.2.5",
     "vue-tailwind-datepicker": "^1.6.1"
   },

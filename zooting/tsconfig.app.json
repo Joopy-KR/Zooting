@@ -3,11 +3,20 @@
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
+    "skipLibCheck": true,
+    "allowJs": true,
+    "outDir": "",
+    //출력할 디렉토리를 설정합니다.
+
+    //etc: js 관련 설정
+    "checkJs": false,
+    //allowJs: true로 js 사용시 js의 오류 검사 여부
+    "maxNodeModuleJsDepth": 0,
     "composite": true,
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["/src/*"]
     }
   }
 }
