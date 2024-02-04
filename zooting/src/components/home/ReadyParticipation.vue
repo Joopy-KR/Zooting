@@ -1,7 +1,7 @@
 <template>
   <div class="participation__container">
-    <img src="/images/logo_lg.png" alt="" style="width: 500px; margin-bottom: 2rem;" class="">
-    <img src="/images/heart-matching.png" class="heart-matching animate__bounceIn" alt="">
+    <img src="@/assets/images/logo/logo_lg.png" alt="" style="width: 500px; margin-bottom: 2rem;" class="">
+    <img src="@/assets/images/home/heart-matching.png" class="heart-matching animate__bounceIn" alt="">
   </div>
 </template>
 
