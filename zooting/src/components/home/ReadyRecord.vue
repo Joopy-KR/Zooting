@@ -1,30 +1,41 @@
 <template>
   <div class="record__container">
-    <div class="record__content">
-      <h1 class="title">Record</h1>
+    <div class="record__top">
+      <button @click="toggleContent">x</button>
+    </div>
+    <div v-if="showContent" class="record__content">
+      <!-- Your content goes here -->
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 
+const showContent = ref(true);
+
+const toggleContent = () => {
+  showContent.value = !showContent.value;
+};
 </script>
 
 <style scoped>
 .record__container {
-  @apply col-span-2 rounded-2xl relative;
-  border: 2px #b18597 solid;
-  background-color: #f9c4d2;
+  @apply flex flex-col col-span-2;
 }
+
+.record__top {
+  @apply flex justify-end h-8 bg-slate-500;
+}
+
 .record__content {
-  @apply bg-white absolute rounded-2xl flex flex-col items-center;
-  border: 2px #b18597 solid;
-  width: 98%;
-  height: 98.7%;
-  top: -0.5%;
-  left: -0.7%;
+  @apply flex-grow border border-violet-300;
+  transition: transform 0.3s ease-out;
+  transform-origin: top;
+  transform: translateY(0);
 }
-.title {
-  @apply flex text-3xl text-center items-center h-20;
+
+.record__content.slide-up {
+  transform: translateY(-100%);
 }
 </style>

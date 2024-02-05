@@ -468,7 +468,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     axios({
       method: "post",
       url: `${API_URL}/api/friends`,
-      params: {
+      data: {
+        email,
         nickname,
       },
       headers: {
