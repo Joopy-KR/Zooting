@@ -25,6 +25,12 @@
                 </div>
               </div>
             </div>
+            <div v-if="isMyProfile" class="mt-5 sm:mt-6">
+              <button type="button"
+                      class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      @click="open = false">Go back to dashboard
+              </button>
+            </div>
           </div>
         </div>
       </PopoverPanel>
@@ -44,6 +50,7 @@ import {addFriendApi, disableFriendApi} from "@/api/friend";
 const store = useAccessTokenStore();
 const props = defineProps({
   userInfo: Object as () => UserInfo,
+  isMyProfile: Boolean,
 })
 const emits = defineEmits([
   "setIsOpenReportDialog",
@@ -53,10 +60,6 @@ const emits = defineEmits([
 const setIsOpenReportDialog = () => {
   emits("setIsOpenReportDialog", true);
 }
-const loadUserInfo = () => {
-  emits("loadUserInfo")
-}
-
 // 유저 차단
 const blockUser = () => {
   if (!props.userInfo?.nickname) {

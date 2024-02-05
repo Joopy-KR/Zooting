@@ -59,7 +59,6 @@ const setIsOpenPersonalityDialog = (status: boolean) => {
   isOpenPersonalityDialog.value = status;
 }
 const getPersonalityMsg = (animal: string | undefined, personality: string | undefined) => {
-  console.log("personality", animal, personality);
   if (!animal && !personality) return undefined;
   if (!animal) return personality;
   if (!personality) return animal;
@@ -117,6 +116,7 @@ watch(() => props.userInfo?.interest,
   />
   <InfoPersonality
       :user-info="userInfo"
+      :is-my-profile="isMyProfile"
       :is-open-personality-dialog="isOpenPersonalityDialog"
       @set-is-open-personality-dialog="setIsOpenPersonalityDialog"
   />
