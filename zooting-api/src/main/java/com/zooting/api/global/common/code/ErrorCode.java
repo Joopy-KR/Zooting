@@ -86,7 +86,9 @@ public enum ErrorCode {
     // 친구 요청 에러 (CODE: 201)
     ALREADY_EXIST_FRIEND_REQUEST(404,"B201" ,"이미 요청을 보냈습니다" ),
     // 친구 에러 (CODE: 202)
-    ALREADY_EXIST_FRIEND(404,"B202" ,"이미 친구입니다" );
+    ALREADY_EXIST_FRIEND(404,"B202" ,"이미 친구입니다" ), 
+    //매칭 에러 (CODE: 500)
+    NOT_MATCHING(404,"B501" , "매칭중이 아닙니다");
 
     /**
      * ******************************* Error Code Constructor ***************************************

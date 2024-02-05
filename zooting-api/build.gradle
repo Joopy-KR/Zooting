@@ -102,7 +102,6 @@ asciidoctor.doFirst {
     delete file('src/main/resources/static/docs')
 }
 
-
 tasks.named('test') {
     useJUnitPlatform()
 }
