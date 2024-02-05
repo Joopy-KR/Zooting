@@ -36,7 +36,7 @@ build: # JOB 이름
   only:
     - master
     - release
-    # - develop
+    - develop
 
 package:
   image: docker:latest
@@ -63,7 +63,7 @@ package:
   only:
     - master
     - release
-    # - develop
+    - develop
 
 deploy: # JOB 이름
   image: docker:latest
@@ -97,7 +97,7 @@ deploy: # JOB 이름
   only:
     - master
     - release
-    # - develop
+    - develop
 
 web-deploy: # JOB 이름
   image: docker:latest
@@ -120,4 +120,4 @@ web-deploy: # JOB 이름
   only:
     - master
     - release
-    - develop
+    # - develop
