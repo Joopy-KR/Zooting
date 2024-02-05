@@ -1,6 +1,9 @@
 package com.zooting.api.domain;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,10 +18,14 @@ import java.time.LocalDateTime;
 public class BaseEntity {
     @CreatedDate
     @Column(updatable = false)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column()
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize
     private LocalDateTime updatedAt;
 
     @PrePersist

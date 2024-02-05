@@ -92,7 +92,11 @@ dependencies {
     implementation 'net.coobird:thumbnailator:0.4.8'
     // mockito - restdoc
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    // jackson 날짜 시간설정
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
+
 asciidoctor {
     inputs.dir snippetsDir
     // asciidoctor task 를 실행할 때, test task 를 먼저 실행한다.

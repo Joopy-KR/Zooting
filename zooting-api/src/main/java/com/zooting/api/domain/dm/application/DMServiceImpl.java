@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ public class DMServiceImpl implements DMService {
     private final DMRoomRepository dmRoomRepository;
     private final MemberRepository memberRepository;
     private final FileRepository fileRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public DMRoom getDMRoom(String sender, String receiver) {
@@ -91,6 +94,9 @@ public class DMServiceImpl implements DMService {
                 }).toList();
         dm.setFiles(files);
         dmRepository.save(dm);
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(dmReq.getClass()));
+        redisTemplate.opsForList().rightPush("dmRoomId:" + dmReq.dmRoomId(), dmReq);
+//        redisTemplate.expire("dmRoomId:" + dmReq.dmRoomId(),30, java.util.concurrent.TimeUnit.MINUTES);
     }
 
     @Override
