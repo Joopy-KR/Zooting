@@ -111,6 +111,7 @@ web-deploy: # JOB 이름
     - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD
   script:
     - cd ./zooting
+    - echo "$VUE_ENV" > ".env"
     - docker-compose down # docker-compose 내리기
     - docker-compose up --build -d # docker-compose 빌드 및 백그라운드 실행
   after_script:
@@ -120,4 +121,4 @@ web-deploy: # JOB 이름
   only:
     - master
     - release
-    # - develop
+    - develop
