@@ -5,6 +5,7 @@ import com.zooting.api.global.common.code.SuccessCode;
 import com.zooting.api.global.jwt.dto.TokenDto;
 import com.zooting.api.global.jwt.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/token")
 @RequiredArgsConstructor
-public class JwtController {
+@Tag(name = "인증", description = "토큰 인증 컨트롤러")
+public class AuthController {
 
     private final JwtService jwtService;
 
