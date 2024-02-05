@@ -24,8 +24,6 @@ import java.util.Set;
 public class PubSubController {
     private final RedisPubSubService redisPubSubService;
     private final RedisTemplate<String, Object> redisTemplate;
-
-    @Operation(summary = "대기방 조회", description = "대기방 조회")
     // 유효한 Topic 리스트 반환
     @GetMapping("/room")
     public Set<String> findAllRoom() {

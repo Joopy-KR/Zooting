@@ -1,6 +1,5 @@
-package com.zooting.api.domain.meeting.dto;
-
-import com.zooting.api.domain.meeting.entity.MeetingParticipant;
+package com.zooting.api.domain.meeting.redisdto;
+import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import jakarta.persistence.Id;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -17,8 +16,9 @@ import org.springframework.data.redis.core.RedisHash;
 @RequiredArgsConstructor
 @RedisHash(value = "Room")
 public class WaitingRoom {
+
     @Id
     String roomId;
     int acceptCount;
-    Set<MeetingParticipant> meetingParticipants;
+    Set<MeetingMemberDto> meetingMembers;
 }
