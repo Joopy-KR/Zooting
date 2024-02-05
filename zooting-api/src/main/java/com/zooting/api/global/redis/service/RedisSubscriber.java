@@ -1,6 +1,8 @@
 package com.zooting.api.global.redis.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zooting.api.global.redis.dto.response.OpenviduTokenRes;
+import com.zooting.api.global.redis.dto.response.RedisMatchRes;
 import io.openvidu.java.client.Connection;
 import io.openvidu.java.client.OpenVidu;
 import io.openvidu.java.client.Session;
@@ -29,17 +31,22 @@ public class RedisSubscriber implements MessageListener {
         try {
             String key = new String(message.getChannel());
             String body = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-            if(body.equals("accept")){
-                log.info("[onMessage] key: {}, body: {} accept", key, body);
-                redisTemplate.opsForList().set(key, 0, (Long)redisTemplate.opsForList().index(key, 0) + 1);
-                if((Long)redisTemplate.opsForList().index(key, 0) == 4){
+            log.info("body {} equals accept {}", body, body.contains("accept"));
+            if(body.contains("accept")){
+                log.info("[onMessage] key: {}, body: {}", key, body);
+                Long currentAccept = Long.valueOf((String) redisTemplate.opsForList().index(key, 0));
+                redisTemplate.opsForList().set(key, 0, currentAccept + 1);
+                if(Long.valueOf((String)redisTemplate.opsForList().index(key, 0)) == 4){
                     Session session = openVidu.createSession();
                     for (int i = 1; i < 5; i++) {
-                        String email = (String) redisTemplate.opsForList().index(key, i);
+                        String email = (String) redisTemplate.opsForList().rightPop(key);
                         Connection connection = session.createConnection();
-                        webSocketTemplate.convertAndSend("/api/sub/dm/" + email, connection);
+                        OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes("openviduToken", connection.getToken());
+                        webSocketTemplate.convertAndSend("/api/sub/dm/" + email, openviduTokenRes);
                         redisTemplate.delete(email);
                     }
+                    //destroy room
+                    deleteRoom(key);
                 }
                 return;
             }
@@ -49,21 +56,13 @@ public class RedisSubscriber implements MessageListener {
                 /*매칭이 완료되면 OpenVidu Session Create*/
                 Session session = openVidu.createSession();
                 log.info("[onMessage] key: {}, listSize: {} 매칭성공", key, listSize);
-                for (int i = 0; i < 4; i++) {
-                    String email = (String) redisTemplate.opsForList().rightPop(key);
-                    log.info("[onMessage] email: {}", email);
-                    Connection connection = session.createConnection();
-                    log.info("[onMessage] connection: {}, token: {}", connection, connection.getToken());
-                    //send token
-                    webSocketTemplate.convertAndSend("/api/sub/dm/" + email, connection);
-                    //delete matched users
-                    redisTemplate.delete(email);
+                for (int i = 1; i < 5; i++) {
+                    String email = (String) redisTemplate.opsForList().index(key, i);
+                    RedisMatchRes redisMatchRes = new RedisMatchRes("match", key);
+                    log.info("[onMessage] email: {} {} {}", email, redisMatchRes.type(), redisMatchRes.roomId());
+                    webSocketTemplate.convertAndSend("/api/sub/dm/" + email, redisMatchRes);
                 }
-                //destroy room
-                deleteRoom(key);
             }
-//            String body = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-//            RedisWaitRoom waitRoom = objectMapper.readValue(body, RedisWaitRoom.class);
             log.info("[onMessage] body: {}", body);
             log.info("[onMessage] key: {}, listSize: {}", key, listSize);
         } catch (Exception e) {

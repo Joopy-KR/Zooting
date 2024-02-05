@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -101,11 +102,12 @@ public class PubSubController {
 
     @Operation(summary = "매칭 수락", description = "매칭 수락")
     @PostMapping("/matching/accept")
-    public ResponseEntity<BaseResponse<String>> acceptMatching(@RequestParam String channel, @AuthenticationPrincipal UserDetails userDetails) {
-        redisTemplate.opsForValue().increment(channel + ":accept");
+    public ResponseEntity<BaseResponse<String>> acceptMatching(@RequestParam String channel) {
+        redisPubSubService.acceptMatching(channel);
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
                 "매칭 수락"
         );
     }
+
 }

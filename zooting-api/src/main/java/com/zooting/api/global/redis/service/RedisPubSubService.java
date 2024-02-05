@@ -28,7 +28,7 @@ public class RedisPubSubService {
         /* 매칭 로직 */
         for (String waitRoom : waitRooms) {
             Long listSize = redisTemplate.opsForList().size(waitRoom);
-            if (listSize < 4) {
+            if (listSize < 5) {
                 log.info("findRoom: {}", waitRoom);
                 redisTemplate.opsForList().rightPush(waitRoom, loginEmail);
                 redisTemplate.opsForValue().set(loginEmail, waitRoom);
@@ -49,5 +49,9 @@ public class RedisPubSubService {
         redisTemplate.opsForValue().set(loginEmail, "room:" + randomUUID);
         redisPublisher.publish(channel.getTopic(), randomUUID.toString());
         return "room:" + randomUUID;
+    }
+
+    public void acceptMatching(String channel) {
+        redisPublisher.publish(channel, "accept");
     }
 }

@@ -34,11 +34,4 @@ public class DMWebSocketController {
         dmService.saveDM(dmReq);
         template.convertAndSend("/api/sub/dm/" + dmReq.receiver(), dmReq);
     }
-
-    @Operation(summary = "매칭 수락")
-    @MessageMapping("/matching/accept")
-    public void acceptMatching(String channel, @AuthenticationPrincipal UserDetails userDetails){
-        log.info("ACCEPT_MATCHING_SUCCESS (201 CREATED) ::");
-        redisTemplate.convertAndSend(channel, userDetails.getUsername());
-    }
 }
