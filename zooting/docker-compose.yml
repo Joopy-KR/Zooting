@@ -2,6 +2,8 @@
 version: '3'
 services:
   web:
+    container_name: zooting-nginx
+    image: duckbill413/zooting-nginx:latest
     build:
       context: .
       dockerfile: Dockerfile
