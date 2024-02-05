@@ -31,6 +31,7 @@
 import { ref, watch } from 'vue'
 import { useAccessTokenStore } from '@/stores/store'
 import { RouterLink } from 'vue-router'
+import type { Friend } from "@/types/global"
 
 const store = useAccessTokenStore()
 const emit = defineEmits(['entryChat'])
@@ -61,13 +62,6 @@ const entryChat = (item: Friend) => {
   store.entryDmRoom(item)
 
 } 
-
-interface Friend {
-  email: string;
-  nickname: string;
-  gender: string;
-  animal: string;
-};
 </script>
 
 <style scoped>
