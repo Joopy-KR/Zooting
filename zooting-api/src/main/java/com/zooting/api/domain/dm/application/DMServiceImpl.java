@@ -106,7 +106,7 @@ public class DMServiceImpl implements DMService {
         List<DMDto> dmDtoList = dmList
                 .stream()
                 .map(dm -> new DMDto(
-                                dmRoom.getId(), dm.getId(), sender, dm.getMessage(), dm.getFiles()
+                                dmRoom.getId(), dm.getId(), dm.getSender(), dm.getMessage(), dm.getFiles()
                                 .stream()
                                 .map(file -> new DMFileRes(
                                         file.getId(),
