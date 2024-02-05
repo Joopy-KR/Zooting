@@ -18,7 +18,7 @@
 
       <!-- Profile image -->
       <img 
-        v-if="isLoggedIn && store.isCompletedSignUp"
+        v-if="isLoggedIn"
         type="button" 
         @click="openProfileMenu()"
         class="user-profile" 
@@ -117,17 +117,16 @@ const getProfileLink = () => {
 }
 
 const getProfileImage = () => {
-  const profile = ref<string>('')
   const animal = userInfo.value?.animal
-  if (animal === '강아지') {profile.value = 'dog'}
-  else if (animal === '고양이') {profile.value = 'cat'}
-  else if (animal === '곰') {profile.value = 'bear'}
-  else if (animal === '공룡') {profile.value = 'dino'}
-  else if (animal === '펭귄') {profile.value = 'penguin'}
-  else if (animal === '토끼') {profile.value = 'rabbit'}
-  else if (animal === '사슴') {profile.value = 'deer'}
-  else {profile.value = 'default-profile'}
-  return `src/assets/images/animal/${profile.value}.png`
+  const profile = animal === '강아지' ? 'dog' :
+                 animal === '고양이' ? 'cat' :
+                 animal === '곰' ? 'bear' :
+                 animal === '공룡' ? 'dino' :
+                 animal === '펭귄' ? 'penguin' :
+                 animal === '토끼' ? 'rabbit' :
+                 animal === '사슴' ? 'deer' :
+                 'default-profile';
+  return `src/assets/images/animal/${profile}.png`
 }
 
 const closeTab = () => {

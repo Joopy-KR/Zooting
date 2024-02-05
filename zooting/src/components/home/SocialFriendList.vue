@@ -21,6 +21,20 @@
         <div class="flex items-center">
           <button class="me-2" @click="entryChat(item)">DM</button>
           <button @click="friendDelete(item.nickname)">삭제</button>
+
+          <svg class="menu-button" @click="openMenu(item.nickname)" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" :ref="`menuBtnRef-${index}`">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M12 6h0m0 6h0m0 6h0"/>
+          </svg>
+        </div>
+        <div class="menu" v-show="isOpenMenu && openedMenuNickname === item.nickname" v-click-outside="() => ClickOustsideMenu(index)" :ref="`menuRef-${index}`">
+          <ul class="py-2 text-sm text-gray-700">
+            <li class="block px-4 py-2 divide-y">
+              <p class="block px-4 py-2 hover:bg-gray-100">프로필 보기</p>
+            </li>
+            <li class="block px-4 py-2">
+              친구 삭제
+            </li>
+          </ul>
         </div>
       </li>
     </ul>
@@ -34,43 +48,59 @@ import { RouterLink } from 'vue-router'
 import type { Friend } from "@/types/global"
 
 const store = useAccessTokenStore()
-const emit = defineEmits(['entryChat'])
 
 const friendList = ref(store.friendList)
+const isOpenMenu = ref<boolean>(false)
+const openedMenuNickname = ref<string | null>(null)
 
-watch(()=> store.friendList, (UpdateList)=>{
-  friendList.value = UpdateList
+watch(() => store.friendList, (updatedList) => {
+  friendList.value = updatedList
 })
 
-const getProfileLink = (value: string) => {
-  return `/profile/${value}`
-}
+const getProfileLink = (value: string) => `/profile/${value}`
 
 const friendDelete = (nickname: string) => {
   store.friendDelete(nickname)
 } 
 
-const getHeartClass = (gender: string) => {
-  return gender === 'man' ? 'w-4 h-4 text-blue-500 ms-1' : 'w-4 h-4 text-pink-500 ms-1';
-}
+const getHeartClass = (gender: string) => (
+  gender === 'man' ? 'w-4 h-4 text-blue-500 ms-1' : 'w-4 h-4 text-pink-500 ms-1'
+)
 
 const getProfileImage = (animal: string) => {
-  const profile = ref<string>('')
-  if (animal === '강아지') {profile.value = 'dog'}
-  else if (animal === '고양이') {profile.value = 'cat'}
-  else if (animal === '곰') {profile.value = 'bear'}
-  else if (animal === '공룡') {profile.value = 'dino'}
-  else if (animal === '펭귄') {profile.value = 'penguin'}
-  else if (animal === '토끼') {profile.value = 'rabbit'}
-  else if (animal === '사슴') {profile.value = 'deer'}
-  else {profile.value = 'default-profile'}
-  return `src/assets/images/animal/${profile.value}.png`
+  const profile = animal === '강아지' ? 'dog' :
+                 animal === '고양이' ? 'cat' :
+                 animal === '곰' ? 'bear' :
+                 animal === '공룡' ? 'dino' :
+                 animal === '펭귄' ? 'penguin' :
+                 animal === '토끼' ? 'rabbit' :
+                 animal === '사슴' ? 'deer' :
+                 'default-profile';
+  return `src/assets/images/animal/${profile}.png`
 }
 
 const entryChat = (item: Friend) => {
   store.entryDmRoom(item)
-
 } 
+
+const openMenu = (nickname: string) => {
+  isOpenMenu.value = !isOpenMenu.value
+  openedMenuNickname.value = isOpenMenu.value ? nickname : null
+}
+
+const menuBtnRef = ref<HTMLElement[]>([])
+const menuRef = ref<HTMLElement[]>([])
+
+// const ClickOustsideMenu = (index: number) => {
+//   return (isOutSide: boolean, e: Event) => {
+//     if (isOpenMenu.value && isOutSide) {
+//       if ((menuRef.value[index] !== e.target) && (menuBtnRef.value[index] !== e.target)) {
+//         isOpenMenu.value = false
+//         openedMenuNickname.value = null
+//       }
+//     }
+//   }
+// }
 </script>
 
 <style scoped>
@@ -110,5 +140,11 @@ button {
 }
 .gender-icon {
   @apply text-xl;
+}
+.menu-button {
+  @apply relative w-6 h-6 text-gray-800;
+}
+.menu {
+  @apply absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 left-[470px];
 }
 </style>
