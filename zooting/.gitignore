@@ -203,7 +203,6 @@ web_modules/
 .env.test.local
 .env.production.local
 .env.local
-.env.d.ts
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -514,5 +513,3 @@ $RECYCLE.BIN/
 # .pnp.*
 
 # End of https://www.toptal.com/developers/gitignore/api/yarn,vue,vuejs,react,reactnative,node,windows,macos
-/.env.production
-/src/types/env.d.ts
