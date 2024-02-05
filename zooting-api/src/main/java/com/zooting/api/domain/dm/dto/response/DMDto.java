@@ -11,7 +11,7 @@ public record DMDto(
         @Schema(description = "DM방 ID")
         Long dmRoomId,
         @Schema(description = "DM ID")
-        Long id,
+        Long dmId,
         @Schema(description = "발신자")
         String sender,
         @Schema(description = "수신자")

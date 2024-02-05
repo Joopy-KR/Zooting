@@ -34,7 +34,7 @@ const selectAnswer = (selectedOption: string) => {
   emit('selectAnswer', selectedOption)
 }
 
-const getImageUrl = () => `images/season${props.test.id}.png`
+const getImageUrl = () => `src/assets/images/personality/season${props.test.id}.png`
 </script>
 
 <style scoped>
@@ -45,13 +45,16 @@ const getImageUrl = () => `images/season${props.test.id}.png`
   @apply flex flex-col lg:w-1/2;
 }
 .test__select-button button {
-  @apply rounded-md bg-violet-50 px-3.5 py-2.5 text-sm font-semibold text-violet-600 shadow-sm hover:bg-violet-100 m-2;
+  @apply rounded-md bg-violet-50 px-3.5 py-4 text-lg font-semibold text-violet-600 shadow-sm hover:bg-violet-100 m-2;
 }
 .test__image {
   @apply flex mt-3;
   width: 200px;
 }
 .test__question {
-  @apply my-5
+  @apply my-10 text-2xl;
+}
+.test__count {
+  @apply text-xl;
 }
 </style>
