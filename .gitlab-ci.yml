@@ -1,7 +1,7 @@
 stages:
-  - build
-  - package
-  - deploy
+  # - build
+  # - package
+  # - deploy
   - web-deploy
 
 build: # JOB 이름
@@ -112,8 +112,8 @@ web-deploy: # JOB 이름
   script:
     - cd ./zooting
     - docker-compose down # docker-compose 내리기
-    - docker-compose pull # docker images pull
     - docker-compose up --build -d # docker-compose 빌드 및 백그라운드 실행
+    - docker-compose pull # docker images pull
   after_script:
     - docker logout # GitLab Container Registry 로그아웃
     - echo [INFO] docker deploy end!
