@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import {defineProps, ref, watch, onMounted} from "vue";
+import {ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import type {UserInfo} from "@/types/global";
 import ReportMessage from "@/components/profile/ReportMessage.vue";
 import UserMenu from "@/components/profile/UserMenu.vue";
 import {useStore} from "@/stores/store";
+import InfoPersonality from "@/components/profile/InfoPersonality.vue";
 
 const router = useRouter();
 
@@ -19,6 +20,7 @@ const emits = defineEmits(["loadUserInfo"]);
 const interests = ref<string[]>([]);
 const ageGroup = ref<string>();
 const isOpenReportDialog = ref<boolean>(false);
+const isOpenPersonalityDialog = ref<boolean>(false);
 
 const loadUserInfo = () => {
   emits("loadUserInfo", props.nickname);
@@ -52,6 +54,10 @@ const setIsOpenReportDialog = (status: boolean) => {
   isOpenReportDialog.value = status;
 }
 
+const setIsOpenPersonalityDialog = (status: boolean) => {
+  console.log(status);
+  isOpenPersonalityDialog.value = status;
+}
 const getPersonalityMsg = (animal: string | undefined, personality: string | undefined) => {
   console.log("personality", animal, personality);
   if (!animal && !personality) return undefined;
@@ -108,6 +114,11 @@ watch(() => props.userInfo?.interest,
       :is-open-report-dialog="isOpenReportDialog"
       :nickname="userInfo?.nickname"
       @set-is-open-report-dialog="setIsOpenReportDialog"
+  />
+  <InfoPersonality
+      :user-info="userInfo"
+      :is-open-personality-dialog="isOpenPersonalityDialog"
+      @set-is-open-personality-dialog="setIsOpenPersonalityDialog"
   />
   <div class="flex flex-col h-screen">
     <div class="w-full h-1/3">
@@ -180,8 +191,9 @@ watch(() => props.userInfo?.interest,
           {{ userInfo?.address }}
         </div>
       </div>
-      <div class="flex justify-center px-4 py-2 lg:text-3xl font-bold tracking-tight text-rose-600">
-        <p class="">{{ getPersonalityMsg(userInfo.animal, userInfo.personality) }}</p>
+      <div class="flex justify-center px-4 py-2 lg:text-3xl font-bold tracking-tight text-rose-600"
+           @click="setIsOpenPersonalityDialog(true)">
+        {{ getPersonalityMsg(userInfo?.animal, userInfo?.personality) }}
       </div>
     </div>
     <div class="interest__container">
