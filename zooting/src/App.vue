@@ -3,7 +3,7 @@
     <TheSideBar/>
     <!-- <RouterView class="ms-14"/> -->
     <VideoChatView class="ms-14"/>
-    <!-- <test class="ms-14"/> -->
+    <!-- <ConnectSessionExample class="ms-14"/> -->
   </div>
 </template>
 
@@ -11,7 +11,7 @@
 import { RouterView } from 'vue-router'
 import TheSideBar from '@/components/TheSideBar.vue'
 import VideoChatView from './views/VideoChatView.vue'
-import test from '@/components/video-chat/test.vue'
+import ConnectSessionExample from '@/components/video-chat/ConnectSessionExample.vue'
 </script>
 
 <style scoped>
