@@ -3,7 +3,6 @@
     <ul role="list" class="friend-list">
       <li v-for="(item, index) in blockList" :key="index" class="friend-list__item">
         <RouterLink :to="getProfileLink(item.nickname)" class="friend-list__item__link">
-          <img class="friend-list__img" src="" alt="profile">
           <div class="font-medium">
             {{ item.nickname }}
           </div>

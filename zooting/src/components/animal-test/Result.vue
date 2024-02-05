@@ -12,19 +12,19 @@
       </div>
     
       <div class="flex flex-col flex-wrap items-center justify-center md:h-screen">
-        <img src="/images/강아지.png" alt="강아지 사진" style="height: 50vh;"
+        <img src="@/assets/images/animal/dog.png" alt="강아지 사진" style="height: 50vh;"
         v-if="resultAnimal === '강아지'">
-        <img src="/images/고양이.png" alt="고양이 사진" style="height: 50vh;"
+        <img src="@/assets/images/animal/cat.png" alt="고양이 사진" style="height: 50vh;"
         v-if="resultAnimal === '고양이'">
-        <img src="/images/곰.png" alt="곰 사진" style="height: 50vh;"
+        <img src="@/assets/images/animal/bear.png" alt="곰 사진" style="height: 50vh;"
         v-if="resultAnimal === '곰'">
-        <img src="/images/공룡.png" alt="공룡 사진" style="height: 50vh;"
+        <img src="@/assets/images/animal/dino.png" alt="공룡 사진" style="height: 50vh;"
         v-if="resultAnimal === '공룡'">
-        <img src="/images/토끼.png" alt="토끼 사진" style="height: 50vh;"
+        <img src="@/assets/images/animal/rabbit.png" alt="토끼 사진" style="height: 50vh;"
         v-if="resultAnimal === '토끼'">
-        <img src="/images/펭귄.png" alt="펭귄 사진" style="height: 50vh;"
+        <img src="@/assets/images/animal/penguin.png" alt="펭귄 사진" style="height: 50vh;"
         v-if="resultAnimal === '펭귄'">
-        <img src="/images/사슴.png" alt="사슴 사진" style="height: 50vh;"
+        <img src="@/assets/images/animal/deer.png" alt="사슴 사진" style="height: 50vh;"
         v-if="resultAnimal === '사슴'">
 
         <div class="flex flex-col items-center justify-center md:mt-10">

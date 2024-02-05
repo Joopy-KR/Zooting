@@ -1,5 +1,5 @@
-import {createRouter, createWebHistory} from "vue-router";
-import {useAccessTokenStore} from "@/stores/store";
+import { createRouter, createWebHistory } from "vue-router";
+import { useAccessTokenStore } from "@/stores/store";
 import HomeView from "@/views/HomeView.vue";
 import SignInView from "@/views/SignInView.vue";
 import SignUpView from "@/views/SignUpView.vue";
@@ -8,6 +8,7 @@ import PersonalityTestView from "@/views/PersonalityTestView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import Login from "@/views/LoginView.vue";
 import type {UserInfo} from "@/types/global";
+import ChatTestView from "@/views/ChatTestView.vue";
 
 function getNickname(): string | null {
   const userInfoString = localStorage.getItem("myInfo");
@@ -15,7 +16,7 @@ function getNickname(): string | null {
   if (userInfoString) {
     try {
       const userInfo: UserInfo = JSON.parse(userInfoString);
-      const nickname: string | undefined = userInfo.nickname;
+      const nickname = userInfo.nickname;
 
       if (!nickname) {
         return null;
@@ -74,6 +75,11 @@ const router = createRouter({
       component: PersonalityTestView,
     },
     {
+      path: "/chat",
+      name: "chat",
+      component: ChatTestView,
+    },
+    {
       path: "/profile/:nickname?",
       name: "profile",
       component: ProfileView,
@@ -118,6 +124,14 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   const store = useAccessTokenStore();
+  console.log(to.name, store.isLogin);
+  console.log(
+    (to.name === "home" ||
+      to.name === "signup" ||
+      to.name === "animal_test" ||
+      to.name === "personality_test") &&
+      !store.isLogin
+  );
 
   if (
     (to.name === "home" ||
@@ -133,17 +147,17 @@ router.beforeEach((to, from) => {
     return { name: "home" };
   }
 
-  // if (to.name === 'signup' && store.isCompletedSignUp) {
-  //   return { name: 'home' }
-  // }
+  if (to.name === 'signup' && store.isCompletedSignUp) {
+    return { name: 'home' }
+  }
 
-  // if (to.name === "animal_test" && store.userInfo?.animal) {
-  //   return { name: "home" };
-  // }
-
-  if (to.name === "personality_test" && store.userInfo?.personality) {
+  if (to.name === "animal_test" && store.userInfo?.animal) {
     return { name: "home" };
   }
+
+  // if (to.name === "personality_test" && store.userInfo?.personality) {
+  //   return { name: "home" };
+  // }
 });
 
 export default router;

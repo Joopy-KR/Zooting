@@ -14,7 +14,6 @@ declare interface UserInfo {
     backgroundImgUrl: string | undefined;
     maskId: number | undefined,
     maskImgUrl: string | undefined;
-    mbti: string | undefined;
     memberStatus: UserStatus | undefined;
 }
 
@@ -70,7 +69,24 @@ declare interface BlockUserReq {
     nickname: string | undefined;
 }
 
+declare interface FriendRequest {
+    nickname: string | undefine;
+}
+
+declare interface DM {
+    dmRoomId: number;
+    dmList: DmItem[];
+    cursor: number;
+}
+
+declare interface DmItem {
+    dmRoomId: number;
+    sender: string;
+    message: string;
+}
+
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
-    Personality, Friend, MaskReq, ReportUserReq
+    Personality, Friend, MaskReq, ReportUserReq,
+    DM, DmItem, FriendRequest
 };

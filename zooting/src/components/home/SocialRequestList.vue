@@ -33,8 +33,8 @@
             </div>
           </RouterLink>
           <div class="flex items-center">
-            <button class="me-2" @click="friendAccept(item)">수락</button>
-            <button @click="friendReject(item)">거절</button>
+            <button class="me-2" @click="friendAccept(item.nickname)">수락</button>
+            <button @click="friendReject(item.nickname)">거절</button>
           </div>
         </li>
       </ul>
@@ -73,7 +73,7 @@
             </div>
           </RouterLink>
           <div class="flex items-center">
-            <button @click="friendRequestCancel(item)">취소</button>
+            <button @click="friendRequestCancel(item.nickname)">취소</button>
           </div>
         </li>
       </ul>
@@ -102,35 +102,16 @@ const getProfileLink = (value: string) => {
   return `/profile/${value}`;
 };
 
-interface Friend {
-  email: string;
-  nickname: string;
-  gender: string;
-  animal: string;
+const friendAccept = (nickname: string) => {
+  store.friendAccept(nickname);
 };
 
-const friendAccept = (item: Friend) => {
-  const payload = {
-    email: item.email,
-    nickname: item.nickname,
-  };
-  store.friendAccept(payload);
+const friendReject = (nickname: string) => {
+  store.friendReject(nickname);
 };
 
-const friendReject = (item: Friend) => {
-  const payload = {
-    email: item.email,
-    nickname: item.nickname,
-  };
-  store.friendReject(payload);
-};
-
-const friendRequestCancel = (item: Friend) => {
-  const payload = {
-    email: item.email,
-    nickname: item.nickname,
-  };
-  store.friendRequestCancel(payload);
+const friendRequestCancel = (nickname: string) => {
+  store.friendRequestCancel(nickname);
 }
 
 const getHeartClass = (gender: string) => {
@@ -138,7 +119,29 @@ const getHeartClass = (gender: string) => {
 }
 
 const getProfileImage = (animal: string) => {
-  return `/images/${animal}.png`
+  const imgUrl = ref<string>('')
+  if (animal === '강아지') {
+    imgUrl.value = 'src/assets/images/animal/dog.png'
+  }
+  if (animal === '고양이') {
+    imgUrl.value = 'src/assets/images/animal/cat.png'
+  }
+  if (animal === '곰') {
+    imgUrl.value = 'src/assets/images/animal/bear.png'
+  }
+  if (animal === '공룡') {
+    imgUrl.value = 'src/assets/images/animal/dino.png'
+  }
+  if (animal === '펭귄') {
+    imgUrl.value = 'src/assets/images/animal/penguin.png'
+  }
+  if (animal === '토끼') {
+    imgUrl.value = 'src/assets/images/animal/rabbit.png'
+  }
+  if (animal === '사슴') {
+    imgUrl.value = 'src/assets/images/animal/deer.png'
+  }
+  return imgUrl.value
 }
 </script>
 

@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {Friend, Personality, TokenState, UserInfo} from "@/types/global";
+import type {DM, Friend, Personality, TokenState, UserInfo} from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -243,11 +243,10 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           router.push({ name: "animal_test" });
         } else if (!userInfo.value?.personality) {
           router.push({ name: "personality_test" });
-        } else {
-          isCompletedTest.value = true;
         }
       },
       (error: any) => {
+        console.log(error);
         router.replace({ name: "signin" });
       }
     );
@@ -469,8 +468,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     axios({
       method: "post",
       url: `${API_URL}/api/friends`,
-      data: {
-        email,
+      params: {
         nickname,
       },
       headers: {
@@ -487,13 +485,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 수락
-  const friendAccept = function (payload: { email: string; nickname: string }) {
-    const { email, nickname } = payload;
+  const friendAccept = function (params: string) {
+    const nickname = params;
     axios({
       method: "post",
       url: `${API_URL}/api/friends/accept`,
-      data: {
-        email,
+      params: {
         nickname,
       },
       headers: {
@@ -511,13 +508,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 거절
-  const friendReject = function (payload: { email: string; nickname: string }) {
-    const { email, nickname } = payload;
+  const friendReject = function (params: string) {
+    const nickname = params;
     axios({
       method: "delete",
-      url: `${API_URL}/api/friends/request/reject`,
-      data: {
-        email,
+      url: `${API_URL}/api/friends/reject`,
+      params: {
         nickname,
       },
       headers: {
@@ -534,13 +530,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 취소
-  const friendRequestCancel = function (payload: { email: string; nickname: string }) {
-    const { email, nickname } = payload;
+  const friendRequestCancel = function (params: string) {
+    const nickname = params;
     axios({
       method: "delete",
-      url: `${API_URL}/api/friends/request/cancel`,
-      data: {
-        email,
+      url: `${API_URL}/api/friends/cancel`,
+      params: {
         nickname,
       },
       headers: {
@@ -557,12 +552,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 차단 해제
-  const blockCancel = function (payload: string) {
-    const nickname = payload;
+  const blockCancel = function (params: string) {
+    const nickname = params;
     axios({
       method: "delete",
       url: `${API_URL}/api/block`,
-      data: {
+      params: {
         nickname,
       },
       headers: {
@@ -579,13 +574,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 삭제
-  const friendDelete = function (payload: { email: string; nickname: string }) {
-    const { email, nickname } = payload;
+  const friendDelete = function (params: string) {
+    const nickname = params;
     axios({
       method: "delete",
       url: `${API_URL}/api/friends/delete`,
-      data: {
-        email,
+      params: {
         nickname,
       },
       headers: {
@@ -601,20 +595,21 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       });
   };
 
-  const searchResult = ref<Friend[]>([]);
+    const searchResult = ref<Friend[]>([])
 
-  // 친구 검색
-  const friendSearch = function (params: string) {
-    axios({
-      method: "get",
-      url: `${API_URL}/api/friends/search`,
-      params: {
-        nickname: params,
-      },
-      headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
-      },
-    })
+    // 친구 검색
+    const friendSearch = function (params: string) {
+      const nickname = params
+      axios({
+        method: "get",
+        url: `${API_URL}/api/friends/search`,
+        params: {
+          nickname,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
       .then((res) => {
         searchResult.value = res.data.result;
         // console.log(res);
@@ -622,21 +617,21 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       .catch((err) => {
         console.log(err);
       });
-  };
+    };
 
-  // 유저 검색
-  const userSearch = function (params: string) {
-    const nickname = params;
-    axios({
-      method: "get",
-      url: `${API_URL}/api/members/searchlist`,
-      params: {
-        nickname,
-      },
-      headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
-      },
-    })
+    // 유저 검색
+    const userSearch = function (params: string) {
+      const nickname = params;
+      axios({
+        method: "get",
+        url: `${API_URL}/api/members/searchlist`,
+        params: {
+          nickname,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
       .then((res) => {
         searchResult.value = res.data.result;
         // console.log(res);
@@ -644,63 +639,114 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       .catch((err) => {
         console.log(err);
       });
-  };
+    };
 
-  // // DM방 입장
-  // const enterDmRoom = function (params: string) {
-  //   const email = params
-  //   axios({
-  //     method: "get",
-  //     url: `${API_URL}/api/dm/room`,
-  //     params: {
-  //       email,
-  //     },
-  //     headers: {
-  //       Authorization: `Bearer ${getAccessToken()}`,
-  //     },
-  //   })
-  //     .then((res) => {
-  //       searchResult.value = res.data.result;
-  //       // console.log(res);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
+    // DM 방 입장
+    const isEntryDmRoom = ref<boolean>(false);
+    const DmInfo = ref<DM | null>(null);
+    const receiverInfo = ref<Friend | null>(null);
+
+    const entryDmRoom = function (params: Friend) {
+      const receiver = params.email;
+      axios({
+        method: "get",
+        url: `${API_URL}/api/dm/room`,
+        params: {
+          receiver,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          // console.log(res);
+          DmInfo.value = res.data.result;
+          receiverInfo.value = params;
+        })
+        .then((res) => {
+          if (DmInfo.value) {
+            const params = {
+              dmRoomId: DmInfo.value.dmRoomId,
+              cursor: DmInfo.value.cursor
+            };
+            cursorDmRoom(params);
+          }
+        })
+        .then((res) => {
+          isEntryDmRoom.value = true;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    // DM 커서
+    const isRefreshing = ref<boolean>(false)
+    const cursorDmRoom = function (params: { cursor: number | undefined; dmRoomId: number | undefined }) {
+        const {dmRoomId, cursor} = params;
+        axios({
+            method: "get",
+            url: `${API_URL}/api/dm/room/prev`,
+            params: {
+                dmRoomId,
+                cursor
+            },
+            headers: {
+                Authorization: `Bearer ${getAccessToken()}`,
+            },
+        })
+            .then((res) => {
+                // console.log(res);
+                if (DmInfo.value) {
+                    DmInfo.value.cursor = res.data.result.cursor;
+                    DmInfo.value.dmList = [...DmInfo.value.dmList, ...res.data.result.dmList];
+                }
+            })
+            .then((res) => {
+                isRefreshing.value = false
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
 
   return {
-    setAccessToken,
-    getAccessToken,
-    setRefreshToken,
-    getRefreshToken,
-    userInfo,
-    getUserInfo,
-    isLogin,
-    signOut,
-    isCompletedSignUp,
-    isCompletedTest,
-    checkCompletedSignUp,
-    setPersonality,
-    saveAdditionalInfo,
-    isDuplication,
-    checkNicknameDuplication,
-    setAnimalFace,
-    friendList,
-    getFriendList,
-    requestFromList,
-    getRequestFromList,
-    requestToList,
-    getRequestToList,
-    blockList,
-    getBlockList,
-    friendRequest,
-    friendAccept,
-    friendReject,
-    friendRequestCancel,
-    blockCancel,
-    friendDelete,
-    friendSearch,
-    userSearch,
-    searchResult,
+      setAccessToken,
+      getAccessToken,
+      setRefreshToken,
+      getRefreshToken,
+      userInfo,
+      getUserInfo,
+      isLogin,
+      signOut,
+      isCompletedSignUp,
+      checkCompletedSignUp,
+      setPersonality,
+      saveAdditionalInfo,
+      isDuplication,
+      checkNicknameDuplication,
+      setAnimalFace,
+      friendList,
+      getFriendList,
+      requestFromList,
+      getRequestFromList,
+      requestToList,
+      getRequestToList,
+      blockList,
+      getBlockList,
+      friendRequest,
+      friendAccept,
+      friendReject,
+      friendRequestCancel,
+      blockCancel,
+      friendDelete,
+      friendSearch,
+      userSearch,
+      searchResult,
+      entryDmRoom,
+      isEntryDmRoom,
+      DmInfo,
+      receiverInfo,
+      cursorDmRoom,
+      isRefreshing,
   };
 });
