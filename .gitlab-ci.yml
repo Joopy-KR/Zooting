@@ -23,7 +23,8 @@ build: # JOB 이름
     - cd ../../.. # 프로젝트 폴더로 경로 이동
     - chmod +x gradlew # gradle 권한 부여
     - ./gradlew clean
-    - ./gradlew build
+    - ./gradlew bootjar
+    # - ./gradlew build
   # artifacts 설정 (bulld를 통해 생성된 파일을 job artifacts에 보관하여 다음에 수행되는 JOB에서 가져다 활용할 수 있게 도와줌)
   artifacts:
     # 보관이 이루어질 경로 설정
