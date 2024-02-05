@@ -22,7 +22,6 @@ const updateIntroduceValue = (event: any) => {
 };
 
 const updateIntroduce = () => {
-  console.log(introduceValue);
   if (!introduceValue.value) {
     return;
   }

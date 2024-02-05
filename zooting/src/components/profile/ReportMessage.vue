@@ -30,7 +30,7 @@ const reportUser = (nickname: string | undefined, reason: string) => {
   };
   reportUserApi(
       reportUserReq,
-      ({data}:any) => console.log(data),
+      ({data}:any) => {},
       (error: any) => console.log(error)
   )
   closeDialog();

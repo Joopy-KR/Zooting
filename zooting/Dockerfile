@@ -6,6 +6,8 @@ RUN rm -rf node_modules package-lock.json
 RUN npm install
 
 COPY ./ .
+ARG VITE_SERVER_API_URL
+ENV VITE_SERVER_API_URL $VITE_SERVER_API_URL
 RUN npm run build-only
 
 FROM nginx:stable-alpine as production-stage

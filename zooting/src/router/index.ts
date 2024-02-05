@@ -34,7 +34,6 @@ function getNickname(): string | null {
 
 const requireAuth = () => (to: any, from: any, next: any) => {
   const store = useAccessTokenStore();
-  console.log(store.getAccessToken());
   if (store.getAccessToken()) {
     return next();
   }
@@ -124,15 +123,6 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   const store = useAccessTokenStore();
-  console.log(to.name, store.isLogin);
-  console.log(
-    (to.name === "home" ||
-      to.name === "signup" ||
-      to.name === "animal_test" ||
-      to.name === "personality_test") &&
-      !store.isLogin
-  );
-
   if (
     (to.name === "home" ||
       to.name === "signup" ||
