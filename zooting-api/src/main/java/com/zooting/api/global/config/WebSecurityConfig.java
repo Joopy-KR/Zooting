@@ -26,36 +26,29 @@ import java.util.List;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomOAuth2FailHandler customOAuth2FailHandler;
-    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
-    private final JwtService jwtService;
+
     private static final String[] URL_WHITE_LIST = {"/error", "/login", "/favicon.ico",
             "/health", "/api-docs/**", "/swagger-ui/**",
             "/swagger-resources/**", "/swagger-ui.html", "/api/token/**",
             "/ws/dm/**", "/api/sub/**", "/api/pub/**"
     };
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOAuth2FailHandler customOAuth2FailHandler;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final JwtService jwtService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .httpBasic(AbstractHttpConfigurer::disable)
+        http.httpBasic(AbstractHttpConfigurer::disable)
                 .cors(corsConfig -> corsConfig.configurationSource(corsConfigurationSource()))
                 .formLogin(AbstractHttpConfigurer::disable)
-                .sessionManagement(session ->
-                        session
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                 JWT 토큰을 쿠키에 넣을지, LocalStorage에 넣을지에 따라 비활성화 여부 결정
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(URL_WHITE_LIST).permitAll()
-                        .anyRequest().authenticated())
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService))
-                        .successHandler(customOAuth2SuccessHandler)
-                        .failureHandler(customOAuth2FailHandler)
-                )
+                .csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(
+                        authorize -> authorize.requestMatchers(URL_WHITE_LIST).permitAll().anyRequest().authenticated())
+                .oauth2Login(
+                        oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                                .successHandler(customOAuth2SuccessHandler).failureHandler(customOAuth2FailHandler))
                 .addFilterBefore(jwtAuthenticateFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -68,9 +61,7 @@ public class WebSecurityConfig {
 
     // CORS 설정
     CorsConfigurationSource corsConfigurationSource() {
-        final List<String> allowedHeaders = List.of(
-                "*"
-        );
+        final List<String> allowedHeaders = List.of("*");
         final List<String> allowedOriginPatterns = List.of(
                 "http://localhost:8080",
                 "http://localhost:5173",

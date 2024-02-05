@@ -12,6 +12,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,65 +21,46 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-
 @Log4j2
 @RequiredArgsConstructor
 public class JwtAuthenticateFilter extends OncePerRequestFilter {
-    private static final String ACCESS_HEADER_AUTHORIZATION = "Authorization";
-    private static final String TOKEN_PREFIX = "Bearer ";
+
     private final JwtService jwtService;
     private final String[] URL_WHITE_LIST;
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            @NonNull HttpServletResponse response,
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        log.info(request.getRequestURI());
         if (PatternMatchUtils.simpleMatch(URL_WHITE_LIST, request.getRequestURI())) {
-            if (request.getRequestURI().startsWith("/dm/ws")) {
-                log.info("소켓 연결 Passed");
-            }
             filterChain.doFilter(request, response);
             return;
         }
 
-        log.info("1. 유저 Request로부터 Access Token을 가져옵니다")
-        ;
-        String accessToken = tokenProcessor(request, ACCESS_HEADER_AUTHORIZATION);
-        log.info("2. 유저 Request로부터 Access Token을 가져왔습니다: " + accessToken);
-
         try {
-            log.info("3. Access Token 인증을 시작합니다.");
-            Authentication authentication = jwtService.verifyAccessToken(accessToken);
-            log.info("4. 인증이 성공적으로 완료되었습니다.");
-            log.info("5. 유저의 Access Token 인증 정보를 SecurityContextHolder에 저장했습니다.");
+            log.info("유저의 토큰을 검증합니다.");
+            Authentication authentication = jwtService.authenticateAccessToken(request);
+
+            log.info("유저의 토큰이 검증되었습니다. 유저를 SecurityContextHolder에 저장합니다.");
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-            jwtErrorHandler(ErrorCode.EXPIRED_ACCESS_TOKEN_EXCEPTION, response);
+            log.info("유저의 액세스 토큰이 만료되었습니다.");
+            sendJwtErrorResponse(ErrorCode.EXPIRED_ACCESS_TOKEN_EXCEPTION, response);
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
-            jwtErrorHandler(ErrorCode.INVALID_ACCESS_TOKEN_EXCEPTION, response);
-        } catch (IllegalArgumentException e){
-            jwtErrorHandler(ErrorCode.ILLEGAL_TOKEN_EXCEPTION, response);
+            log.info("유저의 액세스 토큰이 타당하지 않습니다.");
+            sendJwtErrorResponse(ErrorCode.INVALID_ACCESS_TOKEN_EXCEPTION, response);
+        } catch (IllegalArgumentException e) {
+            log.info("유저의 액세스 토큰이 존재하지 않습니다.");
+            sendJwtErrorResponse(ErrorCode.ILLEGAL_TOKEN_EXCEPTION, response);
         }
     }
 
-    public String tokenProcessor(HttpServletRequest request, String header) {
-        String token = request.getHeader(header);
-        if (token != null && token.startsWith(TOKEN_PREFIX)) {
-            return token.substring(7);
-        }
-        return null;
-    }
-    public void jwtErrorHandler(ErrorCode errorCode, HttpServletResponse response) throws IOException{
+    public void sendJwtErrorResponse(ErrorCode errorCode, HttpServletResponse response) throws IOException {
         Gson gson = new Gson();
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+        response.setStatus(errorCode.getStatus());
         gson.toJson(ErrorResponse.of().code(errorCode).build(), response.getWriter());
-        log.info(errorCode.getMessage());
     }
 }
