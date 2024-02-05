@@ -151,31 +151,19 @@ watch(() => props.open, () => {
     connect()
   }
 })
+
 const getProfileImage = () => {
-  const imgUrl = ref<string>('')
+  const profile = ref<string>('')
   const animal = receiverInfo.value?.animal
-  if (animal === '강아지') {
-    imgUrl.value = 'src/assets/images/animal/dog.png'
-  }
-  if (animal === '고양이') {
-    imgUrl.value = 'src/assets/images/animal/cat.png'
-  }
-  if (animal === '곰') {
-    imgUrl.value = 'src/assets/images/animal/bear.png'
-  }
-  if (animal === '공룡') {
-    imgUrl.value = 'src/assets/images/animal/dino.png'
-  }
-  if (animal === '펭귄') {
-    imgUrl.value = 'src/assets/images/animal/penguin.png'
-  }
-  if (animal === '토끼') {
-    imgUrl.value = 'src/assets/images/animal/rabbit.png'
-  }
-  if (animal === '사슴') {
-    imgUrl.value = 'src/assets/images/animal/deer.png'
-  }
-  return imgUrl.value
+  if (animal === '강아지') {profile.value = 'dog'}
+  else if (animal === '고양이') {profile.value = 'cat'}
+  else if (animal === '곰') {profile.value = 'bear'}
+  else if (animal === '공룡') {profile.value = 'dino'}
+  else if (animal === '펭귄') {profile.value = 'penguin'}
+  else if (animal === '토끼') {profile.value = 'rabbit'}
+  else if (animal === '사슴') {profile.value = 'deer'}
+  else {profile.value = 'default-profile'}
+  return `src/assets/images/animal/${profile.value}.png`
 }
 
 const getProfileLink = () => {
