@@ -2,7 +2,6 @@
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 const KAKAO_LOGIN_URL = `${VITE_SERVER_API_URL}/oauth2/authorization/kakao`;
-console.log("카카오 로그인 URL: ", VITE_SERVER_API_URL, KAKAO_LOGIN_URL);
 </script>
 
 <template>
