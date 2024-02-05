@@ -106,7 +106,7 @@ public class DMServiceImpl implements DMService {
         List<DMDto> dmDtoList = dmList
                 .stream()
                 .map(dm -> new DMDto(
-                                dmRoom.getId(), dm.getId(), sender, dm.getMessage(), dm.getFiles()
+                                dmRoom.getId(), dm.getId(), dm.getSender(), dm.getMessage(), dm.getFiles()
                                 .stream()
                                 .map(file -> new DMFileRes(
                                         file.getId(),
@@ -138,7 +138,7 @@ public class DMServiceImpl implements DMService {
         return new DMRoomRes(
                 dmRoomId,
                 dmDtoList,
-                !dmDtoList.isEmpty() ? dmDtoList.get(dmDtoList.size() - 1).dmRoomId() : 0
+                !dmDtoList.isEmpty() ? dmDtoList.get(dmDtoList.size() - 1).dmId() : 0
         );
     }
 
