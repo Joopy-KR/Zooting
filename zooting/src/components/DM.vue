@@ -102,7 +102,6 @@
 </template>
 
 <script setup lang="ts">
-import { SrvRecord } from 'dns'
 import { ref, watch, onMounted } from 'vue'
 import { useAccessTokenStore } from "../stores/store"
 import type { Friend, DM, DmItem } from "@/types/global"
@@ -149,7 +148,7 @@ watch(() => props.open, () => {
     if (dmInfo.value) {
       dmRoomId.value = dmInfo.value.dmRoomId
     }
-    // connect()
+    connect()
   }
 })
 const getProfileImage = () => {
@@ -278,7 +277,7 @@ const connect = () => {
   stompClient.value.connect(
       () => {
         console.log("Connected from WebSocket")
-        onConnected()
+        // onConnected()
       },
       () => {
         console.log("Could not WebSocket server")
@@ -286,74 +285,72 @@ const connect = () => {
   )
 }
 
-// 소켓 클라이언트 Subscribe 요청
-const onConnected = () => {
-  stompClient.value.subscribe(`${VITE_SERVER_API_URL}/api/sub/dm/${sender}`,
-  (message: any) => {
-    const dmReq = JSON.parse(message.body)
-    console.log('Received DM:', dmReq)
+// // 소켓 클라이언트 Subscribe 요청
+// const onConnected = () => {
+//   stompClient.value.subscribe(`${VITE_SERVER_API_URL}/api/sub/dm/${sender}`,
+//   (message: any) => {
+//     const dmReq = JSON.parse(message.body)
+//     console.log('Received DM:', dmReq)
+//   })
+// }
 
-    newDmList.value.push(dmReq)   // dmReq 타입 확인하기
-  })
-}
+// // 메시지 전송 함수
+// async function sendMessage() {
+//   if (messageInput.value || (fileInput.value && fileInput.value.length > 0)) {
+//     const fileList = ref([])
+//     // FormData 객체 생성
+//     const formData = new FormData()
+//     // formData로는 정수 append X, 서버에서 형변환 필요
+//     formData.append('dmRoomId', String(dmRoomId.value))
+//     formData.append('sender', sender.value)
+//     formData.append('receiver', receiver.value)
+//     formData.append('message', messageInput.value)
 
-// 메시지 전송 함수
-async function sendMessage() {
-  if (messageInput.value || (fileInput.value && fileInput.value.length > 0)) {
-    const fileList = ref([])
-    // FormData 객체 생성
-    const formData = new FormData()
-    // formData로는 정수 append X, 서버에서 형변환 필요
-    formData.append('dmRoomId', String(dmRoomId.value))
-    formData.append('sender', sender.value)
-    formData.append('receiver', receiver.value)
-    formData.append('message', messageInput.value)
+//     // 파일들을 FormData에 추가
+//     if (fileInput.value && fileInput.value.length > 0) {
+//       for (let i = 0; i < fileInput.value.length; i++) {
+//         formData.append('files', fileInput.value[i])
+//       }
+//     }
+//     try {
+//       if (fileInput.value && fileInput.value.length > 0) {
+//         // Axios를 사용하여 파일 업로드 요청 보내기
+//         const response = await axios.post(`${VITE_SERVER_API_URL}/api/ile/upload`, formData, {
+//           headers: {
+//             'Content-Type': 'multipart/form-data',
+//             Authorization: `Bearer ${store.getAccessToken()}`,
+//           }
+//         })
+//         // fileResDto
+//         console.log(response.data)
+//         fileList.value = response.data.result.map((file: any) => ({
+//           S3Id: file.S3Id,
+//           originFileName: file.originFileName,
+//           fileName: file.fileName,
+//           imgUrl: file.imgUrl,
+//           fileDir: file.fileDir,
+//           thumbnailUrl: file.thumbnailUrl
+//         }))
+//       }
+//       // 메시지 전송
+//       stompClient.value.send(`${VITE_SERVER_API_URL}/api/pub/dm/message`, {}, JSON.stringify({
+//         dmRoomId: dmRoomId.value,
+//         sender: sender.value,
+//         receiver: receiver.value,
+//         message: messageInput.value,
+//         files: fileList.value
+//       }))
 
-    // 파일들을 FormData에 추가
-    if (fileInput.value && fileInput.value.length > 0) {
-      for (let i = 0; i < fileInput.value.length; i++) {
-        formData.append('files', fileInput.value[i])
-      }
-    }
-    try {
-      if (fileInput.value && fileInput.value.length > 0) {
-        // Axios를 사용하여 파일 업로드 요청 보내기
-        const response = await axios.post(`${VITE_SERVER_API_URL}/api/ile/upload`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${store.getAccessToken()}`,
-          }
-        })
-        // fileResDto
-        console.log(response.data)
-        fileList.value = response.data.result.map((file: any) => ({
-          S3Id: file.S3Id,
-          originFileName: file.originFileName,
-          fileName: file.fileName,
-          imgUrl: file.imgUrl,
-          fileDir: file.fileDir,
-          thumbnailUrl: file.thumbnailUrl
-        }))
-      }
-      // 메시지 전송
-      stompClient.value.send(`${VITE_SERVER_API_URL}/api/pub/dm/message`, {}, JSON.stringify({
-        dmRoomId: dmRoomId.value,
-        sender: sender.value,
-        receiver: receiver.value,
-        message: messageInput.value,
-        files: fileList.value
-      }))
-
-      // 입력 필드 초기화
-       messageInput.value = ''
-       fileInput.value = null
-       newDmList.value = []
-    }
-    catch (error) {
-      console.error(error)
-    }
-  }
-}
+//       // 입력 필드 초기화
+//        messageInput.value = ''
+//        fileInput.value = null
+//        newDmList.value = []
+//     }
+//     catch (error) {
+//       console.error(error)
+//     }
+//   }
+// }
 </script>
 
 <style scoped>

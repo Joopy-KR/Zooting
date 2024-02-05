@@ -282,6 +282,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         isCompletedSignUp.value = res.data.result;
         if (!isCompletedSignUp) {
           router.push({ name: "signup" });
+        } else {
+          getUserInfo()
         }
       })
       .catch((err) => {
