@@ -171,7 +171,7 @@ onMounted(async () => {
       <div class="flex flex-row justify-between px-12 mr-4">
         <IconMaskDropDown :animal-type="animalType" @set-animal-type="setAnimalType" class="z-30"/>
         <span
-            class="inline-flex items-center gap-x-1.5 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-11"
+            class="inline-flex items-center gap-x-1.5 rounded-full bg-green-200/60 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-11"
         >
           <div class="flex items-center justify-center tracking-tighter">
             <p class="py-2 pl-4 pr-2 font-sans font-semibold text-center text-gray-900 lg:text-xl">

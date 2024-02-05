@@ -102,7 +102,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { SrvRecord } from 'dns'
+import { ref, watch, onMounted } from 'vue'
 import { useAccessTokenStore } from "../stores/store"
 import type { Friend, DM, DmItem } from "@/types/global"
 
@@ -152,7 +153,30 @@ watch(() => props.open, () => {
   }
 })
 const getProfileImage = () => {
-  return `/images/${receiverInfo.value?.animal}.png`
+  const imgUrl = ref<string>('')
+  const animal = receiverInfo.value?.animal
+  if (animal === '강아지') {
+    imgUrl.value = 'src/assets/images/animal/dog.png'
+  }
+  if (animal === '고양이') {
+    imgUrl.value = 'src/assets/images/animal/cat.png'
+  }
+  if (animal === '곰') {
+    imgUrl.value = 'src/assets/images/animal/bear.png'
+  }
+  if (animal === '공룡') {
+    imgUrl.value = 'src/assets/images/animal/dino.png'
+  }
+  if (animal === '펭귄') {
+    imgUrl.value = 'src/assets/images/animal/penguin.png'
+  }
+  if (animal === '토끼') {
+    imgUrl.value = 'src/assets/images/animal/rabbit.png'
+  }
+  if (animal === '사슴') {
+    imgUrl.value = 'src/assets/images/animal/deer.png'
+  }
+  return imgUrl.value
 }
 
 const getProfileLink = () => {

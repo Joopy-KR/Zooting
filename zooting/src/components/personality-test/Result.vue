@@ -75,7 +75,7 @@ const wait = (sec:number) => {
   @apply h-full w-full flex flex-col justify-center bg-white border border-gray-200 shadow p-3 items-center;
 }
 .result__title {
-  @apply text-2xl font-black my-5;
+  @apply text-3xl font-black my-5;
 }
 .summer-text {
   color: #4CA975;
@@ -90,13 +90,13 @@ const wait = (sec:number) => {
   color: #D27D32;
 }
 .result__content {
-  @apply bg-white border border-gray-200 rounded-lg shadow py-5 px-5 text-left;
+  @apply bg-white border border-gray-200 rounded-lg shadow-md p-7 my-7 text-left text-xl;
 }
 .result__content span {
   @apply font-black;
 }
 .test-completed {
-  @apply text-gray-900 bg-gradient-to-r from-red-200 via-red-300 to-yellow-200 hover:bg-gradient-to-bl focus:outline-none focus:ring-red-100 font-medium rounded-lg text-lg px-5 py-2.5 text-center mx-3 my-7 w-80;
+  @apply text-gray-900 bg-gradient-to-r from-red-200 via-red-300 to-yellow-200 hover:bg-gradient-to-bl focus:outline-none focus:ring-red-100 font-medium rounded-lg text-xl px-5 py-2.5 text-center mx-3 my-3 w-80;
 }
 .fade-enter-active,
 .fade-leave-active {

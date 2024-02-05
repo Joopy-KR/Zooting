@@ -6,13 +6,13 @@ const local = localAxios();
 // 유저 차단
 async function blockUserApi(body: BlockUserReq, success: any, fail: any) {
     local.defaults.headers["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`;
-    await local.post(`/api/reports`, body).then(success).catch(fail);
+    await local.post(`/api/block`, body).then(success).catch(fail);
 }
 
 // 유저 차단 해제
-async function disableBlockUserApi(body: BlockUserReq, success:any, fail:any) {
+async function disableBlockUserApi(nickname: string, success:any, fail:any) {
     local.defaults.headers["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`;
-    await local.delete(`/api/reports`).then(success).catch(fail);
+    await local.delete(`/api/block?nickname=${nickname}`).then(success).catch(fail);
 }
 
 export {blockUserApi, disableBlockUserApi};

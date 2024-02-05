@@ -1,0 +1,20 @@
+# docker-compose.yml
+version: '3'
+services:
+  web:
+    container_name: zooting-nginx
+    image: duckbill413/zooting-nginx:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - zooting_net
+
+networks:
+  zooting_net:
+    driver: bridge
