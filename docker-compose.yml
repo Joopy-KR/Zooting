@@ -23,6 +23,22 @@ services:
       - zooting_net
     restart: always
 
+  nginx:
+    container_name: zooting-nginx
+    image: duckbill413/zooting-nginx:latest
+    build:
+      context: ./zooting
+      dockerfile: Dockerfile
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - zooting_net
+    depends_on:
+      - springboot
+
 networks:
   zooting_net:
     driver: bridge
