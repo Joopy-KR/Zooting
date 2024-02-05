@@ -1,5 +1,8 @@
 package com.zooting.api.global.redis.service;
 
+import com.zooting.api.domain.member.dao.MemberRepository;
+import com.zooting.api.domain.member.entity.Member;
+import com.zooting.api.global.redis.entity.RedisMember;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,8 +25,26 @@ public class RedisPubSubService {
     private final RedisSubscriber redisSubscriber;
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final MemberRepository memberRepository;
 
     public String startMatching(String loginEmail) {
+        //email로 RedisMember 변환
+        Member member = memberRepository.findByEmail(loginEmail).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        /* RedisMember 생성 */
+        RedisMember redisMember = RedisMember.builder()
+                .email(member.getEmail())
+                .gender(member.getGender())
+                .nickname(member.getNickname())
+                .address(member.getAddress())
+                .personality(member.getAdditionalInfo().getPersonality())
+                .animal(member.getAdditionalInfo().getAnimal())
+                .introduce(member.getAdditionalInfo().getIntroduce())
+                .interest(member.getAdditionalInfo().getInterest())
+                .idealAnimal(member.getAdditionalInfo().getIdealAnimal())
+                .animalFace(member.getAnimalFace())
+                .blockFromList(member.getBlockFromList())
+                .build();
+
         Set<String> waitRooms = redisTemplate.keys("room:*");
         /* 매칭 로직 */
         for (String waitRoom : waitRooms) {
