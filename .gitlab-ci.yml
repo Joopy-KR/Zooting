@@ -1,8 +1,8 @@
 stages:
+  - web-deploy
   # - build
   # - package
   # - deploy
-  - web-deploy
 
 build: # JOB 이름
   # 사용될 이미지 설정
