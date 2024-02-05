@@ -18,6 +18,7 @@ public class DMWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry endpointRegistry) {
         endpointRegistry.addEndpoint("/ws/dm")
                 .setAllowedOriginPatterns("*")
+                .setAllowedOrigins("*")
                 .withSockJS();
     }
 
