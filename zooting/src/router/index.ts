@@ -133,15 +133,15 @@ router.beforeEach((to, from) => {
       !store.isLogin
   );
 
-  // if (
-  //   (to.name === "home" ||
-  //     to.name === "signup" ||
-  //     to.name === "animal_test" ||
-  //     to.name === "personality_test") &&
-  //   !store.isLogin
-  // ) {
-  //   return { name: "signin" };
-  // }
+  if (
+    (to.name === "home" ||
+      to.name === "signup" ||
+      to.name === "animal_test" ||
+      to.name === "personality_test") &&
+    !store.isLogin
+  ) {
+    return { name: "signin" };
+  }
 
   if (to.name === "signin" && store.isLogin) {
     return { name: "home" };

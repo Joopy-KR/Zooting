@@ -11,7 +11,7 @@
         <font-awesome-icon :icon="['fas', 'window-maximize']" v-show="!isShowContent"/>
       </button>
     </div>
-    <div v-if="isShowContent" class="record__content">
+    <div v-if="isShowContent" class="record__content" @click="matchingStart">
     </div>
   </div>
 </template>
@@ -24,6 +24,10 @@ const isShowContent = ref<boolean>(false)
 const toggleContent = () => {
   isShowContent.value = !isShowContent.value
 }
+
+const matchingStart = () => [
+  
+]
 </script>
 
 <style scoped>
