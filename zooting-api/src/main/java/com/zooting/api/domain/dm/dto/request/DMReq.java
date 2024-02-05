@@ -2,6 +2,7 @@ package com.zooting.api.domain.dm.dto.request;
 
 import com.zooting.api.domain.file.dto.response.FileRes;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
@@ -11,6 +12,9 @@ public record DMReq(
         @Schema(description = "DM방 ID")
         @NotNull
         Long dmRoomId,
+        @Schema(description = "Type")
+        @NotNull
+        Long Type, // 1이면 메세지, 2면 토큰
         @Schema(description = "메시지")
         @NotNull
         String message,
@@ -20,7 +24,8 @@ public record DMReq(
         @Schema(description = "수신자")
         @NotNull
         String receiver,
-        //TODO: file
+        @Schema(description = "파일Id, 썸네일url")
+        @Nullable
         List<FileRes> files
 ) {
 }

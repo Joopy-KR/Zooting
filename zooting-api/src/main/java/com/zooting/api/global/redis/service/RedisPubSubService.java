@@ -44,6 +44,7 @@ public class RedisPubSubService {
         UUID randomUUID = UUID.randomUUID();
         ChannelTopic channel = new ChannelTopic("room:" + randomUUID);
         redisMessageListener.addMessageListener(redisSubscriber, channel);
+        redisTemplate.opsForList().rightPush("room:" + randomUUID, 0);
         redisTemplate.opsForList().rightPush("room:" + randomUUID, loginEmail);
         redisTemplate.opsForValue().set(loginEmail, "room:" + randomUUID);
         redisPublisher.publish(channel.getTopic(), randomUUID.toString());

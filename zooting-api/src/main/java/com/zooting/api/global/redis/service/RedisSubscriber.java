@@ -28,14 +28,29 @@ public class RedisSubscriber implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
         try {
             String key = new String(message.getChannel());
+            String body = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
+            if(body.equals("accept")){
+                log.info("[onMessage] key: {}, body: {} accept", key, body);
+                redisTemplate.opsForList().set(key, 0, (Long)redisTemplate.opsForList().index(key, 0) + 1);
+                if((Long)redisTemplate.opsForList().index(key, 0) == 4){
+                    Session session = openVidu.createSession();
+                    for (int i = 1; i < 5; i++) {
+                        String email = (String) redisTemplate.opsForList().index(key, i);
+                        Connection connection = session.createConnection();
+                        webSocketTemplate.convertAndSend("/api/sub/dm/" + email, connection);
+                        redisTemplate.delete(email);
+                    }
+                }
+                return;
+            }
             log.info("[onMessage] key: {}", key);
             Long listSize = redisTemplate.opsForList().size(key);
-            if (listSize >= 4) { // 매칭완료 조건
+            if (listSize >= 5) { // 매칭완료 조건
                 /*매칭이 완료되면 OpenVidu Session Create*/
                 Session session = openVidu.createSession();
                 log.info("[onMessage] key: {}, listSize: {} 매칭성공", key, listSize);
                 for (int i = 0; i < 4; i++) {
-                    String email = (String) redisTemplate.opsForList().leftPop(key);
+                    String email = (String) redisTemplate.opsForList().rightPop(key);
                     log.info("[onMessage] email: {}", email);
                     Connection connection = session.createConnection();
                     log.info("[onMessage] connection: {}, token: {}", connection, connection.getToken());
@@ -47,7 +62,7 @@ public class RedisSubscriber implements MessageListener {
                 //destroy room
                 deleteRoom(key);
             }
-            String body = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
+//            String body = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
 //            RedisWaitRoom waitRoom = objectMapper.readValue(body, RedisWaitRoom.class);
             log.info("[onMessage] body: {}", body);
             log.info("[onMessage] key: {}, listSize: {}", key, listSize);

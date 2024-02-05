@@ -1,18 +1,14 @@
 package com.zooting.api.global.redis.api;
 
-import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.common.code.SuccessCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import com.zooting.api.global.redis.service.RedisPubSubService;
-import com.zooting.api.global.redis.service.RedisPublisher;
-import com.zooting.api.global.redis.service.RedisSubscriber;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,17 +21,8 @@ import java.util.Set;
 @RequestMapping("/match")
 @RestController
 public class PubSubController {
-    // topic에 메시지 발행을 기다리는 Listner
-    private final RedisMessageListenerContainer redisMessageListener;
-    // 발행자
-    private final RedisPublisher redisPublisher;
-    // 구독자
-    private final RedisSubscriber redisSubscriber;
     private final RedisPubSubService redisPubSubService;
-
-    //    @Autowired
     private final RedisTemplate<String, Object> redisTemplate;
-    private final MemberRepository memberRepository;
 
     @Operation(summary = "대기방 조회", description = "대기방 조회")
     // 유효한 Topic 리스트 반환
@@ -109,6 +96,16 @@ public class PubSubController {
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 "매칭 취소 성공"
+        );
+    }
+
+    @Operation(summary = "매칭 수락", description = "매칭 수락")
+    @PostMapping("/matching/accept")
+    public ResponseEntity<BaseResponse<String>> acceptMatching(@RequestParam String channel, @AuthenticationPrincipal UserDetails userDetails) {
+        redisTemplate.opsForValue().increment(channel + ":accept");
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                "매칭 수락"
         );
     }
 }
