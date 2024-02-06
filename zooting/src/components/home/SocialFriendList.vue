@@ -91,7 +91,7 @@ const getProfileImage = (animal: string) => {
   if (animal === '강아지') {
     imgUrl = new URL('@/assets/images/logo.svg', import.meta.url);
   } else if (animal === '고양이') {
-    imgUrl = new URL('@/assets/images/animal/cat.png');
+    imgUrl = new URL('@/assets/images/animal/cat.png', import.meta.url);
   } else if (animal === '곰') {
     imgUrl = new URL('@/assets/images/animal/bear.png', import.meta.url);
   } else if (animal === '공룡') {
