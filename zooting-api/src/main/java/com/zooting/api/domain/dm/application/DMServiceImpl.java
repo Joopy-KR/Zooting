@@ -95,7 +95,7 @@ public class DMServiceImpl implements DMService {
                 }).toList();
         dm.setFiles(files);
         dmRepository.save(dm);
-        RedisDMReq redisDMReq= new RedisDMReq(dmReq.dmRoomId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(), dmReq.files(), dm.getCreatedAt(), dm.getUpdatedAt());
+        RedisDMReq redisDMReq= new RedisDMReq(dmReq.dmRoomId(), dm.getId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(), dmReq.files(), dm.getCreatedAt(), dm.getUpdatedAt());
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(redisDMReq.getClass()));
         redisTemplate.opsForList().rightPush("dmRoomId:" + dmReq.dmRoomId(), redisDMReq);
         redisTemplate.expire("dmRoomId:" + dmReq.dmRoomId(),30, java.util.concurrent.TimeUnit.MINUTES);
@@ -106,6 +106,25 @@ public class DMServiceImpl implements DMService {
     public DMRoomRes enterDMRoom(String sender, String receiver) {
         DMRoom dmRoom = getDMRoom(sender, receiver);
         Long cursor = getStartCursor(dmRoom.getId(), sender);
+        //redis에 데이터가 있다면 불러옴
+        List<Object> redisDMReqList = redisTemplate.opsForList().range("dmRoomId:" + dmRoom.getId(), 0, -1);
+        if (redisDMReqList != null && !redisDMReqList.isEmpty()) {
+            List<DMDto> dmDtoList = redisDMReqList
+                    .stream()
+                    .map(redisDMReq -> (RedisDMReq) redisDMReq)
+                    .map(redisDMReq -> new DMDto(
+                                    redisDMReq.dmRoomId(), redisDMReq.dmId(), redisDMReq.sender(), redisDMReq.message(), redisDMReq.files()
+                                    .stream()
+                                    .map(file -> new DMFileRes(
+                                            file.imgUrl(),
+                                            file.thumbnailUrl()
+                                    ))
+                                    .toList()
+                            )
+                    )
+                    .toList();
+            return new DMRoomRes(dmRoom.getId(), dmDtoList, cursor);
+        }
         List<DM> dmList = getAllDMList(dmRoom.getId(), cursor);
         if (!dmList.isEmpty()) {
             dmRoom.setSenderLastReadId(dmList.get(dmList.size() - 1).getId());
@@ -117,7 +136,7 @@ public class DMServiceImpl implements DMService {
                                 dmRoom.getId(), dm.getId(), dm.getSender(), dm.getMessage(), dm.getFiles()
                                 .stream()
                                 .map(file -> new DMFileRes(
-                                        file.getId(),
+                                        file.getImgUrl(),
                                         file.getThumbnailUrl()
                                 ))
                                 .toList()
@@ -136,7 +155,7 @@ public class DMServiceImpl implements DMService {
                                 dmRoomId, dm.getId(), dm.getSender(), dm.getMessage(), dm.getFiles()
                                 .stream()
                                 .map(file -> new DMFileRes(
-                                        file.getId(),
+                                        file.getImgUrl(),
                                         file.getThumbnailUrl()
                                 ))
                                 .toList()

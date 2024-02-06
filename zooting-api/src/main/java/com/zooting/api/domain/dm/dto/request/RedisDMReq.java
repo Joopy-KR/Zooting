@@ -10,6 +10,7 @@ import java.util.List;
 
 public record RedisDMReq(
         Long dmRoomId,
+        Long dmId,
         String type,
         String message,
         String sender,
