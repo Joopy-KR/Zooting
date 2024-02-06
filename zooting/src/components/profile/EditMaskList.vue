@@ -149,13 +149,27 @@ watch(myMaskList, (newMyMaskList, oldMyMaskList) => {
     }
   });
 });
-watch(props.userInfo, (newValue) => {
-  animalType.value = newValue?.animal;
-  selectedMaskId.value = newValue?.maskId;
+watch(() => props.userInfo, (newValue) => {
+  if (newValue?.animal) {
+    animalType.value = newValue?.animal;
+  }
+  if (newValue?.maskId) {
+    selectedMaskId.value = newValue?.maskId;
+  }
 })
 watch(() => animalType.value, async (newValue) => {
   await getMaskList(newValue, 0);
   await getMyMaskList(newValue);
+})
+onMounted(() => {
+  if (props.userInfo) {
+    if (props.userInfo?.animal) {
+      animalType.value = props.userInfo?.animal;
+    }
+    if (props.userInfo?.maskId) {
+      selectedMaskId.value = props.userInfo?.maskId;
+    }
+  }
 })
 </script>
 
@@ -183,7 +197,7 @@ watch(() => animalType.value, async (newValue) => {
     </p>
     <div>
       <div class="flex flex-row justify-between px-12 mr-4">
-        <IconMaskDropDown :animal-type="animalType" @set-animal-type="setAnimalType" class="z-30"/>
+        <IconMaskDropDown :animal-type="animalType" :gender="userInfo?.gender" @set-animal-type="setAnimalType" class="z-30"/>
         <span
             class="inline-flex items-center gap-x-1.5 rounded-full bg-green-200/60 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-11"
         >
