@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {defineEmits, defineProps, ref} from "vue";
+import {ref} from "vue";
 import {Dialog, DialogPanel, TransitionChild, TransitionRoot,} from "@headlessui/vue";
 import type {ReportUserReq} from "@/types/global";
 import {reportUserApi} from "@/api/report";
@@ -30,7 +30,7 @@ const reportUser = (nickname: string | undefined, reason: string) => {
   };
   reportUserApi(
       reportUserReq,
-      ({data}:any) => console.log(data),
+      ({data}:any) => {},
       (error: any) => console.log(error)
   )
   closeDialog();

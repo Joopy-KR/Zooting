@@ -7,4 +7,4 @@ ARG JAR_FILE=build/libs/zooting-api-0.0.1-SNAPSHOT.jar
 COPY ${JAR_FILE} zooting-api.jar
 
 # 실행 명령어
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/zooting-api.jar", "--spring.profiles.active=dev"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/zooting-api.jar", "--spring.profiles.active=prod"]

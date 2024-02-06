@@ -1,6 +1,11 @@
 <script setup lang="ts">
+<<<<<<< HEAD
 import { ref, onMounted, watch, computed } from "vue";
 import { useRouter } from "vue-router";
+=======
+import {computed, onMounted, ref, watch} from "vue";
+import {useRouter} from "vue-router";
+>>>>>>> bcac80da20a4d61a7c2a98ac8319d8d907c33ea3
 import EditMaskItem from "@/components/profile/EditMaskItem.vue";
 import IconMaskDropDown from "./IconMaskDropDown.vue";
 import {getMaskListApi, getMyMaskListApi} from "@/api/mask";

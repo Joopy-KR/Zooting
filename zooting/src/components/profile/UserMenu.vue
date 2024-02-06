@@ -82,7 +82,7 @@ const disableBlockUser = () => {
     return;
   }
   disableBlockUserApi(props.userInfo.nickname,
-      ({data}: any) => console.log(data),
+      ({data}: any) => {},
       (error: any) => console.log(error),
   )
   items.value[2].status = true;
@@ -95,7 +95,7 @@ const addFriend = () => {
   }
 
   addFriendApi({nickname: props.userInfo.nickname},
-      ({data}: any) => console.log(data),
+      ({data}: any) => {},
       (error: any) => console.log(error)
   );
   items.value[0].status = false;
@@ -108,7 +108,7 @@ const disableFriend = () => {
   }
 
   disableFriendApi(props.userInfo.nickname,
-      ({data}: any) => console.log(data),
+      ({data}: any) => {},
       (error: any) => console.log(error));
   items.value[0].status = true;
   items.value[1].status = false;
