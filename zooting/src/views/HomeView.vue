@@ -1,10 +1,11 @@
 <template>
   <div class="home__container">
-    <Social 
+    <Social
       :new-sender="newSender"
       @read-message = "readMessage"
     />
     <Ready />
+<!--    <MatchingCompleteModal v-if="isMatchingComplete" class="z-40"/>-->
   </div>
 </template>
 
@@ -19,6 +20,9 @@ const store = useAccessTokenStore()
 
 const userInfo = ref(store.userInfo)
 
+// 매칭이 된 경우
+const isMatchingComplete = ref(true)
+
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
 const stompClient = Stomp.over(socket)
 
@@ -31,7 +35,7 @@ watch(()=> store.userInfo, (UpdateUser)=>{
 onMounted(async () => {
   if (!store.isCompletedSignUp) {
     store.checkCompletedSignUp()
-  } 
+  }
 })
 
 const readMessage = (sender: string) => {
@@ -41,7 +45,7 @@ const readMessage = (sender: string) => {
 
 // 소켓 통신 연결 요청
 stompClient.connect(
-  {}, 
+  {},
   () => {
     console.log('Connected to WebSocket')
     onConnected()

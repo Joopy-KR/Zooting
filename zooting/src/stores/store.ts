@@ -649,7 +649,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     const isEntryDmRoom = ref<boolean>(false);
     const dmInfo = ref<DM | null>(null);
     const receiverInfo = ref<Friend | null>(null);
-    
+
     const entryDmRoom = function (params: Friend) {
       const receiver = params.email;
       axios({
@@ -706,6 +706,28 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         });
     };
 
+    const noticePage = ref<NoticePage>();
+    const noticeList = ref<Notice[]>([]);
+    // 공지사항 리스트
+    const getNoticeList = function (params: {'page': number, 'size':number}) {
+        axios({
+            method: "get",
+            url: `${API_URL}/api/notice`,
+            headers: {
+                Authorization: `Bearer ${getAccessToken()}`,
+            },
+            params : params,
+        })
+            .then((res) => {
+                noticePage.value = res.data.result;
+                noticeList.value = res.data.result["noticeResList"];
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
+
   return {
       setAccessToken,
       getAccessToken,
@@ -746,5 +768,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       cursorDmRoom,
       isRefreshing,
       pastDmList,
+      noticePage,
+      noticeList,
+      getNoticeList,
   };
 });
