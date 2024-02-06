@@ -80,6 +80,8 @@ deploy: # JOB 이름
     - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD # GitLab Container Registry에 로그인
   # 실행될 script 설정
   script:
+    - ./zooting
+    - cat .env
     - docker system prune --volumes -f # 사용되지 않는 컨테이너, 이미지 삭제 및 볼륨 정리
     - docker-compose down # docker-compose 내리기
     - docker-compose pull # docker images pull
