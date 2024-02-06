@@ -520,7 +520,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "delete",
       url: `${API_URL}/api/friends/reject`,
       params: {
-        nickname,
+        nickname
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -542,7 +542,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "delete",
       url: `${API_URL}/api/friends/cancel`,
       params: {
-        nickname,
+        nickname
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -586,7 +586,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "delete",
       url: `${API_URL}/api/friends/delete`,
       params: {
-        nickname,
+        nickname
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
