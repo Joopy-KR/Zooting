@@ -87,25 +87,25 @@ const getHeartClass = (gender: string) => (
 )
 
 const getProfileImage = (animal: string) => {
-  let imgUrl: URL;
+  let imgUrl: string;
   if (animal === '강아지') {
-    imgUrl = new URL('@/assets/images/logo.svg', import.meta.url);
+    imgUrl = '@/assets/images/logo.svg';
   } else if (animal === '고양이') {
-    imgUrl = new URL('@/assets/images/animal/cat.png');
+    imgUrl = '@/assets/images/animal/cat.png';
   } else if (animal === '곰') {
-    imgUrl = new URL('@/assets/images/animal/bear.png', import.meta.url);
+    imgUrl = '@/assets/images/animal/bear.png';
   } else if (animal === '공룡') {
-    imgUrl = new URL('@/assets/images/animal/dino.png', import.meta.url);
+    imgUrl = '@/assets/images/animal/dino.png';
   } else if (animal === '펭귄') {
-    imgUrl = new URL('@/assets/images/animal/penguin.png', import.meta.url);
+    imgUrl = '@/assets/images/animal/penguin.png';
   } else if (animal === '토끼') {
-    imgUrl = new URL('@/assets/images/animal/rabbit.png', import.meta.url);
+    imgUrl = '@/assets/images/animal/rabbit.png';
   } else if (animal === '사슴') {
-    imgUrl = new URL('@/assets/images/animal/deer.png', import.meta.url);
+    imgUrl = '@/assets/images/animal/deer.png';
   } else {
-    imgUrl = new URL('@/assets/images/animal/animal_group.png', import.meta.url);
+    imgUrl = '@/assets/images/animal/animal_group.png';
   }
-  return imgUrl.href;
+  return imgUrl;
 }
 
 const entryChat = (item: Friend) => {

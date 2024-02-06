@@ -34,7 +34,7 @@ const selectAnswer = (selectedOption: string) => {
   emit('selectAnswer', selectedOption)
 }
 
-const getImageUrl = () => new URL(`@/assets/images/personality/season${props.test.id}.png`, import.meta.url).href;
+const getImageUrl = () => `@/assets/images/personality/season${props.test.id}.png`;
 </script>
 
 <style scoped>
