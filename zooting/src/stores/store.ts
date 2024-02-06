@@ -745,5 +745,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       receiverInfo,
       cursorDmRoom,
       isRefreshing,
+      pastDmList,
   };
 });
