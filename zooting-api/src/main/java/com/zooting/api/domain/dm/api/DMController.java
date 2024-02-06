@@ -14,10 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @PreAuthorize("hasRole('USER')")
@@ -54,6 +51,16 @@ public class DMController {
         return BaseResponse.success(
                 SuccessCode.SELECT_SUCCESS,
                 dmRoomRes
+        );
+    }
+
+    @Operation(summary = "DM방 퇴장")
+    @PutMapping("/room/exit")
+    public ResponseEntity<BaseResponse<String>> exitDmRoom(@Valid @NotNull @RequestParam(name = "dmRoomId") Long dmRoomId, @AuthenticationPrincipal UserDetails userDetails) {
+        dmService.exitDmRoom(dmRoomId, userDetails.getUsername());
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                "채팅방 퇴장, 커서 갱신 성공"
         );
     }
 }

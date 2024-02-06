@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {Friend, Personality, TokenState, UserInfo, DM, DmItem } from "@/types/global";
+import type {Friend, Personality, TokenState, UserInfo, Notice, NoticePage, DM, DmItem } from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -745,6 +745,5 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       receiverInfo,
       cursorDmRoom,
       isRefreshing,
-      pastDmList,
-    };
-  });
+  };
+});
