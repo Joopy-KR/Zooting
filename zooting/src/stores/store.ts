@@ -463,13 +463,13 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청
-  const friendRequest = function (payload: { email: string; nickname: string }) {
-    const { email, nickname } = payload;
+  const friendRequest = function (payload: string) {
+    const nickname = payload;
     axios({
       method: "post",
       url: `${API_URL}/api/friends`,
-      params: {
-        nickname,
+      data: {
+        nickname
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -485,13 +485,13 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 수락
-  const friendAccept = function (params: string) {
-    const nickname = params;
+  const friendAccept = function (payload: string) {
+    const nickname = payload;
     axios({
       method: "post",
       url: `${API_URL}/api/friends/accept`,
-      params: {
-        nickname,
+      data: {
+        nickname
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -508,13 +508,13 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 거절
-  const friendReject = function (params: string) {
-    const nickname = params;
+  const friendReject = function (payload: string) {
+    const nickname = payload;
     axios({
       method: "delete",
       url: `${API_URL}/api/friends/reject`,
       params: {
-        nickname,
+        nickname
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -530,13 +530,13 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 취소
-  const friendRequestCancel = function (params: string) {
-    const nickname = params;
+  const friendRequestCancel = function (payload: string) {
+    const nickname = payload;
     axios({
       method: "delete",
       url: `${API_URL}/api/friends/cancel`,
       params: {
-        nickname,
+        nickname
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -580,7 +580,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "delete",
       url: `${API_URL}/api/friends/delete`,
       params: {
-        nickname,
+        nickname
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
