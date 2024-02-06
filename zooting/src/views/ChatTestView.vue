@@ -10,8 +10,9 @@
 
 <script setup lang="ts">
 import axios from "axios";
+const { VITE_SERVER_API_URL } = import.meta.env
 
-const socket = new SockJS("/ws/dm");
+const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`);
 const stompClient = Stomp.over(socket);
 const sender = prompt("로그인 이메일.");
 const receiver = prompt("받는 사람 이메일.");

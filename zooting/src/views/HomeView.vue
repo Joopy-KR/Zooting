@@ -23,50 +23,43 @@ onMounted(async () => {
   if (!store.isCompletedSignUp) {
     store.checkCompletedSignUp()
   } 
-  // store.getUserInfo()
-  connect()
 })
 
 // Web socket -----------------------------------------------
-import SockJS from "sockjs-client"
-import Stomp from "stompjs"
 const { VITE_SERVER_API_URL } = import.meta.env
 
-const socket = ref<any>(null)
-const stompClient = ref<any>(null)
+const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
+const stompClient = Stomp.over(socket)
+
+const isConnected = ref<boolean>(false)
 
 // 소켓 통신 연결 요청
-const connect = () => {
-  console.log("Tring to open connection")
-
-  if (!store.getAccessToken()) {
-    console.log("not found access token")
-    return
+stompClient.connect(
+  {}, 
+  () => {
+    console.log('Connected to WebSocket')
+    onConnected()
+    isConnected.value = true
+  },
+  () => {
+    console.log("Could not WebSocket server")
   }
-  socket.value = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
-  stompClient.value = Stomp.over(socket.value)
-  console.log(stompClient.value.connect())
+)
 
-  stompClient.value.connect(
-      () => {
-        console.log("Connected from WebSocket")
-        // onConnected()
-      },
-      () => {
-        console.log("Could not WebSocket server")
-      }
-  )
+// 연결 해제 시 호출
+socket.onclose = () => {
+    console.log('Disconnected from WebSocket')
+    isConnected.value = false
 }
 
 // 소켓 클라이언트 Subscribe 요청
-// const onConnected = () => {
-//   stompClient.value.subscribe(`${VITE_SERVER_API_URL}/api/sub/dm/${userInfo.value.email}`,
-//   (message: any) => {
-//     const dmReq = JSON.parse(message.body)
-//     console.log('Received DM:', dmReq)
-//   })
-// }
-
+const onConnected = () => {
+  stompClient.subscribe(`${VITE_SERVER_API_URL}/api/sub/dm/${userInfo.value.email}`,
+  (message: any) => {
+    const dmReq = JSON.parse(message.body)
+    console.log('Received DM:', dmReq)
+  })
+}
 </script>
 
 <style scoped>

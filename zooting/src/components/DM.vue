@@ -48,10 +48,13 @@
               <!-- 메시지 -->
               <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
               <!-- 사진 -->
-              <div v-if="item.dmFiles.length > 0" class="grid grid-cols-2 gap-2 my-2">
+              <div v-if="item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
                 <div v-for="(file, index) in item.dmFiles" :key="index">
-                  <img v-if="fileInput" :src="file.thumbnailUrl" class="h-32" alt="Preview">
+                  <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
                 </div>
+              </div>
+              <div v-else-if="item.dmFiles.length === 1" class="my-2">
+                <img :src="item.dmFiles[0].thumbnailUrl" class="h-32" alt="Preview">
               </div>
             </div>
           </div>
@@ -75,10 +78,13 @@
         <div class="file-input" v-show="isOpenFileInput">
           <label for="dropzone-file" class="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-50 bg-gray-50">
             <!-- 파일 imamge -->
-            <div class="grid grid-cols-2 gap-2 my-2">
+            <div v-if="fileInput && fileInput?.length > 1" class="grid grid-cols-2 gap-2 my-2">
               <div v-for="(item, index) in fileInput" :key="index">
-                <img v-if="fileInput" :src="getPreviewUrl(item)" class="h-32" alt="Preview">
+                <img :src="getPreviewUrl(item)" class="h-32" alt="Preview">
               </div>
+            </div>
+            <div v-else-if="fileInput?.length === 1" class="my-2">
+              <img :src="getPreviewUrl(fileInput[0])" class="h-32" alt="Preview">
             </div>
             <!-- 파일 input -->
             <div class="file-input__discription" v-show="!fileInput">
@@ -148,7 +154,7 @@ watch(() => props.open, () => {
     if (dmInfo.value) {
       dmRoomId.value = dmInfo.value.dmRoomId
     }
-    connect()
+    onConnected()
   }
 })
 
@@ -208,7 +214,7 @@ const openFileInput = () => {
   fileInput.value = null
 }
 
-const handleFileChange = (event: InputEvent) => {
+const handleFileChange = (event: Event) => {
   const selectedFiles = (event.target as HTMLInputElement).files
 
   if (selectedFiles && selectedFiles.length > 0) {
@@ -242,102 +248,79 @@ const getPreviewUrl = (file: File) => {
 }
 
 // Web socket -----------------------------------------------
-import SockJS from "sockjs-client"
-import Stomp from "stompjs"
 import axios from 'axios'
 const { VITE_SERVER_API_URL } = import.meta.env
 
-const socket = ref<any>(null)
-const stompClient = ref<any>(null)
+const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
+const stompClient = Stomp.over(socket)
 
-// 소켓 통신 연결 요청
-const connect = () => {
-  console.log("Tring to open connection")
-
-  if (!store.getAccessToken()) {
-    console.log("not found access token")
-    return
-  }
-  socket.value = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
-  stompClient.value = Stomp.over(socket.value)
-
-  stompClient.value.connect(
-      () => {
-        console.log("Connected from WebSocket")
-        // onConnected()
-      },
-      () => {
-        console.log("Could not WebSocket server")
-      }
-  )
+// 소켓 클라이언트 Subscribe 요청
+const onConnected = () => {
+  stompClient.subscribe(`${VITE_SERVER_API_URL}/api/sub/dm/${sender}`,
+  (message: any) => {
+    const dmReq = JSON.parse(message.body)
+    console.log('Received DM:', dmReq)
+  })
 }
 
-// // 소켓 클라이언트 Subscribe 요청
-// const onConnected = () => {
-//   stompClient.value.subscribe(`${VITE_SERVER_API_URL}/api/sub/dm/${sender}`,
-//   (message: any) => {
-//     const dmReq = JSON.parse(message.body)
-//     console.log('Received DM:', dmReq)
-//   })
-// }
+// 메시지 전송 함수
+async function sendMessage() {
+  const fileList = ref([])
+  if (messageInput.value || (fileInput.value && fileInput.value.length > 0)) {
+    // FormData 객체 생성
+    const formData = new FormData()
+    // formData로는 정수 append X, 서버에서 형변환 필요
+    formData.append('dmRoomId', String(dmRoomId.value))
+    formData.append('sender', sender.value)
+    formData.append('receiver', receiver.value)
+    formData.append('message', messageInput.value)
 
-// // 메시지 전송 함수
-// async function sendMessage() {
-//   if (messageInput.value || (fileInput.value && fileInput.value.length > 0)) {
-//     const fileList = ref([])
-//     // FormData 객체 생성
-//     const formData = new FormData()
-//     // formData로는 정수 append X, 서버에서 형변환 필요
-//     formData.append('dmRoomId', String(dmRoomId.value))
-//     formData.append('sender', sender.value)
-//     formData.append('receiver', receiver.value)
-//     formData.append('message', messageInput.value)
+    // 파일들을 FormData에 추가
+    if (fileInput.value && fileInput.value.length > 0) {
+      for (let i = 0; i < fileInput.value.length; i++) {
+        formData.append('files', fileInput.value[i])
+      }
+    }
+    try {
+      if (fileInput.value && fileInput.value.length > 0) {
+        // Axios를 사용하여 파일 업로드 요청 보내기
+        const response = await axios.post(`${VITE_SERVER_API_URL}/api/file/upload`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${store.getAccessToken()}`,
+          }
+        })
+        // fileResDto
+        if (response.data && Array.isArray(response.data.result)) {
+          fileList.value = response.data.result.map((file: any) => ({
+            S3Id: file.S3Id,
+            originFileName: file.originFileName,
+            fileName: file.fileName,
+            imgUrl: file.imgUrl,
+            fileDir: file.fileDir,
+            thumbnailUrl: file.thumbnailUrl
+          }))
+        }
+      }
+      // 메시지 전송
+      stompClient.send(`${VITE_SERVER_API_URL}/api/pub/dm/message`, {}, JSON.stringify({
+        dmRoomId: dmRoomId.value,
+        sender: sender.value,
+        receiver: receiver.value,
+        message: messageInput.value,
+        files: fileList.value
+      }))
 
-//     // 파일들을 FormData에 추가
-//     if (fileInput.value && fileInput.value.length > 0) {
-//       for (let i = 0; i < fileInput.value.length; i++) {
-//         formData.append('files', fileInput.value[i])
-//       }
-//     }
-//     try {
-//       if (fileInput.value && fileInput.value.length > 0) {
-//         // Axios를 사용하여 파일 업로드 요청 보내기
-//         const response = await axios.post(`${VITE_SERVER_API_URL}/api/ile/upload`, formData, {
-//           headers: {
-//             'Content-Type': 'multipart/form-data',
-//             Authorization: `Bearer ${store.getAccessToken()}`,
-//           }
-//         })
-//         // fileResDto
-//         console.log(response.data)
-//         fileList.value = response.data.result.map((file: any) => ({
-//           S3Id: file.S3Id,
-//           originFileName: file.originFileName,
-//           fileName: file.fileName,
-//           imgUrl: file.imgUrl,
-//           fileDir: file.fileDir,
-//           thumbnailUrl: file.thumbnailUrl
-//         }))
-//       }
-//       // 메시지 전송
-//       stompClient.value.send(`${VITE_SERVER_API_URL}/api/pub/dm/message`, {}, JSON.stringify({
-//         dmRoomId: dmRoomId.value,
-//         sender: sender.value,
-//         receiver: receiver.value,
-//         message: messageInput.value,
-//         files: fileList.value
-//       }))
-
-//       // 입력 필드 초기화
-//        messageInput.value = ''
-//        fileInput.value = null
-//        newDmList.value = []
-//     }
-//     catch (error) {
-//       console.error(error)
-//     }
-//   }
-// }
+      // 입력 필드 초기화
+       messageInput.value = ''
+       fileInput.value = null
+       newDmList.value = []
+    }
+    catch (error) {
+      console.error(error)
+    }
+  }
+}
 </script>
 
 <style scoped>
