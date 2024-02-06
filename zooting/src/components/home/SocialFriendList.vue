@@ -4,7 +4,6 @@
       <!-- 친구 리스트 -->
       <li v-for="(item, index) in friendList" :key="index" class="friend-list__item">
         <!-- 리스트 누르면 채팅 열림 -->
-        <div class="w-full cursor-pointer" @click="entryChat(item)">
           <div class="friend-list__item__chat">
             <div class="flex items-center gap-4">
               <!-- 프로필 이미지 -->
@@ -24,15 +23,24 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="flex items-center">
-
-          <!-- 프로필 이동/ 친구 삭제 메뉴 -->
+          
+        <div class="buttons">
+          <!-- 채팅 버튼 -->
+          <svg class="dm-button" @click="entryChat(item)" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/>
+          </svg>
+          <!-- 새로운 채팅 알림 -->
+          <div class="absolute bottom-[10px] left-[10px] cursor-pointer" v-show="props.newSender.includes(item.email)" @click="entryChat(item)">
+            <span class="relative flex w-2 h-2">
+              <span class="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-[#DF75DB]"></span>
+              <span class="relative inline-flex w-2 h-2 rounded-full bg-[#DF75DB]"></span>
+            </span>
+          </div>
+          <!-- 프로필 이동/ 친구 삭제 메뉴 버튼 -->
           <svg class="menu-button" @click="openMenu(item.nickname)" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M12 6h0m0 6h0m0 6h0"/>
           </svg>
         </div>
-
         <div class="menu" v-show="isOpenMenu && openedMenuNickname === item.nickname">
           <div class="py-2 text-sm text-gray-700">
             <RouterLink :to="getProfileLink(item.nickname)" class="block px-4 py-2 hover:bg-gray-100">프로필 보기</RouterLink>
@@ -53,6 +61,12 @@ import { RouterLink } from 'vue-router'
 import type { Friend } from "@/types/global"
 
 const store = useAccessTokenStore()
+
+const props = defineProps<{
+  newSender: string[]
+}>()
+
+const emit = defineEmits(['readMessage'])
 
 const friendList = ref(store.friendList)
 const isOpenMenu = ref<boolean>(false)
@@ -88,6 +102,7 @@ const entryChat = (item: Friend) => {
   store.entryDmRoom(item)
   isOpenMenu.value = false
   openedMenuNickname.value = null
+  emit('readMessage', item.email)
 } 
 
 const openMenu = (nickname: string) => {
@@ -132,14 +147,17 @@ const openMenu = (nickname: string) => {
   @apply text-sm text-gray-500;
 }
 
-button {
-  @apply rounded bg-white px-4 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 h-8;
+.buttons {
+  @apply flex items-center relative;
 }
 .gender-icon {
   @apply text-xl;
 }
+.dm-button {
+  @apply w-6 h-6 mb-1 text-gray-500 transform rotate-45 cursor-pointer me-2 hover:text-gray-600;
+}
 .menu-button {
-  @apply relative w-6 h-6 text-gray-800;
+  @apply relative w-6 h-6 text-gray-800 cursor-pointer;
 }
 .menu {
   @apply absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 left-[470px];

@@ -181,7 +181,6 @@ watch(() => props.open, () => {
     if (dmInfo.value) {
       dmRoomId.value = dmInfo.value.dmRoomId
     }
-    onConnected()
     refreshChat()
   } 
   else {
@@ -190,6 +189,7 @@ watch(() => props.open, () => {
     store.dmInfo = null
     store.pastDmList = []
     sockDmList.value = []
+    //커서갱신
   }
 })
 
@@ -285,15 +285,6 @@ const getPreviewUrl = (file: File) => {
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
 const stompClient = Stomp.over(socket)
 
-// 소켓 클라이언트 Subscribe 요청
-const onConnected = () => {
-  stompClient.subscribe(`${VITE_SERVER_API_URL}/api/sub/dm/${sender}`,
-  (message: any) => {
-    const dmReq = JSON.parse(message.body)
-    console.log('Received DM:', dmReq)
-  })
-}
-
 // 메시지 전송 함수
 async function sendMessage() {
   const fileList = ref([])
@@ -343,7 +334,7 @@ async function sendMessage() {
         }
       }
       // 메시지 전송
-      stompClient.send(`/api/pub/dm/message`, {}, JSON.stringify({
+      stompClient.send('/api/pub/dm/message', {}, JSON.stringify({
         dmRoomId: dmRoomId.value,
         sender: sender.value,
         receiver: receiver.value,

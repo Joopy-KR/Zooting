@@ -7,6 +7,8 @@
     />
     <component 
       :is="currentList"
+      :new-sender="props.newSender"
+      @read-message = "readMessage"
     />
   </div>
 </template>
@@ -21,6 +23,16 @@ import SocialRequestList from './SocialRequestList.vue'
 import SocialBlockList from './SocialBlockList.vue'
 
 const store = useAccessTokenStore()
+
+const props = defineProps<{
+  newSender: string[]
+}>()
+
+const emit = defineEmits(['readMessage'])
+
+const readMessage = (sender: string) => {
+  emit('readMessage', sender)
+}
 
 const tabs = ref<{name: string, count: any}[]>([
   { name: '친구', count: 0 },
