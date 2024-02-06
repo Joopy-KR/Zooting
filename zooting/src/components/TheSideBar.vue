@@ -16,18 +16,9 @@
         </button>
       </div>
 
-      <!-- Log out -->
-      <div class="signout">
-        <button @click="logout" v-if="isLoggedIn && !store.isCompletedSignUp">
-          <svg class="w-5 h-6 m-3 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16" transform="rotate(180)">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8h11m0 0-4-4m4 4-4 4m-5 3H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3"/>
-          </svg>
-        </button>
-      </div>
-
       <!-- Profile image -->
       <img 
-        v-if="isLoggedIn && store.isCompletedSignUp"
+        v-if="isLoggedIn"
         type="button" 
         @click="openProfileMenu()"
         class="user-profile" 
@@ -38,8 +29,11 @@
       <!-- Profile menu -->
       <div class="profile-menu" v-show="isOpenProfileMenu" v-click-outside="ClickOustsideProfileMenu">
           <ul class="py-2 text-sm text-gray-700">
-            <li>
-              <RouterLink :to="getProfileLink()" class="block px-4 py-2 hover:bg-gray-100" @click="closeTab">프로필</RouterLink>
+            <li class="block px-4 py-2 text-gray-300" v-if="!isLoggedIn || !store.isCompletedSignUp">
+              프로필
+            </li>
+            <li v-if="isLoggedIn && store.isCompletedSignUp">
+              <RouterLink :to="getProfileLink()" class="block px-4 py-2 hover:bg-gray-100" @click="closeTab" >프로필</RouterLink>
             </li>
           </ul>
           <div class="py-2">
@@ -53,7 +47,8 @@
       <div class="side-tab" v-show="isSideTabOpen" v-click-outside="ClickOustsideTab">
         <section v-show="currentSideTab == 'messagesTab'" class="h-full">
             <DM 
-              @close-tab="closeTab()"  
+              @close-tab="closeTab()"
+              :open="isSideTabOpen"  
             />
         </section>
 
@@ -125,36 +120,23 @@ const getProfileLink = () => {
 }
 
 const getProfileImage = () => {
-  const imgUrl = ref<string>('')
   const animal = userInfo.value?.animal
-  if (animal === '강아지') {
-    imgUrl.value = 'src/assets/images/animal/dog.png'
-  }
-  if (animal === '고양이') {
-    imgUrl.value = 'src/assets/images/animal/cat.png'
-  }
-  if (animal === '곰') {
-    imgUrl.value = 'src/assets/images/animal/bear.png'
-  }
-  if (animal === '공룡') {
-    imgUrl.value = 'src/assets/images/animal/dino.png'
-  }
-  if (animal === '펭귄') {
-    imgUrl.value = 'src/assets/images/animal/penguin.png'
-  }
-  if (animal === '토끼') {
-    imgUrl.value = 'src/assets/images/animal/rabbit.png'
-  }
-  if (animal === '사슴') {
-    imgUrl.value = 'src/assets/images/animal/deer.png'
-  }
-  return imgUrl.value
+  const profile = animal === '강아지' ? 'dog' :
+                 animal === '고양이' ? 'cat' :
+                 animal === '곰' ? 'bear' :
+                 animal === '공룡' ? 'dino' :
+                 animal === '펭귄' ? 'penguin' :
+                 animal === '토끼' ? 'rabbit' :
+                 animal === '사슴' ? 'deer' :
+                 'default-profile';
+  return `src/assets/images/animal/${profile}.png`
 }
 
 const closeTab = () => {
   isSideTabOpen.value = false
-  store.isEntryDmRoom = false
   isOpenProfileMenu.value = false
+  store.isEntryDmRoom = false
+  store.dmInfo = null
 }
 
 

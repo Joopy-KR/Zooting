@@ -7,6 +7,8 @@
     />
     <component 
       :is="currentList"
+      :new-sender="props.newSender"
+      @read-message = "readMessage"
     />
   </div>
 </template>
@@ -21,6 +23,16 @@ import SocialRequestList from './SocialRequestList.vue'
 import SocialBlockList from './SocialBlockList.vue'
 
 const store = useAccessTokenStore()
+
+const props = defineProps<{
+  newSender: string[]
+}>()
+
+const emit = defineEmits(['readMessage'])
+
+const readMessage = (sender: string) => {
+  emit('readMessage', sender)
+}
 
 const tabs = ref<{name: string, count: any}[]>([
   { name: '친구', count: 0 },
@@ -63,6 +75,7 @@ const handleTabSelected = (currentTab: string) => {
 <style scoped>
 .social__container {
   @apply flex flex-col h-screen;
+  border-right: 1.5px rgb(205, 205, 205) solid;
   min-width: 430px;
 }
 </style>

@@ -119,29 +119,15 @@ const getHeartClass = (gender: string) => {
 }
 
 const getProfileImage = (animal: string) => {
-  const imgUrl = ref<string>('')
-  if (animal === '강아지') {
-    imgUrl.value = 'src/assets/images/animal/dog.png'
-  }
-  if (animal === '고양이') {
-    imgUrl.value = 'src/assets/images/animal/cat.png'
-  }
-  if (animal === '곰') {
-    imgUrl.value = 'src/assets/images/animal/bear.png'
-  }
-  if (animal === '공룡') {
-    imgUrl.value = 'src/assets/images/animal/dino.png'
-  }
-  if (animal === '펭귄') {
-    imgUrl.value = 'src/assets/images/animal/penguin.png'
-  }
-  if (animal === '토끼') {
-    imgUrl.value = 'src/assets/images/animal/rabbit.png'
-  }
-  if (animal === '사슴') {
-    imgUrl.value = 'src/assets/images/animal/deer.png'
-  }
-  return imgUrl.value
+  const profile = animal === '강아지' ? 'dog' :
+                 animal === '고양이' ? 'cat' :
+                 animal === '곰' ? 'bear' :
+                 animal === '공룡' ? 'dino' :
+                 animal === '펭귄' ? 'penguin' :
+                 animal === '토끼' ? 'rabbit' :
+                 animal === '사슴' ? 'deer' :
+                 'default-profile';
+  return `src/assets/images/animal/${profile}.png`
 }
 </script>
 

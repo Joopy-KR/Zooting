@@ -34,8 +34,7 @@ const getProfileLink = (value: string) => {
 
 
 const blockCancel = (nickname: string) => {
-  const payload = nickname
-  store.blockCancel(payload);
+  store.blockCancel(nickname);
 }
 </script>
 
