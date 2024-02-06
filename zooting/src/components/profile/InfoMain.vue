@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {defineProps, onMounted, ref, watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import EditIntroduce from "@/components/profile/EditIntroduce.vue";
 import type {UserInfo} from "@/types/global";

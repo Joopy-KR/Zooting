@@ -12,7 +12,6 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-//@PreAuthorize("hasRole('USER')")
 @RequiredArgsConstructor
 @RestController
 @Tag(name = "DM 웹소켓", description = "DM웹소켓 관련 API")

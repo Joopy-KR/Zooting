@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {defineEmits, defineProps, onMounted, ref} from "vue";
+import { onMounted, ref} from "vue";
 import {Dialog, DialogPanel, TransitionChild, TransitionRoot,} from "@headlessui/vue";
 import {updateIntroduceApi} from "@/api/profile";
 
@@ -22,7 +22,6 @@ const updateIntroduceValue = (event: any) => {
 };
 
 const updateIntroduce = () => {
-  console.log(introduceValue);
   if (!introduceValue.value) {
     return;
   }

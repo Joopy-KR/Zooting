@@ -55,7 +55,6 @@ const setIsOpenReportDialog = (status: boolean) => {
 }
 
 const setIsOpenPersonalityDialog = (status: boolean) => {
-  console.log(status);
   isOpenPersonalityDialog.value = status;
 }
 const getPersonalityMsg = (animal: string | undefined, personality: string | undefined) => {

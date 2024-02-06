@@ -83,7 +83,7 @@ public class JwtService {
 
     public String createAccessToken(CustomUserDetails userDetails) {
         Date date = new Date();
-        Date expirationDate = new Date(date.getTime() + accessTokenExpiration);
+        Date expirationDate = new Date(date.getTime() + accessTokenExpiration * 1000);
 
         return Jwts.builder().signWith(secretKey, Jwts.SIG.HS256).issuer(issuer).expiration(expirationDate)
                 .subject(userDetails.getUsername()).claim("nickname", userDetails.getNickname())
@@ -93,13 +93,13 @@ public class JwtService {
 
     public String createRefreshToken(CustomUserDetails userDetails) {
         Date date = new Date();
-        Date expirationDate = new Date(date.getTime() + refreshTokenExpiration);
+        Date expirationDate = new Date(date.getTime() + refreshTokenExpiration * 1000);
 
         String refreshToken = Jwts.builder().signWith(secretKey, Jwts.SIG.HS256).issuer(issuer)
                 .expiration(expirationDate).subject(userDetails.getUsername())
                 .claim("nickname", userDetails.getNickname()).compact();
 
-        jwtRedisDao.save(userDetails.getEmail(), refreshToken);
+        jwtRedisDao.save(userDetails.getEmail(), refreshToken, refreshTokenExpiration);
         return refreshToken;
     }
 
@@ -116,7 +116,7 @@ public class JwtService {
             log.info("요청의 Refresh Token이 Redis에 저장된 값과 일치합니다.");
             String newAccessToken = createAccessToken(userDetails);
             String newRefreshToken = createRefreshToken(userDetails);
-            jwtRedisDao.save(email, newRefreshToken);
+            jwtRedisDao.save(email, newRefreshToken, refreshTokenExpiration);
 
             return new TokenDto(newAccessToken, newRefreshToken);
         } else {

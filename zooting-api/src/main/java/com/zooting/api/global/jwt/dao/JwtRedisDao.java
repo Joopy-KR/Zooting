@@ -11,8 +11,8 @@ public class JwtRedisDao {
     private final StringRedisTemplate redisTemplate;
     private static final String REFRESH_HASH = "refresh-token/";
 
-    public void save(String email, String refreshToken) {
-        redisTemplate.opsForValue().set(REFRESH_HASH + email, refreshToken, 15, TimeUnit.DAYS);
+    public void save(String email, String refreshToken, long expireTime) {
+        redisTemplate.opsForValue().set(REFRESH_HASH + email, refreshToken, expireTime, TimeUnit.SECONDS);
     }
     public String get(String email) {
         return redisTemplate.opsForValue().get(REFRESH_HASH + email);
