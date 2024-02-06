@@ -22,4 +22,6 @@ public interface DMService {
     DMRoomRes enterDMRoom(String sender, String receiver);
 
     DMRoomRes getDMRoomWithCursor(Long dmRoomId, Long cursor);
+
+    void exitDmRoom(Long dmRoomId, String loginEmail);
 }
