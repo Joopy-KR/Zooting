@@ -66,7 +66,7 @@ cameraWidth.value = 266
 const store = useAccessTokenStore()
 
 const mySessionId = ref("SessionA");
-const myUserName = ref("Participant" + Math.floor(Math.random() * 100));
+const myUserName = store.userInfo?.nickname
 
 const OV = ref(undefined);
 const session = ref(undefined);
@@ -101,6 +101,16 @@ const joinSession = () => {
   // 비동기 예외 발생시
   session.value.on("exception", ({ exception }) => {
     console.warn(exception);
+  });
+
+
+  session.value.on('signal', (event) => {
+    console.log(111)
+    console.log(event.data)
+    // const msg = JSON.parse(event.data).message;
+    console.log(event.data); // Message
+    console.log(event.from); // Connection object of the sender
+    console.log(event.type); // The type of message
   });
 
   
