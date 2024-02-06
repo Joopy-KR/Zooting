@@ -3,8 +3,6 @@ package com.zooting.api.domain.meeting.pubsub;
 import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.redisdto.WaitingRoom;
-import com.zooting.api.global.redis.dto.response.OpenviduTokenRes;
-import com.zooting.api.global.redis.dto.response.RedisMatchRes;
 import io.openvidu.java.client.Connection;
 import io.openvidu.java.client.OpenVidu;
 import io.openvidu.java.client.OpenViduHttpException;
@@ -84,8 +82,12 @@ public class WaitingRoomSubscriber implements MessageListener {
 
     private WaitingRoomMessageDto waitingRoomMessageParser(Message message){
         String id = new String(message.getChannel());
+        log.info("채널(방 제목): {}", id);
         String[] typeAndCount = Objects.requireNonNull(
-                redisTemplate.getStringSerializer().deserialize(message.getBody())).split(" ");
+                redisTemplate.getStringSerializer().deserialize(message.getBody())).replaceAll("\"", "").split(" ");
+
+        log.info("명령어: {}", typeAndCount[0]);
+        log.info("값: {}", typeAndCount[1]);
 
         return WaitingRoomMessageDto.builder()
                 .id(id)
