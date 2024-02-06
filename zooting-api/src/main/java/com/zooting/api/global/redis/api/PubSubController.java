@@ -6,16 +6,19 @@ import com.zooting.api.global.common.code.SuccessCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import com.zooting.api.global.redis.service.RedisPubSubService;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Set;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -107,5 +110,4 @@ public class PubSubController {
                 "매칭 수락"
         );
     }
-
 }

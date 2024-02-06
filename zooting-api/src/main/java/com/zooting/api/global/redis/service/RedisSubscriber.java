@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RedisSubscriber implements MessageListener {
-    private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisMessageListenerContainer redisMessageListener;
     private final SimpMessageSendingOperations webSocketTemplate;
@@ -50,25 +49,6 @@ public class RedisSubscriber implements MessageListener {
                 }
                 return;
             }
-            log.info("[onMessage] key: {}", key);
-            Long listSize = redisTemplate.opsForList().size(key);
-            if (listSize >= 5) { // 매칭완료 조건
-                /*매칭이 완료되면 OpenVidu Session Create*/
-                Session session = openVidu.createSession();
-                log.info("[onMessage] key: {}, listSize: {} 매칭성공", key, listSize);
-                for (int i = 1; i < 5; i++) {
-                    String email = (String) redisTemplate.opsForList().index(key, i);
-                    RedisMatchRes redisMatchRes = new RedisMatchRes("match", key);
-                    log.info("[onMessage] email: {} {} {}", email, redisMatchRes.type(), redisMatchRes.roomId());
-                    webSocketTemplate.convertAndSend("/api/sub/dm/" + email, redisMatchRes);
-                }
-            }
-            log.info("[onMessage] body: {}", body);
-            log.info("[onMessage] key: {}, listSize: {}", key, listSize);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
 
     public void deleteRoom(String key) {
         ChannelTopic channelTopic = new ChannelTopic(key);

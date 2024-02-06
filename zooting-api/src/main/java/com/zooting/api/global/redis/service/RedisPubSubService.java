@@ -1,5 +1,6 @@
 package com.zooting.api.global.redis.service;
 
+import com.zooting.api.domain.meeting.pubsub.RedisPublisher;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.redis.entity.RedisMember;

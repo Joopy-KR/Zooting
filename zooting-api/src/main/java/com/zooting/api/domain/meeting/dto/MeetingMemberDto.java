@@ -25,4 +25,26 @@ public class MeetingMemberDto {
     private String idealAnimal;
     private AnimalFace animalFace;
     private List<Block> blockFromList;  // 내가 차단한 리스트
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MeetingMemberDto that)) {
+            return false;
+        }
+
+        if (!email.equals(that.email)) {
+            return false;
+        }
+        return gender.equals(that.gender);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = email.hashCode();
+        result = 31 * result + gender.hashCode();
+        return result;
+    }
 }
