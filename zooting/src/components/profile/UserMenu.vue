@@ -41,11 +41,20 @@
 <script setup lang="ts">
 import {Popover, PopoverButton, PopoverPanel} from '@headlessui/vue'
 import {blockUserApi, disableBlockUserApi} from "@/api/block.js";
-import {EyeIcon, EyeSlashIcon, FaceFrownIcon, FaceSmileIcon, MegaphoneIcon} from '@heroicons/vue/20/solid'
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  FaceFrownIcon,
+  FaceSmileIcon,
+  MegaphoneIcon,
+  UserPlusIcon,
+  UsersIcon
+} from '@heroicons/vue/20/solid'
 import {useAccessTokenStore} from "@/stores/store"
 import {computed, onMounted, ref, watch} from "vue";
-import type {UserInfo} from "@/types/global";
-import {addFriendApi, disableFriendApi} from "@/api/friend";
+import type {Friend, UserInfo} from "@/types/global";
+import {addFriendApi, disableFriendApi, loadFriendRequestListApi} from "@/api/friend";
+import {UserMinusIcon} from "@heroicons/vue/16/solid";
 
 const store = useAccessTokenStore();
 const props = defineProps({
@@ -57,6 +66,7 @@ const emits = defineEmits([
   "loadUserInfo",
 ]);
 
+const friendList = ref<Friend[]>();
 const setIsOpenReportDialog = () => {
   emits("setIsOpenReportDialog", true);
 }
@@ -73,8 +83,8 @@ const blockUser = () => {
       },
       (error: any) => console.log(error)
   )
-  items.value[2].status = false;
-  items.value[3].status = true;
+  items.value[3].status = false;
+  items.value[4].status = true;
 }
 // 유저 차단 해제
 const disableBlockUser = () => {
@@ -82,11 +92,12 @@ const disableBlockUser = () => {
     return;
   }
   disableBlockUserApi(props.userInfo.nickname,
-      ({data}: any) => {},
+      ({data}: any) => {
+      },
       (error: any) => console.log(error),
   )
-  items.value[2].status = true;
-  items.value[3].status = false;
+  items.value[3].status = true;
+  items.value[4].status = false;
 }
 
 const addFriend = () => {
@@ -99,7 +110,7 @@ const addFriend = () => {
       (error: any) => console.log(error)
   );
   items.value[0].status = false;
-  items.value[1].status = true;
+  items.value[2].status = true;
 }
 
 const disableFriend = () => {
@@ -111,11 +122,12 @@ const disableFriend = () => {
       ({data}: any) => {},
       (error: any) => console.log(error));
   items.value[0].status = true;
-  items.value[1].status = false;
+  items.value[2].status = false;
 }
 const items = ref([
-  {name: '친구추가', icon: FaceSmileIcon, onclick: () => addFriend(), status: false},
-  {name: '친구해제', icon: FaceFrownIcon, onclick: () => disableFriend(), status: false},
+  {name: '친구추가', icon: UserPlusIcon, onclick: () => addFriend(), status: false},
+  {name: '친구요청중', icon: UsersIcon, status: false},
+  {name: '친구해제', icon: UserMinusIcon, onclick: () => disableFriend(), status: false},
   {name: '차단하기', icon: EyeSlashIcon, onclick: () => blockUser(), status: false},
   {name: '차단해제', icon: EyeIcon, onclick: () => disableBlockUser(), status: false},
   {name: '신고하기', icon: MegaphoneIcon, onclick: () => setIsOpenReportDialog(), status: true},
@@ -125,34 +137,77 @@ const activatedItems = computed(() => {
   return items.value.filter(item => item.status === true);
 })
 
+const loadFriendRequestList = async () => {
+  if (!props.userInfo?.nickname) {
+    return;
+  }
+
+  await loadFriendRequestListApi(
+      ({data}: any) => {
+        const resultArray = data.result || [];
+        const result: Friend[] = [];
+
+        resultArray.forEach((item: any) => {
+          result.push({
+            email: item.email,
+            nickname: item.nickname,
+            animal: item.animal,
+            gender: item.gender,
+          });
+        })
+
+        friendList.value = result;
+
+        // friend update
+        updateFriendStatus();
+      },
+      (error: any) => console.log(error)
+  )
+}
+const updateFriendStatus = () => {
+  const find = friendList.value?.find(friend => friend.nickname === props.userInfo?.nickname);
+
+  // 친구 요청 중인 경우
+  if (!!find) {
+    items.value[0].status = false;
+    items.value[2].status = false;
+    items.value[1].status = true;
+  } else {
+    items.value[1].status = false;
+  }
+}
+
 watch(props.userInfo,
-    (newUserInfo) => {
+    async (newUserInfo) => {
       if (!newUserInfo?.memberStatus) {
         items.value[0].status = false;
         items.value[1].status = false;
         items.value[2].status = false;
         items.value[3].status = false;
+        items.value[4].status = true;
         return;
       }
       // 현재 친구 상태
       if (newUserInfo.memberStatus.isFriend) {
         items.value[0].status = false;
-        items.value[1].status = true;
+        items.value[2].status = true;
       } else {
         items.value[0].status = true;
-        items.value[1].status = false;
+        items.value[2].status = false;
       }
       // 현재 차단 상태
       if (newUserInfo.memberStatus.isBlock) {
-        items.value[2].status = false;
-        items.value[3].status = true;
-      } else {
-        items.value[2].status = true;
         items.value[3].status = false;
+        items.value[4].status = true;
+      } else {
+        items.value[3].status = true;
+        items.value[4].status = false;
       }
       // 현재 신고된 상태
       if (newUserInfo.memberStatus.isReport) {
-        items.value[4].status = true;
+        items.value[5].status = true;
       }
+
+      await loadFriendRequestList();
     }, {deep: true});
 </script>

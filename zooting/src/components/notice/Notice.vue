@@ -12,6 +12,7 @@
         </li>
       </ul>
     </div>
+
     <!-- 공지사항 디테일 -->
     <TransitionRoot as="template" class="z-40" :show="detailModalOpen">
       <Dialog as="div" class="relative z-10" @close="detailModalOpen = false">
