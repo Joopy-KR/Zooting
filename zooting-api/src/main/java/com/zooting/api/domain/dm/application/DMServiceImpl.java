@@ -142,6 +142,24 @@ public class DMServiceImpl implements DMService {
         );
     }
 
+    @Transactional
+    @Override
+    public void exitDmRoom(Long dmRoomId, String loginEmail) {
+        DMRoom dmRoom = dmRoomRepository.findById(dmRoomId).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
+        List<DM> dmList = dmRoom.getDms();
+        log.info("dmListsize : {}", dmList.size());
+        int index = dmList.size() - 1;
+        log.info("lastdmid : {}", dmList.get(index).getId());
+        if (!dmList.isEmpty()) {
+            if (dmRoom.getSender().getEmail().equals(loginEmail)) {
+                dmRoom.setSenderLastReadId(dmList.get(index).getId());
+            } else {
+                dmRoom.setReceiverLastReadId(dmList.get(index).getId());
+            }
+        }
+    }
+
     private Long getStartCursor(Long dmRoomId, String sender) {
         DMRoom dmRoom = dmRoomRepository.findById(dmRoomId).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
