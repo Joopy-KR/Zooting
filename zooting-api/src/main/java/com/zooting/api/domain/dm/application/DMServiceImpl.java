@@ -3,6 +3,7 @@ package com.zooting.api.domain.dm.application;
 import com.zooting.api.domain.dm.dao.DMRepository;
 import com.zooting.api.domain.dm.dao.DMRoomRepository;
 import com.zooting.api.domain.dm.dto.request.DMReq;
+import com.zooting.api.domain.dm.dto.request.RedisDMReq;
 import com.zooting.api.domain.dm.dto.response.DMDto;
 import com.zooting.api.domain.dm.dto.response.DMRoomRes;
 import com.zooting.api.domain.dm.entity.DM;
@@ -94,9 +95,10 @@ public class DMServiceImpl implements DMService {
                 }).toList();
         dm.setFiles(files);
         dmRepository.save(dm);
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(dmReq.getClass()));
-        redisTemplate.opsForList().rightPush("dmRoomId:" + dmReq.dmRoomId(), dmReq);
-//        redisTemplate.expire("dmRoomId:" + dmReq.dmRoomId(),30, java.util.concurrent.TimeUnit.MINUTES);
+        RedisDMReq redisDMReq= new RedisDMReq(dmReq.dmRoomId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(), dmReq.files(), dm.getCreatedAt(), dm.getUpdatedAt());
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(redisDMReq.getClass()));
+        redisTemplate.opsForList().rightPush("dmRoomId:" + dmReq.dmRoomId(), redisDMReq);
+        redisTemplate.expire("dmRoomId:" + dmReq.dmRoomId(),30, java.util.concurrent.TimeUnit.MINUTES);
     }
 
     @Override
