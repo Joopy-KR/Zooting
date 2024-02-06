@@ -9,7 +9,7 @@
       <div class="side-bar__item">
         
         <!-- Notifications button -->
-        <button @click="toggleNotificationsTab">
+        <button v-if="isLoggedIn" @click="toggleNotificationsTab ">
           <svg ref="tabRef" :class="[isActivenotificationsTab() ? 'text-violet-800 hover:text-violet-600' : 'text-gray-400 hover:text-gray-500', 'w-6 h-6']" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="20" fill="none" viewBox="0 0 14 20">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7a3 3 0 0 1 3-3M5 19h4m0-3c0-4.1 4-4.9 4-9A6 6 0 1 0 1 7c0 4 4 5 4 9h4Z"/>
           </svg>
@@ -58,7 +58,7 @@
         </section>
 
         <section v-show="currentSideTab == 'notificationsTab'" class="h-full">
-          <Notifications />
+          <Notice />
         </section>
       </div>
     </transition>
@@ -70,7 +70,7 @@ import { ref, computed, watch } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAccessTokenStore } from "../stores/store"
 import DM from './DM.vue'
-import Notifications from './Notifications.vue'
+import Notice from './notice/Notice.vue'
 
 const store = useAccessTokenStore()
 const router = useRouter()
@@ -79,6 +79,7 @@ const isLoggedIn = computed(() => store.isLogin)
 
 const isSideTabOpen = ref(false)
 const currentSideTab = ref<string | null>(null)
+const DEFAULT_PAGE_SIZE = 6;
 
 const userInfo = ref(store.userInfo)
 
@@ -103,6 +104,8 @@ const toggleNotificationsTab = () => {
     store.isEntryDmRoom = false
   }
   else if (isSideTabOpen.value === false) {
+    // 공지사항 탭 열 때 공지사항 조회
+    store.getNoticeList({page: 0, size:DEFAULT_PAGE_SIZE})
     isSideTabOpen.value = true
     store.isEntryDmRoom = false
   }
@@ -153,6 +156,7 @@ const closeTab = () => {
   store.isEntryDmRoom = false
   isOpenProfileMenu.value = false
 }
+
 
 const logout = () => {
   closeTab()

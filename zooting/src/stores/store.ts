@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {DM, Friend, Personality, TokenState, UserInfo} from "@/types/global";
+import type {DM, Friend, Personality, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -709,6 +709,27 @@ export const useAccessTokenStore = defineStore("access-token", () => {
             });
     };
 
+  const noticePage = ref<NoticePage>();
+  const noticeList = ref<Notice[]>([]);
+  // 공지사항 리스트
+  const getNoticeList = function (params: {'page': number, 'size':number}) {
+    axios({
+      method: "get",
+      url: `${API_URL}/api/notice`,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+      params : params,
+    })
+        .then((res) => {
+          noticePage.value = res.data.result;
+          noticeList.value = res.data.result.noticeResList;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  };
+
   return {
       setAccessToken,
       getAccessToken,
@@ -748,5 +769,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       receiverInfo,
       cursorDmRoom,
       isRefreshing,
+      noticePage,
+      noticeList,
+      getNoticeList,
   };
 });
