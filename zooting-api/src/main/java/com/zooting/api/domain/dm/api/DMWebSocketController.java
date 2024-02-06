@@ -14,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-//@PreAuthorize("hasRole('USER')")
 @RequiredArgsConstructor
 @RestController
 @Tag(name = "DM 웹소켓", description = "DM웹소켓 관련 API")

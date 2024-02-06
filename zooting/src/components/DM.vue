@@ -58,7 +58,6 @@
 </template>
 
 <script setup lang="ts">
-import { SrvRecord } from 'dns'
 import { ref, watch, onMounted } from 'vue'
 import { useAccessTokenStore } from "../stores/store"
 

@@ -247,14 +247,11 @@ watch(nickname, async (newValue, oldValue) => {
   if (!newValue) return;
 
   await checkNickname(newValue);
-  console.log(isNicknameVerify.value);
 });
 
 onMounted(async () => {
   await store.getUserInfo();
   updateChanges();
-  console.log(store.userInfo);
-  console.log(myInfo.value);
 });
 </script>
 

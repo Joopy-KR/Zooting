@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, defineProps, onMounted, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import EditMaskItem from "@/components/profile/EditMaskItem.vue";
 import IconMaskDropDown from "./IconMaskDropDown.vue";

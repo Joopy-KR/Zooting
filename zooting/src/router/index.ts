@@ -10,37 +10,6 @@ import Login from "@/views/LoginView.vue";
 import type {UserInfo} from "@/types/global";
 import ChatTestView from "@/views/ChatTestView.vue";
 
-function getNickname(): string | null {
-  const userInfoString = localStorage.getItem("myInfo");
-
-  if (userInfoString) {
-    try {
-      const userInfo: UserInfo = JSON.parse(userInfoString);
-      const nickname = userInfo.nickname;
-
-      if (!nickname) {
-        return null;
-      }
-
-      return nickname;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  } else {
-    return null;
-  }
-}
-
-const requireAuth = () => (to: any, from: any, next: any) => {
-  const store = useAccessTokenStore();
-  console.log(store.getAccessToken());
-  if (store.getAccessToken()) {
-    return next();
-  }
-  next("/signin");
-};
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -87,7 +56,8 @@ const router = createRouter({
         if (to.params.nickname) {
           next();
         } else {
-          const nickname = getNickname();
+          const store = useAccessTokenStore();
+          const nickname = store.userInfo.nickname;
           if (nickname) {
             to.params.nickname = nickname;
             next({ name: "profile", params: { nickname: nickname } });
@@ -124,15 +94,6 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   const store = useAccessTokenStore();
-  console.log(to.name, store.isLogin);
-  console.log(
-    (to.name === "home" ||
-      to.name === "signup" ||
-      to.name === "animal_test" ||
-      to.name === "personality_test") &&
-      !store.isLogin
-  );
-
   if (
     (to.name === "home" ||
       to.name === "signup" ||
