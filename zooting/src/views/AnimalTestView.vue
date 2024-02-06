@@ -36,7 +36,7 @@
   import { ref, onMounted } from 'vue'
   import Camera from '@/components/animal-test/Camera.vue'
   import Result from '@/components/animal-test/Result.vue'
-  import { useAccessTokenStore } from "../stores/store"
+  import { useAccessTokenStore } from "@/stores/store"
 
   const store = useAccessTokenStore()
 

@@ -133,7 +133,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useAccessTokenStore } from "../stores/store"
+import { useAccessTokenStore } from "@/stores/store"
 import type { Friend, DM, DmItem } from "@/types/global"
 import axios from 'axios'
 const { VITE_SERVER_API_URL } = import.meta.env
@@ -192,18 +192,27 @@ watch(() => props.open, () => {
     //커서갱신
   }
 })
-
 const getProfileImage = () => {
+  let imgUrl: URL;
   const animal = receiverInfo.value?.animal
-  const profile = animal === '강아지' ? 'dog' :
-                 animal === '고양이' ? 'cat' :
-                 animal === '곰' ? 'bear' :
-                 animal === '공룡' ? 'dino' :
-                 animal === '펭귄' ? 'penguin' :
-                 animal === '토끼' ? 'rabbit' :
-                 animal === '사슴' ? 'deer' :
-                 'default-profile';
-  return `src/assets/images/animal/${profile}.png`
+  if (animal === '강아지') {
+    imgUrl = new URL('@/assets/images/logo.svg', import.meta.url);
+  } else if (animal === '고양이') {
+    imgUrl = new URL('@/assets/images/animal/cat.png');
+  } else if (animal === '곰') {
+    imgUrl = new URL('@/assets/images/animal/bear.png', import.meta.url);
+  } else if (animal === '공룡') {
+    imgUrl = new URL('@/assets/images/animal/dino.png', import.meta.url);
+  } else if (animal === '펭귄') {
+    imgUrl = new URL('@/assets/images/animal/penguin.png', import.meta.url);
+  } else if (animal === '토끼') {
+    imgUrl = new URL('@/assets/images/animal/rabbit.png', import.meta.url);
+  } else if (animal === '사슴') {
+    imgUrl = new URL('@/assets/images/animal/deer.png', import.meta.url);
+  } else {
+    imgUrl = new URL('@/assets/images/animal/animal_group.png', import.meta.url);
+  }
+  return imgUrl.href;
 }
 
 const getProfileLink = () => {

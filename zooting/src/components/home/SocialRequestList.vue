@@ -119,15 +119,25 @@ const getHeartClass = (gender: string) => {
 }
 
 const getProfileImage = (animal: string) => {
-  const profile = animal === '강아지' ? 'dog' :
-                 animal === '고양이' ? 'cat' :
-                 animal === '곰' ? 'bear' :
-                 animal === '공룡' ? 'dino' :
-                 animal === '펭귄' ? 'penguin' :
-                 animal === '토끼' ? 'rabbit' :
-                 animal === '사슴' ? 'deer' :
-                 'default-profile';
-  return `src/assets/images/animal/${profile}.png`
+  let imgUrl: URL;
+  if (animal === '강아지') {
+    imgUrl = new URL('@/assets/images/logo.svg', import.meta.url);
+  } else if (animal === '고양이') {
+    imgUrl = new URL('@/assets/images/animal/cat.png');
+  } else if (animal === '곰') {
+    imgUrl = new URL('@/assets/images/animal/bear.png', import.meta.url);
+  } else if (animal === '공룡') {
+    imgUrl = new URL('@/assets/images/animal/dino.png', import.meta.url);
+  } else if (animal === '펭귄') {
+    imgUrl = new URL('@/assets/images/animal/penguin.png', import.meta.url);
+  } else if (animal === '토끼') {
+    imgUrl = new URL('@/assets/images/animal/rabbit.png', import.meta.url);
+  } else if (animal === '사슴') {
+    imgUrl = new URL('@/assets/images/animal/deer.png', import.meta.url);
+  } else {
+    imgUrl = new URL('@/assets/images/animal/animal_group.png', import.meta.url);
+  }
+  return imgUrl.href;
 }
 </script>
 

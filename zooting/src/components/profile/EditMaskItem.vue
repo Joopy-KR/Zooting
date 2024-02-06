@@ -22,12 +22,12 @@ const props = defineProps({
       <img
           v-if="selectedMaskId === mask.maskId"
           class="absolute top-0 left-0 z-10 lg:w-8 md:w-6 sm:w-4"
-          src="/src/assets/images/mask/check_icon.png"
+          src="@/assets/images/mask/check_icon.png"
           alt="mask_selected_info"/>
       <img
           v-if="!mask.status"
           class="absolute bottom-0 right-0 z-10 lg:w-8 md:w-6 sm:w-4"
-          src="/src/assets/images/mask/lock_icon.png"
+          src="@/assets/images/mask/lock_icon.png"
           alt="mask_locked_info"/>
       <img
           :src="mask.imgUrl"
