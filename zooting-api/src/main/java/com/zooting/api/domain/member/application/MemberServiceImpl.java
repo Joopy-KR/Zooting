@@ -36,12 +36,11 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final MaskInventoryRepository maskInventoryRepository;
     private final BackgroundInventoryRepository backgroundInventoryRepository;
-    public static final String DEFAULT_MASK = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/default_animal.png";
-    public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/zooting-background-default.jpg";
-    public static final Long DEFAULT_MASK_ID = 99L;
-    public static final Long DEFAULT_BACKGROUND_ID = 99L;
+    public static final String DEFAULT_MASK = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Mask/dogMask.png";
+    public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Background/oilpaintart.jpg";public static final Long DEFAULT_MASK_ID = 99L;
+    public static final Long DEFAULT_BACKGROUND_ID = 100L;
     public static final Long DEFAULT_POINT = 0L;
-    public static final Long CHANGE_NICKNAME_PRICE = 10L;
+    public static final Long CHANGE_NICKNAME_PRICE = 100L;
 
     @Override
     public boolean existNickname(String nickname) {
