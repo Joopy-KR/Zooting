@@ -38,7 +38,7 @@ stompClient.connect(
   {}, 
   () => {
     console.log('Connected to WebSocket')
-    onConnected()
+    // onConnected()
     isConnected.value = true
   },
   () => {
@@ -52,14 +52,14 @@ socket.onclose = () => {
     isConnected.value = false
 }
 
-// 소켓 클라이언트 Subscribe 요청
-const onConnected = () => {
-  stompClient.subscribe(`${VITE_SERVER_API_URL}/api/sub/dm/${userInfo.value.email}`,
-  (message: any) => {
-    const dmReq = JSON.parse(message.body)
-    console.log('Received DM:', dmReq)
-  })
-}
+// // 소켓 클라이언트 Subscribe 요청
+// const onConnected = () => {
+//   stompClient.subscribe(`${VITE_SERVER_API_URL}/api/sub/dm/${userInfo.value.email}`,
+//   (message: any) => {
+//     const dmReq = JSON.parse(message.body)
+//     console.log('Received DM:', dmReq)
+//   })
+// }
 </script>
 
 <style scoped>

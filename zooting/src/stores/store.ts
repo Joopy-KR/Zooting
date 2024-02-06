@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {DM,  Friend, Personality, TokenState, UserInfo, DM } from "@/types/global";
+import type {Friend, Personality, TokenState, UserInfo, DM, DmItem } from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -618,7 +618,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
       .then((res) => {
         searchResult.value = res.data.result;
-        // console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -640,7 +639,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
       .then((res) => {
         searchResult.value = res.data.result;
-        // console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -651,7 +649,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     const isEntryDmRoom = ref<boolean>(false);
     const dmInfo = ref<DM | null>(null);
     const receiverInfo = ref<Friend | null>(null);
-
+    
     const entryDmRoom = function (params: Friend) {
       const receiver = params.email;
       axios({
@@ -670,15 +668,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           receiverInfo.value = params;
         })
         .then((res) => {
-          if (dmInfo.value) {
-            const params = {
-              dmRoomId: dmInfo.value.dmRoomId,
-              cursor: dmInfo.value.cursor
-            };
-            cursorDmRoom(params);
-          }
-        })
-        .then((res) => {
           isEntryDmRoom.value = true;
         })
         .catch((err) => {
@@ -688,7 +677,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
     // DM 커서
     const isRefreshing = ref<boolean>(false);
-    const cursorDmRoom = function (params: { cursor: number | undefined; dmRoomId: number | undefined }) {
+    const pastDmList = ref<DmItem[]>([])
+    const cursorDmRoom = function (params: { cursor: number; dmRoomId: number }) {
       const {dmRoomId, cursor} = params;
       axios({
         method: "get",
@@ -702,10 +692,10 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         },
       })
         .then((res) => {
-          console.log(res)
+          console.log(res);
           if (dmInfo.value) {
             dmInfo.value.cursor = res.data.result.cursor;
-            dmInfo.value.dmList = [...dmInfo.value.dmList, ...res.data.result.dmList];
+            pastDmList.value = [...pastDmList.value, ...res.data.result.dmList];
           }
         })
         .then((res) => {
@@ -755,5 +745,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       receiverInfo,
       cursorDmRoom,
       isRefreshing,
+      pastDmList,
     };
   });

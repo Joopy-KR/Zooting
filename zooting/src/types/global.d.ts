@@ -81,8 +81,15 @@ declare interface DM {
 
 declare interface DmItem {
     dmRoomId: number;
+    dmId: number;
     sender: string;
     message: string;
+    dmFiles: DmFile[] | [];
+}
+
+declare interface DmFile {
+    fileId: number;
+    thumbnailUrl: string;
 }
 
 export {

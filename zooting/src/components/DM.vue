@@ -25,35 +25,59 @@
       
       <!-- 대화 내용 -->
       <div class="dm__chat" ref="chatRef" @scroll="handleChatScroll">
+        <!-- 소켓 통신 -->
         <div>
-          <div v-for="(item, index) in newDmList" :key="index">
+          <div v-for="(item, index) in sockDmList" :key="index">
             <div :class="[isSender(item.sender) ? 'justify-end': '', 'flex mb-4']">
               <div :class="[isSender(item.sender) ? 'bg-violet-200 rounded-s-xl rounded-b-xl': 'bg-gray-100 rounded-e-xl rounded-es-xl', 'dm__chat-item']">
                 <!-- 메시지 -->
                 <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
-                <!-- 사진 -->  
-                <div v-if="item.dmFiles.length > 0" class="grid grid-cols-2 gap-2 my-2">
+                <!-- 사진 -->
+                <div v-if="item.dmFiles && item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
                   <div v-for="(file, index) in item.dmFiles" :key="index">
-                    <img v-if="fileInput" :src="file.thumbnailUrl" class="h-32" alt="Preview">
+                    <img :src="getPreviewUrl(file)" class="h-32" alt="Preview">
                   </div>
+                </div>
+                <div v-else-if="item.dmFiles && item.dmFiles.length === 1" class="my-2">
+                  <img :src="getPreviewUrl(item.dmFilest[0])" class="h-32" alt="Preview">
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div v-for="(item, index) in dmInfo?.dmList" :key="index">
+        <!-- 최근 대화 -->
+        <div>
+          <div v-for="(item, index) in dmInfo?.dmList" :key="index">
+            <div :class="[isSender(item.sender) ? 'justify-end': '', 'flex mb-4']">
+              <div :class="[isSender(item.sender) ? 'bg-violet-200 rounded-s-xl rounded-b-xl': 'bg-gray-100 rounded-e-xl rounded-es-xl', 'dm__chat-item']">
+                <!-- 메시지 -->
+                <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
+                <!-- 사진 -->
+                <div v-if="item.dmFiles && item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
+                  <div v-for="(file, index) in item.dmFiles" :key="index">
+                    <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
+                  </div>
+                </div>
+                <div v-else-if="item.dmFiles && item.dmFiles.length === 1" class="my-2">
+                  <img :src="item.dmFiles[0].thumbnailUrl" class="h-32" alt="Preview">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 이전 대화 (스크롤) -->
+        <div v-for="(item, index) in pastDmList" :key="index">
           <div :class="[isSender(item.sender) ? 'justify-end': '', 'flex mb-4']">
             <div :class="[isSender(item.sender) ? 'bg-violet-200 rounded-s-xl rounded-b-xl': 'bg-gray-100 rounded-e-xl rounded-es-xl', 'dm__chat-item']">
               <!-- 메시지 -->
               <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
               <!-- 사진 -->
-              <div v-if="item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
+              <div v-if="item.dmFiles && item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
                 <div v-for="(file, index) in item.dmFiles" :key="index">
                   <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
                 </div>
               </div>
-              <div v-else-if="item.dmFiles.length === 1" class="my-2">
+              <div v-else-if="item.dmFiles && item.dmFiles.length === 1" class="my-2">
                 <img :src="item.dmFiles[0].thumbnailUrl" class="h-32" alt="Preview">
               </div>
             </div>
@@ -77,7 +101,7 @@
         <!-- 파일 등록 -->
         <div class="file-input" v-show="isOpenFileInput">
           <label for="dropzone-file" class="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-50 bg-gray-50">
-            <!-- 파일 imamge -->
+            <!-- 파일 image -->
             <div v-if="fileInput && fileInput?.length > 1" class="grid grid-cols-2 gap-2 my-2">
               <div v-for="(item, index) in fileInput" :key="index">
                 <img :src="getPreviewUrl(item)" class="h-32" alt="Preview">
@@ -108,9 +132,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useAccessTokenStore } from "../stores/store"
 import type { Friend, DM, DmItem } from "@/types/global"
+import axios from 'axios'
+const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
 const emit = defineEmits(['closeTab'])
@@ -120,6 +146,8 @@ const props = defineProps<{
 
 const dmInfo = ref<DM | null>(store.dmInfo)
 const receiverInfo = ref<Friend | null>(store.receiverInfo)
+const pastDmList = ref<DmItem[]>(store.pastDmList)
+const sockDmList = ref<any>([])
 
 const chatRef = ref<HTMLElement | null>(null)
 const isOpenFileInput = ref<boolean>(false)
@@ -129,7 +157,6 @@ const fileInput = ref<File[] | null>(null)
 const sender = ref<string>('')
 const receiver = ref<string>('')
 const dmRoomId = ref<number>(0)
-const newDmList = ref<DmItem[]>([])
 
 watch(()=> store.dmInfo, (UpdateUser)=>{
   dmInfo.value = UpdateUser
@@ -139,12 +166,12 @@ watch(()=> store.receiverInfo, (UpdateUser)=>{
   receiverInfo.value = UpdateUser
 })
 
+watch(()=> store.pastDmList, (UpdateUser)=>{
+  pastDmList.value = UpdateUser
+})
+
 watch(() => props.open, () => {
-  if (!props.open) {
-    isOpenFileInput.value = false
-    fileInput.value = null
-  } 
-  else {
+  if (props.open) {
     if (store.userInfo?.email) {
       sender.value = store.userInfo.email
     }
@@ -155,6 +182,14 @@ watch(() => props.open, () => {
       dmRoomId.value = dmInfo.value.dmRoomId
     }
     onConnected()
+    refreshChat()
+  } 
+  else {
+    isOpenFileInput.value = false
+    fileInput.value = null
+    store.dmInfo = null
+    store.pastDmList = []
+    sockDmList.value = []
   }
 })
 
@@ -239,7 +274,6 @@ const handleFileChange = (event: Event) => {
       }
     }
     fileInput.value = filesArray
-    console.log(fileInput.value)
   }
 }
 
@@ -248,9 +282,6 @@ const getPreviewUrl = (file: File) => {
 }
 
 // Web socket -----------------------------------------------
-import axios from 'axios'
-const { VITE_SERVER_API_URL } = import.meta.env
-
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
 const stompClient = Stomp.over(socket)
 
@@ -267,6 +298,7 @@ const onConnected = () => {
 async function sendMessage() {
   const fileList = ref([])
   if (messageInput.value || (fileInput.value && fileInput.value.length > 0)) {
+    isOpenFileInput.value = false
     // FormData 객체 생성
     const formData = new FormData()
     // formData로는 정수 append X, 서버에서 형변환 필요
@@ -281,6 +313,14 @@ async function sendMessage() {
         formData.append('files', fileInput.value[i])
       }
     }
+
+    // 새로운 메시지 추가 (전송되는 척)
+    sockDmList.value.push({
+      sender: sender.value,
+      message: messageInput.value,
+      dmFiles: fileInput.value,
+    })
+    
     try {
       if (fileInput.value && fileInput.value.length > 0) {
         // Axios를 사용하여 파일 업로드 요청 보내기
@@ -303,7 +343,7 @@ async function sendMessage() {
         }
       }
       // 메시지 전송
-      stompClient.send(`${VITE_SERVER_API_URL}/api/pub/dm/message`, {}, JSON.stringify({
+      stompClient.send(`/api/pub/dm/message`, {}, JSON.stringify({
         dmRoomId: dmRoomId.value,
         sender: sender.value,
         receiver: receiver.value,
@@ -312,9 +352,8 @@ async function sendMessage() {
       }))
 
       // 입력 필드 초기화
-       messageInput.value = ''
-       fileInput.value = null
-       newDmList.value = []
+      messageInput.value = ''
+      fileInput.value = null
     }
     catch (error) {
       console.error(error)
