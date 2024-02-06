@@ -70,7 +70,7 @@ declare interface BlockUserReq {
 }
 
 declare interface FriendRequest {
-    nickname: string | undefine;
+    nickname: string | undefined;
 }
 
 declare interface DM {
@@ -84,9 +84,20 @@ declare interface DmItem {
     sender: string;
     message: string;
 }
+declare interface Notice {
+    noticeId : number | null;
+    title : string | null;
+    content : string | null;
+    createdAt : string | null;
+}
+declare interface NoticePage {
+    noticeList : <Notice>([]);
+    currentPage : number;
+    totalPage : number;
+}
 
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
     Personality, Friend, MaskReq, ReportUserReq,
-    DM, DmItem, FriendRequest
+    DM, DmItem, FriendRequest, Notice, NoticePage
 };
