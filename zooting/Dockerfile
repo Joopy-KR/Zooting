@@ -5,6 +5,8 @@ COPY package*.json ./
 RUN rm -rf node_modules package-lock.json
 RUN npm install
 
+# .env 파일을 복사
+COPY .env .
 COPY ./ .
 RUN npm run build-only
 
