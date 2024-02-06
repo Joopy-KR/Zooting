@@ -26,7 +26,15 @@
           <!-- 채팅 이름 -->
           <span class="text-sm font-semibold text-gray-900 dark:text-white">나는세진: </span>
           <!-- 채팅 내용 -->
-          <span class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">안 들리시나요?</span> 
+          <!-- <span class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">안 들리시나요?</span>  -->
+                  <div v-ovChatPanel id="my-panel">
+                <div>
+                  <ul>
+                    {{ messages }}
+                    <li v-for="msg in messages" :key="msg">{{ msg }}</li>
+                  </ul>
+                </div>
+              </div>
           </div>
         </div>
       </div>
@@ -38,10 +46,10 @@
         </div>
 
         <!-- 텍스트 입력창 -->
-        <input type="text" placeholder="Say something" class="main__feature--input">
+        <input type="text" v-model="inputChat" placeholder="Say something" class="main__feature--input">
 
         <!-- 전송 버튼 -->
-        <button class="main__feature--send-button">
+        <button class="main__feature--send-button" @click="send()">
           <svg class="w-6 h-6 text-white transform rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/>
           </svg>
@@ -51,12 +59,48 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, defineProps } from 'vue'
 import { useAccessTokenStore } from "@/stores/store"
 
 const store = useAccessTokenStore()
 const receiverInfo = ref<any>(store.receiverInfo)
 
+const props = defineProps(['session'])
+const session = props.session
+
+const inputChat = ref('')
+const messages = ref([])
+
+console.log(props)
+
+
+const send = function() {
+  props.session.signal({
+    data: inputChat.value,  // Any string (optional)
+    to: [],                     // Array of Connection objects (optional. Broadcast to everyone if empty)
+    type: 'my-chat'             // The type of message (optional)
+  })
+  .then(() => {
+    console.log('Message successfully sent');
+  })
+  .catch(error => {
+    console.error(error);
+  });
+}
+
+if (session) {
+  session.on('signal', (event) => {
+    console.log(111)
+    const msg = JSON.parse(event.data).message;
+    messages.value.push(msg);
+    console.log(event.data); // Message
+    console.log(event.from); // Connection object of the sender
+    console.log(event.type); // The type of message
+  });
+}
+
+
+    
 watch(()=> store.receiverInfo, (UpdateUser)=>{
   receiverInfo.value = UpdateUser
 })

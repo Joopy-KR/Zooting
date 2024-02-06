@@ -22,7 +22,9 @@
     />
     
     <!-- 사이드바 -->
-    <VideoChatSideBarVue class="right-component"/> 
+    <VideoChatSideBarVue class="right-component"
+    :session="session"
+    /> 
   </div>
 
   <div class="flex justify-between">
@@ -58,7 +60,7 @@ currentStatus.value = 'CatchMind'
 const cameraHeight = ref(0)
 const cameraWidth = ref(0)
 
-cameraHeight.value = 150
+cameraHeight.value = 160
 cameraWidth.value = 266
 
 const store = useAccessTokenStore()
