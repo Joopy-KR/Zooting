@@ -1,7 +1,10 @@
 <template>
 	<div v-if="streamManager">
-		<ov-video :stream-manager="streamManager"/>
-		<div><p>{{ clientData }}</p></div>
+		<ov-video
+    :stream-manager="streamManager"  
+    :cameraHeight="cameraHeight" 
+    :cameraWidth="cameraWidth"/>
+		<!-- <div><p>{{ clientData }}</p></div> -->
 	</div>
 </template>
 
@@ -11,6 +14,8 @@ import { defineProps, computed } from 'vue';
 
 const props = defineProps<{
   streamManager: any
+  cameraHeight: Number
+  cameraWidth: Number
 }>()
 
 const clientData = computed(() => {

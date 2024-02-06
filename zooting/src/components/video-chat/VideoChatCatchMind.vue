@@ -2,9 +2,16 @@
   <div class="flex flex-col h-screen p-4">
     <!-- 카메라 -->
     <div class="grid h-40 grid-cols-4 gap-3">
-      <div v-for="(item, index) in 4" :key="index" class="camera-box">
-        <h1 class="flex flex-col justify-end h-full">{{item}}: nickname</h1>
-      </div>
+      <user-video :stream-manager="publisher" 
+      :cameraHeight="cameraHeight" 
+      :cameraWidth="cameraWidth"
+      />
+      <user-video v-for="sub in subscribers" 
+      :key="sub.stream.connection.connectionId" 
+      :stream-manager="sub" 
+      :cameraHeight="cameraHeight" 
+      :cameraWidth="cameraWidth"
+      />
     </div>
     <!-- 캐치마인드 게임 -->
     <div class="catch-mind">
@@ -21,7 +28,9 @@
 </template>
 
 <script setup lang="ts">
+import UserVideo from '@/components/video-chat/UserVideo.vue' 
 import { ref, onMounted } from 'vue';
+defineProps(['session', 'publisher', 'subscribers', 'cameraHeight', 'cameraWidth'])
 
 let canvas: HTMLCanvasElement | null = null;
 let context: CanvasRenderingContext2D | null = null;

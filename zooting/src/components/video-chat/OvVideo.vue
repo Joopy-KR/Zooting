@@ -1,17 +1,28 @@
 <template>
-	<video autoplay/>
+  <video ref="videoElement" class="videoElement" autoplay />
 </template>
 
-<script>
-export default {
-	name: 'OvVideo',
+<script setup>
+import { ref, onMounted } from 'vue';
 
-	props: {
-		streamManager: Object,
-	},
+const props = defineProps({
+  streamManager: Object,
+	cameraHeight: Number,
+  cameraWidth: Number
+});
 
-	mounted () {
-		this.streamManager.addVideoElement(this.$el);
-	},
-};
+const videoElement = ref(null);
+
+onMounted(() => {
+	const videoHeight = props.cameraHeight + 'px'
+	const videoWidth = props.cameraWidth + 'px'
+	videoElement.value.style.height = videoHeight
+	videoElement.value.style.width = videoWidth
+  props.streamManager.addVideoElement(videoElement.value);
+});
+
 </script>
+
+<style scoped>
+
+</style>
