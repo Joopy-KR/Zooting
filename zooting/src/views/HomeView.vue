@@ -63,8 +63,6 @@ const onConnected = () => {
     console.log('Received DM:', dmReq.value)
 
     newSender.value.push(dmReq.sender)
-    // 만약 탭이 열려 있으면 메시지 보여줌 emit
-    // 닫혀 있는 애들한테는 알림 표시 - props V
   })
 }
 </script>

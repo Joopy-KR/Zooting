@@ -35,11 +35,11 @@
                 <!-- 사진 -->
                 <div v-if="item.dmFiles && item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
                   <div v-for="(file, index) in item.dmFiles" :key="index">
-                    <img :src="getPreviewUrl(file)" class="h-32" alt="Preview">
+                    <img :src="getPreviewUrl(item.sender, file)" class="h-32" alt="Preview">
                   </div>
                 </div>
                 <div v-else-if="item.dmFiles && item.dmFiles.length === 1" class="my-2">
-                  <img :src="getPreviewUrl(item.dmFilest[0])" class="h-32" alt="Preview">
+                  <img :src="getPreviewUrl(item.sender, item.dmFilest[0])" class="h-32" alt="Preview">
                 </div>
               </div>
             </div>
@@ -104,11 +104,11 @@
             <!-- 파일 image -->
             <div v-if="fileInput && fileInput?.length > 1" class="grid grid-cols-2 gap-2 my-2">
               <div v-for="(item, index) in fileInput" :key="index">
-                <img :src="getPreviewUrl(item)" class="h-32" alt="Preview">
+                <img :src="getPreviewUrl(sender, item)" class="h-32" alt="Preview">
               </div>
             </div>
             <div v-else-if="fileInput?.length === 1" class="my-2">
-              <img :src="getPreviewUrl(fileInput[0])" class="h-32" alt="Preview">
+              <img :src="getPreviewUrl(sender, fileInput[0])" class="h-32" alt="Preview">
             </div>
             <!-- 파일 input -->
             <div class="file-input__discription" v-show="!fileInput">
@@ -134,7 +134,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAccessTokenStore } from "../stores/store"
-import type { Friend, DM, DmItem } from "@/types/global"
+import type { Friend, DM, DmItem, DmFile } from "@/types/global"
 import axios from 'axios'
 const { VITE_SERVER_API_URL } = import.meta.env
 
@@ -186,10 +186,10 @@ watch(() => props.open, () => {
   else {
     isOpenFileInput.value = false
     fileInput.value = null
-    store.dmInfo = null
+    // store.dmInfo = null
     store.pastDmList = []
     sockDmList.value = []
-    //커서갱신
+    store.exitDmRoom(dmRoomId.value)
   }
 })
 
@@ -277,8 +277,12 @@ const handleFileChange = (event: Event) => {
   }
 }
 
-const getPreviewUrl = (file: File) => {
-  return URL.createObjectURL(file)
+const getPreviewUrl = (sender: string, file: File | DmFile) => {
+  if (isSender(sender)) {
+    return URL.createObjectURL(file)
+  } else {
+    return file.thumbnailUrl
+  }
 }
 
 // Web socket -----------------------------------------------

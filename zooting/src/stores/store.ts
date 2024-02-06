@@ -706,6 +706,27 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         });
     };
 
+    // DM방 퇴장
+    const exitDmRoom = function (params: number) {
+      const dmRoomId = params;
+      axios({
+        method: "put",
+        url: `${API_URL}/api/dm/room/exit`,
+        params: {
+          dmRoomId,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
   return {
       setAccessToken,
       getAccessToken,
@@ -746,5 +767,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       cursorDmRoom,
       isRefreshing,
       pastDmList,
+      exitDmRoom,
   };
 });

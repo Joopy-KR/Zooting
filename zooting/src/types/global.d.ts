@@ -98,7 +98,7 @@ declare interface Notice {
     createdAt : string | null;
 }
 declare interface NoticePage {
-    noticeList : <Notice>([]);
+    noticeList : Notice[];
     currentPage : number;
     totalPage : number;
 }
@@ -106,5 +106,5 @@ declare interface NoticePage {
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
     Personality, Friend, MaskReq, ReportUserReq,
-    DM, DmItem, FriendRequest, Notice, NoticePage
+    DM, DmItem, DmFile, FriendRequest, Notice, NoticePage
 };
