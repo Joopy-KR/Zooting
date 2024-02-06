@@ -1,41 +1,46 @@
 <template>
   <div class="interest__container">
     <ul role="list" class="friend-list">
+      <!-- 친구 리스트 -->
       <li v-for="(item, index) in friendList" :key="index" class="friend-list__item">
-        <RouterLink :to="getProfileLink(item.nickname)" class="friend-list__item__link">
-          <div class="flex items-center gap-4">
-            <img class="friend-list__img" :src="getProfileImage(item.animal)" alt="profile">
-            <div class="font-medium">
-              <div class="flex items-center">
-                {{ item.nickname }}
-                <div class="gender-icon">
-                  <svg :class="getHeartClass(item.gender)" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="m12.7 20.7 6.2-7.1c2.7-3 2.6-6.5.8-8.7A5 5 0 0 0 16 3c-1.3 0-2.7.4-4 1.4A6.3 6.3 0 0 0 8 3a5 5 0 0 0-3.7 1.9c-1.8 2.2-2 5.8.8 8.7l6.2 7a1 1 0 0 0 1.4 0"/>
-                  </svg>
+        <!-- 리스트 누르면 채팅 열림 -->
+        <div class="w-full cursor-pointer" @click="entryChat(item)">
+          <div class="friend-list__item__chat">
+            <div class="flex items-center gap-4">
+              <!-- 프로필 이미지 -->
+              <img class="friend-list__img" :src="getProfileImage(item.animal)" alt="profile">
+              <div class="font-medium">
+                <div class="flex items-center">
+                  {{ item.nickname }}
+                  <!-- 성별 아이콘 -->
+                  <div class="gender-icon">
+                    <svg :class="getHeartClass(item.gender)" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="m12.7 20.7 6.2-7.1c2.7-3 2.6-6.5.8-8.7A5 5 0 0 0 16 3c-1.3 0-2.7.4-4 1.4A6.3 6.3 0 0 0 8 3a5 5 0 0 0-3.7 1.9c-1.8 2.2-2 5.8.8 8.7l6.2 7a1 1 0 0 0 1.4 0"/>
+                    </svg>
+                  </div>
                 </div>
+                <!-- 현재 접속 상태 -->
+                <div class="friend-list__content">Content</div>
               </div>
-              <div class="friend-list__content">Content</div>
             </div>
           </div>
-        </RouterLink>
+        </div>
         <div class="flex items-center">
-          <button class="me-2" @click="entryChat(item)">DM</button>
-          <button @click="friendDelete(item.nickname)">삭제</button>
 
-          <svg class="menu-button" @click="openMenu(item.nickname)" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" :ref="`menuBtnRef-${index}`">
+          <!-- 프로필 이동/ 친구 삭제 메뉴 -->
+          <svg class="menu-button" @click="openMenu(item.nickname)" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M12 6h0m0 6h0m0 6h0"/>
           </svg>
         </div>
-        <div class="menu" v-show="isOpenMenu && openedMenuNickname === item.nickname" v-click-outside="() => ClickOustsideMenu(index)" :ref="`menuRef-${index}`">
-          <ul class="py-2 text-sm text-gray-700">
-            <li class="block px-4 py-2 divide-y">
-              <p class="block px-4 py-2 hover:bg-gray-100">프로필 보기</p>
-            </li>
-            <li class="block px-4 py-2">
-              친구 삭제
-            </li>
-          </ul>
-        </div>
+
+        <div class="menu" v-show="isOpenMenu && openedMenuNickname === item.nickname">
+          <div class="py-2 text-sm text-gray-700">
+            <RouterLink :to="getProfileLink(item.nickname)" class="block px-4 py-2 hover:bg-gray-100">프로필 보기</RouterLink>
+          </div>
+          <div class="py-2">
+            <div class="block px-4 py-2 text-sm text-red-700 cursor-pointer hover:bg-gray-100" @click="friendDelete(item.nickname)">친구 삭제</div>
+          </div>
+      </div>
       </li>
     </ul>
   </div>
@@ -81,26 +86,18 @@ const getProfileImage = (animal: string) => {
 
 const entryChat = (item: Friend) => {
   store.entryDmRoom(item)
+  isOpenMenu.value = false
+  openedMenuNickname.value = null
 } 
 
 const openMenu = (nickname: string) => {
-  isOpenMenu.value = !isOpenMenu.value
+  if (isOpenMenu.value && openedMenuNickname.value == nickname) {
+    isOpenMenu.value = false
+  } else {
+    isOpenMenu.value = true
+  }
   openedMenuNickname.value = isOpenMenu.value ? nickname : null
 }
-
-const menuBtnRef = ref<HTMLElement[]>([])
-const menuRef = ref<HTMLElement[]>([])
-
-// const ClickOustsideMenu = (index: number) => {
-//   return (isOutSide: boolean, e: Event) => {
-//     if (isOpenMenu.value && isOutSide) {
-//       if ((menuRef.value[index] !== e.target) && (menuBtnRef.value[index] !== e.target)) {
-//         isOpenMenu.value = false
-//         openedMenuNickname.value = null
-//       }
-//     }
-//   }
-// }
 </script>
 
 <style scoped>
@@ -125,7 +122,7 @@ const menuRef = ref<HTMLElement[]>([])
 .friend-list__item {
   @apply flex justify-between px-6 py-4;
 }
-.friend-list__item__link {
+.friend-list__item__chat {
   @apply flex items-center justify-between gap-4;
 }
 .friend-list__img {
