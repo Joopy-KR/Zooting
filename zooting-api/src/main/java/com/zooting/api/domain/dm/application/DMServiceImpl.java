@@ -6,6 +6,7 @@ import com.zooting.api.domain.dm.dto.request.DMReq;
 import com.zooting.api.domain.dm.dto.request.RedisDMReq;
 import com.zooting.api.domain.dm.dto.response.DMDto;
 import com.zooting.api.domain.dm.dto.response.DMRoomRes;
+import com.zooting.api.domain.dm.dto.response.RedisDMRoomRes;
 import com.zooting.api.domain.dm.entity.DM;
 import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.file.dao.FileRepository;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -95,10 +97,11 @@ public class DMServiceImpl implements DMService {
                 }).toList();
         dm.setFiles(files);
         dmRepository.save(dm);
-        RedisDMReq redisDMReq= new RedisDMReq(dmReq.dmRoomId(), dm.getId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(), dmReq.files(), dm.getCreatedAt(), dm.getUpdatedAt());
+        RedisDMReq redisDMReq = new RedisDMReq(dmReq.dmRoomId(), dm.getId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(), dmReq.files(), dm.getCreatedAt(), dm.getUpdatedAt());
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(redisDMReq.getClass()));
         redisTemplate.opsForList().rightPush("dmRoomId:" + dmReq.dmRoomId(), redisDMReq);
-        redisTemplate.expire("dmRoomId:" + dmReq.dmRoomId(),30, java.util.concurrent.TimeUnit.MINUTES);
+        redisTemplate.expire("dmRoomId:" + dmReq.dmRoomId(), 30, java.util.concurrent.TimeUnit.MINUTES);
+        //GSON?
     }
 
     @Override
@@ -106,25 +109,6 @@ public class DMServiceImpl implements DMService {
     public DMRoomRes enterDMRoom(String sender, String receiver) {
         DMRoom dmRoom = getDMRoom(sender, receiver);
         Long cursor = getStartCursor(dmRoom.getId(), sender);
-        //redis에 데이터가 있다면 불러옴
-        List<Object> redisDMReqList = redisTemplate.opsForList().range("dmRoomId:" + dmRoom.getId(), 0, -1);
-        if (redisDMReqList != null && !redisDMReqList.isEmpty()) {
-            List<DMDto> dmDtoList = redisDMReqList
-                    .stream()
-                    .map(redisDMReq -> (RedisDMReq) redisDMReq)
-                    .map(redisDMReq -> new DMDto(
-                                    redisDMReq.dmRoomId(), redisDMReq.dmId(), redisDMReq.sender(), redisDMReq.message(), redisDMReq.files()
-                                    .stream()
-                                    .map(file -> new DMFileRes(
-                                            file.imgUrl(),
-                                            file.thumbnailUrl()
-                                    ))
-                                    .toList()
-                            )
-                    )
-                    .toList();
-            return new DMRoomRes(dmRoom.getId(), dmDtoList, cursor);
-        }
         List<DM> dmList = getAllDMList(dmRoom.getId(), cursor);
         if (!dmList.isEmpty()) {
             dmRoom.setSenderLastReadId(dmList.get(dmList.size() - 1).getId());
@@ -144,6 +128,41 @@ public class DMServiceImpl implements DMService {
                 )
                 .toList();
         return new DMRoomRes(dmRoom.getId(), dmDtoList, cursor);
+    }
+
+    @Override
+    @Transactional
+    public RedisDMRoomRes enterDMRoomRedis(String sender, String receiver) {
+        DMRoom dmRoom = getDMRoom(sender, receiver);
+        Long cursor = getStartCursor(dmRoom.getId(), sender);
+        //redis에 데이터가 있다면 불러옴
+        List<Object> ObjectList = redisTemplate.opsForList().range("dmRoomId:" + dmRoom.getId(), 0, -1);
+        if (ObjectList != null && !ObjectList.isEmpty()) {
+            List<RedisDMReq> redisDMReqList = ObjectList.stream()
+                    .map(obj -> (RedisDMReq) obj)
+                    .collect(Collectors.toList());
+            return new RedisDMRoomRes(dmRoom.getId(), redisDMReqList, cursor);
+        }
+        List<DM> dmList = getAllDMList(dmRoom.getId(), cursor);
+        if (!dmList.isEmpty()) {
+            dmRoom.setSenderLastReadId(dmList.get(dmList.size() - 1).getId());
+            cursor = dmList.get(dmList.size() - 1).getId();
+        }
+        List<RedisDMReq> redisDMReqList = dmList
+                .stream()
+                .map(dm -> new RedisDMReq(
+                                dm.getDmRoom().getId(), dm.getId(), "MESSAGE", dm.getMessage(), dm.getSender(), receiver, dm.getFiles()
+                                .stream()
+                                .map(file -> new DMFileRes(
+                                        file.getImgUrl(),
+                                        file.getThumbnailUrl()
+                                ))
+                                .toList(),
+                                dm.getCreatedAt(), dm.getUpdatedAt()
+                        )
+                )
+                .toList();
+        return new RedisDMRoomRes(dmRoom.getId(), redisDMReqList, cursor);
     }
 
     @Override

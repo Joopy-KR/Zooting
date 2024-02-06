@@ -2,6 +2,7 @@ package com.zooting.api.domain.dm.application;
 
 import com.zooting.api.domain.dm.dto.request.DMReq;
 import com.zooting.api.domain.dm.dto.response.DMRoomRes;
+import com.zooting.api.domain.dm.dto.response.RedisDMRoomRes;
 import com.zooting.api.domain.dm.entity.DM;
 import com.zooting.api.domain.dm.entity.DMRoom;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ public interface DMService {
     void saveDM(DMReq dmReq);
 
     DMRoomRes enterDMRoom(String sender, String receiver);
+    RedisDMRoomRes enterDMRoomRedis(String sender, String receiver);
 
     DMRoomRes getDMRoomWithCursor(Long dmRoomId, Long cursor);
 }
