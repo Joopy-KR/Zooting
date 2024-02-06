@@ -97,7 +97,8 @@ public class DMServiceImpl implements DMService {
                 }).toList();
         dm.setFiles(files);
         dmRepository.save(dm);
-        RedisDMReq redisDMReq = new RedisDMReq(dmReq.dmRoomId(), dm.getId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(), dmReq.files(), dm.getCreatedAt(), dm.getUpdatedAt());
+        RedisDMReq redisDMReq = new RedisDMReq(dmReq.dmRoomId(), dm.getId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(),
+                dmReq.files().stream().map(file -> new DMFileRes(file.imgUrl(), file.thumbnailUrl())).toList(), dm.getCreatedAt(), dm.getUpdatedAt());
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(redisDMReq.getClass()));
         redisTemplate.opsForList().rightPush("dmRoomId:" + dmReq.dmRoomId(), redisDMReq);
         redisTemplate.expire("dmRoomId:" + dmReq.dmRoomId(), 30, java.util.concurrent.TimeUnit.MINUTES);
@@ -162,6 +163,7 @@ public class DMServiceImpl implements DMService {
                         )
                 )
                 .toList();
+        redisTemplate.opsForList().rightPushAll("dmRoomId:" + dmRoom.getId(), redisDMReqList);
         return new RedisDMRoomRes(dmRoom.getId(), redisDMReqList, cursor);
     }
 
@@ -185,6 +187,31 @@ public class DMServiceImpl implements DMService {
                 dmRoomId,
                 dmDtoList,
                 !dmDtoList.isEmpty() ? dmDtoList.get(dmDtoList.size() - 1).dmId() : 0
+        );
+    }
+
+    @Override
+    public RedisDMRoomRes getDMRoomWithCursorRedis(Long dmRoomId, Long cursor) {
+        Page<DM> dmList = getDMList(dmRoomId, cursor);
+        List<RedisDMReq> redisDMReqList = dmList
+                .stream()
+                .map(dm -> new RedisDMReq(
+                                dm.getDmRoom().getId(), dm.getId(), "MESSAGE", dm.getMessage(), dm.getSender(), dm.getDmRoom().getReceiver().getEmail(), dm.getFiles()
+                                .stream()
+                                .map(file -> new DMFileRes(
+                                        file.getImgUrl(),
+                                        file.getThumbnailUrl()
+                                ))
+                                .toList(),k
+                                dm.getCreatedAt(), dm.getUpdatedAt()
+                        )
+                )
+                .toList();
+        redisTemplate.opsForList().leftPushAll("dmRoomId:" + dmRoomId, redisDMReqList);
+        return new RedisDMRoomRes(
+                dmRoomId,
+                redisDMReqList,
+                !redisDMReqList.isEmpty() ? redisDMReqList.get(redisDMReqList.size() - 1).dmId() : 0
         );
     }
 

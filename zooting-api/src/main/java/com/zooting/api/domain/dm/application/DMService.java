@@ -24,4 +24,5 @@ public interface DMService {
     RedisDMRoomRes enterDMRoomRedis(String sender, String receiver);
 
     DMRoomRes getDMRoomWithCursor(Long dmRoomId, Long cursor);
+    RedisDMRoomRes getDMRoomWithCursorRedis(Long dmRoomId, Long cursor);
 }

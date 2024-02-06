@@ -2,6 +2,7 @@ package com.zooting.api.domain.dm.api;
 
 import com.zooting.api.domain.dm.application.DMService;
 import com.zooting.api.domain.dm.dto.response.DMRoomRes;
+import com.zooting.api.domain.dm.dto.response.RedisDMRoomRes;
 import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
@@ -47,9 +48,29 @@ public class DMController {
         );
     }
 
+    @Operation(summary = "DM방 입장redis")
+    @GetMapping("/room/redis")
+    public ResponseEntity<BaseResponse<RedisDMRoomRes>> enterDmRoomRedis(@Valid @NotNull @RequestParam(name = "receiver") String receiver, @AuthenticationPrincipal UserDetails userDetails) {
+        RedisDMRoomRes redisDmRoomRes = dmService.enterDMRoomRedis(userDetails.getUsername(), receiver);
+        return BaseResponse.success(
+                SuccessCode.SELECT_SUCCESS,
+                redisDmRoomRes
+        );
+    }
+
     @Operation(summary = "DM방 스크롤")
     @GetMapping("/room/prev")
     public ResponseEntity<BaseResponse<DMRoomRes>> getNextDm(@Valid @NotNull @RequestParam(name = "dmRoomId") Long dmRoomId, @RequestParam(name = "cursor") Long cursor) {
+        DMRoomRes dmRoomRes = dmService.getDMRoomWithCursor(dmRoomId, cursor);
+        return BaseResponse.success(
+                SuccessCode.SELECT_SUCCESS,
+                dmRoomRes
+        );
+    }
+
+    @Operation(summary = "DM방 스크롤")
+    @GetMapping("/room/prev/redis")
+    public ResponseEntity<BaseResponse<DMRoomRes>> getNextDmRedis(@Valid @NotNull @RequestParam(name = "dmRoomId") Long dmRoomId, @RequestParam(name = "cursor") Long cursor) {
         DMRoomRes dmRoomRes = dmService.getDMRoomWithCursor(dmRoomId, cursor);
         return BaseResponse.success(
                 SuccessCode.SELECT_SUCCESS,
