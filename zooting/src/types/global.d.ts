@@ -91,7 +91,7 @@ declare interface Notice {
     createdAt : string | null;
 }
 declare interface NoticePage {
-    noticeList : <Notice>([]);
+    noticeList : Notice[];
     currentPage : number;
     totalPage : number;
 }
