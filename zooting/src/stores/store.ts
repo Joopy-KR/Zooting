@@ -723,7 +723,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
         .then((res) => {
           noticePage.value = res.data.result;
-          noticeList.value = res.data.result.noticeResList;
+          noticeList.value = res.data.result["noticeResList"];
         })
         .catch((err) => {
           console.log(err);

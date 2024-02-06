@@ -22,7 +22,7 @@
               </div>
               <div class="relative h-5 rounded-full overflow-hidden bg-gray-300 mt-20 mx-10">
                 <div class="absolute top-0 bottom-0 left-0 rounded-full bg-gradient-to-r from-pink-500 to-purple-500"
-                     style="{ width : enterRoomTimeLimit %}">
+                     >
                 </div>
               </div>
               <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">

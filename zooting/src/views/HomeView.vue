@@ -2,7 +2,7 @@
   <div class="home__container">
     <Social />
     <Ready />
-    <MatchingCompleteModal v-if="isMatchingComplete" class="z-40"/>
+<!--    <MatchingCompleteModal v-if="isMatchingComplete" class="z-40"/>-->
   </div>
 </template>
 
@@ -11,7 +11,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useAccessTokenStore } from "../stores/store"
 import Social from '../components/home/Social.vue'
 import Ready from '../components/home/Ready.vue'
-import MatchingCompleteModal from "@/components/home/MatchingCompleteModal.vue";
+// import MatchingCompleteModal from "@/components/home/MatchingCompleteModal.vue";
 
 const store = useAccessTokenStore()
 
