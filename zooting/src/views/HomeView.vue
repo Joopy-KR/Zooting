@@ -33,9 +33,7 @@ watch(()=> store.userInfo, (UpdateUser)=>{
 })
 
 onMounted(async () => {
-  if (!store.isCompletedSignUp) {
-    store.checkCompletedSignUp()
-  }
+  store.checkCompletedSignUp()
 })
 
 const readMessage = (sender: string) => {

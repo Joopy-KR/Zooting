@@ -235,9 +235,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     await loadMyInfoApi(
       ({ data }: any) => {
         userInfo.value = data.result;
-        if (!userInfo.value?.animal) {
+        if (!data.result.animal) {
           router.push({ name: "animal_test" });
-        } else if (!userInfo.value?.personality) {
+        } else if (!data.result.personality) {
           router.push({ name: "personality_test" });
         }
       },
@@ -260,7 +260,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 추가 정보 저장 여부 확인
-  const isCompletedSignUp = ref<boolean>(false);
   const checkCompletedSignUp = function () {
     axios({
       method: "get",
@@ -271,12 +270,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // isCompletedSignUp.value = res.data.result;
-        // if (!isCompletedSignUp.value) {
-        //   router.push({ name: "signup" });
-        // } else {
-        //   getUserInfo()
-        // }
         if (!res.data.result) {
           router.push({name: "signup"})
         } else {
@@ -370,13 +363,13 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 동물상 테스트 결과 저장
-  const setAnimalFace = function (payload: number[]) {
-    const animalfaceList = payload;
+  const setAnimalFace = function (payload: {animal: string, percentage: number}[]) {
+    const animalFaceReqList = payload;
     axios({
       method: "post",
       url: `${API_URL}/api/animalface`,
       data: {
-        animalfaceList,
+        animalFaceReqList,
       },
       headers: {
         accept: "application/json",
@@ -735,7 +728,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       getUserInfo,
       isLogin,
       signOut,
-      isCompletedSignUp,
       checkCompletedSignUp,
       setPersonality,
       saveAdditionalInfo,
