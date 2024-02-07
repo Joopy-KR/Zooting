@@ -33,10 +33,10 @@
       <!-- Profile menu -->
       <div class="profile-menu" v-show="isOpenProfileMenu" v-click-outside="ClickOustsideProfileMenu">
         <ul class="py-2 text-sm text-gray-700">
-          <li class="block px-4 py-2 text-gray-300" v-if="!isLoggedIn || !store.isCompletedSignUp">
+          <li class="block px-4 py-2 text-gray-300" v-if="!isLoggedIn">
             프로필
           </li>
-          <li v-if="isLoggedIn && store.isCompletedSignUp">
+          <li v-if="isLoggedIn">
             <RouterLink :to="getProfileLink()" class="block px-4 py-2 hover:bg-gray-100" @click="closeTab">프로필
             </RouterLink>
           </li>

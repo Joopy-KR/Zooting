@@ -269,8 +269,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 유저 권한 확인
-  const checkCompletedSignUp = function () {
-    return axios({
+  const checkCompletedSignUp = async function () {
+    return await axios({
       method: "get",
       url: `${API_URL}/api/members/privilege/check`,
       headers: {
