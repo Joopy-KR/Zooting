@@ -1,12 +1,18 @@
 <template>
     <div class="main">
       <div class="main__info">
-        <p class="main__room-time">3:12</p>
+        <div class="main__room-time">	
+        <div>
+          <span>{{ min }}</span> :
+          <span>{{ sec }}</span>
+        </div>
+        </div>
         <div class="flex m-2">
-          <img class="w-8 h-8 rounded-full" src="/images/강아지.png" alt="프로필 사진">
-          <img class="w-8 h-8 rounded-full" src="/images/고양이.png" alt="프로필 사진">
-          <img class="w-8 h-8 rounded-full" src="/images/사슴.png" alt="프로필 사진">
-          <img class="w-8 h-8 rounded-full" src="/images/토끼.png" alt="프로필 사진">
+          <img
+           v-for="(animal, index) in props.currentAnimals" :key="index"
+           class="w-8 h-8 rounded-full"
+           :src="'/images/' + animal + '.png'" 
+           alt="프로필 사진">
         </div>
       </div>
       <div class="main__title">
@@ -14,8 +20,14 @@
       </div>
       <div class="main__body">
         <!-- 개별 채팅 -->
-        <div class="main__body--single-chat" v-for="msg in messages" :key="msg">
-          <img class="w-8 h-8 rounded-full" src="/images/토끼.png" alt="프로필 사진">
+        <div class="main__body--single-chat" v-for="msg in props.currentChat" :key="msg">
+          <img v-if="msg.animal === '강아지'" class="w-8 h-8 rounded-full" src="/images/강아지.png" alt="프로필 사진">
+          <img v-if="msg.animal === '고양이'" class="w-8 h-8 rounded-full" src="/images/고양이.png" alt="프로필 사진">
+          <img v-if="msg.animal === '곰'" class="w-8 h-8 rounded-full" src="/images/곰.png" alt="프로필 사진">
+          <img v-if="msg.animal === '공룡'" class="w-8 h-8 rounded-full" src="/images/공룡.png" alt="프로필 사진">
+          <img v-if="msg.animal === '사슴'" class="w-8 h-8 rounded-full" src="/images/사슴.png" alt="프로필 사진">
+          <img v-if="msg.animal === '토끼'" class="w-8 h-8 rounded-full" src="/images/토끼.png" alt="프로필 사진">
+          <img v-if="msg.animal === '펭귄'" class="w-8 h-8 rounded-full" src="/images/펭귄.png" alt="프로필 사진">
           <!-- 성별 아이콘 -->
           <div class="absolute gender-icon left-3.5 top-5">
             <svg :class="getHeartClass()" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -24,9 +36,9 @@
           </div>
           <div class="main__body--chat-context">
             <!-- 채팅 이름 -->
-            <span class="text-sm font-semibold text-gray-900 dark:text-white">나는세진: </span>
+            <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ msg.nickname }}: </span>
             <!-- 채팅 내용 -->
-            <span class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ msg }}</span> 
+            <span class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ msg.message }}</span> 
           </div>
         </div>
       </div>
@@ -36,58 +48,91 @@
           <font-awesome-icon :icon="['fas', 'microphone']" v-show="!is_muted" @click="is_muted = !is_muted" style="cursor: pointer; margin-left: 4px;"/>
           <font-awesome-icon :icon="['fas', 'microphone-slash']" v-show="is_muted" @click="is_muted = !is_muted" style="cursor: pointer;"/>
         </div>
-
-        <!-- 텍스트 입력창 -->
-        <input type="text" v-model="inputChat" placeholder="Say something" class="main__feature--input">
-
-        <!-- 전송 버튼 -->
-        <button class="main__feature--send-button" @click.prevent="send()">
-          <svg class="w-6 h-6 text-white transform rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/>
-          </svg>
-        </button>
+        
+        <form @submit.prevent="send()" class="flex justify-between flex-grow">
+          <!-- 텍스트 입력창 -->
+          <input type="text" :value="inputChat" @input="onInput" placeholder="Say something" class="main__feature--input">
+        
+          <!-- 전송 버튼 -->
+          <button class="main__feature--send-button">
+            <svg class="w-6 h-6 text-white transform rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/>
+            </svg>
+          </button>
+        </form>
     </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps } from 'vue'
+import { ref, watch, defineProps, onMounted, onUnmounted } from 'vue'
 import { useAccessTokenStore } from "@/stores/store"
 
+
+// 타이머 변수 및 함수
+let stTime = ref(0)
+let timerStart = ref(null)
+let min = ref('00')
+let sec = ref('00')
+
+const addZero = (num) => (num < 10 ? '0' + num : '' + num)
+
+const StartWatch = () => {
+  if (!stTime.value) {
+    stTime.value = Date.now()
+  } 
+  
+  if (!timerStart.value) {
+    timerStart.value = setInterval(() => {
+      const nowTime = new Date(Date.now() - stTime.value)
+      min.value = addZero(nowTime.getMinutes())
+      sec.value = addZero(nowTime.getSeconds())
+    }, 1)
+  }
+};
+
+onMounted(() => {
+  StartWatch()
+})
+
+onUnmounted(() => {
+  if (timerStart.value) {
+    clearInterval(timerStart.value);
+  }
+})
+
+// 채팅 기능
 const store = useAccessTokenStore()
 const receiverInfo = ref<any>(store.receiverInfo)
 
-const props = defineProps(['session'])
-const session = props.session
+const props = defineProps(['session', 'currentChat', 'currentAnimals'])
 
 const inputChat = ref('')
-const messages = ref([])
-
-console.log(props)
-
+const onInput = function(event) {
+  inputChat.value = event.currentTarget.value
+}
 
 const send = function() {
   props.session?.signal({
-    data: inputChat.value,  // Any string (optional)
-    to: [],                     // Array of Connection objects (optional. Broadcast to everyone if empty)
-    type: 'my-chat'             // The type of message (optional)
+    data: inputChat.value,  // 현재 입력한 내용
+    to: [],                 // [] - Broadcast
   })
   .then(() => {
-    console.log('Message successfully sent')
-    messages.value.push(inputChat.value)
-    inputChat.value = ''
+    inputChat.value = ''  // 현재 입력한 내용 지우기
   })
   .catch(error => {
-    console.error(error);
-  });
+    console.error("메시지 전송에 실패했어요..." + error)
+  })
 }
 
+// 음소거 기능
+const is_muted = ref(true)
 
+
+// 성별 하트 모양
 watch(()=> store.receiverInfo, (UpdateUser)=>{
   receiverInfo.value = UpdateUser
 })
-
-const is_muted = ref(true)
 
 const getHeartClass = () => {
   return receiverInfo.value?.gender === 'man' ? 'w-3 h-3 text-blue-500 ms-1' : 'w-3 h-3 text-pink-500 ms-1';
@@ -128,7 +173,7 @@ const getHeartClass = () => {
 }
 
 .main__body--single-chat {
-  @apply flex justify-center ml-4 mt-2 mb-2 gap-1 relative;
+  @apply flex justify-center items-center ml-4 mt-2 mb-2 gap-1 relative;
 }
 
 .main__body--chat-context {
