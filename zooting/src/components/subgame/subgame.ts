@@ -60,6 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let animation:number;
     let life = 5;
     let score = 0;
+    let dogImg = new Image(); // 이후 수정
+    // dogImg.src = "../"
 
     let lifeElement = document.querySelector('#life');
     if (lifeElement) {
