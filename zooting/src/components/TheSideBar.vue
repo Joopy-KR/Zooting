@@ -89,8 +89,8 @@ const DEFAULT_PAGE_SIZE = 6
 
 const userInfo = ref(store.userInfo)
 
-watch(() => store.userInfo, (UpdateUser) => {
-  userInfo.value = UpdateUser
+watch(() => store.userInfo, (update) => {
+  userInfo.value = update
 })
 
 const getHomeLink = () => {
@@ -190,9 +190,10 @@ const ClickOustsideTab = (isOutSide: boolean, e: Event) => {
   }
 }
 
-const currentDmRoomId = (dmRoomId: number) => [
+const currentDmRoomId = (dmRoomId: number) => {
   emit('currentDmRoomId', dmRoomId)
-]
+}
+
 </script>
 
 <style scoped>

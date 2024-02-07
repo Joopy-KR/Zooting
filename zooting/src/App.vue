@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <TheSideBar
-      @currnet-dm-room-id="currentDmRoomId"
+      @current-dm-room-id="currentDmRoomId"
       :dm-req = "dmReq"
     />
     <RouterView 
@@ -20,8 +20,8 @@ import TheSideBar from '@/components/TheSideBar.vue'
 const dmRoomId = ref<number>(0)
 const dmReq = ref<any>(null)
 
-const currentDmRoomId = (dmRoomid: number) => {
-  dmRoomId.value = dmRoomid
+const currentDmRoomId = (id: number) => {
+  dmRoomId.value = id
 }
 
 const receiveMessage = (req: any) => {

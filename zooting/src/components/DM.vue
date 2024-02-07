@@ -25,7 +25,6 @@
       
       <!-- 대화 내용 -->
       <div class="dm__chat" ref="chatRef" @scroll="handleChatScroll">
-        {{ props.dmReq }}
         <!-- 소켓 통신 -->
         <div>
           <div v-for="(item, index) in sockDmList" :key="index">
@@ -148,16 +147,16 @@ const sender = ref<string>('')
 const receiver = ref<string>('')
 const dmRoomId = ref<number>(0)
 
-watch(()=> store.dmInfo, (UpdateUser)=>{
-  dmInfo.value = UpdateUser
+watch(()=> store.dmInfo, (update)=>{
+  dmInfo.value = update
 })
 
-watch(()=> store.receiverInfo, (UpdateUser)=>{
-  receiverInfo.value = UpdateUser
+watch(()=> store.receiverInfo, (update)=>{
+  receiverInfo.value = update
 })
 
-watch(()=> store.pastDmList, (UpdateUser)=>{
-  pastDmList.value = UpdateUser
+watch(()=> store.pastDmList, (update)=>{
+  pastDmList.value = update
 })
 
 watch(() => props.open, () => {
@@ -170,7 +169,7 @@ watch(() => props.open, () => {
     }
     if (dmInfo.value) {
       dmRoomId.value = dmInfo.value.dmRoomId
-      emit('currentDmRoomId', dmRoomId)
+      emit('currentDmRoomId', dmRoomId.value)
     }
     refreshChat()
   } 
@@ -183,6 +182,15 @@ watch(() => props.open, () => {
     store.exitDmRoom(dmRoomId.value)
   }
 })
+
+watch(()=> props.dmReq, ()=>{
+  sockDmList.value.push({
+    sender: props.dmReq.sender,
+    message: props.dmReq.message,
+    dmFiles: props.dmReq.files,
+  })
+})
+
 const getProfileImage = () => {
   let imgUrl: URL;
   const animal = receiverInfo.value?.animal

@@ -27,8 +27,8 @@ const store = useAccessTokenStore()
 
 const blockList = ref(store.blockList)
 
-watch(()=> store.blockList, (UpdateList)=>{
-  blockList.value = UpdateList
+watch(()=> store.blockList, (update)=>{
+  blockList.value = update
 })
 
 const getProfileLink = (value: string) => {

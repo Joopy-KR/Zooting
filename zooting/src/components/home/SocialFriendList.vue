@@ -72,8 +72,8 @@ const friendList = ref(store.friendList)
 const isOpenMenu = ref<boolean>(false)
 const openedMenuNickname = ref<string | null>(null)
 
-watch(() => store.friendList, (updatedList) => {
-  friendList.value = updatedList
+watch(() => store.friendList, (update) => {
+  friendList.value = update
 })
 
 const getProfileLink = (value: string) => `/profile/${value}`

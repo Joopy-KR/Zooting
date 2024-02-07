@@ -90,12 +90,12 @@ const store = useAccessTokenStore();
 const requestFromList = ref(store.requestFromList);
 const requestToList = ref(store.requestToList);
 
-watch(()=> store.requestFromList, (UpdateList)=>{
-  requestFromList.value = UpdateList;
+watch(()=> store.requestFromList, (update)=>{
+  requestFromList.value = update;
 });
 
-watch(()=> store.requestToList, (UpdateList)=>{
-  requestToList.value = UpdateList;
+watch(()=> store.requestToList, (update)=>{
+  requestToList.value = update;
 });
 
 const getProfileLink = (value: string) => {

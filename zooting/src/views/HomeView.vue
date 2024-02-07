@@ -31,8 +31,8 @@ const stompClient = Stomp.over(socket)
 
 const newSender = ref<string[]>([])
 
-watch(()=> store.userInfo, (UpdateUser)=>{
-  userInfo.value = UpdateUser
+watch(()=> store.userInfo, (update)=>{
+  userInfo.value = update
 })
 
 onMounted(async () => {
