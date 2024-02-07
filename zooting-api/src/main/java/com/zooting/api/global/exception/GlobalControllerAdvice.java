@@ -24,16 +24,15 @@ public class GlobalControllerAdvice {
      */
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handleAllExceptions(Exception e) {
-        e.printStackTrace(); // 처리되지 않은 에러에 대해서는 서버 로그 출력
         ErrorResponse response = ErrorResponse.of()
                 .code(ErrorCode.INTERNAL_SERVER_ERROR)
                 .message(e.getMessage())
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @ExceptionHandler(RuntimeException.class)
     protected ResponseEntity<ErrorResponse> handleRuntimeExceptions(RuntimeException e) {
-        e.printStackTrace(); // 처리되지 않은 에러에 대해서는 서버 로그 출력
         ErrorResponse response = ErrorResponse.of()
                 .code(ErrorCode.INTERNAL_SERVER_ERROR)
                 .message(e.getMessage())
@@ -41,6 +40,7 @@ public class GlobalControllerAdvice {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodValidation(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
@@ -62,6 +62,7 @@ public class GlobalControllerAdvice {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex) {
         // 원하는 응답 형식으로 ResponseEntity를 생성하여 반환
@@ -72,12 +73,23 @@ public class GlobalControllerAdvice {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ErrorResponse> handleNullPointException(NullPointerException ex) {
         // 원하는 응답 형식으로 ResponseEntity를 생성하여 반환
         ErrorResponse response = ErrorResponse.of()
                 .code(ErrorCode.INTERNAL_SERVER_ERROR)
                 .message(ex.getMessage())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    // Custom ErrorCode를 기반으로 에러 처리
+    @ExceptionHandler(BaseExceptionHandler.class)
+    public ResponseEntity<ErrorResponse> handleCustomBaseExceptionHandler(BaseExceptionHandler e) {
+        ErrorResponse response = ErrorResponse.of()
+                .code(e.getErrorCode())
+                .message(e.getMessage())
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
