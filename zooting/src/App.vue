@@ -1,7 +1,8 @@
 <template>
   <div class="flex">
     <TheSideBar/>
-    <RouterView class="ms-14"/>
+    <!-- <RouterView class="ms-14"/> -->
+    <VideoChatView class="ms-14"/>
   </div>
 </template>
 
@@ -9,6 +10,7 @@
 import { ref } from 'vue'
 import { RouterView } from 'vue-router'
 import TheSideBar from '@/components/TheSideBar.vue'
+import VideoChatView from './views/VideoChatView.vue'
 
 const currentReceiver = ref<string>('')
 </script>

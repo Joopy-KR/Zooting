@@ -23,39 +23,39 @@
       </div>
     </div>
 
-  <div class="main__container" v-show="isLoaded">
-    <!-- 자유 대화 -->
-    <VideoChatTalk
-    class="left-component"
-    :session="session"
-    :publisher="publisher"
-    :subscribers="subscribers"
-    :cameraHeight="cameraHeight"
-    :cameraWidth="cameraWidth"
-    v-if="currentStatus === 'talk'"
-    />
+    <div class="main__container" v-show="isLoaded">
+      <!-- 자유 대화 -->
+      <VideoChatTalk
+      class="left-component"
+      :session="session"
+      :publisher="publisher"
+      :subscribers="subscribers"
+      :cameraHeight="cameraHeight"
+      :cameraWidth="cameraWidth"
+      v-if="currentStatus === 'talk'"
+      />
 
-    <!-- 캐치마인드 -->
-    <VideoChatCatchMind class="left-component"
-    :session="session"
-    :publisher="publisher"
-    :subscribers="subscribers"
-    :cameraHeight="cameraHeight"
-    :cameraWidth="cameraWidth"
-    v-if="currentStatus === 'CatchMind'"
-    />
-    
-    <!-- 사이드바 -->
-    <VideoChatSideBarVue class="right-component"
-    :session="session"
-    :currentChat="currentChat"
-    :currentAnimals="currentAnimals"
-    :publisher="publisher"
-    :subscribers="subscribers"
-    :statusInfo="statusInfo"
-    /> 
+      <!-- 캐치마인드 -->
+      <VideoChatCatchMind class="left-component"
+      :session="session"
+      :publisher="publisher"
+      :subscribers="subscribers"
+      :cameraHeight="cameraHeight"
+      :cameraWidth="cameraWidth"
+      v-if="currentStatus === 'CatchMind'"
+      />
+      
+      <!-- 사이드바 -->
+      <VideoChatSideBarVue class="right-component"
+      :session="session"
+      :currentChat="currentChat"
+      :currentAnimals="currentAnimals"
+      :publisher="publisher"
+      :subscribers="subscribers"
+      :statusInfo="statusInfo"
+      /> 
+    </div>
   </div>
-</div>
 </template>
 
 <script setup lang="ts">

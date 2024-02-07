@@ -10,8 +10,8 @@
         <div class="flex m-2">
           <img
            v-for="(animal, index) in $props.currentAnimals" :key="index"
-           class="w-8 h-8 rounded-full"
-           :src="'/images/' + animal + '.png'" 
+           class="w-8 h-8 rounded-full" 
+           :src="getProfileImage(animal)"
            alt="프로필 사진">
         </div>
       </div>
@@ -21,13 +21,7 @@
       <div class="main__body">
         <!-- 개별 채팅 -->
         <div class="main__body--single-chat" v-for="msg in $props.currentChat" :key="msg">
-          <img v-if="msg.animal === '강아지'" class="w-8 h-8 rounded-full" src="/images/강아지.png" alt="프로필 사진">
-          <img v-if="msg.animal === '고양이'" class="w-8 h-8 rounded-full" src="/images/고양이.png" alt="프로필 사진">
-          <img v-if="msg.animal === '곰'" class="w-8 h-8 rounded-full" src="/images/곰.png" alt="프로필 사진">
-          <img v-if="msg.animal === '공룡'" class="w-8 h-8 rounded-full" src="/images/공룡.png" alt="프로필 사진">
-          <img v-if="msg.animal === '사슴'" class="w-8 h-8 rounded-full" src="/images/사슴.png" alt="프로필 사진">
-          <img v-if="msg.animal === '토끼'" class="w-8 h-8 rounded-full" src="/images/토끼.png" alt="프로필 사진">
-          <img v-if="msg.animal === '펭귄'" class="w-8 h-8 rounded-full" src="/images/펭귄.png" alt="프로필 사진">
+          <img class="w-8 h-8 rounded-full" :src="getProfileImage(msg.animal)" alt="프로필 사진">
           <!-- 성별 아이콘 -->
           <div class="absolute gender-icon left-3.5 top-5">
             <svg :class="msg.gender === 'man' ? 'w-3 h-3 text-blue-500 ms-1' : 'w-3 h-3 text-pink-500 ms-1'" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
@@ -36,9 +30,9 @@
           </div>
           <div class="main__body--chat-context">
             <!-- 채팅 이름 -->
-            <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ msg.nickname }}: </span>
+            <span class="text-sm font-semibold text-gray-900">{{ msg.nickname }}: </span>
             <!-- 채팅 내용 -->
-            <span class="text-sm font-normal py-2.5 text-gray-900 dark:text-white">{{ msg.message }}</span> 
+            <span class="text-sm font-normal py-2.5 text-gray-900">{{ msg.message }}</span> 
           </div>
         </div>
       </div>
@@ -142,6 +136,28 @@ const doUnmute = function() {
   is_muted.value = false
 }
 
+// 프로필 이미지 경로구하는 함수
+const getProfileImage = (animal: String) => {
+  let imgUrl: URL;
+  if (animal === '강아지') {
+    imgUrl = new URL('@/assets/images/animal/dogx.png', import.meta.url);
+  } else if (animal === '고양이') {
+    imgUrl = new URL('@/assets/images/animal/cat.png', import.meta.url);
+  } else if (animal === '곰') {
+    imgUrl = new URL('@/assets/images/animal/bear.png', import.meta.url);
+  } else if (animal === '공룡') {
+    imgUrl = new URL('@/assets/images/animal/dino.png', import.meta.url);
+  } else if (animal === '펭귄') {
+    imgUrl = new URL('@/assets/images/animal/penguin.png', import.meta.url);
+  } else if (animal === '토끼') {
+    imgUrl = new URL('@/assets/images/animal/rabbit.png', import.meta.url);
+  } else if (animal === '사슴') {
+    imgUrl = new URL('@/assets/images/animal/deer.png', import.meta.url);
+  } else {
+    imgUrl = new URL('@/assets/images/animal/animal_group.png', import.meta.url);
+  }
+  return imgUrl.href;
+}
 </script>
 
 <style scoped>
