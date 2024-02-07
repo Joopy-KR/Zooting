@@ -48,7 +48,9 @@ stompClient.connect(
   {},
   () => {
     console.log('Connected to WebSocket')
-    onConnected()
+    if (store.isCompletedSignUp) {
+      onConnected()
+    }
   },
   () => {
     console.log("Could not WebSocket server")
