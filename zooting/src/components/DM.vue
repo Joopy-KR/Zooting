@@ -323,7 +323,7 @@ async function sendMessage() {
       message: messageInput.value,
       dmFiles: fileInput.value,
     })
-    
+    console.log(fileInput.value)
     try {
       if (fileInput.value && fileInput.value.length > 0) {
         // Axios를 사용하여 파일 업로드 요청 보내기

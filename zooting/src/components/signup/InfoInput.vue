@@ -30,18 +30,18 @@
         <div v-if="isCorrectNickname" class="correct-message">사용 가능한 닉네임입니다</div>
       </div>
       
-      <div class="input__div">
+      <!-- <div class="input__div">
         <label for="gender" class="input__label">성별</label>
         <RadioGroup v-model="gender">
           <div class="gender">
-            <RadioGroupOption as="template" v-for="gender in ['man', 'woman']" :key="gender" :value="gender" v-slot="{ checked }">
-              <div :class="[checked ? 'gender__option--checked' : 'gender__option--no-checked', 'gender__option']">
+            <RadioGroupOption as="template" v-for="gender in ['man', 'woman']" :key="gender" :value="gender" v-slot="{ isChecked }">
+              <div :class="[isChecked ? 'gender__option--checked' : 'gender__option--no-checked', 'gender__option']">
                 <RadioGroupLabel as="span">{{ getGenderLabel(gender) }}</RadioGroupLabel>
               </div>
             </RadioGroupOption>
           </div>
         </RadioGroup>
-      </div>
+      </div> -->
       
       <div class="input__div">
         <label for="birth" class="input__label">생년월일</label>

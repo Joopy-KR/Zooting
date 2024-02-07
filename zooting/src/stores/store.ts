@@ -229,7 +229,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 유저 정보
-  const isCompletedTest = ref<boolean>(false);
   const userInfo = ref<UserInfo | null>(null);
 
   const getUserInfo = async function () {
@@ -237,7 +236,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       ({ data }: any) => {
         userInfo.value = data.result;
 
-        if (!isCompletedSignUp) {
+        if (!isCompletedSignUp.value) {
           router.push({ name: "signup" });
         } else if (!userInfo.value?.animal) {
           router.push({ name: "animal_test" });
@@ -280,7 +279,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
       .then((res) => {
         isCompletedSignUp.value = res.data.result;
-        if (!isCompletedSignUp) {
+        if (!isCompletedSignUp.value) {
           router.push({ name: "signup" });
         } else {
           getUserInfo()

@@ -41,8 +41,10 @@ stompClient.connect(
   {},
   () => {
     console.log('Connected to WebSocket')
-    localStorage.setItem('newSender', JSON.stringify(['roki32@naver.com']))
-    onConnected()
+    localStorage.setItem('newSender', JSON.stringify([]))
+    // if (store.isCompletedSignUp) {
+    //   onConnected()
+    // }
   },
   () => {
     console.log("Could not WebSocket server")
