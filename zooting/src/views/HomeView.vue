@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { useAccessTokenStore } from "../stores/store"
+import { useAccessTokenStore } from "@/stores/store"
 import Social from '../components/home/Social.vue'
 import Ready from '../components/home/Ready.vue'
 const { VITE_SERVER_API_URL } = import.meta.env
