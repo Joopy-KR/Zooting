@@ -40,16 +40,13 @@ public class MemberAndAnimalfaceUsecase {
         Long maxAnimal = 0L;
         String memberAnimal = "";
         for (var af : animalfaceReq.animalFaceReqList()) {
-            if (af.animal().equals("강아지")) {
-                animalFace.setAnimal1(af.percentage());
-            }else if (af.animal().equals("고양이")) {
-                animalFace.setAnimal2(af.percentage());
-            }else if (af.animal().equals("토끼")) {
-                animalFace.setAnimal3(af.percentage());
-            }else if (af.animal().equals("사슴") || af.animal().equals("곰")) {
-                animalFace.setAnimal4(af.percentage());
-            }else {
-                animalFace.setAnimal5(af.percentage());
+            switch (af.animal()) {
+                case "강아지" -> animalFace.setAnimal1(af.percentage());
+                case "고양이" -> animalFace.setAnimal2(af.percentage());
+                case "토끼" -> animalFace.setAnimal3(af.percentage());
+                case "사슴", "곰" -> animalFace.setAnimal4(af.percentage());
+                case "펭귄", "공룡" -> animalFace.setAnimal5(af.percentage());
+                default -> throw new BaseExceptionHandler(ErrorCode.INVALID_TYPE_VALUE);
             }
             if (af.percentage() > maxAnimal) {
                 maxAnimal = af.percentage();
