@@ -1,5 +1,7 @@
 package com.zooting.api.global.config;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +42,10 @@ public class RedisConfig {
         container.setConnectionFactory(connectionFactory);
 //        container.addMessageListener(messageListenerAdapter, new PatternTopic("redis/sub/*"));
         return container;
+    }
+    @Bean
+    public Gson gson() {
+        return new GsonBuilder().create();
     }
     //리스너어댑터 설정
 //    @Bean

@@ -52,7 +52,7 @@
         let filesList = [];
         // FormData 객체 생성
         const formData = new FormData();
-        formData.append('dmRoomId', 6);
+        formData.append('dmRoomId', 7);
         formData.append('sender', sender);
         formData.append('receiver', receiver);
         formData.append('message', messageContent);
@@ -83,7 +83,7 @@
 
             // Send a message to the WebSocket topic with FormData
             stompClient.send('/api/pub/dm/message', {}, JSON.stringify({
-                dmRoomId: 6,
+                dmRoomId: 7,
                 sender: sender,
                 receiver: receiver,
                 message: messageContent,
