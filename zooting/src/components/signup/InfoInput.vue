@@ -224,7 +224,6 @@ const saveAdditionalInfo = () => {
       interest: Array.from(interestSet.value),
       idealAnimal: Array.from(idealAnimalSet.value),
     }
-    console.log(payload)
     store.saveAdditionalInfo(payload)
   } else if (!isCorrectNickname.value) {
     nicknameError.value = true

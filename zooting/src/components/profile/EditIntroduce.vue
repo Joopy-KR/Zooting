@@ -33,8 +33,7 @@ const updateIntroduce = () => {
         introduce: introduceValue.value,
       },
       ({data}: any) => {
-        console.log(data);
-        if (data.status === 201) {
+        if (data.status === 201 || data.status === 200) {
           emits("loadMyInfo")
           introduceValue.value = "";
           showSuccess.value = true;

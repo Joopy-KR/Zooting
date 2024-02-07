@@ -48,7 +48,6 @@ const clickMask = (mask: Mask) => {
   if (!props.userInfo?.animal) {
     return;
   }
-  console.log("MASKMASKMASKMASKMASKMASK", mask);
   if (props.userInfo.animal !== mask.animal) {
     setNotify("동물상 불일치", "내 동물상과 달라 사용하실 수 없습니다.");
     setShowFail(true);
@@ -59,7 +58,13 @@ const clickMask = (mask: Mask) => {
     purchaseMask(mask.maskId);
   } // 내가 소유한 마스크이면 default 마스크로 변경
   else {
-    changeDefaultMask(mask.maskId);
+    // 현재 마스크와 동일한 경우
+    if (mask.isSelected) {
+     setNotify("동물상 가면 변경 실패", "현재 마스크와 일치합니다.");
+     setShowFail(true);
+    } else {
+      changeDefaultMask(mask.maskId);
+    }
   }
 }
 // 마스크 변경하기
@@ -120,8 +125,6 @@ const getMaskList = async (animal: string | undefined, page: number) => {
         currentPage.value = data["result"]["currentPage"];
         totalPage.value = data["result"]["totalPage"];
 
-        console.log("mask-data", maskData);
-
         const masks: Mask[] = [];
         if (!maskData) {
           maskList.value = [];
@@ -140,7 +143,6 @@ const getMaskList = async (animal: string | undefined, page: number) => {
           });
         }
         maskList.value = masks;
-        console.log("MLMLMLMLMLMLMLMLML", maskList.value);
       },
       (error: any) => console.error(error)
   );
@@ -151,11 +153,9 @@ const getMyMaskList = async (animal: string | undefined) => {
   await getMyMaskListApi(
       ({data}: any) => {
         const maskData = data["result"];
-        console.log("my-maskData", maskData);
-
         const masks: Mask[] = [];
         for (const mask of maskData) {
-          masks.push({
+          const tmp = {
             maskId: mask.maskId,
             animal: mask.animal,
             description: mask.description,
@@ -164,11 +164,16 @@ const getMyMaskList = async (animal: string | undefined) => {
             imgUrl: mask.imgUrl,
             status: true,
             isSelected: false,
-          });
+          };
+
+          if (tmp.maskId === props.userInfo?.maskId) {
+            tmp.isSelected = true;
+            selectedMaskId.value = tmp.maskId;
+          }
+          masks.push(tmp);
         }
 
         myMaskList.value = masks;
-        console.log(myMaskList.value);
       },
       (error: any) => console.error(error)
   );
@@ -190,17 +195,19 @@ const moveToMyPage = () => {
 };
 
 watch(myMaskList, (newMyMaskList) => {
-  if (!maskList.value) return;
+  if (!newMyMaskList) return;
 
   newMyMaskList.forEach((myMask) => {
     const correspondingMask = maskList.value?.find(
         (mask: Mask) => mask.maskId === myMask.maskId
     );
 
-    console.log("CCCCCCCCCCCCCCCCCCCCCCC", correspondingMask);
     if (correspondingMask) {
       // myMaskList의 id와 maskList의 id가 같은 경우에만 처리
       correspondingMask.status = myMask.status;
+      if (correspondingMask.maskId === props.userInfo?.maskId) {
+        correspondingMask.isSelected = true;
+      }
     }
   });
 });

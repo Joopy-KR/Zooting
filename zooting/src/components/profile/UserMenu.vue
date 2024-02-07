@@ -206,7 +206,6 @@ const loadFriendRequestList = async () => {
         })
 
         friendList.value = result;
-        console.log("FriendRequestList", friendRequestList.value);
         // friend update
         updateFriendStatus();
       },
