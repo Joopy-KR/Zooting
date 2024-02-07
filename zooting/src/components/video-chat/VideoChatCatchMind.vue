@@ -30,7 +30,14 @@
 <script setup lang="ts">
 import UserVideo from '@/components/video-chat/UserVideo.vue' 
 import { ref, onMounted } from 'vue';
-defineProps(['session', 'publisher', 'subscribers', 'cameraHeight', 'cameraWidth'])
+
+defineProps({
+  session: Object,
+  publisher: Object,
+  subscribers: Object,
+  cameraHeight: Number,
+  cameraWidth: Number
+  })
 
 let canvas: HTMLCanvasElement | null = null;
 let context: CanvasRenderingContext2D | null = null;

@@ -9,18 +9,18 @@
         </div>
         <div class="flex m-2">
           <img
-           v-for="(animal, index) in props.currentAnimals" :key="index"
+           v-for="(animal, index) in $props.currentAnimals" :key="index"
            class="w-8 h-8 rounded-full"
            :src="'/images/' + animal + '.png'" 
            alt="프로필 사진">
         </div>
       </div>
       <div class="main__title">
-        <p>자유 대화 시간</p>
+        <p>{{ props.statusInfo }}</p>
       </div>
       <div class="main__body">
         <!-- 개별 채팅 -->
-        <div class="main__body--single-chat" v-for="msg in props.currentChat" :key="msg">
+        <div class="main__body--single-chat" v-for="msg in $props.currentChat" :key="msg">
           <img v-if="msg.animal === '강아지'" class="w-8 h-8 rounded-full" src="/images/강아지.png" alt="프로필 사진">
           <img v-if="msg.animal === '고양이'" class="w-8 h-8 rounded-full" src="/images/고양이.png" alt="프로필 사진">
           <img v-if="msg.animal === '곰'" class="w-8 h-8 rounded-full" src="/images/곰.png" alt="프로필 사진">
@@ -30,7 +30,7 @@
           <img v-if="msg.animal === '펭귄'" class="w-8 h-8 rounded-full" src="/images/펭귄.png" alt="프로필 사진">
           <!-- 성별 아이콘 -->
           <div class="absolute gender-icon left-3.5 top-5">
-            <svg :class="getHeartClass()" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+            <svg :class="msg.gender === 'man' ? 'w-3 h-3 text-blue-500 ms-1' : 'w-3 h-3 text-pink-500 ms-1'" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
               <path d="m12.7 20.7 6.2-7.1c2.7-3 2.6-6.5.8-8.7A5 5 0 0 0 16 3c-1.3 0-2.7.4-4 1.4A6.3 6.3 0 0 0 8 3a5 5 0 0 0-3.7 1.9c-1.8 2.2-2 5.8.8 8.7l6.2 7a1 1 0 0 0 1.4 0"/>
             </svg>
           </div>
@@ -45,8 +45,8 @@
       <div class="main__feature">
         <!-- 음소거 버튼 -->
         <div class="w-6 h-6">
-          <font-awesome-icon :icon="['fas', 'microphone']" v-show="!is_muted" @click="is_muted = !is_muted" style="cursor: pointer; margin-left: 4px;"/>
-          <font-awesome-icon :icon="['fas', 'microphone-slash']" v-show="is_muted" @click="is_muted = !is_muted" style="cursor: pointer;"/>
+          <font-awesome-icon :icon="['fas', 'microphone']" v-show="!is_muted" @click="doMute()" style="cursor: pointer; margin-left: 4px;"/>
+          <font-awesome-icon :icon="['fas', 'microphone-slash']" v-show="is_muted" @click="doUnmute()" style="cursor: pointer;"/>
         </div>
         
         <form @submit.prevent="send()" class="flex justify-between flex-grow">
@@ -65,8 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, onMounted, onUnmounted } from 'vue'
-import { useAccessTokenStore } from "@/stores/store"
+import { ref, defineProps, onMounted, onUnmounted } from 'vue'
 
 
 // 타이머 변수 및 함수
@@ -102,10 +101,14 @@ onUnmounted(() => {
 })
 
 // 채팅 기능
-const store = useAccessTokenStore()
-const receiverInfo = ref<any>(store.receiverInfo)
-
-const props = defineProps(['session', 'currentChat', 'currentAnimals'])
+const props = defineProps({
+  session: Object,
+  currentChat: Object,
+  currentAnimals: Object,
+  publisher: Object,
+  subscribers: Object,
+  statusInfo: String,
+  })
 
 const inputChat = ref('')
 const onInput = function(event) {
@@ -128,14 +131,15 @@ const send = function() {
 // 음소거 기능
 const is_muted = ref(true)
 
+const doMute = function() {
+  console.log(props.publisher.publishAudio)
+  props.publisher.publishAudio(false)
+  is_muted.value = true
+}
 
-// 성별 하트 모양
-watch(()=> store.receiverInfo, (UpdateUser)=>{
-  receiverInfo.value = UpdateUser
-})
-
-const getHeartClass = () => {
-  return receiverInfo.value?.gender === 'man' ? 'w-3 h-3 text-blue-500 ms-1' : 'w-3 h-3 text-pink-500 ms-1';
+const doUnmute = function() {
+  props.publisher.publishAudio(true)
+  is_muted.value = false
 }
 
 </script>

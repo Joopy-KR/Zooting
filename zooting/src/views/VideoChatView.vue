@@ -50,6 +50,9 @@
     :session="session"
     :currentChat="currentChat"
     :currentAnimals="currentAnimals"
+    :publisher="publisher"
+    :subscribers="subscribers"
+    :statusInfo="statusInfo"
     /> 
   </div>
 </div>
@@ -92,7 +95,14 @@ const isLoaded = ref(false)
 
 // 현재 진행중인 컴포넌트
 const currentStatus = ref('')
+const statusInfo = ref('')  // 사이드바에 나타나는 현재 진행중인 프로그램
 currentStatus.value = 'CatchMind'
+
+if (currentStatus.value = 'CatchMind') {
+  statusInfo.value = '캐치마인드'
+} else {
+  statusInfo.value = '자유 대화 시간'
+}
 
 // 현재 참가중인 동물 목록
 const currentAnimals = ref([])
@@ -109,11 +119,13 @@ cameraWidth.value = 266
 const mySessionId = ref("SessionA")
 const myUserName = ref<any>('')
 const myUserAnimal = ref<any>('')
+const myGender = ref<any>('')
 
 async function getUser() {
     await store.getUserInfo()
     myUserName.value = store.userInfo?.nickname
     myUserAnimal.value = store.userInfo?.animal
+    myGender.value = store.userInfo?.gender
 }
 
 const OV = ref(undefined);
@@ -122,6 +134,7 @@ const mainStreamManager = ref(undefined);
 const publisher = ref(undefined);
 const subscribers = ref([]);
 const currentChat = ref([])
+
 
 const joinSession = () => {
   // Openvidu 객체 가져오기
@@ -136,10 +149,14 @@ const joinSession = () => {
   session.value.on("streamCreated", ({ stream }) => {
     const subscriber = session.value.subscribe(stream);
     subscribers.value.push(subscriber);
+
+    // 새로 들어온 subscriber 동물상 현재 참가동물에 넣어주기
+    currentAnimals.value.push(JSON.parse(stream.connection.data).animal)
   });
   
   // 세션이 나갈때마다 subscribers에서 빼기
   session.value.on("streamDestroyed", ({ stream }) => {
+    currentAnimals.value.pop(JSON.parse(stream.connection.data).animal)
     const index = subscribers.value.indexOf(stream.streamManager, 0);
     if (index >= 0) {
       subscribers.value.splice(index, 1);
@@ -157,12 +174,13 @@ const joinSession = () => {
     const chatData: any = {
       'animal': fromData.animal,
       'nickname': fromData.nickname,
+      'gender': fromData.gender,
       'message': event.data
     }
     currentChat.value.push(chatData)
   });
 
-  // 현재 참가중인 동물목록에 넣어주기
+  // 현재 참가중인 동물목록에 자신 넣어주기
   currentAnimals.value.push(myUserAnimal.value)
 
   // 유저 토큰 이용해 세션과 연결하기 (이 부분이 주어지는 토큰으로 대체)
@@ -172,7 +190,7 @@ const joinSession = () => {
 
     // 첫번째 인자는 토큰, 두번째 인자는 모든 유저에 의해 검색 가능
     // 'streamCreated'(Stream.connection.data의 속성), 유저 닉네임으로 DOM에 추가됨
-    session.value.connect(token, { nickname: myUserName.value, animal: myUserAnimal.value }).then(() => {
+    session.value.connect(token, { nickname: myUserName.value, animal: myUserAnimal.value, gender: myGender.value }).then(() => {
 
       // 실제 publish 하는 부분, 이 부분에서 카메라와 오디오 소스 설정 가능
       let pub = OV.value.initPublisher(undefined, {
