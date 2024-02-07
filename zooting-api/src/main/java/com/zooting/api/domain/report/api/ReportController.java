@@ -33,7 +33,7 @@ public class ReportController {
         reportService.insertReport(reportReq);
         return BaseResponse.success(
                 SuccessCode.INSERT_SUCCESS,
-                reportReq.email() + "에 대한 신고 완료"
+                reportReq.nickname() + "에 대한 신고 완료"
         );
     }
 }
