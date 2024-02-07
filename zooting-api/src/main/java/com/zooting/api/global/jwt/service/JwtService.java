@@ -2,152 +2,137 @@ package com.zooting.api.global.jwt.service;
 
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
+import com.zooting.api.global.jwt.dao.JwtRedisDao;
+import com.zooting.api.global.jwt.dto.TokenDto;
 import com.zooting.api.global.security.userdetails.CustomUserDetails;
-import io.jsonwebtoken.*;
+import com.zooting.api.global.security.userdetails.service.CustomUserDetailsService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
-import lombok.Getter;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Date;
+import javax.crypto.SecretKey;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
 @Log4j2
-@Getter
 @Service
 public class JwtService {
+
+    private static final String ACCESS_HEADER_AUTHORIZATION = "Authorization";
+    private static final String TOKEN_PREFIX = "Bearer ";
     private final String issuer;
     private final SecretKey secretKey;
     private final long accessTokenExpiration;
     private final long refreshTokenExpiration;
-    private final StringRedisTemplate redisTemplate;
-    private static final String REFRESH_HASH = "refresh-token/";
+    private final JwtRedisDao jwtRedisDao;
+    private final CustomUserDetailsService userDetailsService;
 
-    public JwtService(
-            @Value("${jwt.issuer}") String issuer,
-            @Value("${jwt.secretKey}") String secretKey,
+    public JwtService(JwtRedisDao jwtRedisDao, CustomUserDetailsService userDetailsService,
+            @Value("${jwt.issuer}") String issuer, @Value("${jwt.secretKey}") String secretKey,
             @Value("${jwt.access-token-expiration}") long accessTokenExpiration,
-            @Value("${jwt.refresh-token-expiration}") long refreshTokenExpiration,
-            StringRedisTemplate redisTemplate
-    ) {
+            @Value("${jwt.refresh-token-expiration}") long refreshTokenExpiration) {
+        this.jwtRedisDao = jwtRedisDao;
+        this.issuer = issuer;
+        this.userDetailsService = userDetailsService;
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
         this.accessTokenExpiration = accessTokenExpiration;
         this.refreshTokenExpiration = refreshTokenExpiration;
-        this.issuer = issuer;
-        this.redisTemplate = redisTemplate;
     }
 
-    public JwtBuilder createToken(UserDetails userDetails, long expirationTime) {
-        Date date = new Date();
-        Date expirationDate = new Date(date.getTime() + expirationTime);
+    /**
+     * 로그인을 요청한 유저의 Request에서 토큰 정보를 가져오고, 권한을 부여한다.
+     *
+     * @param request 로그인한 유저의 Request
+     * @return Access Token에 있던 유저 정보를 기반으로 한 인증 객체
+     */
+    public Authentication authenticateAccessToken(HttpServletRequest request) {
+        String token = requestHeaderJwtParser(request);
+        Claims claims = verifyJwtToken(token);
+        JwtClaimsParser jwtClaimsParser = new JwtClaimsParser(claims);
 
-        return Jwts.builder()
-                .signWith(secretKey, Jwts.SIG.HS256)
-                .issuer(issuer)
-                .expiration(expirationDate)
-                .subject(userDetails.getUsername());
-    }
+        log.info("토큰의 Claims에 저장된 닉네임:" + claims.get("nickname"));
 
-    public String createAccessToken(UserDetails userDetails) {
-        return createToken(userDetails, accessTokenExpiration * 1000)
-                .claim("Privilege",
-                        userDetails
-                                .getAuthorities()
-                                .stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .toList()
-                )
-                .compact();
-    }
+        UserDetails userDetails = CustomUserDetails.builder().email(claims.getSubject())
+                .nickname((String) claims.get("nickname")).authorities(jwtClaimsParser.getPrivileges()).build();
 
-    public String createRefreshToken(UserDetails userDetails) {
-        return createToken(userDetails, refreshTokenExpiration * 1000).compact();
-    }
-
-    public Authentication verifyAccessToken(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token) // Throws JWT Exception
-                .getPayload();
-
-        UserDetails userDetails = CustomUserDetails.builder()
-                .email(claims.getSubject())
-                .authorities(getPrivileges(claims))
-                .build();
-
-        return new UsernamePasswordAuthenticationToken(
-                userDetails,
-                userDetails.getPassword(),
+        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
                 userDetails.getAuthorities());
     }
 
-    public String verifyRefreshToken(String refreshToken) {
-        try {
-            log.info("Refresh Token 검증을 시작합니다");
-            Claims claims = Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(refreshToken) // Throws JWT Exception
-                    .getPayload();
+    /**
+     * 로그인을 요청한 유저의 Request Header에서 Access Token 정보를 가져온다.
+     *
+     * @param request 유저의 Request
+     * @return Request Header에서 가져온  Access Token 정보
+     */
+    public String requestHeaderJwtParser(HttpServletRequest request) {
+        String token = request.getHeader(ACCESS_HEADER_AUTHORIZATION);
+        if (token != null && token.startsWith(TOKEN_PREFIX)) {
+            return token.substring(7);
+        }
+        return null;
+    }
 
-            String email = claims.getSubject();
+    public String createAccessToken(CustomUserDetails userDetails) {
+        Date date = new Date();
+        Date expirationDate = new Date(date.getTime() + accessTokenExpiration * 1000);
 
-            log.info("토큰이 정상적으로 검증되었습니다");
-            log.info("Refresh Token 사용자: " + email);
+        return Jwts.builder().signWith(secretKey, Jwts.SIG.HS256).issuer(issuer).expiration(expirationDate)
+                .subject(userDetails.getUsername()).claim("nickname", userDetails.getNickname())
+                .claim("Privilege", userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                .compact();
+    }
 
-            return email;
-        } catch (ExpiredJwtException e) {
-            log.info("Refresh Token이 만료되었습니다. 로그인 페이지로 이동합니다.");
-            // TODO: Redirect to login Page
-            throw new BaseExceptionHandler(ErrorCode.EXPIRED_REFRESH_TOKEN_EXCEPTION);
-        } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
-            log.info("유효하지 않은 토큰입니다.");
-            throw new BaseExceptionHandler(ErrorCode.INVALID_REFRESH_TOKEN_EXCEPTION);
+    public String createRefreshToken(CustomUserDetails userDetails) {
+        Date date = new Date();
+        Date expirationDate = new Date(date.getTime() + refreshTokenExpiration * 1000);
+
+        String refreshToken = Jwts.builder().signWith(secretKey, Jwts.SIG.HS256).issuer(issuer)
+                .expiration(expirationDate).subject(userDetails.getUsername())
+                .claim("nickname", userDetails.getNickname()).compact();
+
+        jwtRedisDao.save(userDetails.getEmail(), refreshToken, refreshTokenExpiration);
+        return refreshToken;
+    }
+
+    public TokenDto rotateJwtTokens(String refreshToken) {
+        Claims claims = verifyJwtToken(refreshToken);
+        String email = claims.getSubject();
+        String refreshTokenInServer = jwtRedisDao.get(email);
+
+        CustomUserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+        log.info("Refresh Token Rotation 요청이 들어왔습니다.");
+
+        if (refreshTokenInServer.equals(refreshToken)) {
+            log.info("요청의 Refresh Token이 Redis에 저장된 값과 일치합니다.");
+            String newAccessToken = createAccessToken(userDetails);
+            String newRefreshToken = createRefreshToken(userDetails);
+            jwtRedisDao.save(email, newRefreshToken, refreshTokenExpiration);
+
+            return new TokenDto(newAccessToken, newRefreshToken);
+        } else {
+            throw new BaseExceptionHandler(ErrorCode.INCONSISTENT_REFRESH_TOKEN_EXCEPTION);
         }
     }
 
-    public void saveRefreshTokenRedis(String email, String refreshToken) {
-        redisTemplate.opsForValue().set(REFRESH_HASH + email, refreshToken, 15, TimeUnit.DAYS);
-    }
-
-    public String getRefreshTokenRedis(String email) {
-        return redisTemplate.opsForValue().get(REFRESH_HASH + email);
+    public Claims verifyJwtToken(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token) // Throws JWT Exception
+                .getPayload();
     }
 
     public ResponseCookie buildResponseCookie(String refreshToken) {
-        return ResponseCookie.from("refresh-token", refreshToken)
-                .maxAge(refreshTokenExpiration * 1000)
-                .path("/")
-                .secure(true)
+        return ResponseCookie.from("refresh-token", refreshToken).maxAge(refreshTokenExpiration).path("/").secure(true)
                 .sameSite("Lax") // Same site 설정 필요
-                .domain("i10a702.p.ssafy.io")  //어느 도메인에 열어줄 것인가
+                .domain("localhost")  //어느 도메인에 열어줄 것인가
                 .build();
-    }
-
-    public Collection<GrantedAuthority> getPrivileges(Claims claims) {
-        Object stringAuthorities = claims.get("Privilege");
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        if (stringAuthorities instanceof Collection<?>) {
-            for (Object grantedAuthority : (Collection<?>) stringAuthorities) {
-                if (grantedAuthority instanceof String) {
-                    authorities.add(new SimpleGrantedAuthority("ROLE_" + grantedAuthority));
-                }
-            }
-        }
-        return authorities;
     }
 }

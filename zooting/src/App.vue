@@ -6,8 +6,11 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { RouterView } from 'vue-router'
 import TheSideBar from '@/components/TheSideBar.vue'
+
+const currentReceiver = ref<string>('')
 </script>
 
 <style scoped>

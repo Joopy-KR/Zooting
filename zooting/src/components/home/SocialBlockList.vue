@@ -1,9 +1,8 @@
 <template>
-  <div class="friend__container">
+  <div class="interest__container">
     <ul role="list" class="friend-list">
       <li v-for="(item, index) in blockList" :key="index" class="friend-list__item">
         <RouterLink :to="getProfileLink(item.nickname)" class="friend-list__item__link">
-          <img class="friend-list__img" src="" alt="profile">
           <div class="font-medium">
             {{ item.nickname }}
           </div>
@@ -35,25 +34,24 @@ const getProfileLink = (value: string) => {
 
 
 const blockCancel = (nickname: string) => {
-  const payload = nickname
-  store.blockCancel(payload);
+  store.blockCancel(nickname);
 }
 </script>
 
 <style scoped>
-.friend__container {
+.interest__container {
   @apply flex-grow-0;
   overflow-y: auto;
 }
-.friend__container::-webkit-scrollbar {
+.interest__container::-webkit-scrollbar {
   width: 7px;
   background-color: white;
 }
-.friend__container::-webkit-scrollbar-thumb {
+.interest__container::-webkit-scrollbar-thumb {
   background-color: #d6d6d6;
   border-radius: 4px;
 }
-.friend__container::-webkit-scrollbar-track {
+.interest__container::-webkit-scrollbar-track {
   background-color: transparent;
 }
 .friend-list {

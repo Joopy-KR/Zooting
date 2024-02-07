@@ -1,44 +1,29 @@
 <script setup lang="ts">
 import InfoSideBar from "@/components/profile/InfoSideBar.vue";
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import { loadMyInfoApi, loadUserInfoApi, checkIsMyProfileApi } from "@/api/profile";
-import { useAccessTokenStore } from "@/stores/store";
-
-const store = useAccessTokenStore();
+import {onMounted, ref} from "vue";
+import {useRoute} from "vue-router";
+import {checkIsMyProfileApi, loadMyInfoApi, loadUserInfoApi} from "@/api/profile";
+import type {UserInfo} from "@/types/global";
 
 const route = useRoute();
 
-interface Info {
-  email: string | null;
-  gender: string | null;
-  nickname: string | null;
-  birth: string | null;
-  address: string | null;
-  point: number | null;
-  personality: string | null;
-  animal: string | null;
-  interest: string | null;
-  introduce: string | null;
-  idealAnimal: string;
-  backgroundImgUrl: string | null;
-  maskImgUrl: string | null;
-}
-
-const userInfo = ref<Info>({
-  email: null,
-  gender: null,
-  nickname: null,
-  birth: null,
-  address: null,
-  point: null,
-  personality: null,
-  animal: null,
-  interest: null,
-  introduce: null,
+const userInfo = ref<UserInfo>({
+  email: undefined,
+  nickname: undefined,
+  address: undefined,
+  animal: undefined,
+  backgroundId: undefined,
+  backgroundImgUrl: undefined,
+  birth: undefined,
+  gender: undefined,
   idealAnimal: "[]",
-  backgroundImgUrl: null,
-  maskImgUrl: null,
+  interest: undefined,
+  introduce: undefined,
+  maskId: undefined,
+  maskImgUrl: undefined,
+  personality: undefined,
+  point: undefined,
+  memberStatus: undefined,
 });
 
 const setUserInfo = (data: any) => {
@@ -53,27 +38,30 @@ const setUserInfo = (data: any) => {
   userInfo.value!.introduce = data["result"].introduce;
   userInfo.value!.interest = data["result"].interest;
   userInfo.value!.idealAnimal = data["result"].idealAnimal;
+  userInfo.value!.backgroundId = data["result"].backgroundId
   userInfo.value!.backgroundImgUrl = data["result"].backgroundImgUrl;
+  userInfo.value!.maskId = data["result"].maskId;
   userInfo.value!.maskImgUrl = data["result"].maskImgUrl;
+  userInfo.value!.memberStatus = data["result"].memberStatus;
 };
 
-const loadUserInfo = (nickname: string) => {
-  loadUserInfoApi(
-    nickname,
-    ({ data }: any) => setUserInfo(data),
-    (error: any) => {
-      console.log(error);
-    }
+const loadUserInfo = async (nickname: string) => {
+  await loadUserInfoApi(
+      nickname,
+      ({data}: any) => setUserInfo(data),
+      (error: any) => {
+        console.log(error);
+      }
   );
 };
 
 // 나의 정보 불러오기
-const loadMyInfo = () => {
-  loadMyInfoApi(
-    ({ data }: any) => setUserInfo(data),
-    (error: any) => {
-      console.log(error);
-    }
+const loadMyInfo = async () => {
+  await loadMyInfoApi(
+      ({data}: any) => setUserInfo(data),
+      (error: any) => {
+        console.log(error);
+      }
   );
 };
 
@@ -85,24 +73,22 @@ const convertDate = (inputDate: string) => {
   originalDate.setDate(originalDate.getDate() + 1);
 
   // 날짜를 원하는 형식으로 포맷
-  const formattedDate = originalDate.toISOString().split("T")[0];
-
-  return formattedDate;
+  return originalDate.toISOString().split("T")[0];
 };
 
 const isMyProfile = ref<boolean>(false);
 
 const checkIsMyProfile = async (nickname: string) => {
   await checkIsMyProfileApi(
-    nickname,
-    ({ data }: any) => {
-      const myProfile = data?.result?.myProfile;
+      nickname,
+      ({data}: any) => {
+        const myProfile: boolean = data["result"].myProfile;
 
-      if (myProfile !== undefined) {
-        isMyProfile.value = myProfile;
-      }
-    },
-    (error: any) => console.log(error)
+        if (myProfile !== undefined) {
+          isMyProfile.value = myProfile;
+        }
+      },
+      (error: any) => console.log(error)
   );
 };
 
@@ -116,16 +102,20 @@ onMounted(async () => {
     } else {
       await loadMyInfo(); // 내 정보 조회
     }
+  } else {
+    await loadMyInfo();
   }
+  console.log(isMyProfile.value);
 });
 </script>
+
 <template>
   <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
     <div class="w-1/3">
-      <InfoSideBar :user-info="userInfo" :is-my-profile="isMyProfile" />
+      <InfoSideBar :user-info="userInfo" :nickname="route.params.nickname" :is-my-profile="isMyProfile" @load-user-info="loadUserInfo"/>
     </div>
     <div class="w-2/3">
-      <router-view :user-info="userInfo" :is-my-profile="isMyProfile" />
+      <router-view :user-info="userInfo" :nickname="route.params.nickname" :is-my-profile="isMyProfile" @load-my-info="loadMyInfo"/>
     </div>
   </div>
 </template>

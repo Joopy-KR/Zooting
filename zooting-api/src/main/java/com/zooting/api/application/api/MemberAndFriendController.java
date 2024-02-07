@@ -1,8 +1,8 @@
 package com.zooting.api.application.api;
 
-import com.zooting.api.domain.friend.dto.request.FriendReq;
 import com.zooting.api.application.usecase.MemberAndFriendAndFriendRequestUsecase;
 import com.zooting.api.application.usecase.MemberAndFriendRequestUsecase;
+import com.zooting.api.domain.friend.dto.request.FriendReq;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,8 +31,8 @@ public class MemberAndFriendController {
     //친구 요청 보내기
     @Operation(summary = "친구 요청 보내기", description = "로그인 한 사람이 친구 요청 보내기")
     @PostMapping("")
-    public ResponseEntity<BaseResponse<String>> sendFriendRequest(@Valid @NotNull @RequestBody String nickname, @AuthenticationPrincipal UserDetails userDetails){
-        memberAndFriendRequestUsecase.sendFriendRequest(userDetails.getUsername(), nickname);
+    public ResponseEntity<BaseResponse<String>> sendFriendRequest(@Valid @NotNull @RequestBody FriendReq friendReq, @AuthenticationPrincipal UserDetails userDetails) {
+        memberAndFriendRequestUsecase.sendFriendRequest(userDetails.getUsername(), friendReq.nickname());
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 "친구 요청 성공"
@@ -41,8 +41,8 @@ public class MemberAndFriendController {
 
     @Operation(summary = "친구 수락", description = "로그인 한 사람 기준 요청 온 친구 수락")
     @PostMapping("/accept")
-    public ResponseEntity<BaseResponse<String>> acceptFriend(@Valid @NotNull @RequestBody String nickname, @AuthenticationPrincipal UserDetails userDetails){
-        memberAndFriendAndFriendRequestUsecase.acceptFriend(userDetails.getUsername(), nickname);
+    public ResponseEntity<BaseResponse<String>> acceptFriend(@Valid @NotNull @RequestBody FriendReq friendReq, @AuthenticationPrincipal UserDetails userDetails) {
+        memberAndFriendAndFriendRequestUsecase.acceptFriend(userDetails.getUsername(), friendReq.nickname());
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 "친구 수락 성공"
@@ -51,7 +51,7 @@ public class MemberAndFriendController {
 
     @Operation(summary = "친구 삭제", description = "로그인 한 사람 기준 친구 삭제")
     @DeleteMapping("/delete")
-    public ResponseEntity<BaseResponse<String>> deleteFriend(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<BaseResponse<String>> deleteFriend(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
         memberAndFriendAndFriendRequestUsecase.deleteFriend(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
@@ -62,7 +62,7 @@ public class MemberAndFriendController {
     //받은 친구요청 거절
     @Operation(summary = "친구 요청 거절", description = "로그인 한 사람이 친구 요청 거절")
     @DeleteMapping("reject")
-    public ResponseEntity<BaseResponse<String>> rejectFriendRequest(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<BaseResponse<String>> rejectFriendRequest(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
         memberAndFriendAndFriendRequestUsecase.rejectFriendRequest(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
@@ -73,7 +73,7 @@ public class MemberAndFriendController {
 
     @Operation(summary = "친구 요청 취소", description = "로그인 한 사람이 보낸 친구 요청 취소")
     @DeleteMapping("cancel")
-    public ResponseEntity<BaseResponse<String>> cancelFriendRequest(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<BaseResponse<String>> cancelFriendRequest(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
         memberAndFriendAndFriendRequestUsecase.cancelFriendRequest(userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,

@@ -57,7 +57,7 @@ const selectTab = (selectedTab: string) => {
   position: relative;
 }
 .tab-bar__item--active {
-  @apply border-indigo-500 text-indigo-600;
+  @apply border-violet-500 text-violet-600;
 }
 .tab-bar__item--inactive {
   @apply border-transparent text-gray-400 hover:border-gray-200 hover:text-gray-500;

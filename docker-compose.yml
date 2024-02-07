@@ -1,0 +1,44 @@
+version: "3"
+services:
+  springboot:
+    container_name: zooting-api
+    image: duckbill413/zooting-docker-api:latest
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: "Asia/Seoul"
+    networks:
+      - zooting_net
+    volumes:
+      - /home/ec2-user/logs:/logs
+
+  redis:
+    image: redis:alpine
+    container_name: zooting-redis
+    command: redis-server --port 6379
+    hostname: redis
+    ports:
+      - "6800:6379"
+    networks:
+      - zooting_net
+    restart: always
+
+  nginx:
+    container_name: zooting-nginx
+    image: duckbill413/zooting-nginx:latest
+    build:
+      context: ./zooting
+      dockerfile: Dockerfile
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - zooting_net
+    depends_on:
+      - springboot
+
+networks:
+  zooting_net:
+    driver: bridge

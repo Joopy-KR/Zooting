@@ -3,6 +3,7 @@ package com.zooting.api.domain.notice.api;
 import com.zooting.api.domain.notice.application.NoticeService;
 import com.zooting.api.domain.notice.dto.request.NoticeSaveReq;
 import com.zooting.api.domain.notice.dto.request.NoticeUpdateReq;
+import com.zooting.api.domain.notice.dto.response.NoticePageRes;
 import com.zooting.api.domain.notice.dto.response.NoticeRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
@@ -40,7 +41,7 @@ public class NoticeController {
     }
     @Operation(summary = "공지사항 수정")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<BaseResponse<String>> updateNotice(
             @Valid @RequestBody NoticeUpdateReq noticeReq) {
         noticeService.updateNotice(noticeReq);
@@ -51,11 +52,11 @@ public class NoticeController {
     }
 
     @Operation(summary = "공지사항 조회")
-    @PreAuthorize("hasAnyRole(permitAll())")
+    @PreAuthorize("permitAll()")
     @GetMapping
-    public ResponseEntity<BaseResponse<List<NoticeRes>>> selectNotice(
+    public ResponseEntity<BaseResponse<NoticePageRes>> selectNotice(
             @PageableDefault(sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        var result = noticeService.findNotice(pageable);
+        NoticePageRes result = noticeService.findNotice(pageable);
         return BaseResponse.success(
                 SuccessCode.SELECT_SUCCESS,
                 result

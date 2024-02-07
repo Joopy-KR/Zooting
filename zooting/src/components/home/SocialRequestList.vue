@@ -1,5 +1,5 @@
 <template>
-  <div class="grid friend__container">
+  <div class="grid interest__container">
     <!-- 받은 요청 -->
     <div>
       <!-- Title -->
@@ -33,8 +33,8 @@
             </div>
           </RouterLink>
           <div class="flex items-center">
-            <button class="me-2" @click="friendAccept(item)">수락</button>
-            <button @click="friendReject(item)">거절</button>
+            <button class="me-2" @click="friendAccept(item.nickname)">수락</button>
+            <button @click="friendReject(item.nickname)">거절</button>
           </div>
         </li>
       </ul>
@@ -73,7 +73,7 @@
             </div>
           </RouterLink>
           <div class="flex items-center">
-            <button @click="friendRequestCancel(item)">취소</button>
+            <button @click="friendRequestCancel(item.nickname)">취소</button>
           </div>
         </li>
       </ul>
@@ -102,35 +102,16 @@ const getProfileLink = (value: string) => {
   return `/profile/${value}`;
 };
 
-interface Friend {
-  email: string;
-  nickname: string;
-  gender: string;
-  animal: string;
+const friendAccept = (nickname: string) => {
+  store.friendAccept(nickname);
 };
 
-const friendAccept = (item: Friend) => {
-  const payload = {
-    email: item.email,
-    nickname: item.nickname,
-  };
-  store.friendAccept(payload);
+const friendReject = (nickname: string) => {
+  store.friendReject(nickname);
 };
 
-const friendReject = (item: Friend) => {
-  const payload = {
-    email: item.email,
-    nickname: item.nickname,
-  };
-  store.friendReject(payload);
-};
-
-const friendRequestCancel = (item: Friend) => {
-  const payload = {
-    email: item.email,
-    nickname: item.nickname,
-  };
-  store.friendRequestCancel(payload);
+const friendRequestCancel = (nickname: string) => {
+  store.friendRequestCancel(nickname);
 }
 
 const getHeartClass = (gender: string) => {
@@ -138,23 +119,41 @@ const getHeartClass = (gender: string) => {
 }
 
 const getProfileImage = (animal: string) => {
-  return `/images/${animal}.png`
+  let imgUrl: URL;
+  if (animal === '강아지') {
+    imgUrl = new URL('@/assets/images/logo.svg', import.meta.url);
+  } else if (animal === '고양이') {
+    imgUrl = new URL('@/assets/images/animal/cat.png', import.meta.url);
+  } else if (animal === '곰') {
+    imgUrl = new URL('@/assets/images/animal/bear.png', import.meta.url);
+  } else if (animal === '공룡') {
+    imgUrl = new URL('@/assets/images/animal/dino.png', import.meta.url);
+  } else if (animal === '펭귄') {
+    imgUrl = new URL('@/assets/images/animal/penguin.png', import.meta.url);
+  } else if (animal === '토끼') {
+    imgUrl = new URL('@/assets/images/animal/rabbit.png', import.meta.url);
+  } else if (animal === '사슴') {
+    imgUrl = new URL('@/assets/images/animal/deer.png', import.meta.url);
+  } else {
+    imgUrl = new URL('@/assets/images/animal/animal_group.png', import.meta.url);
+  }
+  return imgUrl.href;
 }
 </script>
 
 <style scoped>
-.friend__container {
+.interest__container {
   @apply h-screen overflow-y-auto;
 }
-.friend__container::-webkit-scrollbar {
+.interest__container::-webkit-scrollbar {
   width: 6px;
   background-color: white;
 }
-.friend__container::-webkit-scrollbar-thumb {
+.interest__container::-webkit-scrollbar-thumb {
   background-color: #d6d6d6;
   border-radius: 4px;
 }
-.friend__container::-webkit-scrollbar-track {
+.interest__container::-webkit-scrollbar-track {
   background-color: transparent;
 }
 .friend-list {
