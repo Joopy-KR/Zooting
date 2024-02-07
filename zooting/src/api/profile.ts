@@ -10,7 +10,7 @@ async function checkNicknameApi(param: string, success: any, fail: any) {
 // 닉네임 업데이트
 async function updateNicknameApi(body: any, success: any, fail: any) {
   local.defaults.headers["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`;
-  await local.put(`/api/members/nickname`, body).then(success).catch(fail);
+  await local.patch(`/api/members/nickname`, body).then(success).catch(fail);
 }
 // 내 정보 가져오기
 async function loadMyInfoApi(success: any, fail: any) {
@@ -38,7 +38,7 @@ async function checkIsMyProfileApi(param: string, success: any, fail: any) {
 // 내 자기소개 업데이트
 async function updateIntroduceApi(body: any, success: any, fail: any) {
   local.defaults.headers["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`;
-  await local.put(`/api/members/introduce`, body).then(success).catch(fail);
+  await local.patch(`/api/members/introduce`, body).then(success).catch(fail);
 }
 // 이상형, 관심사 업데이트
 interface UpdateIdealAnimalsAndInterests {
@@ -51,7 +51,7 @@ async function updateIdealAnimalAndInterestsApi(
   fail: any
 ) {
   local.defaults.headers["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`;
-  await local.put(`/api/members/interests`, body).then(success).catch(fail);
+  await local.patch(`/api/members/interests`, body).then(success).catch(fail);
 }
 
 export {

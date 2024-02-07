@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref} from "vue";
+import {onMounted, ref} from "vue";
 import {Dialog, DialogPanel, TransitionChild, TransitionRoot,} from "@headlessui/vue";
 import {updateIntroduceApi} from "@/api/profile";
+import SuccessNotification from "@/components/util/SuccessNotification.vue";
+import FailNotification from "@/components/util/FailNotification.vue";
 
 const emits = defineEmits([
   "closeEditIntroduce",
@@ -31,14 +33,23 @@ const updateIntroduce = () => {
         introduce: introduceValue.value,
       },
       ({data}: any) => {
-        emits("loadMyInfo")
-        introduceValue.value = "";
+        if (data.status === 201 || data.status === 200) {
+          emits("loadMyInfo")
+          introduceValue.value = "";
+          showSuccess.value = true;
+        } else {
+          showFail.value = true;
+        }
       },
       (error: any) => console.error(error)
   );
   emits("closeEditIntroduce");
 };
 
+const showSuccess = ref(false);
+const setShowSuccess = (status: boolean) => showSuccess.value = status;
+const showFail = ref(false);
+const setShowFail = (status: boolean) => showFail.value = status;
 onMounted(() => {
   if (props.introduce) {
     introduceValue.value = props.introduce;
@@ -47,6 +58,9 @@ onMounted(() => {
 </script>
 
 <template>
+  <SuccessNotification title="저장 성공" message="자기 소개 수정 완료" :show-from-parent="showSuccess"
+                       @set-parent-show="setShowSuccess"/>
+  <FailNotification title="저장 실패" message="자기 소개 수정 실패" :show-from-parent="showFail" @set-parent-show="setShowFail"/>
   <TransitionRoot as="template" :show="isOpenEditIntroduce">
     <Dialog as="div" class="relative z-10" @close="closeDialog">
       <TransitionChild
