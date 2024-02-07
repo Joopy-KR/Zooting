@@ -23,7 +23,8 @@ const setIsOpenPersonalityDialog = (status: boolean) => {
   emits("setIsOpenPersonalityDialog", status);
 }
 
-const getColorClass = (value: string) => {
+const getColorClass = (value: string | undefined) => {
+  if (!value) return undefined;
   if (value.includes('여름')) {
     return 'summer-text'
   } else if (value.includes('겨울')) {
@@ -39,11 +40,11 @@ const moveToPersonalityTest = () => {
   router.push({name: "personality_test"})
 }
 
-watch(props.userInfo,
-    (newValue) => {
-      personality.value = store.personality[newValue.personality.toUpperCase()];
-    })
-
+watch(props.userInfo, (newValue) => {
+  if (newValue?.personality) {
+    personality.value = store.personality[newValue.personality.toUpperCase()];
+  }
+});
 </script>
 
 <template>
@@ -70,20 +71,20 @@ watch(props.userInfo,
               <div class="result__container">
                 <div>
                   <div class="result__title">
-                    <h1>{{ userInfo.nickname }} 님의 성격 유형은</h1>
+                    <h1>{{ userInfo?.nickname }} 님의 성격 유형은</h1>
                     <h1>
-                      <span :class="getColorClass(personality.title)">
-                      {{ (personality as Personality).title }}
+                      <span :class="getColorClass(personality?.title)">
+                      {{ personality?.title }}
                         </span>이에요
                     </h1>
                   </div>
 
                   <div class="result__content">
-                    <li v-for="(content, index) in personality.content" :key="index">
+                    <li v-for="(content, index) in personality?.content ? personality.content : []" :key="index">
                       {{ content }}
                     </li>
-                    <li><span :class="getColorClass(personality.match)">
-            {{ (personality as Personality).title }}
+                    <li><span :class="getColorClass(personality?.match)">
+            {{ personality?.title }}
           </span> 유형과 궁합이 맞아요.
                     </li>
                   </div>
@@ -92,7 +93,7 @@ watch(props.userInfo,
                   <button type="button"
                           class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-12 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                           @click="moveToPersonalityTest">
-                    다시 검사히기
+                    다시 검사하기
                   </button>
                 </div>
               </div>

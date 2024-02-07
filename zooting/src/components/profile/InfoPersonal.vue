@@ -7,9 +7,10 @@
   />
   <SuccessDialog
       title="업데이트 성공!"
-      message="회원정보 업데이트 완료!"
+      message="이상형 & 관심사 정보 업데이트에 성공하였습니다."
       :success-alert="successAlert"
       @set-success-alert="setSuccessAlert"
+      @on-click-submit="moveToMyPage"
   />
   <div class="input__container relative">
     <div @click="moveToMyPage()" class="flex flex-col items-center ml-4 absolute top-5 left-5">
@@ -66,7 +67,7 @@
           {{ interest }}
         </div>
       </div>
-      <button class="submit-button" type="button" @click.prevent="updateIdealAnimalAndInterests">
+      <button class="submit-button" type="button" @click="updateIdealAnimalAndInterests">
         수정하기
       </button>
     </div>
@@ -186,17 +187,19 @@ const updateIdealAnimalAndInterests = async () => {
         idealAnimal: Array.from(idealAnimalSet.value),
       },
       ({data}: any) => {
-        store.getUserInfo();
-        setSuccessAlert(true);
+        if (data.status === 200 || data.status === 201) {
+          // 성공 알림 띄우기
+          successAlert.value = true;
 
-        if (props.isMyProfile) {
-          emits("loadMyInfo");
+          if (props.isMyProfile) {
+            emits("loadMyInfo");
+          }
+        } else {
+          failAlert.value = true;
         }
-        moveToMyPage();
       },
       (error: any) => {
         setFailAlert(true);
-        console.error(error);
       }
   );
 };

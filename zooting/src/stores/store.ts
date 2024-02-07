@@ -3,11 +3,11 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {Friend, Personality, TokenState, UserInfo, Notice, NoticePage, DM, DmItem } from "@/types/global";
+import type {DM, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
-  const personality: Personality = {
+  const personality: PersonalityList = {
     INFP: {
       title: "설레는 봄",
       match: "포근한 겨울",
@@ -253,11 +253,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 로그인 상태 판별
   const isLogin = computed(() => {
-    if (state.value.accessToken) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!state.value.accessToken;
   });
 
   // 로그아웃

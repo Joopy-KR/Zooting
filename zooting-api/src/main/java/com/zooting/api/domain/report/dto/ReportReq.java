@@ -10,9 +10,8 @@ public record ReportReq(
         @Size(min=1, max=2000, message = "신고 사유는 1에서 2000자 사이입니다.")
         @Schema(description = "신고 사유")
         String reason,
-        @Schema(description = "신고 대상 이메일")
+        @Schema(description = "신고 대상 닉네임")
         @NotNull
-        @Email
-        String email
+        String nickname
 ) {
 }

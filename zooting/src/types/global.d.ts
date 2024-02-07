@@ -39,12 +39,14 @@ declare interface TokenState {
     refreshToken: string | null;
 }
 
+declare interface PersonalityList {
+    [key: string]: Personality;
+}
+
 declare interface Personality {
-    [key: string]: {
-        title: string;
-        match: string;
-        content: string[];
-    };
+    title: string;
+    match: string;
+    content: string[];
 }
 
 declare interface Friend {
@@ -91,20 +93,27 @@ declare interface DmFile {
     fileId: number;
     thumbnailUrl: string;
 }
+
 declare interface Notice {
-    noticeId : number | null;
-    title : string | null;
-    content : string | null;
-    createdAt : string | null;
+    noticeId: number | null;
+    title: string | null;
+    content: string | null;
+    createdAt: string | null;
 }
+
 declare interface NoticePage {
-    noticeList : Notice[] | [];
+    noticeList : Notice[];
     currentPage : number;
     totalPage : number;
 }
 
+declare interface Notify {
+    title: string,
+    message: any,
+}
+
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
-    Personality, Friend, MaskReq, ReportUserReq,
-    DM, DmItem, DmFile, FriendRequest, Notice, NoticePage
+    PersonalityList, Personality, Friend, MaskReq, ReportUserReq,
+    DM, DmItem, FriendRequest, Notice, NoticePage, Notify
 };

@@ -267,6 +267,7 @@ onMounted(async () => {
       message="회원정보 업데이트 완료!"
       :success-alert="successAlert"
       @set-success-alert="setSuccessAlert"
+      @on-click-submit="moveToMyPage"
   />
   <div class="flex flex-col px-12 py-8">
     <div class="flex flex-row justify-between">
