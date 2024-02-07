@@ -268,9 +268,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     state.value.accessToken = null;
   };
 
-  // 추가 정보 저장 여부 확인
+  // 유저 권한 확인
   const checkCompletedSignUp = function () {
-    axios({
+    return axios({
       method: "get",
       url: `${API_URL}/api/members/privilege/check`,
       headers: {
@@ -279,15 +279,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        if (!res.data.result) {
-          router.push({name: "signup"})
-        } else {
-          getUserInfo()
-        }
-        return res.data.result
+        console.log(res);
+        return res.data.result;
       })
       .catch((err) => {
         console.log(err);
+        throw err;
       });
   };
 
