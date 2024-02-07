@@ -127,7 +127,7 @@ const getProfileImage = () => {
   let imgUrl: URL;
   const animal = userInfo.value?.animal
   if (animal === '강아지') {
-    imgUrl = new URL('@/assets/images/logo.svg', import.meta.url);
+    imgUrl = new URL('@/assets/images/animal/dog.png', import.meta.url);
   } else if (animal === '고양이') {
     imgUrl = new URL('@/assets/images/animal/cat.png', import.meta.url);
   } else if (animal === '곰') {

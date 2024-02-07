@@ -7,7 +7,7 @@
         <svg class="exit-button" @click="$emit('closeTab'), isOpenFileInput = !isOpenFileInput" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m15 19-7-7 7-7"/>
         </svg>
-        <!-- 프로필 이미지 (프로필로 라우팅) -->
+        <!-- 프로필 이미지 -->
         <RouterLink :to="getProfileLink()" @click="$emit('closeTab')">
           <img class="w-12" :src="getProfileImage()" alt="profile">
         </RouterLink>
@@ -186,7 +186,6 @@ watch(() => props.open, () => {
   else {
     isOpenFileInput.value = false
     fileInput.value = null
-    // store.dmInfo = null
     store.pastDmList = []
     sockDmList.value = []
     store.exitDmRoom(dmRoomId.value)
@@ -196,7 +195,7 @@ const getProfileImage = () => {
   let imgUrl: URL;
   const animal = receiverInfo.value?.animal
   if (animal === '강아지') {
-    imgUrl = new URL('@/assets/images/logo.svg', import.meta.url);
+    imgUrl = new URL('@/assets/images/animal/dog.png', import.meta.url);
   } else if (animal === '고양이') {
     imgUrl = new URL('@/assets/images/animal/cat.png', import.meta.url);
   } else if (animal === '곰') {
