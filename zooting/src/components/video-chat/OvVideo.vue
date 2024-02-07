@@ -1,9 +1,9 @@
 <template>
   <div id="conatiner" class="container">
     <div v-show="is_loaded">
-      <video :id="'videoId-' + connectionId" autoplay playsinline></video>
+      <video :id="'videoId-' + connectionId" autoplay playsinline style="display: none;"></video>
     </div>
-    <div :id="'threeId-' + connectionId"></div>
+    <!-- <div :id="'threeId-' + connectionId"></div> -->
 		<video
       id="canvas_video"
       style="width: 600px; height: 600px"
@@ -69,8 +69,8 @@ class BasicScene {
     this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 0.01, 5000)
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setSize(this.width, this.height)
-    const threeCanvas: any = document.getElementById(`threeId-${connectionId.value}`)
-    threeCanvas.appendChild(this.renderer.domElement)
+    // const threeCanvas: any = document.getElementById(`threeId-${connectionId.value}`)
+    // threeCanvas.appendChild(this.renderer.domElement)
 		const canvas_video = document.getElementById('canvas_video')
 		canvas_video.srcObject = this.renderer.domElement.captureStream()
 		console.log(canvas_video)
@@ -401,8 +401,8 @@ canvas {
 
 <style scoped>
 
-video {
+/* video {
   display: none;
-}
+} */
 
 </style>
