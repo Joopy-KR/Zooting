@@ -1,3 +1,8 @@
+import StopDogImg from '@/assets/images/sub_game/stopdog.png';
+import RunningDogImg from '@/assets/images/sub_game/runningdog.png';
+import StartDogImg from '@/assets/images/sub_game/startdog.png';
+
+
 document.addEventListener('DOMContentLoaded', () => {
 
     let canvas = document.querySelector("#canvas") as HTMLCanvasElement
@@ -7,19 +12,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // 캐릭터
+    let dogImg = new Image(); // 이후 수정
+    dogImg.src = StopDogImg;
     let dino = {
         x: 0,
-        y: 170, // 땅에서 상자 크기만큼 위에서부터 그린다
-        width: 20,
-        height: 20,
+        y: 130, // 땅에서 상자 크기만큼 위에서부터 그린다
+        width: 50,
+        height: 60,
         draw(){
             if (! ctx){
                 return;
             }
-            ctx.fillStyle = 'green';
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+            // ctx.fillStyle = 'green';
+            // ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.drawImage(dogImg, this.x, this.y, this.width, this.height);
+            console.log(dogImg.src)
         }
     }
+    // let dogImgUrl = new URL('@/assets/images/sub_game/startdog.png', import.meta.url);
     // 선인장 장애물
     class Cactus {
         width:number;
@@ -60,8 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let animation:number;
     let life = 5;
     let score = 0;
-    let dogImg = new Image(); // 이후 수정
-    // dogImg.src = "../"
 
     let lifeElement = document.querySelector('#life');
     if (lifeElement) {
@@ -83,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         timer++;
 
-        if (timer % 120 == 0 ) {
+        if (timer % 200 == 0 ) {
             let cactus = new Cactus();
             cactusArr.push(cactus);
         }
@@ -113,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             dino.y-= 0.8;
         }
         if(jumpState == 0) {
-            if(dino.y < 170) {
+            if(dino.y < 130) {
                 dino.y ++ ;
             }
         }
@@ -125,11 +133,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gameState == 0) {
                 gameState = 1; // 게임 실행
                 frameAction();
+
             } else if (gameState == 1) { // 게임실행 중일 때 스페이스 누르면
                 jumpState = 1; // 점프 중으로 변경
+                dogImg.src = RunningDogImg;
+                dino.draw();
             }
         }
     })
+    // 스페이스바 누르면 게임 화면 시작
+    document.addEventListener('keyup', (e)=>{
+        if (e.code == 'Space'){
+            if (gameState == 1) { // 게임실행 중일 때 스페이스 누르면
+                jumpState = 1; // 점프 중으로 변경
+                dogImg.src = RunningDogImg;
+                dino.draw();
+            }
+        }
+    })
+
     function drawLine () {
         if (!ctx) {
             return;
