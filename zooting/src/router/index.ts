@@ -57,7 +57,7 @@ const router = createRouter({
           next();
         } else {
           const store = useAccessTokenStore();
-          const nickname = store.userInfo.nickname;
+          const nickname = store.userInfo?.nickname;
           if (nickname) {
             to.params.nickname = nickname;
             next({ name: "profile", params: { nickname: nickname } });
@@ -89,36 +89,36 @@ const router = createRouter({
         },
       ],
     },
+    {
+      // catch-all 라우트
+      path: "/:catchAll(.*)",
+      name: 'not-found',
+      component: HomeView,
+    },
   ],
 });
 
 router.beforeEach((to, from) => {
   const store = useAccessTokenStore();
-  if (
-    (to.name === "home" ||
-      to.name === "signup" ||
-      to.name === "animal_test" ||
-      to.name === "personality_test") &&
-    !store.isLogin
-  ) {
-    return { name: "signin" };
+
+  // 허용되지 않는 경로 접근
+  if (to.name === 'not-found') {
+    if (store.isLogin) {
+      return {name: 'home'};
+    } else {
+      return {name: 'signin'};
+    }
   }
 
-  if (to.name === "signin" && store.isLogin) {
-    return { name: "home" };
+  // 로그인이 된 경우
+  if (store.isLogin) {
+    return;
   }
 
-  if (to.name === 'signup' && store.userInfo?.nickname) {
-    return { name: 'home' }
+  // 로그인이 안한 경우
+  if (to.name !== 'login' && to.name !== 'signin') {
+    return {name: 'signin'};
   }
-
-  // if (to.name === "animal_test" && store.userInfo?.animal) {
-  //   return { name: "home" };
-  // }
-
-  // if (to.name === "personality_test" && store.userInfo?.personality) {
-  //   return { name: "home" };
-  // }
 });
 
 export default router;

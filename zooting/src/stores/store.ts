@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {DM, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
+import type {DM, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage, DmItem} from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -235,11 +235,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     await loadMyInfoApi(
       ({ data }: any) => {
         userInfo.value = data.result;
-        if (!data.result.animal) {
-          router.push({ name: "animal_test" });
-        } else if (!data.result.personality) {
-          router.push({ name: "personality_test" });
-        }
       },
       (error: any) => {
         console.log(error);
@@ -250,7 +245,21 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 로그인 상태 판별
   const isLogin = computed(() => {
-    return !!state.value.accessToken;
+    if (state.value.accessToken) {
+      return true;
+    } else {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (refreshToken) {
+        state.value.refreshToken = refreshToken;
+      }
+      if (accessToken) {
+        state.value.accessToken = accessToken;
+        return true;
+      }
+    }
+    return false;
   });
 
   // 로그아웃
