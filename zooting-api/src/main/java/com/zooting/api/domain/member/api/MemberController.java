@@ -59,7 +59,7 @@ public class MemberController {
         );
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('ANONYMOUS, USER')")
     @Operation(
             summary = "프로필 확인",
             description = "내 프로필이 맞다면 myprofile = true" +
