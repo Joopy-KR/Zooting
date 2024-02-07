@@ -4,6 +4,7 @@
       <img src="/src/assets/images/logo/logo_lg.png" alt="" class="animate__bounceIn">
     </div>
     <div class="ready__main">
+      <Subgame class="mb-10"/>
       <ReadyMatch />
       <ReadyRecord />
     </div>
@@ -13,6 +14,7 @@
 <script setup lang="ts">
 import ReadyMatch from './ReadyMatch.vue'
 import ReadyRecord from './ReadyRecord.vue'
+import Subgame from '../subgame/Subgame.vue';
 
 </script>
 
