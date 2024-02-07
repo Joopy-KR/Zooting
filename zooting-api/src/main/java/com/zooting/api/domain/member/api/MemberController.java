@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
-@Tag(name = "유저", description = "Member 관련 API")
+@Tag(name = "멤버", description = "Member 관련 API")
 public class MemberController {
     private final MemberService memberService;
 
