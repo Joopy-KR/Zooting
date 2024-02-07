@@ -153,9 +153,10 @@ const joinSession = () => {
 
 
   session.value.on('signal', (event) => {
+    const fromData = JSON.parse(event.from.data)
     const chatData: any = {
-      'animal': myUserAnimal.value,
-      'nickname': myUserName.value,
+      'animal': fromData.animal,
+      'nickname': fromData.nickname,
       'message': event.data
     }
     currentChat.value.push(chatData)
@@ -171,7 +172,7 @@ const joinSession = () => {
 
     // 첫번째 인자는 토큰, 두번째 인자는 모든 유저에 의해 검색 가능
     // 'streamCreated'(Stream.connection.data의 속성), 유저 닉네임으로 DOM에 추가됨
-    session.value.connect(token, { clientData: myUserName }).then(() => {
+    session.value.connect(token, { nickname: myUserName.value, animal: myUserAnimal.value }).then(() => {
 
       // 실제 publish 하는 부분, 이 부분에서 카메라와 오디오 소스 설정 가능
       let pub = OV.value.initPublisher(undefined, {
