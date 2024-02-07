@@ -21,7 +21,7 @@ public class MaskInventoryServiceImpl implements MaskInventoryService{
     public List<MaskRes> findAllMaskInventory(String memberId) {
         return maskInventoryRepository.findAllByMember_Email(memberId)
                 .stream().map(myMask-> new MaskRes(
-                        myMask.getId(),
+                        myMask.getMask().getId(),
                         myMask.getMask().getAnimal(),
                         myMask.getMask().getDescription(),
                         myMask.getMask().getPrice(),
