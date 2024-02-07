@@ -129,7 +129,6 @@ const { VITE_SERVER_API_URL } = import.meta.env
 const store = useAccessTokenStore()
 const emit = defineEmits(['closeTab', 'currentDmRoomId'])
 const props = defineProps<{
-  open: boolean
   dmReq: any
 }>()
 
@@ -159,8 +158,8 @@ watch(()=> store.pastDmList, (update)=>{
   pastDmList.value = update
 })
 
-watch(() => props.open, () => {
-  if (props.open) {
+watch(() => store.isEntryDmRoom, () => {
+  if (store.isEntryDmRoom) {
     if (store.userInfo?.email) {
       sender.value = store.userInfo.email
     }

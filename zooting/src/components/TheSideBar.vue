@@ -53,7 +53,6 @@
         <section v-show="currentSideTab == 'messagesTab'" class="h-full">
           <DM
               @close-tab="closeTab"
-              :open="isSideTabOpen"
               @current-dm-room-id="currentDmRoomId"
               :dm-req = props.dmReq
           />
@@ -83,7 +82,7 @@ const props = defineProps<{
 
 const isLoggedIn = computed(() => store.isLogin)
 
-const isSideTabOpen = ref(false)
+const isSideTabOpen = ref<boolean>(false)
 const currentSideTab = ref<string | null>(null)
 const DEFAULT_PAGE_SIZE = 6
 
