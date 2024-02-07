@@ -14,22 +14,21 @@ async function getMaskListApi(params: MaskReq, success: any, fail: any) {
 }
 
 // 해금 마스크 정보 가져오기
-async function getMyMaskListApi(param: string, success: any, fail: any) {
+async function getMyMaskListApi(success: any, fail: any) {
     local.defaults.headers["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`;
     await local.get("/api/items/mask-inventory").then(success).catch(fail);
-    // await local.get(`/api/mask?type=${param}`).then(success).catch(fail);
 }
 
 // 마스크 구매
 async function purchaseMaskApi(body: { maskId: number }, success: any, fail: any) {
     local.defaults.headers["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`;
-    await local.post("/api/mask").then(success).catch(fail);
+    await local.post("/api/mask", body).then(success).catch(fail);
 }
 
 // 내 디폴트 마스크 변경
-async function changeDefaultMaskApi(maskId: number, success: any, fail: any) {
+async function changeDefaultMaskApi(body: { maskId: number }, success: any, fail: any) {
     local.defaults.headers["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`
-    await local.patch(`/api/mask?maskId=${maskId}`).then(success).catch(fail);
+    await local.patch(`/api/members/mask`, body).then(success).catch(fail);
 }
 
 export {getMaskListApi, getMyMaskListApi, purchaseMaskApi, changeDefaultMaskApi};

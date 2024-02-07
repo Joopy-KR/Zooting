@@ -3,8 +3,10 @@ import {computed, onMounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import EditMaskItem from "@/components/profile/EditMaskItem.vue";
 import IconMaskDropDown from "./IconMaskDropDown.vue";
-import {getMaskListApi, getMyMaskListApi} from "@/api/mask";
-import type {Mask, UserInfo} from "@/types/global";
+import {changeDefaultMaskApi, getMaskListApi, getMyMaskListApi, purchaseMaskApi} from "@/api/mask";
+import type {Mask, UserInfo, Notify} from "@/types/global";
+import SuccessNotify from "@/components/util/SuccessNotification.vue";
+import FailNotify from "@/components/util/FailNotification.vue";
 
 const router = useRouter();
 const props = defineProps({
@@ -20,25 +22,86 @@ const myMaskList = ref<Mask[]>([]);
 const animalType = ref<string>("강아지"); // 현재 선택된 동물
 const totalPage = ref<number>(0);
 const currentPage = ref<number>(0);
+const showSuccess = ref<boolean>(false);
+const showFail = ref<boolean>(false);
+const notify = ref<Notify>({
+  title: '',
+  message: '',
+})
+
+const setShowSuccess = (status: boolean) => {
+  showSuccess.value = status;
+}
+const setShowFail = (status: boolean) => {
+  showFail.value = status;
+}
+const setNotify = (title: string, message: any) => {
+  notify.value.title = title;
+  notify.value.message = message;
+}
 
 const loadMyInfo = () => {
   emits("loadMyInfo");
 }
 
 const clickMask = (mask: Mask) => {
+  if (!props.userInfo?.animal) {
+    return;
+  }
+  console.log("MASKMASKMASKMASKMASKMASK", mask);
+  if (props.userInfo.animal !== mask.animal) {
+    setNotify("동물상 불일치", "내 동물상과 달라 사용하실 수 없습니다.");
+    setShowFail(true);
+    return;
+  }
   // 내가 소유한 mask가 아니라면 구매
   if (!mask.status) {
-
+    purchaseMask(mask.maskId);
+  } // 내가 소유한 마스크이면 default 마스크로 변경
+  else {
+    changeDefaultMask(mask.maskId);
   }
 }
 // 마스크 변경하기
-const changeMask = (maskId: number) => {
-
+const changeDefaultMask = (maskId: number) => {
+  changeDefaultMaskApi({maskId: maskId},
+      ({data}: any) => {
+        if (data.status === 200 || data.status === 201) {
+          setNotify("마스크 변경", data.result);
+          setShowSuccess(true);
+          emits("loadMyInfo");
+          getMyMaskList(props.userInfo?.animal);
+        } else {
+          setNotify("마스크 변경", data.result);
+          setShowFail(true);
+        }
+      },
+      (error: any) => {
+        console.log(error);
+        setNotify("마스크 변경", "마스크 변경에 실패 했습니다.");
+        setShowFail(true);
+      }
+  )
 }
 
 // 마스크 구매하기
 const purchaseMask = (maskId: number) => {
-
+  purchaseMaskApi({maskId: maskId},
+      ({data}: any) => {
+        if (data.status === 200 || data.status === 201) {
+          setNotify("마스크 구매", data.result); // TODO 마스크를 구매할지 확인 메시지 필요
+          setShowSuccess(true);
+          emits("loadMyInfo");
+          getMyMaskList(props.userInfo?.animal);
+        } else {
+          setNotify("마스크 구매", data.result);
+          setShowFail(true);
+        }
+      }, (error: any) => {
+        console.log(error);
+        setNotify("마스크 구매", "마스크 구매를 실패했습니다.");
+        setShowFail(true);
+      })
 }
 
 const filterMaskByAnimal = computed(() => {
@@ -77,14 +140,15 @@ const getMaskList = async (animal: string | undefined, page: number) => {
           });
         }
         maskList.value = masks;
+        console.log("MLMLMLMLMLMLMLMLML", maskList.value);
       },
       (error: any) => console.error(error)
   );
 };
 
-const getMyMaskList = async (animal: string) => {
+const getMyMaskList = async (animal: string | undefined) => {
+  if (!animal) return;
   await getMyMaskListApi(
-      animal,
       ({data}: any) => {
         const maskData = data["result"];
         console.log("my-maskData", maskData);
@@ -104,6 +168,7 @@ const getMyMaskList = async (animal: string) => {
         }
 
         myMaskList.value = masks;
+        console.log(myMaskList.value);
       },
       (error: any) => console.error(error)
   );
@@ -124,28 +189,18 @@ const moveToMyPage = () => {
   });
 };
 
-watch(myMaskList, (newMyMaskList, oldMyMaskList) => {
+watch(myMaskList, (newMyMaskList) => {
   if (!maskList.value) return;
-  if (!newMyMaskList || !oldMyMaskList) {
-    return;
-  }
-  // myMaskList가 변경될 때 실행되는 콜백 함수
 
-  // 예전 목록과 새로운 목록을 비교하여 변경된 항목을 찾음
-  const changedItems = newMyMaskList.filter((newItem) => {
-    const oldItem = oldMyMaskList.find((item) => item.maskId === newItem.maskId);
-    return oldItem && oldItem.status !== newItem.status;
-  });
-
-  // 변경된 항목에 대해 처리
-  changedItems.forEach((changedItem) => {
+  newMyMaskList.forEach((myMask) => {
     const correspondingMask = maskList.value?.find(
-        (mask: Mask) => mask.maskId === changedItem.maskId
+        (mask: Mask) => mask.maskId === myMask.maskId
     );
 
+    console.log("CCCCCCCCCCCCCCCCCCCCCCC", correspondingMask);
     if (correspondingMask) {
       // myMaskList의 id와 maskList의 id가 같은 경우에만 처리
-      correspondingMask.status = changedItem.status;
+      correspondingMask.status = myMask.status;
     }
   });
 });
@@ -174,6 +229,18 @@ onMounted(() => {
 </script>
 
 <template>
+  <SuccessNotify
+      :title="notify.title"
+      :message="notify.message"
+      :show-from-parent="showSuccess"
+      @set-parent-show="setShowSuccess"
+  />
+  <FailNotify
+      :title="notify.title"
+      :message="notify.message"
+      :show-from-parent="showFail"
+      @set-parent-show="setShowFail"
+  />
   <div class="flex flex-col relative">
     <div @click="moveToMyPage()" class="flex flex-col items-center ml-4 absolute top-5 left-5">
       <svg
@@ -197,7 +264,8 @@ onMounted(() => {
     </p>
     <div>
       <div class="flex flex-row justify-between px-12 mr-4">
-        <IconMaskDropDown :animal-type="animalType" :gender="userInfo?.gender" @set-animal-type="setAnimalType" class="z-30"/>
+        <IconMaskDropDown :animal-type="animalType" :gender="userInfo?.gender" @set-animal-type="setAnimalType"
+                          class="z-30"/>
         <span
             class="inline-flex items-center gap-x-1.5 rounded-full bg-green-200/60 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-11"
         >
