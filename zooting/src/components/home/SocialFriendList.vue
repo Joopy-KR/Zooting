@@ -55,12 +55,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useAccessTokenStore } from '@/stores/store'
+import { ref, watch, computed } from 'vue'
+import { useAccessTokenStore, useStore } from '@/stores/store'
 import { RouterLink } from 'vue-router'
 import type { Friend } from "@/types/global"
 
 const store = useAccessTokenStore()
+const dmStore = useStore()
 
 const emit = defineEmits(['readMessage'])
 
@@ -108,12 +109,7 @@ const entryChat = (item: Friend) => {
   store.entryDmRoom(item)
   isOpenMenu.value = false
   openedMenuNickname.value = null
-
-  const emailToRemove: string = item.email
-  const existingNewSenders: string[] = JSON.parse(localStorage.getItem('newSender') || '[]')
-  const updatedNewSenders: string[] = existingNewSenders.filter(email => email !== emailToRemove)
-
-  localStorage.setItem('newSender', JSON.stringify(updatedNewSenders))
+  dmStore.newMessage = dmStore.newMessage.filter(email => email !== item.email)
 }
 
 const openMenu = (nickname: string) => {
@@ -125,10 +121,7 @@ const openMenu = (nickname: string) => {
   openedMenuNickname.value = isOpenMenu.value ? nickname : null
 }
 
-const isNewSender = (email: string) => {
-  const newSenders = JSON.parse(localStorage.getItem('newSender') || '[]')
-  return newSenders.includes(email)
-}
+const isNewSender = computed(() => (email: string) => dmStore.newMessage.includes(email))
 </script>
 
 <style scoped>

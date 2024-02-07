@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {DM, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
+import type {DM, DmItem, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -169,8 +169,11 @@ export const useStore = defineStore("store", () => {
       ],
     },
   };
-  return { personality };
-});
+
+  const newMessage = ref<string[]>([])
+  
+  return { personality, newMessage };
+}, { persist: true });
 
 export const useAccessTokenStore = defineStore("access-token", () => {
   const API_URL: string = VITE_SERVER_API_URL;
