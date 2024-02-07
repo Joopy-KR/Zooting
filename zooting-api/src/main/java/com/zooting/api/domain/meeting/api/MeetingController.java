@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,7 +31,7 @@ public class MeetingController {
     @DeleteMapping("/exit")
     @Operation(summary = "미팅 대기방 등록 취소", description = "미팅 대기방 등록 취소")
     public ResponseEntity<BaseResponse<String>> exitFromWaitingRoom(
-            @AuthenticationPrincipal UserDetails userDetails, String waitingRoomId) {
+            @AuthenticationPrincipal UserDetails userDetails, @RequestParam(name = "room") String waitingRoomId) {
         meetingService.exitFromWaitingRoom(userDetails, waitingRoomId);
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 대기방 등록 취소에 성공했습니다.");
     }

@@ -5,23 +5,23 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 @Builder
 @Getter
 @Setter
+@ToString
 @RedisHash(value = "room")
-@RequiredArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 public class WaitingRoom {
 
     @Id
-    String roomId;
-
+    String waitingRoomId;
     int acceptCount;
-
     Set<MeetingMemberDto> meetingMembers;
 }
