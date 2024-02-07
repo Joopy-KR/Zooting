@@ -33,9 +33,7 @@ watch(()=> store.userInfo, (UpdateUser)=>{
 })
 
 onMounted(async () => {
-  if (!store.isCompletedSignUp) {
-    store.checkCompletedSignUp()
-  }
+  store.checkCompletedSignUp()
 })
 
 const readMessage = (sender: string) => {
@@ -48,7 +46,9 @@ stompClient.connect(
   {},
   () => {
     console.log('Connected to WebSocket')
-    onConnected()
+    if (store.isCompletedSignUp) {
+      onConnected()
+    }
   },
   () => {
     console.log("Could not WebSocket server")

@@ -32,15 +32,13 @@
       
       <div class="input__div">
         <label for="gender" class="input__label">성별</label>
-        <RadioGroup v-model="gender">
           <div class="gender">
-            <RadioGroupOption as="template" v-for="gender in ['man', 'woman']" :key="gender" :value="gender" v-slot="{ checked }">
-              <div :class="[checked ? 'gender__option--checked' : 'gender__option--no-checked', 'gender__option']">
-                <RadioGroupLabel as="span">{{ getGenderLabel(gender) }}</RadioGroupLabel>
+            <div v-for="value in ['man', 'woman']" :key="gender" @click="gender = value">
+              <div :class="[ gender === value ? 'gender__option--checked' : 'gender__option--no-checked', 'gender__option']">
+                <span>{{ getGenderLabel(value) }}</span>
               </div>
-            </RadioGroupOption>
-          </div>
-        </RadioGroup>
+            </div>
+        </div>
       </div>
       
       <div class="input__div">
@@ -238,6 +236,7 @@ const saveAdditionalInfo = () => {
   } else {
     addressError.value = false
   }
+   store.checkCompletedSignUp()
 }
 
 interface Payload {
