@@ -13,7 +13,7 @@
       </div>
 
       <!-- Content -->
-      <div v-if="!requestFromList" class="mt-3 text-center text-gray-500">
+      <div v-if="requestFromList.length === 0" class="mt-3 text-center text-gray-500">
         받은 요청이 없습니다
       </div>
       <ul role="list" class="friend-list">
@@ -33,8 +33,8 @@
             </div>
           </RouterLink>
           <div class="flex items-center">
-            <button class="me-2" @click="friendAccept(item.nickname)">수락</button>
-            <button @click="friendReject(item.nickname)">거절</button>
+            <button class="bg-blue-200 me-2" @click="friendAccept(item.nickname)">수락</button>
+            <button class="bg-red-200" @click="friendReject(item.nickname)">거절</button>
           </div>
         </li>
       </ul>
@@ -53,7 +53,7 @@
       </div>
       
       <!-- Content -->
-      <div v-if="!requestToList" class="mt-3 text-center text-gray-500">
+      <div v-if="requestToList.length === 0" class="mt-3 text-center text-gray-500">
         보낸 요청이 없습니다
       </div>
       <ul role="list" class="friend-list">
@@ -173,6 +173,6 @@ const getProfileImage = (animal: string) => {
   @apply text-sm text-gray-500;
 }
 button {
-  @apply rounded bg-white px-4 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 h-8;
+  @apply rounded px-4 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 h-8;
 }
 </style>
