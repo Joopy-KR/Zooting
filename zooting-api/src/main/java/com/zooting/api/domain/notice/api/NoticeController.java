@@ -41,7 +41,7 @@ public class NoticeController {
     }
     @Operation(summary = "공지사항 수정")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<BaseResponse<String>> updateNotice(
             @Valid @RequestBody NoticeUpdateReq noticeReq) {
         noticeService.updateNotice(noticeReq);

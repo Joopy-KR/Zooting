@@ -143,7 +143,7 @@ public class MemberController {
 
     @Operation(summary = "포인트 차감 후 닉네임 변경")
     @PreAuthorize("hasAnyRole('USER')")
-    @PutMapping("/nickname")
+    @PatchMapping("/nickname")
     public ResponseEntity<BaseResponse<String>> modifyNickname(
             @Valid @RequestBody NicknameReq nicknameReq,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -161,7 +161,7 @@ public class MemberController {
 
     @Operation(summary = "관심사, 이상형 수정")
     @PreAuthorize("hasAnyRole('USER')")
-    @PutMapping("/interests")
+    @PatchMapping("/interests")
     public ResponseEntity<BaseResponse<String>> updateInterests(
             @Valid @RequestBody InterestsReq interestsReq,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -174,7 +174,7 @@ public class MemberController {
 
     @Operation(summary = "자기소개 수정")
     @PreAuthorize("hasAnyRole('USER')")
-    @PutMapping("/introduce")
+    @PatchMapping("/introduce")
     public ResponseEntity<BaseResponse<String>> updateIntroduce(
             @Valid @RequestBody IntroduceReq introduceReq,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -203,7 +203,7 @@ public class MemberController {
 
     @Operation(summary = "성격 수정")
     @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
-    @PutMapping("/characters")
+    @PatchMapping("/characters")
     public ResponseEntity<BaseResponse<String>> updatePersonality(
             @Valid @RequestBody PersonalityReq personalityReq,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -233,7 +233,7 @@ public class MemberController {
             description = "유저의 동물상과 일치할때만 마스크 변경 가능"
     )
     @PreAuthorize("hasAnyRole('USER')")
-    @PutMapping("/mask")
+    @PatchMapping("/mask")
     public ResponseEntity<BaseResponse<String>> changeMask(
             @RequestBody MaskReq maskReq,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -254,7 +254,7 @@ public class MemberController {
 
     @Operation(summary = "내 배경이미지 변경")
     @PreAuthorize("hasAnyRole('USER')")
-    @PutMapping("/background")
+    @PatchMapping("/background")
     public ResponseEntity<BaseResponse<String>> changeBackground(
             @RequestBody BackgroundReq backgroundReq,
             @AuthenticationPrincipal UserDetails userDetails) {
