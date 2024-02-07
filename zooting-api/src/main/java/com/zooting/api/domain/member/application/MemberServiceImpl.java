@@ -47,14 +47,12 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.existsByNickname(nickname);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public boolean checkMemberPrivilege(String userId) {
+    public List<Privilege> checkMemberPrivilege(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        if(member.getRole().contains(Privilege.USER)){
-            return true;
-        }
-        return false;
+        return member.getRole();
     }
 
     @Override
