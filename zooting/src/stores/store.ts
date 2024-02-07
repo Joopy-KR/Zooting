@@ -235,9 +235,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     await loadMyInfoApi(
       ({ data }: any) => {
         userInfo.value = data.result;
-        if (!isCompletedSignUp.value) {
-          router.push({ name: "signup" });
-        } else if (!userInfo.value?.animal) {
+        if (!userInfo.value?.animal) {
           router.push({ name: "animal_test" });
         } else if (!userInfo.value?.personality) {
           router.push({ name: "personality_test" });
@@ -273,12 +271,18 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        isCompletedSignUp.value = res.data.result;
-        if (!isCompletedSignUp.value) {
-          router.push({ name: "signup" });
+        // isCompletedSignUp.value = res.data.result;
+        // if (!isCompletedSignUp.value) {
+        //   router.push({ name: "signup" });
+        // } else {
+        //   getUserInfo()
+        // }
+        if (!res.data.result) {
+          router.push({name: "signup"})
         } else {
           getUserInfo()
         }
+        return res.data.result
       })
       .catch((err) => {
         console.log(err);
