@@ -35,4 +35,12 @@ public class MeetingController {
         meetingService.exitFromWaitingRoom(userDetails, waitingRoomId);
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 대기방 등록 취소에 성공했습니다.");
     }
+
+    @PostMapping("/accept")
+    @Operation(summary = "매칭 수락", description = "매칭 수락")
+    public ResponseEntity<BaseResponse<String>> acceptMatching(
+            @RequestParam(name = "room") String waitingRoomId) {
+        meetingService.acceptMatching(waitingRoomId);
+        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅을 수락했습니다.");
+    }
 }

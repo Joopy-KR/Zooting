@@ -73,6 +73,14 @@ public class MeetingService {
         }
     }
 
+    public void acceptMatching(String waitingRoomId){
+        WaitingRoom waitingRoom = loadWaitingRoomFromRedis(waitingRoomId);
+
+        waitingRoom.setAcceptCount(waitingRoom.getAcceptCount() + 1);
+        waitingRoomRedisRepository.save(waitingRoom);
+        acceptMatchingMessagePublisher(waitingRoom);
+    }
+
     /**
      * TODO: meetingMemberDto를 파라미터로 받아 최적의 대기실을 찾는 알고리즘 작성할 것
      *  들어가려는 유저와 동일한 성별의 유저가 2명 이상일 경우 들어가지 못하게 할 것
@@ -140,6 +148,12 @@ public class MeetingService {
                 MessageType.REGISTER.getPrefix() + waitingRoom.getMeetingMembers().size());
     }
 
+    private void acceptMatchingMessagePublisher(WaitingRoom waitingRoom) {
+        redisPublisher.publish(MessageType.REDIS_HASH.getPrefix() + waitingRoom.getWaitingRoomId(),
+                MessageType.ACCEPTANCE.getPrefix() + waitingRoom.getAcceptCount());
+    }
+
+
     private Member loadMemberFromDatabase(UserDetails userDetails) {
         Optional<Member> member = memberRepository.findMemberByEmail(userDetails.getUsername());
         return member.orElse(null);
@@ -148,6 +162,7 @@ public class MeetingService {
     private WaitingRoom loadWaitingRoomFromRedis(String waitingRoomId) {
         log.info("waitingRoomId를 기반으로 대기방 정보를 조회합니다: {} ", waitingRoomId);
         Optional<WaitingRoom> waitingRoom = waitingRoomRedisRepository.findById(waitingRoomId);
+
         log.info("대기방 정보를 가져왔습니다. false일 경우 대기방 없음: {} ", waitingRoom.isPresent());
         return waitingRoom.orElse(null);
     }

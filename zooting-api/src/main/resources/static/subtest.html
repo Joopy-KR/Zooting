@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DM Chat</title>
+    <!-- Include Stomp library -->
+<!--    <script src="/webjars/vue/2.5.16/dist/vue.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<ul id="messages"></ul>
+
+<script>
+    // Connect to WebSocket
+    const socket = new SockJS("/ws/dm");
+    const stompClient = Stomp.over(socket);
+    const userEmail = prompt("로그인 이메일.");
+
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+
+        // Subscribe to the user's DM topic
+        stompClient.subscribe(`/api/sub/dm/${userEmail}`, function (message) {
+            const messageData = JSON.parse(message.body);
+            console.log('Received DM:', messageData);
+            displayMessage(messageData);
+        });
+        console.log('Subscription Path:', '/api/sub/dm/' + userEmail);
+
+    });
+
+    // Display a received message
+    function displayMessage(messageData) {
+        const messagesList = document.getElementById('messages');
+        const listItem = document.createElement('li');
+        listItem.appendChild(document.createTextNode(`${messageData.sender}: ${messageData.message}`));
+        messagesList.appendChild(listItem);
+    }
+
+</script>
+</body>
+</html>

@@ -33,14 +33,22 @@ public class WaitingRoomSubscriber implements MessageListener {
 
     @Override
     public void onMessage(@NonNull Message message, byte[] pattern) {
+        log.info("나는 onMessage다@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
         WaitingRoomMessageDto parsedMessage = waitingRoomMessageParser(message);
-        String waitingRoomId = parsedMessage.getId();
+        String waitingRoomId = parsedMessage.getId().split(":")[1];
         String type = parsedMessage.getType();
+        log.info("나는 Type이다@@@@@@@@@@@@@@@@@@@@@@@@@@@@ {}", type);
+        log.info("나는 아이디이다. {}", waitingRoomId);
+
         int count = parsedMessage.getCount();
 
-        if (MessageType.REGISTER.getPrefix().equals(type)) {
+        if (MessageType.REGISTER.getPrefix().contains(type)) {
+            log.info("유저가 대기방 등록 완료했습니다. onMessage");
             sendAcceptMessageToClient(waitingRoomId, type, count);
-        } else if (MessageType.ACCEPTANCE.getPrefix().equals(type)) {
+        } else if (MessageType.ACCEPTANCE.getPrefix().contains(type)) {
+            log.info("유저가 매칭 수락함. onMessage(Acceptance)");
+
             sendOpenviduTokenToClient(waitingRoomId, count);
         }
     }
@@ -58,9 +66,13 @@ public class WaitingRoomSubscriber implements MessageListener {
             }
         }
     }
+
     private void sendOpenviduTokenToClient(String waitingRoomId, int count){
         WaitingRoom waitingRoom = waitingRoomRedisRepository.findById(waitingRoomId).orElse(null);
         log.info("[onMessage] key: {}, body: {}", waitingRoomId, count);
+        log.info("WaitingRoom is Null? {}", waitingRoom == null);
+        log.info("Count === 4? {}", count == 4);
+
         if (waitingRoom != null && count == 4) {
             try {
                 Session session = openVidu.createSession();
