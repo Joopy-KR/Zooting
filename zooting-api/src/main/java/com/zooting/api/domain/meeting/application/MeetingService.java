@@ -8,6 +8,8 @@ import com.zooting.api.domain.meeting.pubsub.WaitingRoomSubscriber;
 import com.zooting.api.domain.meeting.redisdto.WaitingRoom;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
+import com.zooting.api.global.common.code.ErrorCode;
+import com.zooting.api.global.exception.BaseExceptionHandler;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -30,7 +32,6 @@ public class MeetingService {
     private final RedisPublisher redisPublisher;
     private final WaitingRoomSubscriber waitingRoomSubscriber;
 
-
     /**
      * TODO: synchronized VS Lettuce의 Spin Lock VS Redisson의 분산락
      *   Mutex / Semaphore / Monitoring (Java의 synchronized 구현 방식)
@@ -39,11 +40,8 @@ public class MeetingService {
      * @return 유저가 등록한 대기실의 ID
      */
     public synchronized String registerToWaitingRoom(UserDetails userDetails) {
-        log.info("유저를 대기열에 등록합니다. : {}", userDetails.getUsername());
-
         Member member = loadMemberFromDatabase(userDetails);
         MeetingMemberDto meetingMemberDto = member.toMeetingMemberDto();
-        log.info("유저 정보를 가져옵니다. : {}", member.getEmail());
 
         Iterable<WaitingRoom> waitingRooms = waitingRoomRedisRepository.findAll();
         WaitingRoom idealWaitingRoom = findIdealWaitingRoom(waitingRooms, meetingMemberDto);
@@ -54,30 +52,25 @@ public class MeetingService {
     public synchronized void exitFromWaitingRoom(UserDetails userDetails, String waitingRoomId) {
         Member member = loadMemberFromDatabase(userDetails);
         MeetingMemberDto meetingMemberDto = member.toMeetingMemberDto();
-        log.info("유저를 대기방에서 퇴장시킵니다 : {}", meetingMemberDto.getEmail());
-        log.info("대기방 아이디 : {}", waitingRoomId);
 
         WaitingRoom waitingRoom = loadWaitingRoomFromRedis(waitingRoomId);
         Set<MeetingMemberDto> waitingRoomMembers = waitingRoom.getMeetingMembers();
-        log.info("대기방 정보를 불러옵니다 : {}", waitingRoomMembers.toString());
 
         waitingRoomMembers.remove(meetingMemberDto);
 
         if (waitingRoomMembers.isEmpty()) {
-            log.info("퇴장을 완료했습니다. 대기방에 유저가 없어 방을 삭제합니다.");
             waitingRoomRedisRepository.deleteById(waitingRoomId);
         } else { // 아니면 갱신함
-            log.info("퇴장을 완료했습니다.");
             waitingRoomRedisRepository.save(waitingRoom);
-            log.info("퇴장 후 멤버 목록: {}", waitingRoomRedisRepository.findById(waitingRoomId).get().getMeetingMembers().toString());
         }
     }
 
-    public void acceptMatching(String waitingRoomId){
+    public synchronized void acceptMatching(String waitingRoomId) {
         WaitingRoom waitingRoom = loadWaitingRoomFromRedis(waitingRoomId);
 
         waitingRoom.setAcceptCount(waitingRoom.getAcceptCount() + 1);
         waitingRoomRedisRepository.save(waitingRoom);
+
         acceptMatchingMessagePublisher(waitingRoom);
     }
 
@@ -86,13 +79,11 @@ public class MeetingService {
      *  들어가려는 유저와 동일한 성별의 유저가 2명 이상일 경우 들어가지 못하게 할 것
      *  현재는 대기실에 4명 이하면 무조건 들어가는 상태
      *
-     * @param waitingRooms     유저가 들어갈수 있는 방의 목록
      * @param meetingMemberDto 대기열에 등록하려는 유저의 정보
      * @return 현재 유저가 들어갈수 있는 가장 이상적인 방
      */
     private WaitingRoom findIdealWaitingRoom(Iterable<WaitingRoom> waitingRooms, MeetingMemberDto meetingMemberDto) {
-        log.info("유저가 입장할 수 있는 방의 정보를 검색합니다: {}", waitingRooms.iterator().hasNext());
-
+        // 알고리즘 로직 구현
         if (waitingRooms.iterator().hasNext()) {
             for (WaitingRoom waitingRoom : waitingRooms) {
                 Set<MeetingMemberDto> meetingMembers = waitingRoom.getMeetingMembers();
@@ -102,20 +93,20 @@ public class MeetingService {
             }
         }
         // 들어갈수 있는 방이 없는 경우 즉, waitingRooms가 비어있거나 상기 if문에서 return되지 않은 경우
-        log.info("유저가 입장할수 있는 대기방이 없습니다: {}", waitingRooms);
-        return createWaitingRoom(meetingMemberDto);
+        return createWaitingRoom();
     }
 
-    private WaitingRoom createWaitingRoom(MeetingMemberDto meetingMemberDto) {
-        log.info("새로운 대기방을 생성합니다: {}", meetingMemberDto.getEmail());
+    private WaitingRoom createWaitingRoom() {
         String randomUUID = UUID.randomUUID().toString();
+        WaitingRoom waitingRoom = WaitingRoom.builder()
+                .waitingRoomId(randomUUID)
+                .meetingMembers(new HashSet<>())
+                .acceptCount(0)
+                .build();
 
         ChannelTopic channel = new ChannelTopic(MessageType.REDIS_HASH.getPrefix() + randomUUID);
-
-        WaitingRoom waitingRoom = WaitingRoom.builder().waitingRoomId(randomUUID)
-                .meetingMembers(new HashSet<>()).acceptCount(0).build();
-
         redisMessageListener.addMessageListener(waitingRoomSubscriber, channel);
+
         return waitingRoomRedisRepository.save(waitingRoom);
     }
 
@@ -139,7 +130,7 @@ public class MeetingService {
     }
 
     /**
-     * Subscriber에 현재 대기실 인원 수를 전달
+     * 유저의 대기실 입장 정보를 Publish Subscriber에 현재 대기실 인원 수를 전달
      *
      * @param waitingRoom 현재 대기실
      */
@@ -148,6 +139,11 @@ public class MeetingService {
                 MessageType.REGISTER.getPrefix() + waitingRoom.getMeetingMembers().size());
     }
 
+    /**
+     * 대기방에 있는 유저들의 매칭 수락 정보를 Publish Subscriber에 현재 매칭을 수락한 멤버들의 정보를 전달
+     *
+     * @param waitingRoom 현재 대기실
+     */
     private void acceptMatchingMessagePublisher(WaitingRoom waitingRoom) {
         redisPublisher.publish(MessageType.REDIS_HASH.getPrefix() + waitingRoom.getWaitingRoomId(),
                 MessageType.ACCEPTANCE.getPrefix() + waitingRoom.getAcceptCount());
@@ -156,14 +152,11 @@ public class MeetingService {
 
     private Member loadMemberFromDatabase(UserDetails userDetails) {
         Optional<Member> member = memberRepository.findMemberByEmail(userDetails.getUsername());
-        return member.orElse(null);
+        return member.orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
     }
 
     private WaitingRoom loadWaitingRoomFromRedis(String waitingRoomId) {
-        log.info("waitingRoomId를 기반으로 대기방 정보를 조회합니다: {} ", waitingRoomId);
         Optional<WaitingRoom> waitingRoom = waitingRoomRedisRepository.findById(waitingRoomId);
-
-        log.info("대기방 정보를 가져왔습니다. false일 경우 대기방 없음: {} ", waitingRoom.isPresent());
-        return waitingRoom.orElse(null);
+        return waitingRoom.orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_WAITING_ROOM));
     }
 }

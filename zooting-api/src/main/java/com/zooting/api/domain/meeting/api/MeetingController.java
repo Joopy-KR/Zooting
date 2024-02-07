@@ -21,6 +21,7 @@ public class MeetingController {
 
     private final MeetingService meetingService;
 
+//    @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/register")
     @Operation(summary = "미팅 대기방 등록", description = "미팅 대기방 등록")
     public ResponseEntity<BaseResponse<String>> registerToWaitingRoom(
@@ -28,6 +29,7 @@ public class MeetingController {
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, meetingService.registerToWaitingRoom(userDetails));
     }
 
+//    @PreAuthorize("hasAnyRole('USER')")
     @DeleteMapping("/exit")
     @Operation(summary = "미팅 대기방 등록 취소", description = "미팅 대기방 등록 취소")
     public ResponseEntity<BaseResponse<String>> exitFromWaitingRoom(
@@ -35,7 +37,7 @@ public class MeetingController {
         meetingService.exitFromWaitingRoom(userDetails, waitingRoomId);
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 대기방 등록 취소에 성공했습니다.");
     }
-
+//    @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/accept")
     @Operation(summary = "매칭 수락", description = "매칭 수락")
     public ResponseEntity<BaseResponse<String>> acceptMatching(
