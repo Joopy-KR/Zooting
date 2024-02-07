@@ -195,6 +195,7 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
+    @Transactional
     @Override
     public boolean changeMask(String memberId, MaskReq maskReq) {
         AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
@@ -208,7 +209,7 @@ public class MemberServiceImpl implements MemberService {
         }
         return false;
     }
-
+    @Transactional
     @Override
     public void changeBackground(String memberId, BackgroundReq backgroundReq) {
         AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
