@@ -17,7 +17,9 @@ public class DMWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry endpointRegistry) {
         endpointRegistry.addEndpoint("/ws/dm")
-                .setAllowedOriginPatterns("https://i10a702.p.ssafy.io", "http://localhost:5173")
+                .setAllowedOriginPatterns("https://i10a702.p.ssafy.io",
+                        "http://localhost:5173",
+                        "http://70.12.247.212:5173")
                 .withSockJS();
     }
 

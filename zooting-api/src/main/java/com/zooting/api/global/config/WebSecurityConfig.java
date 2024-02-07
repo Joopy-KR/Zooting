@@ -65,7 +65,8 @@ public class WebSecurityConfig {
         final List<String> allowedOriginPatterns = List.of(
                 "http://localhost:8080",
                 "http://localhost:5173",
-                "https://i10a702.p.ssafy.io"
+                "https://i10a702.p.ssafy.io",
+                "http://70.12.247.212:5173"
         );
         return request -> {
             CorsConfiguration config = new CorsConfiguration();
