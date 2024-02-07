@@ -33,13 +33,10 @@
                 <!-- 메시지 -->
                 <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
                 <!-- 사진 -->
-                <div v-if="item.dmFiles && item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
+                <div v-if="item.dmFiles" :class="[item.dmFiles.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
                   <div v-for="(file, index) in item.dmFiles" :key="index">
                     <img :src="getPreviewUrl(item.sender, file)" class="h-32" alt="Preview">
                   </div>
-                </div>
-                <div v-else-if="item.dmFiles && item.dmFiles.length === 1" class="my-2">
-                  <img :src="getPreviewUrl(item.sender, item.dmFilest[0])" class="h-32" alt="Preview">
                 </div>
               </div>
             </div>
@@ -53,13 +50,10 @@
                 <!-- 메시지 -->
                 <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
                 <!-- 사진 -->
-                <div v-if="item.dmFiles && item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
+                <div v-if="item.dmFiles" :class="[item.dmFiles.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
                   <div v-for="(file, index) in item.dmFiles" :key="index">
                     <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
                   </div>
-                </div>
-                <div v-else-if="item.dmFiles && item.dmFiles.length === 1" class="my-2">
-                  <img :src="item.dmFiles[0].thumbnailUrl" class="h-32" alt="Preview">
                 </div>
               </div>
             </div>
@@ -72,13 +66,10 @@
               <!-- 메시지 -->
               <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
               <!-- 사진 -->
-              <div v-if="item.dmFiles && item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
+              <div v-if="item.dmFiles" :class="[item.dmFiles.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
                 <div v-for="(file, index) in item.dmFiles" :key="index">
                   <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
                 </div>
-              </div>
-              <div v-else-if="item.dmFiles && item.dmFiles.length === 1" class="my-2">
-                <img :src="item.dmFiles[0].thumbnailUrl" class="h-32" alt="Preview">
               </div>
             </div>
           </div>
@@ -102,13 +93,10 @@
         <div class="file-input" v-show="isOpenFileInput">
           <label for="dropzone-file" class="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-50 bg-gray-50">
             <!-- 파일 image -->
-            <div v-if="fileInput && fileInput?.length > 1" class="grid grid-cols-2 gap-2 my-2">
+            <div v-if="fileInput" :class="[fileInput?.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
               <div v-for="(item, index) in fileInput" :key="index">
                 <img :src="getPreviewUrl(sender, item)" class="h-32" alt="Preview">
               </div>
-            </div>
-            <div v-else-if="fileInput?.length === 1" class="my-2">
-              <img :src="getPreviewUrl(sender, fileInput[0])" class="h-32" alt="Preview">
             </div>
             <!-- 파일 input -->
             <div class="file-input__discription" v-show="!fileInput">
