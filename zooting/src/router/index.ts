@@ -112,13 +112,13 @@ router.beforeEach((to, from) => {
     return { name: 'home' }
   }
 
-  if (to.name === "animal_test" && store.userInfo?.animal) {
-    return { name: "home" };
-  }
+  // if (to.name === "animal_test" && store.userInfo?.animal) {
+  //   return { name: "home" };
+  // }
 
-  if (to.name === "personality_test" && store.userInfo?.personality) {
-    return { name: "home" };
-  }
+  // if (to.name === "personality_test" && store.userInfo?.personality) {
+  //   return { name: "home" };
+  // }
 });
 
 export default router;

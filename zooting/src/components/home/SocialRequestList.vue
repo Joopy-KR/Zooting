@@ -33,8 +33,8 @@
             </div>
           </RouterLink>
           <div class="flex items-center">
-            <button class="bg-blue-200 me-2" @click="friendAccept(item.nickname)">수락</button>
-            <button class="bg-red-200" @click="friendReject(item.nickname)">거절</button>
+            <button class="bg-blue-200 hover:bg-blue-300 me-2" @click="friendAccept(item.nickname)">수락</button>
+            <button class="bg-red-200 hover:bg-red-300" @click="friendReject(item.nickname)">거절</button>
           </div>
         </li>
       </ul>

@@ -42,7 +42,7 @@
           </li>
         </ul>
         <div class="py-2">
-          <div class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" @click="logout">로그아웃</div>
+          <div class="block px-4 py-2 text-sm text-red-700 cursor-pointer hover:bg-gray-100" @click="logout">로그아웃</div>
         </div>
       </div>
     </nav>
@@ -52,8 +52,10 @@
       <div class="side-tab" v-show="isSideTabOpen" v-click-outside="ClickOustsideTab">
         <section v-show="currentSideTab == 'messagesTab'" class="h-full">
           <DM
-              @close-tab="closeTab()"
+              @close-tab="closeTab"
               :open="isSideTabOpen"
+              @current-dm-room-id="currentDmRoomId"
+              :dm-req = props.dmReq
           />
         </section>
 
@@ -74,12 +76,16 @@ import Notice from './notice/Notice.vue'
 
 const store = useAccessTokenStore()
 const router = useRouter()
+const emit = defineEmits(['currentDmRoomId'])
+const props = defineProps<{
+  dmReq: any
+}>()
 
 const isLoggedIn = computed(() => store.isLogin)
 
 const isSideTabOpen = ref(false)
 const currentSideTab = ref<string | null>(null)
-const DEFAULT_PAGE_SIZE = 6;
+const DEFAULT_PAGE_SIZE = 6
 
 const userInfo = ref(store.userInfo)
 
@@ -153,7 +159,6 @@ const closeTab = () => {
   store.dmInfo = null
 }
 
-
 const logout = () => {
   closeTab()
   store.signOut()
@@ -161,12 +166,11 @@ const logout = () => {
 }
 
 const isOpenProfileMenu = ref<boolean>(false)
+const profileRef = ref<HTMLElement | null>(null)
 
 const openProfileMenu = () => (
     isOpenProfileMenu.value = !isOpenProfileMenu.value
 )
-
-const profileRef = ref<HTMLElement | null>(null)
 
 const ClickOustsideProfileMenu = (isOutSide: boolean, e: Event) => {
   if (isOutSide) {
@@ -185,6 +189,10 @@ const ClickOustsideTab = (isOutSide: boolean, e: Event) => {
     }
   }
 }
+
+const currentDmRoomId = (dmRoomId: number) => [
+  emit('currentDmRoomId', dmRoomId)
+]
 </script>
 
 <style scoped>

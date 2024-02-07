@@ -5,7 +5,6 @@
       @read-message = "readMessage"
     />
     <Ready />
-<!--    <MatchingCompleteModal v-if="isMatchingComplete" class="z-40"/>-->
   </div>
 </template>
 
@@ -17,6 +16,10 @@ import Ready from '../components/home/Ready.vue'
 const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
+const props = defineProps<{
+  dmRoomId: number
+}>()
+const emit = defineEmits(['receiveMessage'])
 
 const userInfo = ref(store.userInfo)
 
@@ -39,8 +42,10 @@ onMounted(async () => {
 })
 
 const readMessage = (sender: string) => {
-  const index = newSender.value.indexOf(sender)
-  newSender.value.splice(index, 1)
+  if (newSender.value.includes(sender)) {
+    const index = newSender.value.indexOf(sender)
+    newSender.value.splice(index, 1)
+  }
 }
 
 // 소켓 통신 연결 요청
@@ -64,9 +69,14 @@ const onConnected = () => {
   stompClient.subscribe(`/api/sub/dm/${userInfo.value.email}`,
   (message: any) => {
     const dmReq = JSON.parse(message.body)
-    console.log('Received DM:', dmReq.value)
-
-    newSender.value.push(dmReq.sender)
+    // 현재 open 된 dmRooId인 경우 메시지 전송
+    if (props.dmRoomId === dmReq.dmRoomId) {
+      emit('receiveMessage', dmReq)
+    } else {
+      // 새로운 메시지 알림
+      newSender.value.push(dmReq.sender)
+    }
+    
   })
 }
 </script>
