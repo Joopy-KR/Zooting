@@ -16,7 +16,7 @@ async function getMaskListApi(params: MaskReq, success: any, fail: any) {
 // 해금 마스크 정보 가져오기
 async function getMyMaskListApi(param: string, success: any, fail: any) {
     local.defaults.headers["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`;
-    await local.get("/api/mask").then(success).catch(fail);
+    await local.get("/api/items/mask-inventory").then(success).catch(fail);
     // await local.get(`/api/mask?type=${param}`).then(success).catch(fail);
 }
 

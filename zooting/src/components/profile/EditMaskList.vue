@@ -14,14 +14,22 @@ const props = defineProps({
 const emits = defineEmits([
   "loadMyInfo"
 ]);
+const selectedMaskId = ref<Number>();
 const maskList = ref<Mask[]>([]);
 const myMaskList = ref<Mask[]>([]);
-const animalType = ref<string>("강아지");
+const animalType = ref<string>("강아지"); // 현재 선택된 동물
 const totalPage = ref<number>(0);
 const currentPage = ref<number>(0);
 
 const loadMyInfo = () => {
   emits("loadMyInfo");
+}
+
+const clickMask = (mask: Mask) => {
+  // 내가 소유한 mask가 아니라면 구매
+  if (!mask.status) {
+
+  }
 }
 // 마스크 변경하기
 const changeMask = (maskId: number) => {
@@ -37,10 +45,10 @@ const filterMaskByAnimal = computed(() => {
   return maskList.value.filter((mask) => mask.animal === animalType.value);
 });
 
-const getMaskList = (animal: string | undefined, page: number) => {
-  getMaskListApi(
+const getMaskList = async (animal: string | undefined, page: number) => {
+  await getMaskListApi(
       {
-        animal: undefined,
+        animal: animal,
         page: page,
         size: 6,
       },
@@ -48,6 +56,8 @@ const getMaskList = (animal: string | undefined, page: number) => {
         const maskData = data["result"]["maskResList"];
         currentPage.value = data["result"]["currentPage"];
         totalPage.value = data["result"]["totalPage"];
+
+        console.log("mask-data", maskData);
 
         const masks: Mask[] = [];
         if (!maskData) {
@@ -72,11 +82,12 @@ const getMaskList = (animal: string | undefined, page: number) => {
   );
 };
 
-const getMyMaskList = (type: string) => {
-  getMyMaskListApi(
-      type,
+const getMyMaskList = async (animal: string) => {
+  await getMyMaskListApi(
+      animal,
       ({data}: any) => {
         const maskData = data["result"];
+        console.log("my-maskData", maskData);
 
         const masks: Mask[] = [];
         for (const mask of maskData) {
@@ -99,7 +110,7 @@ const getMyMaskList = (type: string) => {
 };
 
 const redoAnimalTest = () => {
-  router.push({name: "animal_test"}); // TODO: 동작이 안됨 확인 필요
+  router.push({name: "animal_test"});
 }
 
 const setAnimalType = (animal: string) => {
@@ -138,11 +149,28 @@ watch(myMaskList, (newMyMaskList, oldMyMaskList) => {
     }
   });
 });
-
-onMounted(async () => {
-  getMaskList("강아지", 0);
-  getMyMaskList("");
-});
+watch(() => props.userInfo, (newValue) => {
+  if (newValue?.animal) {
+    animalType.value = newValue?.animal;
+  }
+  if (newValue?.maskId) {
+    selectedMaskId.value = newValue?.maskId;
+  }
+})
+watch(() => animalType.value, async (newValue) => {
+  await getMaskList(newValue, 0);
+  await getMyMaskList(newValue);
+})
+onMounted(() => {
+  if (props.userInfo) {
+    if (props.userInfo?.animal) {
+      animalType.value = props.userInfo?.animal;
+    }
+    if (props.userInfo?.maskId) {
+      selectedMaskId.value = props.userInfo?.maskId;
+    }
+  }
+})
 </script>
 
 <template>
@@ -164,12 +192,12 @@ onMounted(async () => {
       </svg>
       <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
     </div>
-    <p class="lg:px-12 lg:pt-16 lg:pb-10 lg:text-4xl font-bold tracking-tighter text-center">
+    <p class="sm:pt-16 lg:px-12 lg:pt-16 lg:pb-10 lg:text-3xl sm:text-xl font-bold tracking-tighter text-center">
       아바타 동물상 선택
     </p>
     <div>
       <div class="flex flex-row justify-between px-12 mr-4">
-        <IconMaskDropDown :animal-type="animalType" @set-animal-type="setAnimalType" class="z-30"/>
+        <IconMaskDropDown :animal-type="animalType" :gender="userInfo?.gender" @set-animal-type="setAnimalType" class="z-30"/>
         <span
             class="inline-flex items-center gap-x-1.5 rounded-full bg-green-200/60 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-11"
         >
@@ -184,7 +212,9 @@ onMounted(async () => {
     </div>
     <div class="flex items-center content-center justify-center w-2/3 mx-auto">
       <div class="grid grid-cols-3 gap-3 px-12 py-8 m-4">
-        <EditMaskItem v-for="mask in filterMaskByAnimal" :key="mask.maskId" :mask="mask" @load-my-info="loadMyInfo"/>
+        <EditMaskItem v-for="mask in filterMaskByAnimal" :key="mask.maskId" :mask="mask"
+                      :selected-mask-id="selectedMaskId" @load-my-info="loadMyInfo"
+                      @click="clickMask(mask)"/>
       </div>
     </div>
     <div class="flex justify-center">

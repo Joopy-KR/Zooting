@@ -81,8 +81,15 @@ declare interface DM {
 
 declare interface DmItem {
     dmRoomId: number;
+    dmId: number;
     sender: string;
     message: string;
+    dmFiles: DmFile[] | [];
+}
+
+declare interface DmFile {
+    fileId: number;
+    thumbnailUrl: string;
 }
 declare interface Notice {
     noticeId : number | null;
@@ -91,7 +98,7 @@ declare interface Notice {
     createdAt : string | null;
 }
 declare interface NoticePage {
-    noticeList : <Notice>([]);
+    noticeList : Notice[] | [];
     currentPage : number;
     totalPage : number;
 }

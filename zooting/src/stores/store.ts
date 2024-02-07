@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {DM, Friend, Personality, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
+import type {Friend, Personality, TokenState, UserInfo, Notice, NoticePage, DM, DmItem } from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -254,7 +254,11 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 로그인 상태 판별
   const isLogin = computed(() => {
-    return !!state.value.accessToken;
+    if (state.value.accessToken) {
+      return true;
+    } else {
+      return false;
+    }
   });
 
   // 로그아웃
@@ -278,6 +282,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         isCompletedSignUp.value = res.data.result;
         if (!isCompletedSignUp) {
           router.push({ name: "signup" });
+        } else {
+          getUserInfo()
         }
       })
       .catch((err) => {
@@ -463,12 +469,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청
-  const friendRequest = function (payload: { email: string; nickname: string }) {
-    const { email, nickname } = payload;
+  const friendRequest = function (payload: string) {
+    const nickname = payload;
     axios({
       method: "post",
       url: `${API_URL}/api/friends`,
-      params: {
+      data: {
         nickname,
       },
       headers: {
@@ -485,12 +491,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 수락
-  const friendAccept = function (params: string) {
-    const nickname = params;
+  const friendAccept = function (payload: string) {
+    const nickname = payload;
     axios({
       method: "post",
       url: `${API_URL}/api/friends/accept`,
-      params: {
+      data: {
         nickname,
       },
       headers: {
@@ -514,7 +520,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "delete",
       url: `${API_URL}/api/friends/reject`,
       params: {
-        nickname,
+        nickname
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -536,7 +542,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "delete",
       url: `${API_URL}/api/friends/cancel`,
       params: {
-        nickname,
+        nickname
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -580,7 +586,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "delete",
       url: `${API_URL}/api/friends/delete`,
       params: {
-        nickname,
+        nickname
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -612,7 +618,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
       .then((res) => {
         searchResult.value = res.data.result;
-        // console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -634,7 +639,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
       .then((res) => {
         searchResult.value = res.data.result;
-        // console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -643,7 +647,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
     // DM 방 입장
     const isEntryDmRoom = ref<boolean>(false);
-    const DmInfo = ref<DM | null>(null);
+    const dmInfo = ref<DM | null>(null);
     const receiverInfo = ref<Friend | null>(null);
 
     const entryDmRoom = function (params: Friend) {
@@ -659,18 +663,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         },
       })
         .then((res) => {
-          // console.log(res);
-          DmInfo.value = res.data.result;
+          console.log(res);
+          dmInfo.value = res.data.result;
           receiverInfo.value = params;
-        })
-        .then((res) => {
-          if (DmInfo.value) {
-            const params = {
-              dmRoomId: DmInfo.value.dmRoomId,
-              cursor: DmInfo.value.cursor
-            };
-            cursorDmRoom(params);
-          }
         })
         .then((res) => {
           isEntryDmRoom.value = true;
@@ -679,56 +674,59 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           console.log(err);
         });
     };
+
     // DM 커서
-    const isRefreshing = ref<boolean>(false)
-    const cursorDmRoom = function (params: { cursor: number | undefined; dmRoomId: number | undefined }) {
-        const {dmRoomId, cursor} = params;
+    const isRefreshing = ref<boolean>(false);
+    const pastDmList = ref<DmItem[]>([])
+    const cursorDmRoom = function (params: { cursor: number; dmRoomId: number }) {
+      const {dmRoomId, cursor} = params;
+      axios({
+        method: "get",
+        url: `${API_URL}/api/dm/room/prev`,
+        params: {
+          dmRoomId,
+          cursor
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          console.log(res);
+          if (dmInfo.value) {
+            dmInfo.value.cursor = res.data.result.cursor;
+            pastDmList.value = [...pastDmList.value, ...res.data.result.dmList];
+          }
+        })
+        .then((res) => {
+          isRefreshing.value = false
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    const noticePage = ref<NoticePage>();
+    const noticeList = ref<Notice[]>([]);
+    // 공지사항 리스트
+    const getNoticeList = function (params: {'page': number, 'size':number}) {
         axios({
             method: "get",
-            url: `${API_URL}/api/dm/room/prev`,
-            params: {
-                dmRoomId,
-                cursor
-            },
+            url: `${API_URL}/api/notice`,
             headers: {
                 Authorization: `Bearer ${getAccessToken()}`,
             },
+            params : params,
         })
             .then((res) => {
-                // console.log(res);
-                if (DmInfo.value) {
-                    DmInfo.value.cursor = res.data.result.cursor;
-                    DmInfo.value.dmList = [...DmInfo.value.dmList, ...res.data.result.dmList];
-                }
-            })
-            .then((res) => {
-                isRefreshing.value = false
+                noticePage.value = res.data.result;
+                noticeList.value = res.data.result["noticeResList"];
             })
             .catch((err) => {
                 console.log(err);
             });
     };
 
-  const noticePage = ref<NoticePage>();
-  const noticeList = ref<Notice[]>([]);
-  // 공지사항 리스트
-  const getNoticeList = function (params: {'page': number, 'size':number}) {
-    axios({
-      method: "get",
-      url: `${API_URL}/api/notice`,
-      headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
-      },
-      params : params,
-    })
-        .then((res) => {
-          noticePage.value = res.data.result;
-          noticeList.value = res.data.result.noticeResList;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-  };
 
   return {
       setAccessToken,
@@ -765,10 +763,11 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       searchResult,
       entryDmRoom,
       isEntryDmRoom,
-      DmInfo,
+      dmInfo,
       receiverInfo,
       cursorDmRoom,
       isRefreshing,
+      pastDmList,
       noticePage,
       noticeList,
       getNoticeList,

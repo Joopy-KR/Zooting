@@ -3,10 +3,8 @@ package com.zooting.api.domain.dm.application;
 import com.zooting.api.domain.dm.dao.DMRepository;
 import com.zooting.api.domain.dm.dao.DMRoomRepository;
 import com.zooting.api.domain.dm.dto.request.DMReq;
-import com.zooting.api.domain.dm.dto.request.RedisDMReq;
 import com.zooting.api.domain.dm.dto.response.DMDto;
 import com.zooting.api.domain.dm.dto.response.DMRoomRes;
-import com.zooting.api.domain.dm.dto.response.RedisDMRoomRes;
 import com.zooting.api.domain.dm.entity.DM;
 import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.file.dao.FileRepository;
@@ -21,15 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -188,6 +183,24 @@ public class DMServiceImpl implements DMService {
                 dmDtoList,
                 !dmDtoList.isEmpty() ? dmDtoList.get(dmDtoList.size() - 1).dmId() : 0
         );
+    }
+
+    @Transactional
+    @Override
+    public void exitDmRoom(Long dmRoomId, String loginEmail) {
+        DMRoom dmRoom = dmRoomRepository.findById(dmRoomId).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
+        List<DM> dmList = dmRoom.getDms();
+        log.info("dmListsize : {}", dmList.size());
+        int index = dmList.size() - 1;
+        log.info("lastdmid : {}", dmList.get(index).getId());
+        if (!dmList.isEmpty()) {
+            if (dmRoom.getSender().getEmail().equals(loginEmail)) {
+                dmRoom.setSenderLastReadId(dmList.get(index).getId());
+            } else {
+                dmRoom.setReceiverLastReadId(dmList.get(index).getId());
+            }
+        }
     }
 
     @Override

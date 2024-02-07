@@ -1,12 +1,12 @@
 <template>
   <div class="notice__container">
     <ul role="list" class="notice-list">
-      <li v-for="(notice, index) in noticeList" :key="index" class="notice-list__item">
+      <li v-for="(notice, index) in noticeList" :key="index" class="notice-list__item cursor-pointer" @click="getNoticeContents(notice)">
         <div class="flex items-center gap-4 w-full">
           <div class="font-medium w-full">
             <div class="flex items-center">
             </div>
-            <div class="flex justify-between w-full cursor-pointer" @click="getNoticeContents(notice)">
+            <div class="flex justify-between w-full" >
               <div class="notice-list__title">{{ notice.title }}</div>
               <div class="notice-list__content">{{ notice.createdAt }}</div>
             </div>

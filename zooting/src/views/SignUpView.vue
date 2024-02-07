@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import InfoInput from '../components/signup/InfoInput.vue'
+import InfoInput from '@/components/signup/InfoInput.vue'
 </script>
 
 <style scoped>
