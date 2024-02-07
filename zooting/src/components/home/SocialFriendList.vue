@@ -30,7 +30,7 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/>
           </svg>
           <!-- 새로운 채팅 알림 -->
-          <div class="absolute bottom-[10px] left-[10px] cursor-pointer" v-show="props.newSender.includes(item.email)" @click="entryChat(item)">
+          <div class="absolute bottom-[10px] left-[10px] cursor-pointer" v-show="isNewSender(item.email)" @click="entryChat(item)">
             <span class="relative flex w-2 h-2">
               <span class="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-[#DF75DB]"></span>
               <span class="relative inline-flex w-2 h-2 rounded-full bg-[#DF75DB]"></span>
@@ -61,10 +61,6 @@ import { RouterLink } from 'vue-router'
 import type { Friend } from "@/types/global"
 
 const store = useAccessTokenStore()
-
-const props = defineProps<{
-  newSender: string[]
-}>()
 
 const emit = defineEmits(['readMessage'])
 
@@ -112,8 +108,13 @@ const entryChat = (item: Friend) => {
   store.entryDmRoom(item)
   isOpenMenu.value = false
   openedMenuNickname.value = null
-  emit('readMessage', item.email)
-} 
+
+  const emailToRemove: string = item.email
+  const existingNewSenders: string[] = JSON.parse(localStorage.getItem('newSender') || '[]')
+  const updatedNewSenders: string[] = existingNewSenders.filter(email => email !== emailToRemove)
+
+  localStorage.setItem('newSender', JSON.stringify(updatedNewSenders))
+}
 
 const openMenu = (nickname: string) => {
   if (isOpenMenu.value && openedMenuNickname.value == nickname) {
@@ -122,6 +123,11 @@ const openMenu = (nickname: string) => {
     isOpenMenu.value = true
   }
   openedMenuNickname.value = isOpenMenu.value ? nickname : null
+}
+
+const isNewSender = (email: string) => {
+  const newSenders = JSON.parse(localStorage.getItem('newSender') || '[]')
+  return newSenders.includes(email)
 }
 </script>
 

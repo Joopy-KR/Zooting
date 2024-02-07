@@ -1,9 +1,6 @@
 <template>
   <div class="home__container">
-    <Social
-      :new-sender="newSender"
-      @read-message = "readMessage"
-    />
+    <Social/>
     <Ready />
   </div>
 </template>
@@ -29,8 +26,6 @@ const isMatchingComplete = ref(true)
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
 const stompClient = Stomp.over(socket)
 
-const newSender = ref<string[]>([])
-
 watch(()=> store.userInfo, (update)=>{
   userInfo.value = update
 })
@@ -41,18 +36,12 @@ onMounted(async () => {
   }
 })
 
-const readMessage = (sender: string) => {
-  if (newSender.value.includes(sender)) {
-    const index = newSender.value.indexOf(sender)
-    newSender.value.splice(index, 1)
-  }
-}
-
 // 소켓 통신 연결 요청
 stompClient.connect(
   {},
   () => {
     console.log('Connected to WebSocket')
+    localStorage.setItem('newSender', JSON.stringify(['roki32@naver.com']))
     onConnected()
   },
   () => {
@@ -74,7 +63,10 @@ const onConnected = () => {
       emit('receiveMessage', dmReq)
     } else {
       // 새로운 메시지 알림
-      newSender.value.push(dmReq.sender)
+      const existingNewSenders: string[] = JSON.parse(localStorage.getItem('newSender') || '[]')
+      const newSender = dmReq.sender
+      existingNewSenders.push(newSender)
+      localStorage.setItem('newSender', JSON.stringify(existingNewSenders))
     }
     
   })
