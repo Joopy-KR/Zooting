@@ -100,8 +100,13 @@ declare interface NoticePage {
     totalPage: number;
 }
 
+declare interface Notify {
+    title: string,
+    message: any,
+}
+
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
     PersonalityList, Personality, Friend, MaskReq, ReportUserReq,
-    DM, DmItem, FriendRequest, Notice, NoticePage
+    DM, DmItem, FriendRequest, Notice, NoticePage, Notify
 };

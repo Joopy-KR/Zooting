@@ -93,7 +93,7 @@ watch(props.userInfo, (newValue) => {
                   <button type="button"
                           class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-12 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                           @click="moveToPersonalityTest">
-                    다시 검사히기
+                    다시 검사하기
                   </button>
                 </div>
               </div>
