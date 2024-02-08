@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="canvas-size border-2" id="game" v-if = "pressStart" >
-      <span id="description" class="shakeY absolute align-middle"> Press Spacebar</span>
+      <span id="description" class="shakeY absolute align-middle">Press Spacebar</span>
       <span id="record"></span><i id="score"></i>
       <canvas id="canvas" class="z-40"></canvas>
     </div>

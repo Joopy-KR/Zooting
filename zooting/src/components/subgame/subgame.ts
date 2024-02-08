@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.height = 20 + getRandomInt(-5, 6);
             this.x = 560; // 가장 끝에서 약 30만큼 전
             this.y = 190 - this.height; // 땅위치에서 높이만큼 위에서 시작
-
         }
         draw() {
             if (! ctx) {
@@ -54,13 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // ctx.fillStyle = 'red';
             // ctx.fillRect(this.x, this.y, this.width, this.height);
             // let num = getRandomInt(1, 3);
-            // if (num === 1) {
-            //     obstacleImg.src = HamburgerImg;
-            // }else if (num === 2) {
-            //     obstacleImg.src = PizzaImg;
-            // }else {
-            //     obstacleImg.src = PotatoImg;
-            // }
             ctx.drawImage(obstacleImg, this.x, this.y, this.width, this.height);
         }
     }

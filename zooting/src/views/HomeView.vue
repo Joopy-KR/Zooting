@@ -17,8 +17,8 @@ const store = useAccessTokenStore()
 
 const userInfo = ref(store.userInfo)
 
-// 매칭이 된 경우
-const isMatchingComplete = ref(true)
+// 매칭이 된 경우 모달창이 뜨는 조건
+const isMatchingComplete = ref(false)
 
 watch(()=> store.userInfo, (UpdateUser)=>{
   userInfo.value = UpdateUser
