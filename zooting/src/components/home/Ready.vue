@@ -4,7 +4,7 @@
       <img src="/src/assets/images/logo/logo_lg.png" alt="" class="animate__bounceIn">
     </div>
     <div class="ready__main">
-<!--      <Subgame class="mb-10 subgame"/>-->
+      <Subgame class="mb-10 subgame"/>
       <ReadyMatch />
       <ReadyRecord />
     </div>
