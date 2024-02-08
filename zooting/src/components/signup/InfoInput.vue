@@ -236,7 +236,6 @@ const saveAdditionalInfo = () => {
   } else {
     addressError.value = false
   }
-   store.checkCompletedSignUp()
 }
 
 interface Payload {
