@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {DM, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage, DmItem} from "@/types/global";
+import type {DM, DmItem, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -169,8 +169,11 @@ export const useStore = defineStore("store", () => {
       ],
     },
   };
-  return { personality };
-});
+
+  const newMessage = ref<string[]>([])
+
+  return { personality, newMessage };
+}, { persist: true });
 
 export const useAccessTokenStore = defineStore("access-token", () => {
   const API_URL: string = VITE_SERVER_API_URL;
@@ -708,6 +711,27 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         });
     };
 
+    // DM방 퇴장
+    const exitDmRoom = function (params: number) {
+      const dmRoomId = params;
+      axios({
+        method: "put",
+        url: `${API_URL}/api/dm/room/exit`,
+        params: {
+          dmRoomId,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
     const noticePage = ref<NoticePage>();
     const noticeList = ref<Notice[]>([]);
     // 공지사항 리스트
@@ -728,7 +752,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
                 console.log(err);
             });
     };
-
 
   return {
       setAccessToken,
@@ -769,6 +792,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       cursorDmRoom,
       isRefreshing,
       pastDmList,
+      exitDmRoom,
       noticePage,
       noticeList,
       getNoticeList,

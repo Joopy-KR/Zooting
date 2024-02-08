@@ -1,5 +1,8 @@
 <template>
   <div class="interest__container">
+    <div v-if="blockList.length === 0" class="mt-3 text-center text-gray-500">
+        차단한 사용자가 없습니다
+      </div>
     <ul role="list" class="friend-list">
       <li v-for="(item, index) in blockList" :key="index" class="friend-list__item">
         <RouterLink :to="getProfileLink(item.nickname)" class="friend-list__item__link">
@@ -24,8 +27,8 @@ const store = useAccessTokenStore()
 
 const blockList = ref(store.blockList)
 
-watch(()=> store.blockList, (UpdateList)=>{
-  blockList.value = UpdateList
+watch(()=> store.blockList, (update)=>{
+  blockList.value = update
 })
 
 const getProfileLink = (value: string) => {
