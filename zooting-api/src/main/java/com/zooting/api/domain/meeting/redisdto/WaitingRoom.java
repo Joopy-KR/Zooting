@@ -15,9 +15,9 @@ import org.springframework.data.redis.core.RedisHash;
 @Getter
 @Setter
 @ToString
-@RedisHash(value = "room")
 @NoArgsConstructor
 @AllArgsConstructor
+@RedisHash(value = "room")
 public class WaitingRoom {
 
     @Id

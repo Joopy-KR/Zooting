@@ -3,14 +3,18 @@ package com.zooting.api.domain.meeting.dto;
 import com.zooting.api.domain.animalface.entity.AnimalFace;
 import com.zooting.api.domain.block.entity.Block;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MeetingMemberDto {
 
     @Id
