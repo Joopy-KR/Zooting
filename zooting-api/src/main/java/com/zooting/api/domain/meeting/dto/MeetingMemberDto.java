@@ -2,12 +2,11 @@ package com.zooting.api.domain.meeting.dto;
 
 import com.zooting.api.domain.animalface.entity.AnimalFace;
 import com.zooting.api.domain.block.entity.Block;
-import jakarta.persistence.Id;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.annotation.Id;
 
 @Getter
 @Setter

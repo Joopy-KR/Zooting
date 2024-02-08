@@ -42,8 +42,10 @@ public class MeetingService {
     public synchronized String registerToWaitingRoom(UserDetails userDetails) {
         Member member = loadMemberFromDatabase(userDetails);
         MeetingMemberDto meetingMemberDto = member.toMeetingMemberDto();
+        log.info("유저를 대기열에 등록합니다. : {}", meetingMemberDto.getEmail());
 
         Iterable<WaitingRoom> waitingRooms = waitingRoomRedisRepository.findAll();
+
         WaitingRoom idealWaitingRoom = findIdealWaitingRoom(waitingRooms, meetingMemberDto);
 
         return registerMemberToWaitingRoom(idealWaitingRoom, meetingMemberDto);
@@ -85,6 +87,7 @@ public class MeetingService {
     private WaitingRoom findIdealWaitingRoom(Iterable<WaitingRoom> waitingRooms, MeetingMemberDto meetingMemberDto) {
         // 알고리즘 로직 구현
         if (waitingRooms.iterator().hasNext()) {
+            log.info("유저가 입장 가능한 대기열이 있습니다.");
             for (WaitingRoom waitingRoom : waitingRooms) {
                 Set<MeetingMemberDto> meetingMembers = waitingRoom.getMeetingMembers();
                 if (meetingMembers.size() < 4) {
