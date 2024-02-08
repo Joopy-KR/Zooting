@@ -2,7 +2,10 @@ package com.zooting.api.domain.member.api;
 
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.*;
+import com.zooting.api.domain.member.dto.response.MemberRes;
+import com.zooting.api.domain.member.dto.response.MemberSearchRes;
+import com.zooting.api.domain.member.dto.response.MyProfileReq;
+import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
@@ -59,7 +62,7 @@ public class MemberController {
         );
     }
 
-    @PreAuthorize("hasAnyRole('ANONYMOUS, USER')")
+    @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
     @Operation(
             summary = "프로필 확인",
             description = "내 프로필이 맞다면 myprofile = true" +
