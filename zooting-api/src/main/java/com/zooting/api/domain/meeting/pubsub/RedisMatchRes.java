@@ -1,4 +1,4 @@
-package com.zooting.api.global.redis.dto.response;
+package com.zooting.api.domain.meeting.pubsub;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

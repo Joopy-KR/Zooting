@@ -35,7 +35,12 @@ watch(()=> store.userInfo, (update)=>{
 onMounted(async () => {
   const result = await store.checkCompletedSignUp()
   if (result === 'USER') {
+<<<<<<< HEAD
     store.getUserInfo()
+=======
+    await store.getUserInfo()
+    // 소켓 연결 요청을 여기서 하니까 요청을 보내지 않음. why??
+>>>>>>> f0773be23d765deb84345e523ac0b550e4123cd1
   }
 })
 
