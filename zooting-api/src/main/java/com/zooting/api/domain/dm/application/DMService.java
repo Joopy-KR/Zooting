@@ -23,5 +23,5 @@ public interface DMService {
 
     void exitDmRoom(Long dmRoomId, String loginEmail);
 
-    RedisDMRoomRes getDMRoomWithCursorRedis(Long dmRoomId, Long cursor);
+    RedisDMRoomRes getDMRoomWithCursorRedis(Long dmRoomId, Long cursor, String loginEmail);
 }

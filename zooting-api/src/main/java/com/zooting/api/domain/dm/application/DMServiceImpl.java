@@ -98,7 +98,7 @@ public class DMServiceImpl implements DMService {
         dmRepository.save(dm);
         RedisDMRes redisDMRes = new RedisDMRes(dmReq.dmRoomId(), dm.getId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(),
                 dmReq.files().stream().map(file -> new DMFileRes(file.imgUrl(), file.thumbnailUrl())).toList());
-        redisTemplate.opsForList().rightPush("dmRoomId:" + dmReq.dmRoomId(), gson.toJson(redisDMRes));
+        redisTemplate.opsForList().rightPush(dmReq.sender() + ":dmRoomId:" + dmReq.dmRoomId(), gson.toJson(redisDMRes));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class DMServiceImpl implements DMService {
         DMRoom dmRoom = getDMRoom(sender, receiver);
         Long cursor = getStartCursor(dmRoom.getId(), sender);
         /* redis에 데이터가 있다면 불러옴 */
-        List<Object> objectList = redisTemplate.opsForList().range("dmRoomId:" + dmRoom.getId(), 0, -1);
+        List<Object> objectList = redisTemplate.opsForList().range(sender + ":dmRoomId:" + dmRoom.getId(), 0, -1);
         if (objectList != null && !objectList.isEmpty()) {
             List<RedisDMRes> redisDMResList = objectList.stream()
                     .map(obj -> gson.fromJson((String) obj, RedisDMRes.class))
@@ -131,7 +131,7 @@ public class DMServiceImpl implements DMService {
                                     ))
                                     .toList()
                             );
-                            redisTemplate.opsForList().rightPush("dmRoomId:" + dmRoom.getId(), gson.toJson(redisDMRes));
+                            redisTemplate.opsForList().rightPush(sender + ":dmRoomId:" + dmRoom.getId(), gson.toJson(redisDMRes));
                             return redisDMRes;
                         }
                 )
@@ -146,20 +146,27 @@ public class DMServiceImpl implements DMService {
     public void exitDmRoom(Long dmRoomId, String loginEmail) {
         DMRoom dmRoom = dmRoomRepository.findById(dmRoomId).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
-        redisTemplate.expire("dmRoomId:" + dmRoomId, 60, java.util.concurrent.TimeUnit.MINUTES);
         DM lastDm = dmRepository.findTopByDmRoomIdOrderByIdDesc(dmRoomId).orElse(null);
+        String sender = dmRoom.getSender().getEmail();
         log.info("lastdmid : {}", lastDm.getId());
         if (Objects.nonNull(lastDm)) {
             if (dmRoom.getSender().getEmail().equals(loginEmail)) {
                 dmRoom.setSenderLastReadId(lastDm.getId());
             } else {
                 dmRoom.setReceiverLastReadId(lastDm.getId());
+                sender = dmRoom.getReceiver().getEmail();
             }
         }
+        redisTemplate.expire(sender + ":dmRoomId:" + dmRoomId, 60, java.util.concurrent.TimeUnit.MINUTES);
     }
 
     @Override
-    public RedisDMRoomRes getDMRoomWithCursorRedis(Long dmRoomId, Long cursor) {
+    public RedisDMRoomRes getDMRoomWithCursorRedis(Long dmRoomId, Long cursor, String loginEmail) {
+        Object lastDm = redisTemplate.opsForList().index(loginEmail + ":dmRoomId:" + dmRoomId, 0);
+        if(lastDm != null){
+            RedisDMRes redisDMRes = gson.fromJson((String) lastDm, RedisDMRes.class);
+            cursor = redisDMRes.dmId();
+        }
         Page<DM> dmList = getDMList(dmRoomId, cursor);
         List<RedisDMRes> redisDMResList = dmList
                 .stream()
@@ -173,7 +180,7 @@ public class DMServiceImpl implements DMService {
                                     ))
                                     .toList()
                             );
-                            redisTemplate.opsForList().leftPush("dmRoomId:" + dmRoomId, gson.toJson(redisDMRes));
+                            redisTemplate.opsForList().leftPush(loginEmail + ":dmRoomId:" + dmRoomId, gson.toJson(redisDMRes));
                             return redisDMRes;
                         }
                 )

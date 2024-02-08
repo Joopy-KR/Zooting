@@ -46,8 +46,8 @@ public class DMController {
 
     @Operation(summary = "DM방 스크롤")
     @GetMapping("/room/prev")
-    public ResponseEntity<BaseResponse<RedisDMRoomRes>> getNextDmRedis(@Valid @NotNull @RequestParam(name = "dmRoomId") Long dmRoomId, @RequestParam(name = "cursor") Long cursor) {
-        RedisDMRoomRes redisDmRoomRes = dmService.getDMRoomWithCursorRedis(dmRoomId, cursor);
+    public ResponseEntity<BaseResponse<RedisDMRoomRes>> getNextDmRedis(@Valid @NotNull @RequestParam(name = "dmRoomId") Long dmRoomId, @RequestParam(name = "cursor") Long cursor, @AuthenticationPrincipal UserDetails userDetails){
+        RedisDMRoomRes redisDmRoomRes = dmService.getDMRoomWithCursorRedis(dmRoomId, cursor, userDetails.getUsername());
         return BaseResponse.success(
                 SuccessCode.SELECT_SUCCESS,
                 redisDmRoomRes
