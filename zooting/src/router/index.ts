@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from "vue-router";
-import { useAccessTokenStore } from "@/stores/store";
+import {createRouter, createWebHistory} from "vue-router";
+import {useAccessTokenStore} from "@/stores/store";
 import HomeView from "@/views/HomeView.vue";
 import SignInView from "@/views/SignInView.vue";
 import SignUpView from "@/views/SignUpView.vue";
@@ -7,7 +7,6 @@ import AnimalTestView from "@/views/AnimalTestView.vue";
 import PersonalityTestView from "@/views/PersonalityTestView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import Login from "@/views/LoginView.vue";
-import type {UserInfo} from "@/types/global";
 import ChatTestView from "@/views/ChatTestView.vue";
 
 const router = createRouter({

@@ -299,7 +299,7 @@ const deer = ref(0);
 const turtle = ref(0);
 
 // 모델 경로
-const URL = `src/assets/animal_test_model/${gender.value}`;
+const URL = `/assets/animal_test_model/${gender.value}`;
 
 // 모델 로딩 후 웹캠 출력
 const init = async () => {

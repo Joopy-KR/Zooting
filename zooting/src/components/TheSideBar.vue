@@ -3,7 +3,7 @@
     <nav class="side-bar">
       <div class="logo">
         <RouterLink :to="getHomeLink()" @click="closeTab">
-          <img src="@/assets/images/logo/logo_sm.png" alt="" class="w-10">
+          <img src="/assets/images/logo/logo_sm.png" alt="" class="w-10">
         </RouterLink>
       </div>
       <div class="side-bar__item">
@@ -132,21 +132,21 @@ const getProfileImage = () => {
   let imgUrl: URL;
   const animal = userInfo.value?.animal
   if (animal === '강아지') {
-    imgUrl = new URL('@/assets/images/animal/dog.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/dog.png', import.meta.url);
   } else if (animal === '고양이') {
-    imgUrl = new URL('@/assets/images/animal/cat.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/cat.png', import.meta.url);
   } else if (animal === '곰') {
-    imgUrl = new URL('@/assets/images/animal/bear.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/bear.png', import.meta.url);
   } else if (animal === '공룡') {
-    imgUrl = new URL('@/assets/images/animal/dino.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/dino.png', import.meta.url);
   } else if (animal === '펭귄') {
-    imgUrl = new URL('@/assets/images/animal/penguin.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/penguin.png', import.meta.url);
   } else if (animal === '토끼') {
-    imgUrl = new URL('@/assets/images/animal/rabbit.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/rabbit.png', import.meta.url);
   } else if (animal === '사슴') {
-    imgUrl = new URL('@/assets/images/animal/deer.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/deer.png', import.meta.url);
   } else {
-    imgUrl = new URL('@/assets/images/animal/animal_group.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/animal_group.png', import.meta.url);
   }
   return imgUrl.href;
 }

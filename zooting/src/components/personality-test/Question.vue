@@ -38,13 +38,13 @@ const selectAnswer = (selectedOption: string) => {
 
 const getImageUrl = () => {
   if (props.test.id === 1) {
-    return new URL('@/assets/images/personality/season1.png', import.meta.url).href
+    return new URL('/assets/images/personality/season1.png', import.meta.url).href
   } else if (props.test.id === 2) {
-    return new URL('@/assets/images/personality/season2.png', import.meta.url).href
+    return new URL('/assets/images/personality/season2.png', import.meta.url).href
   } else if (props.test.id === 3) {
-    return new URL('@/assets/images/personality/season3.png', import.meta.url).href
+    return new URL('/assets/images/personality/season3.png', import.meta.url).href
   } else if (props.test.id === 4) {
-    return new URL('@/assets/images/personality/season4.png', import.meta.url).href    
+    return new URL('/assets/images/personality/season4.png', import.meta.url).href
   }
 };
 </script>
