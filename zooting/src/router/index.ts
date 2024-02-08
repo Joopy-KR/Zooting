@@ -111,6 +111,9 @@ router.beforeEach((to, from) => {
 
   // 로그인이 된 경우
   if (store.isLogin) {
+    if (to.name === 'home') {
+      store.getUserInfo()
+    }
     return;
   }
 

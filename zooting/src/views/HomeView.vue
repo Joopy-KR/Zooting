@@ -58,15 +58,20 @@ socket.onclose = () => {
 }
 
 const onConnected = () => {
+  console.log(`/api/sub/dm/${userInfo.value?.email}`)
   stompClient.subscribe(`/api/sub/dm/${userInfo.value?.email}`,
   (message: any) => {
     const dmReq = JSON.parse(message.body)
-    // 현재 open 된 dmRooId인 경우 메시지 전송
-    if (props.dmRoomId === dmReq.dmRoomId) {
-      emit('receiveMessage', dmReq)
+    if (dmReq.type === 'message') {
+      // 현재 open 된 dmRooId인 경우 메시지 전송
+      if (props.dmRoomId === dmReq.dmRoomId) {
+        emit('receiveMessage', dmReq)
+      } else {
+        // 새로운 메시지 알림
+        dmStore.newMessage.push(dmReq.sender)
+      }
     } else {
-      // 새로운 메시지 알림
-      dmStore.newMessage.push(dmReq.sender)
+      console.log(dmReq)
     }
   })
 }

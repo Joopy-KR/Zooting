@@ -1,10 +1,5 @@
 <template>
   <div class="flex">
-<<<<<<< HEAD
-    <TheSideBar/>
-    <!-- <RouterView class="ms-14"/> -->
-    <VideoChatView class="ms-14"/>
-=======
     <TheSideBar
       @current-dm-room-id="currentDmRoomId"
       :dm-req = "dmReq"
@@ -14,7 +9,7 @@
       :dm-room-id="dmRoomId"
       @receive-message="receiveMessage"
     />
->>>>>>> f0773be23d765deb84345e523ac0b550e4123cd1
+    <!-- <VideoChatView class="ms-14"/> -->
   </div>
 </template>
 

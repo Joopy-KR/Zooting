@@ -732,6 +732,22 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         });
     };
 
+    const meetingRegister = function () {
+      axios({
+        method: "post",
+        url: `${API_URL}/api/meeting/register`,
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
     const noticePage = ref<NoticePage>();
     const noticeList = ref<Notice[]>([]);
     // 공지사항 리스트
@@ -796,5 +812,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       noticePage,
       noticeList,
       getNoticeList,
+      meetingRegister,
   };
 });

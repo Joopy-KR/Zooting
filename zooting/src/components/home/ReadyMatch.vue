@@ -1,16 +1,24 @@
 <template>
   <div class="match__container">
-    <div class="match__page mt-20">
+    <div class="mt-20 match__page">
       <ReadyState/>
-      <div class="button drag-prevent"><p>MATCHING</p></div>
+      <div class="button drag-prevent" @click="meetingRegister"><p>MATCHING</p></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import {ref} from "vue";
+import axios from "axios";
 import ReadyState from '@/components/home/ReadyState.vue'
+import { useAccessTokenStore } from "@/stores/store"
+const { VITE_SERVER_API_URL } = import.meta.env;
 
+const store = useAccessTokenStore()
+
+const meetingRegister = () => {
+	store.meetingRegister()
+}
 </script>
 
 <style lang="scss" scoped>
