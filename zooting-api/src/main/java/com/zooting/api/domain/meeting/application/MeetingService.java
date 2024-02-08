@@ -152,7 +152,6 @@ public class MeetingService {
                 MessageType.ACCEPTANCE.getPrefix() + waitingRoom.getAcceptCount());
     }
 
-
     private Member loadMemberFromDatabase(UserDetails userDetails) {
         Optional<Member> member = memberRepository.findMemberByEmail(userDetails.getUsername());
         return member.orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));

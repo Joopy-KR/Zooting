@@ -3,6 +3,8 @@ package com.zooting.api.domain.meeting.pubsub;
 import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.redisdto.WaitingRoom;
+import com.zooting.api.global.common.code.ErrorCode;
+import com.zooting.api.global.exception.BaseExceptionHandler;
 import io.openvidu.java.client.Connection;
 import io.openvidu.java.client.OpenVidu;
 import io.openvidu.java.client.OpenViduHttpException;
@@ -33,64 +35,58 @@ public class WaitingRoomSubscriber implements MessageListener {
 
     @Override
     public void onMessage(@NonNull Message message, byte[] pattern) {
-        WaitingRoomMessageDto parsedMessage = waitingRoomMessageParser(message);
+        final int MEETING_CAPACITY = 1;
+        final WaitingRoomMessageDto parsedMessage = waitingRoomMessageParser(message);
+        final String waitingRoomId = parsedMessage.getId();
+        final String type = parsedMessage.getType();
+        final int count = parsedMessage.getCount();
 
-        String waitingRoomId = parsedMessage.getId();
-        String type = parsedMessage.getType();
-        int count = parsedMessage.getCount();
+        WaitingRoom waitingRoom = waitingRoomRedisRepository.findById(waitingRoomId)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
 
-        if (MessageType.REGISTER.getPrefix().contains(type)) {
-            sendAcceptMessageToClient(waitingRoomId, type, count);
-        } else if (MessageType.ACCEPTANCE.getPrefix().contains(type)) {
-            sendOpenviduTokenToClient(waitingRoomId, count);
+        if (MessageType.REGISTER.getPrefix().contains(type) && count == MEETING_CAPACITY) {
+            sendAcceptMessageToClient(waitingRoom, count);
+        } else if (MessageType.ACCEPTANCE.getPrefix().contains(type) && count == MEETING_CAPACITY) {
+            sendOpenviduTokenToClient(waitingRoom, count);
         }
     }
 
-    private void sendAcceptMessageToClient(String waitingRoomId, String type, int count){
-        WaitingRoom waitingRoom = waitingRoomRedisRepository.findById(waitingRoomId).orElse(null);
-        if (waitingRoom != null && count == 4) { // 매칭완료 조건
-            log.info("[onMessage] key: {}, register: {} 매칭성공", waitingRoomId, count);
+    private void sendAcceptMessageToClient(WaitingRoom waitingRoom, int count) {
+        log.info("[onMessage] key: {}, register: {} 매칭성공", waitingRoom.getWaitingRoomId(), count);
+        for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
+            String email = meetingMemberDto.getEmail();
+            RedisMatchRes redisMatchRes = new RedisMatchRes("match", waitingRoom.getWaitingRoomId());
+            log.info("[onMessage] email: {} {} {}", email, redisMatchRes.type(), redisMatchRes.roomId());
+            webSocketTemplate.convertAndSend("/api/sub/dm/" + email, redisMatchRes);
+        }
+    }
+
+    private void sendOpenviduTokenToClient(WaitingRoom waitingRoom, int count) {
+        try {
+            Session session = openVidu.createSession();
+            log.info("세션을 만들었습니다. 인원 : {}", count);
             for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
                 String email = meetingMemberDto.getEmail();
-                RedisMatchRes redisMatchRes = new RedisMatchRes("match", waitingRoomId);
-                log.info("[onMessage] email: {} {} {}", email, redisMatchRes.type(), redisMatchRes.roomId());
-                webSocketTemplate.convertAndSend("/api/sub/dm/" + email, redisMatchRes);
+                Connection connection = session.createConnection();
+
+                OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes("openviduToken", connection.getToken());
+                webSocketTemplate.convertAndSend("/api/sub/dm/" + email, openviduTokenRes);
             }
+            waitingRoomRedisRepository.deleteById(waitingRoom.getWaitingRoomId());
+            redisMessageListener.removeMessageListener(this, new ChannelTopic(waitingRoom.getWaitingRoomId()));
+        } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
-    private void sendOpenviduTokenToClient(String waitingRoomId, int count){
-        WaitingRoom waitingRoom = waitingRoomRedisRepository.findById(waitingRoomId).orElse(null);
-        if (waitingRoom != null && count == 4) {
-            try {
-                Session session = openVidu.createSession();
-                for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
-                    String email = meetingMemberDto.getEmail();
-                    Connection connection = session.createConnection();
-
-                    OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes("openviduToken",
-                            connection.getToken());
-                    webSocketTemplate.convertAndSend("/api/sub/dm/" + email, openviduTokenRes);
-                }
-                waitingRoomRedisRepository.deleteById(waitingRoomId);
-                redisMessageListener.removeMessageListener(this, new ChannelTopic(waitingRoomId));
-            } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-    }
-
-    private WaitingRoomMessageDto waitingRoomMessageParser(Message message){
+    private WaitingRoomMessageDto waitingRoomMessageParser(Message message) {
         String waitingRoomIdWithRedisHash = new String(message.getChannel());
         String waitingRoomId = waitingRoomIdWithRedisHash.split(":")[1];
 
         String[] typeAndCount = Objects.requireNonNull(
                 redisTemplate.getStringSerializer().deserialize(message.getBody())).replaceAll("\"", "").split(" ");
 
-        return WaitingRoomMessageDto.builder()
-                .id(waitingRoomId)
-                .type(typeAndCount[0])
-                .count(Integer.parseInt(typeAndCount[1]))
-                .build();
+        return WaitingRoomMessageDto.builder().id(waitingRoomId).type(typeAndCount[0])
+                .count(Integer.parseInt(typeAndCount[1])).build();
     }
 }
