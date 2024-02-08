@@ -7,7 +7,7 @@
         <svg class="exit-button" @click="$emit('closeTab'), isOpenFileInput = !isOpenFileInput" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m15 19-7-7 7-7"/>
         </svg>
-        <!-- 프로필 이미지 (프로필로 라우팅) -->
+        <!-- 프로필 이미지 -->
         <RouterLink :to="getProfileLink()" @click="$emit('closeTab')">
           <img class="w-12" :src="getProfileImage()" alt="profile">
         </RouterLink>
@@ -33,13 +33,10 @@
                 <!-- 메시지 -->
                 <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
                 <!-- 사진 -->
-                <div v-if="item.dmFiles && item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
+                <div v-if="item.dmFiles && item.dmFiles.length > 0" :class="[item.dmFiles.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
                   <div v-for="(file, index) in item.dmFiles" :key="index">
-                    <img :src="getPreviewUrl(file)" class="h-32" alt="Preview">
+                    <img :src="getPreviewUrl(item.sender, file)" class="h-32" alt="Preview">
                   </div>
-                </div>
-                <div v-else-if="item.dmFiles && item.dmFiles.length === 1" class="my-2">
-                  <img :src="getPreviewUrl(item.dmFilest[0])" class="h-32" alt="Preview">
                 </div>
               </div>
             </div>
@@ -53,13 +50,10 @@
                 <!-- 메시지 -->
                 <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
                 <!-- 사진 -->
-                <div v-if="item.dmFiles && item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
+                <div v-if="item.dmFiles && item.dmFiles.length > 0" :class="[item.dmFiles.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
                   <div v-for="(file, index) in item.dmFiles" :key="index">
                     <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
                   </div>
-                </div>
-                <div v-else-if="item.dmFiles && item.dmFiles.length === 1" class="my-2">
-                  <img :src="item.dmFiles[0].thumbnailUrl" class="h-32" alt="Preview">
                 </div>
               </div>
             </div>
@@ -72,13 +66,10 @@
               <!-- 메시지 -->
               <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
               <!-- 사진 -->
-              <div v-if="item.dmFiles && item.dmFiles.length > 1" class="grid grid-cols-2 gap-2 my-2">
+              <div v-if="item.dmFiles && item.dmFiles.length > 0" :class="[item.dmFiles.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
                 <div v-for="(file, index) in item.dmFiles" :key="index">
                   <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
                 </div>
-              </div>
-              <div v-else-if="item.dmFiles && item.dmFiles.length === 1" class="my-2">
-                <img :src="item.dmFiles[0].thumbnailUrl" class="h-32" alt="Preview">
               </div>
             </div>
           </div>
@@ -102,13 +93,10 @@
         <div class="file-input" v-show="isOpenFileInput">
           <label for="dropzone-file" class="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-50 bg-gray-50">
             <!-- 파일 image -->
-            <div v-if="fileInput && fileInput?.length > 1" class="grid grid-cols-2 gap-2 my-2">
+            <div v-if="fileInput && fileInput.length > 0" :class="[fileInput?.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
               <div v-for="(item, index) in fileInput" :key="index">
-                <img :src="getPreviewUrl(item)" class="h-32" alt="Preview">
+                <img :src="getPreviewUrl(sender, item)" class="h-32" alt="Preview">
               </div>
-            </div>
-            <div v-else-if="fileInput?.length === 1" class="my-2">
-              <img :src="getPreviewUrl(fileInput[0])" class="h-32" alt="Preview">
             </div>
             <!-- 파일 input -->
             <div class="file-input__discription" v-show="!fileInput">
@@ -133,15 +121,15 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useAccessTokenStore } from "@/stores/store"
-import type { Friend, DM, DmItem } from "@/types/global"
+import { useAccessTokenStore } from "../stores/store"
+import type { Friend, DM, DmItem, DmFile } from "@/types/global"
 import axios from 'axios'
 const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
-const emit = defineEmits(['closeTab'])
+const emit = defineEmits(['closeTab', 'currentDmRoomId'])
 const props = defineProps<{
-  open: boolean
+  dmReq: any
 }>()
 
 const dmInfo = ref<DM | null>(store.dmInfo)
@@ -158,20 +146,20 @@ const sender = ref<string>('')
 const receiver = ref<string>('')
 const dmRoomId = ref<number>(0)
 
-watch(()=> store.dmInfo, (UpdateUser)=>{
-  dmInfo.value = UpdateUser
+watch(()=> store.dmInfo, (update)=>{
+  dmInfo.value = update
 })
 
-watch(()=> store.receiverInfo, (UpdateUser)=>{
-  receiverInfo.value = UpdateUser
+watch(()=> store.receiverInfo, (update)=>{
+  receiverInfo.value = update
 })
 
-watch(()=> store.pastDmList, (UpdateUser)=>{
-  pastDmList.value = UpdateUser
+watch(()=> store.pastDmList, (update)=>{
+  pastDmList.value = update
 })
 
-watch(() => props.open, () => {
-  if (props.open) {
+watch(() => store.isEntryDmRoom, () => {
+  if (store.isEntryDmRoom) {
     if (store.userInfo?.email) {
       sender.value = store.userInfo.email
     }
@@ -180,37 +168,47 @@ watch(() => props.open, () => {
     }
     if (dmInfo.value) {
       dmRoomId.value = dmInfo.value.dmRoomId
+      emit('currentDmRoomId', dmRoomId.value)
     }
     refreshChat()
   } 
   else {
     isOpenFileInput.value = false
     fileInput.value = null
-    store.dmInfo = null
     store.pastDmList = []
     sockDmList.value = []
-    //커서갱신
+    receiver.value = ''
+    store.exitDmRoom(dmRoomId.value)
   }
 })
+
+watch(()=> props.dmReq, ()=>{
+  sockDmList.value.push({
+    sender: props.dmReq.sender,
+    message: props.dmReq.message,
+    dmFiles: props.dmReq.files,
+  })
+})
+
 const getProfileImage = () => {
   let imgUrl: URL;
   const animal = receiverInfo.value?.animal
   if (animal === '강아지') {
-    imgUrl = new URL('@/assets/images/logo.svg', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/dog.png', import.meta.url);
   } else if (animal === '고양이') {
-    imgUrl = new URL('@/assets/images/animal/cat.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/cat.png', import.meta.url);
   } else if (animal === '곰') {
-    imgUrl = new URL('@/assets/images/animal/bear.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/bear.png', import.meta.url);
   } else if (animal === '공룡') {
-    imgUrl = new URL('@/assets/images/animal/dino.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/dino.png', import.meta.url);
   } else if (animal === '펭귄') {
-    imgUrl = new URL('@/assets/images/animal/penguin.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/penguin.png', import.meta.url);
   } else if (animal === '토끼') {
-    imgUrl = new URL('@/assets/images/animal/rabbit.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/rabbit.png', import.meta.url);
   } else if (animal === '사슴') {
-    imgUrl = new URL('@/assets/images/animal/deer.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/deer.png', import.meta.url);
   } else {
-    imgUrl = new URL('@/assets/images/animal/animal_group.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/animal_group.png', import.meta.url);
   }
   return imgUrl.href;
 }
@@ -286,8 +284,12 @@ const handleFileChange = (event: Event) => {
   }
 }
 
-const getPreviewUrl = (file: File) => {
-  return URL.createObjectURL(file)
+const getPreviewUrl = (sender: string, file: File | DmFile) => {
+  if (isSender(sender)) {
+    return URL.createObjectURL(file)
+  } else {
+    return file.thumbnailUrl
+  }
 }
 
 // Web socket -----------------------------------------------
@@ -320,7 +322,7 @@ async function sendMessage() {
       message: messageInput.value,
       dmFiles: fileInput.value,
     })
-    
+    console.log(fileInput.value)
     try {
       if (fileInput.value && fileInput.value.length > 0) {
         // Axios를 사용하여 파일 업로드 요청 보내기

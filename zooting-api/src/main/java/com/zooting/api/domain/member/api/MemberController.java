@@ -2,7 +2,11 @@ package com.zooting.api.domain.member.api;
 
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.*;
+import com.zooting.api.domain.member.dto.response.MemberRes;
+import com.zooting.api.domain.member.dto.response.MemberSearchRes;
+import com.zooting.api.domain.member.dto.response.MyProfileReq;
+import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,7 +54,7 @@ public class MemberController {
                     "false - 추가 정보 저장되지 않음" +
                     "true - 추가 정보 저장되어 있음")
     @GetMapping("/privilege/check")
-    public ResponseEntity<BaseResponse<Boolean>> checkPrivilege(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<BaseResponse<List<Privilege>>> checkPrivilege(@AuthenticationPrincipal UserDetails userDetails) {
         var result = memberService.checkMemberPrivilege(userDetails.getUsername());
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
@@ -58,7 +62,7 @@ public class MemberController {
         );
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
     @Operation(
             summary = "프로필 확인",
             description = "내 프로필이 맞다면 myprofile = true" +

@@ -10,7 +10,7 @@ import VideoComp from "@/components/signin/Video.vue"
         <VideoComp />
       </div>
       <div class="flex flex-col items-center justify-center">
-          <img src="@/assets/images/logo/logo_lg.png" alt="" class="w-3/4">
+          <img src="/assets/images/logo/logo_lg.png" alt="" class="w-3/4">
           <div class="signin-button">
             <SocialSignInButton />
           </div>

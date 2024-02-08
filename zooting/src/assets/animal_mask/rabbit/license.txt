@@ -1,8 +1,0 @@
-Model Information:
-* title:	Prop149 Rabbit Head
-* source:	https://sketchfab.com/3d-models/prop149-rabbit-head-14eb3d6a41104ddf853223d2ee4deab1
-* author:	BaluCG (https://sketchfab.com/BaluCG)
-
-Model License:
-* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
-* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works

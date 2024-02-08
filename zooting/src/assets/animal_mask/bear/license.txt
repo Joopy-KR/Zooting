@@ -1,8 +1,0 @@
-Model Information:
-* title:	Prop124 Bear Head
-* source:	https://sketchfab.com/3d-models/prop124-bear-head-a909dd7bbc654f6287348214f193634a
-* author:	BaluCG (https://sketchfab.com/BaluCG)
-
-Model License:
-* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
-* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works

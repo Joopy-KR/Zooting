@@ -56,12 +56,11 @@ public class JwtService {
     public Authentication authenticateAccessToken(HttpServletRequest request) {
         String token = requestHeaderJwtParser(request);
         Claims claims = verifyJwtToken(token);
-        JwtClaimsParser jwtClaimsParser = new JwtClaimsParser(claims);
 
         log.info("토큰의 Claims에 저장된 닉네임:" + claims.get("nickname"));
 
         UserDetails userDetails = CustomUserDetails.builder().email(claims.getSubject())
-                .nickname((String) claims.get("nickname")).authorities(jwtClaimsParser.getPrivileges()).build();
+                .nickname((String) claims.get("nickname")).authorities(JwtClaimsParser.getPrivileges(claims)).build();
 
         return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
                 userDetails.getAuthorities());

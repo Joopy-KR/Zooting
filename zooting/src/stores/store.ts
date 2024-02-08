@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {DM, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
+import type {DM, DmItem, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -169,8 +169,11 @@ export const useStore = defineStore("store", () => {
       ],
     },
   };
-  return { personality };
-});
+
+  const newMessage = ref<string[]>([])
+
+  return { personality, newMessage };
+}, { persist: true });
 
 export const useAccessTokenStore = defineStore("access-token", () => {
   const API_URL: string = VITE_SERVER_API_URL;
@@ -229,21 +232,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 유저 정보
-  const isCompletedTest = ref<boolean>(false);
   const userInfo = ref<UserInfo | null>(null);
 
   const getUserInfo = async function () {
     await loadMyInfoApi(
       ({ data }: any) => {
         userInfo.value = data.result;
-
-        if (!isCompletedSignUp) {
-          router.push({ name: "signup" });
-        } else if (!userInfo.value?.animal) {
-          router.push({ name: "animal_test" });
-        } else if (!userInfo.value?.personality) {
-          router.push({ name: "personality_test" });
-        }
       },
       (error: any) => {
         console.log(error);
@@ -254,7 +248,21 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 로그인 상태 판별
   const isLogin = computed(() => {
-    return !!state.value.accessToken;
+    if (state.value.accessToken) {
+      return true;
+    } else {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (refreshToken) {
+        state.value.refreshToken = refreshToken;
+      }
+      if (accessToken) {
+        state.value.accessToken = accessToken;
+        return true;
+      }
+    }
+    return false;
   });
 
   // 로그아웃
@@ -263,10 +271,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     state.value.accessToken = null;
   };
 
-  // 추가 정보 저장 여부 확인
-  const isCompletedSignUp = ref<boolean>(false);
-  const checkCompletedSignUp = function () {
-    axios({
+  // 유저 권한 확인
+  const checkCompletedSignUp = async function () {
+    return await axios({
       method: "get",
       url: `${API_URL}/api/members/privilege/check`,
       headers: {
@@ -275,15 +282,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        isCompletedSignUp.value = res.data.result;
-        if (!isCompletedSignUp) {
-          router.push({ name: "signup" });
-        } else {
-          getUserInfo()
-        }
+        console.log(res);
+        return res.data.result;
       })
       .catch((err) => {
         console.log(err);
+        throw err;
       });
   };
 
@@ -348,7 +352,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const setPersonality = function (payload: string) {
     const personality = payload;
     axios({
-      method: "put",
+      method: "patch",
       url: `${API_URL}/api/members/characters`,
       data: {
         personality,
@@ -368,13 +372,13 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 동물상 테스트 결과 저장
-  const setAnimalFace = function (payload: number[]) {
-    const animalfaceList = payload;
+  const setAnimalFace = function (payload: {animal: string, percentage: number}[]) {
+    const animalFaceReqList = payload;
     axios({
       method: "post",
       url: `${API_URL}/api/animalface`,
       data: {
-        animalfaceList,
+        animalFaceReqList,
       },
       headers: {
         accept: "application/json",
@@ -382,7 +386,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
+        const data = res.data;
+        const {accessToken, refreshToken} = data["result"];
+        if (accessToken && refreshToken) {
+          setAccessToken(accessToken);
+          setRefreshToken(refreshToken);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -702,6 +711,27 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         });
     };
 
+    // DM방 퇴장
+    const exitDmRoom = function (params: number) {
+      const dmRoomId = params;
+      axios({
+        method: "put",
+        url: `${API_URL}/api/dm/room/exit`,
+        params: {
+          dmRoomId,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
     const noticePage = ref<NoticePage>();
     const noticeList = ref<Notice[]>([]);
     // 공지사항 리스트
@@ -723,7 +753,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
             });
     };
 
-
   return {
       setAccessToken,
       getAccessToken,
@@ -733,7 +762,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       getUserInfo,
       isLogin,
       signOut,
-      isCompletedSignUp,
       checkCompletedSignUp,
       setPersonality,
       saveAdditionalInfo,
@@ -764,6 +792,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       cursorDmRoom,
       isRefreshing,
       pastDmList,
+      exitDmRoom,
       noticePage,
       noticeList,
       getNoticeList,

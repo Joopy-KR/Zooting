@@ -1,8 +1,0 @@
-Model Information:
-* title:	Prop189 Shiba Dog Head
-* source:	https://sketchfab.com/3d-models/prop189-shiba-dog-head-e0301925f64749119ce8fd9580f35032
-* author:	BaluCG (https://sketchfab.com/BaluCG)
-
-Model License:
-* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
-* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works

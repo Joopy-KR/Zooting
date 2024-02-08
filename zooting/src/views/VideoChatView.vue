@@ -42,6 +42,7 @@
       :subscribers="subscribers"
       :cameraHeight="cameraHeight"
       :cameraWidth="cameraWidth"
+      @send-canvas="receive"
       v-if="currentStatus === 'CatchMind'"
       />
       
@@ -66,7 +67,7 @@ import VideoChatCatchMind from '@/components/video-chat/VideoChatCatchMind.vue'
 // 사이드바
 import VideoChatSideBarVue from '@/components/video-chat/VideoChatSideBar.vue'
 
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import { useAccessTokenStore } from '@/stores/store.ts'
@@ -89,6 +90,12 @@ async function startSession() {
   await joinSession()
 }
 
+const canvasEl = ref(null)
+
+const receive = function(canvas) {
+  canvasEl.value = canvas
+  console.log('이제야 됨 느려텨저라 ')
+}
 // 로딩 완료를 나타내기 위한 플래그
 const isLoaded = ref(false)
 
@@ -183,6 +190,11 @@ const joinSession = () => {
   // 현재 참가중인 동물목록에 자신 넣어주기
   currentAnimals.value.push(myUserAnimal.value)
 
+
+  // const videoTrack = canvasEl.captureStream(60).getVideoTracks()[0]
+	// console.log(canvas_video)
+  // props.streamManager.addVideoElement(canvas_video)
+
   // 유저 토큰 이용해 세션과 연결하기 (이 부분이 주어지는 토큰으로 대체)
 
   // Openvidu 배포 서버로부터 토큰 가져오기(이 부분이 바뀌어야함)
@@ -191,7 +203,7 @@ const joinSession = () => {
     // 첫번째 인자는 토큰, 두번째 인자는 모든 유저에 의해 검색 가능
     // 'streamCreated'(Stream.connection.data의 속성), 유저 닉네임으로 DOM에 추가됨
     session.value.connect(token, { nickname: myUserName.value, animal: myUserAnimal.value, gender: myGender.value }).then(() => {
-
+      
       // 실제 publish 하는 부분, 이 부분에서 카메라와 오디오 소스 설정 가능
       let pub = OV.value.initPublisher(undefined, {
         audioSource: undefined,
@@ -251,7 +263,8 @@ const createSession = async (sessionId) => {
   const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions', { customSessionId: sessionId }, {
     headers: { 
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${store.getAccessToken()}`
+              // 'Authorization': `Bearer ${store.getAccessToken()}`
+              'Authorization': `Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA3MzgzOTgyLCJzdWIiOiJramg5NzExMkBuYXZlci5jb20iLCJQcml2aWxlZ2UiOlsiVVNFUiJdfQ.AVeGR1FpRzapx4LnyJ-9rT0euzYHlu6GzgWJreVoTlw`
              },
   });
   return response.data; // sessionId가 옴
@@ -262,7 +275,8 @@ const createToken = async (sessionId) => {
   const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions/' + sessionId + '/connections', {}, {
     headers: { 
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${store.getAccessToken()}`
+              // 'Authorization': `Bearer ${store.getAccessToken()}`
+              'Authorization': `Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA3MzgzOTgyLCJzdWIiOiJramg5NzExMkBuYXZlci5jb20iLCJQcml2aWxlZ2UiOlsiVVNFUiJdfQ.AVeGR1FpRzapx4LnyJ-9rT0euzYHlu6GzgWJreVoTlw`
              },
   });
   return response.data; // 토큰이 옴

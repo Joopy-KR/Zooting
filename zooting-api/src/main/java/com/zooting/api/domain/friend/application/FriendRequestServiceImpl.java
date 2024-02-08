@@ -3,6 +3,7 @@ package com.zooting.api.domain.friend.application;
 import com.zooting.api.domain.friend.dao.FriendRequestRepository;
 import com.zooting.api.domain.friend.dto.response.FriendRes;
 import com.zooting.api.domain.friend.entity.FriendRequest;
+import com.zooting.api.domain.member.entity.AdditionalInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class FriendRequestServiceImpl implements FriendRequestService {
                         friendRequest.getFrom().getEmail(),
                         friendRequest.getFrom().getNickname(),
                         Optional.ofNullable(friendRequest.getFrom().getAdditionalInfo())
-                                .map(additionalInfo -> additionalInfo.getAnimal())
+                                .map(AdditionalInfo::getAnimal)
                                 .orElse(null),
                         friendRequest.getFrom().getGender())
                 )
@@ -39,7 +40,7 @@ public class FriendRequestServiceImpl implements FriendRequestService {
                         friendRequest.getTo().getEmail(),
                         friendRequest.getTo().getNickname(),
                         Optional.ofNullable(friendRequest.getTo().getAdditionalInfo())
-                                .map(additionalInfo -> additionalInfo.getAnimal())
+                                .map(AdditionalInfo::getAnimal)
                                 .orElse(null),
                         friendRequest.getTo().getGender())
                 )

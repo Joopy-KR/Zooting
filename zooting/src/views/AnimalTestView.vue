@@ -159,16 +159,16 @@
   // 동물상 비율 저장
   const saveTestResult = () => {
     const animalFaceReqList = [];
-    animalFaceReqList.push("dog", allAnimal.value["dog"]);
-    animalFaceReqList.push("cat", allAnimal.value["cat"]);
-    animalFaceReqList.push("rabbit", allAnimal.value["rabbit"]);
+    animalFaceReqList.push({animal:"강아지", percentage: Number(allAnimal.value["dog"])});
+    animalFaceReqList.push({animal:"고양이", percentage: Number(allAnimal.value["cat"])});
+    animalFaceReqList.push({animal:"토끼", percentage: Number(allAnimal.value["rabbit"])});
 
     if (allAnimal.value["gender"] === 'female') {
-      animalFaceReqList.push("deer", allAnimal.value["deer"]);
-      animalFaceReqList.push("turtle", allAnimal.value["turtle"]);
+      animalFaceReqList.push({animal:"사슴", percentage: Number(allAnimal.value["deer"])});
+      animalFaceReqList.push({animal:"펭귄", percentage: Number(allAnimal.value["turtle"])});
     } else {
-      animalFaceReqList.push("bear", allAnimal.value["bear"])
-      animalFaceReqList.push("dino", allAnimal.value["dino"]);
+      animalFaceReqList.push({animal:"곰", percentage: Number(allAnimal.value["bear"])})
+      animalFaceReqList.push({animal:"공룡", percentage: Number(allAnimal.value["dino"])});
     }
 
     store.setAnimalFace(animalFaceReqList);

@@ -1,47 +1,44 @@
 <template>
   <div class="home__container">
-    <Social
-      :new-sender="newSender"
-      @read-message = "readMessage"
-    />
+    <Social/>
     <Ready />
-<!--    <MatchingCompleteModal v-if="isMatchingComplete" class="z-40"/>-->
+    <MatchingCompleteModal v-if="isMatchingComplete" class="z-40"/>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { useAccessTokenStore } from "@/stores/store"
+import { useAccessTokenStore, useStore } from "@/stores/store"
 import Social from '../components/home/Social.vue'
 import Ready from '../components/home/Ready.vue'
+import MatchingCompleteModal from "@/components/home/MatchingCompleteModal.vue";
 const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
+const dmStore = useStore()
+const props = defineProps<{
+  dmRoomId: number
+}>()
+const emit = defineEmits(['receiveMessage'])
 
 const userInfo = ref(store.userInfo)
 
-// 매칭이 된 경우
-const isMatchingComplete = ref(true)
-
+// 매칭이 된 경우 모달창이 뜨는 조건
+const isMatchingComplete = ref(false)
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
 const stompClient = Stomp.over(socket)
 
-const newSender = ref<string[]>([])
-
-watch(()=> store.userInfo, (UpdateUser)=>{
-  userInfo.value = UpdateUser
+watch(()=> store.userInfo, (update)=>{
+  userInfo.value = update
 })
 
 onMounted(async () => {
-  if (!store.isCompletedSignUp) {
-    store.checkCompletedSignUp()
+  const result = await store.checkCompletedSignUp()
+  if (result === 'USER') {
+    await store.getUserInfo()
+    // 소켓 연결 요청을 여기서 하니까 요청을 보내지 않음. why??
   }
 })
-
-const readMessage = (sender: string) => {
-  const index = newSender.value.indexOf(sender)
-  newSender.value.splice(index, 1)
-}
 
 // 소켓 통신 연결 요청
 stompClient.connect(
@@ -61,14 +58,16 @@ socket.onclose = () => {
 }
 
 const onConnected = () => {
-  stompClient.subscribe(`/api/sub/dm/${userInfo.value.email}`,
+  stompClient.subscribe(`/api/sub/dm/${userInfo.value?.email}`,
   (message: any) => {
     const dmReq = JSON.parse(message.body)
-    console.log('Received DM:', dmReq.value)
-
-    newSender.value.push(dmReq.sender)
-    // 만약 탭이 열려 있으면 메시지 보여줌 emit
-    // 닫혀 있는 애들한테는 알림 표시 - props V
+    // 현재 open 된 dmRooId인 경우 메시지 전송
+    if (props.dmRoomId === dmReq.dmRoomId) {
+      emit('receiveMessage', dmReq)
+    } else {
+      // 새로운 메시지 알림
+      dmStore.newMessage.push(dmReq.sender)
+    }
   })
 }
 </script>

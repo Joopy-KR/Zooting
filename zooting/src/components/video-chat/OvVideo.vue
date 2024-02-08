@@ -1,15 +1,12 @@
 <template>
-  <div id="conatiner" class="container">
+  <div id="conatiner" class="container" v-if="streamManager">
+    <!-- style="overflow: hidden;" -->
     <div v-show="is_loaded">
-      <video :id="'videoId-' + connectionId" autoplay playsinline style="display: none;"></video>
+      <video :id="'videoId-' + connectionId" autoplay playsinline></video>
     </div>
-    <!-- <div :id="'threeId-' + connectionId"></div> -->
-		<video
-      id="canvas_video"
-      style="width: 600px; height: 600px"
-      autoplay
-      controls
-    ></video>
+    <div :id="'threeId-' + connectionId">
+
+    </div>
     
     <div class="flex flex-col items-center justify-center" id="loading" v-show="!is_loaded" style="background-color: black; width: 533px; height: 300px;">
       <p class="mb-8 text-5xl font-bold text-white">가면 벗겨짐</p>
@@ -31,6 +28,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { GLTFLoader, GLTF } from 'three/addons/loaders/GLTFLoader.js'
 import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3"
 const { FaceLandmarker, FilesetResolver } = vision
+const emit = defineEmits(['sendCanvas'])
 
 onMounted(() => {
   init()
@@ -44,8 +42,9 @@ onUnmounted(() => {
 
 const props = defineProps<{
   streamManager: any
+  cameraHeight: Number
+  cameraWidth: Number
 }>()
-
 const connectionId = ref(props.streamManager.stream.connection.connectionId)
 
 // 로딩 되었는지 판단할 변수
@@ -69,12 +68,9 @@ class BasicScene {
     this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 0.01, 5000)
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setSize(this.width, this.height)
-    // const threeCanvas: any = document.getElementById(`threeId-${connectionId.value}`)
-    // threeCanvas.appendChild(this.renderer.domElement)
-		const canvas_video = document.getElementById('canvas_video')
-		canvas_video.srcObject = this.renderer.domElement.captureStream()
-		console.log(canvas_video)
-    props.streamManager.addVideoElement(canvas_video)
+    const threeCanvas: any = document.getElementById(`threeId-${connectionId.value}`)
+    threeCanvas.appendChild(this.renderer.domElement)
+    // props.streamManager.addVideoElement(threeCanvas)
     
     // 조명 추가
     const ambientLight = new THREE.AmbientLight(0xffffff, 2)
@@ -104,10 +100,11 @@ class BasicScene {
     )
     this.scene.add(inputFramesPlane)
     this.render()
+    emit('sendCanvas', this.renderer.domElement)
     
     // 가면이 벗겨지면 카메라 끄기
     const canvas: any = document.querySelector("canvas")
-    watch(is_loaded, () => {
+    watch(is_loaded, () => { 
       if (is_loaded.value === false) {
         canvas.style.visibility = "hidden"
       } else {
@@ -401,8 +398,8 @@ canvas {
 
 <style scoped>
 
-/* video {
+video {
   display: none;
-} */
+}
 
 </style>

@@ -5,17 +5,19 @@
       <user-video :stream-manager="publisher" 
       :cameraHeight="cameraHeight" 
       :cameraWidth="cameraWidth"
+      @send-canvas="sendCanvas"
       />
       <user-video v-for="sub in subscribers" 
       :key="sub.stream.connection.connectionId" 
       :stream-manager="sub" 
       :cameraHeight="cameraHeight" 
       :cameraWidth="cameraWidth"
+      @send-canvas="sendCanvas"
       />
     </div>
     <!-- 캐치마인드 게임 -->
     <div class="catch-mind">
-      <canvas class="canvas" width="1000" height="450">이 브라우저는 캔버스를 지원하지 않습니다.</canvas>
+      <!-- <canvas class="canvas" width="1000" height="450">이 브라우저는 캔버스를 지원하지 않습니다.</canvas> -->
       <div class="control" id="control">
       <button class="color-btn" data-color="black"></button>
       <button class="color-btn" data-color="red"></button>
@@ -29,15 +31,22 @@
 
 <script setup lang="ts">
 import UserVideo from '@/components/video-chat/UserVideo.vue' 
+import { subscribe } from 'diagnostics_channel';
 import { ref, onMounted } from 'vue';
 
-defineProps({
+const props = defineProps({
   session: Object,
   publisher: Object,
   subscribers: Object,
   cameraHeight: Number,
   cameraWidth: Number
   })
+
+const emit = defineEmits(['sendCanvas'])
+
+const sendCanvas = function(canvas) {
+  emit('sendCanvas', canvas)
+}
 
 let canvas: HTMLCanvasElement | null = null;
 let context: CanvasRenderingContext2D | null = null;
@@ -88,6 +97,7 @@ function setColor(e){
   colVal = e.target.getAttribute('data-color');
   context.fillStyle = colVal; // 펜 색상
 }
+
 </script>
 
 

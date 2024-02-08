@@ -32,6 +32,10 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        log.info("Request URI: {}", request.getRequestURI());
+        log.info("Request Method: {}", request.getMethod());
+        log.info("Request Params: {}", request.getParameterMap());
+        log.info("Access-token: {}", request.getHeader("Authorization"));
         if (PatternMatchUtils.simpleMatch(URL_WHITE_LIST, request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;

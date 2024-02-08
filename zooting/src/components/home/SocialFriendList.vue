@@ -30,7 +30,7 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/>
           </svg>
           <!-- 새로운 채팅 알림 -->
-          <div class="absolute bottom-[10px] left-[10px] cursor-pointer" v-show="props.newSender.includes(item.email)" @click="entryChat(item)">
+          <div class="absolute bottom-[10px] left-[10px] cursor-pointer" v-show="isNewSender(item.email)" @click="entryChat(item)">
             <span class="relative flex w-2 h-2">
               <span class="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-[#DF75DB]"></span>
               <span class="relative inline-flex w-2 h-2 rounded-full bg-[#DF75DB]"></span>
@@ -55,16 +55,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useAccessTokenStore } from '@/stores/store'
+import { ref, watch, computed } from 'vue'
+import { useAccessTokenStore, useStore } from '@/stores/store'
 import { RouterLink } from 'vue-router'
 import type { Friend } from "@/types/global"
 
 const store = useAccessTokenStore()
-
-const props = defineProps<{
-  newSender: string[]
-}>()
+const dmStore = useStore()
 
 const emit = defineEmits(['readMessage'])
 
@@ -72,8 +69,8 @@ const friendList = ref(store.friendList)
 const isOpenMenu = ref<boolean>(false)
 const openedMenuNickname = ref<string | null>(null)
 
-watch(() => store.friendList, (updatedList) => {
-  friendList.value = updatedList
+watch(() => store.friendList, (update) => {
+  friendList.value = update
 })
 
 const getProfileLink = (value: string) => `/profile/${value}`
@@ -89,21 +86,21 @@ const getHeartClass = (gender: string) => (
 const getProfileImage = (animal: string) => {
   let imgUrl: URL;
   if (animal === '강아지') {
-    imgUrl = new URL('@/assets/images/logo.svg', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/dog.png', import.meta.url);
   } else if (animal === '고양이') {
-    imgUrl = new URL('@/assets/images/animal/cat.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/cat.png', import.meta.url);
   } else if (animal === '곰') {
-    imgUrl = new URL('@/assets/images/animal/bear.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/bear.png', import.meta.url);
   } else if (animal === '공룡') {
-    imgUrl = new URL('@/assets/images/animal/dino.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/dino.png', import.meta.url);
   } else if (animal === '펭귄') {
-    imgUrl = new URL('@/assets/images/animal/penguin.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/penguin.png', import.meta.url);
   } else if (animal === '토끼') {
-    imgUrl = new URL('@/assets/images/animal/rabbit.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/rabbit.png', import.meta.url);
   } else if (animal === '사슴') {
-    imgUrl = new URL('@/assets/images/animal/deer.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/deer.png', import.meta.url);
   } else {
-    imgUrl = new URL('@/assets/images/animal/animal_group.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/animal_group.png', import.meta.url);
   }
   return imgUrl.href;
 }
@@ -112,8 +109,8 @@ const entryChat = (item: Friend) => {
   store.entryDmRoom(item)
   isOpenMenu.value = false
   openedMenuNickname.value = null
-  emit('readMessage', item.email)
-} 
+  dmStore.newMessage = dmStore.newMessage.filter(email => email !== item.email)
+}
 
 const openMenu = (nickname: string) => {
   if (isOpenMenu.value && openedMenuNickname.value == nickname) {
@@ -123,6 +120,8 @@ const openMenu = (nickname: string) => {
   }
   openedMenuNickname.value = isOpenMenu.value ? nickname : null
 }
+
+const isNewSender = computed(() => (email: string) => dmStore.newMessage.includes(email))
 </script>
 
 <style scoped>

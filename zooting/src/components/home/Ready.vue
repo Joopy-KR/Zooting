@@ -1,9 +1,10 @@
 <template>
   <div class="ready__container">
     <div class="ready__header">
-      <img src="@/assets/images/logo/logo_lg.png" alt="" class="animate__bounceIn">
+      <img src="/assets/images/logo/logo_lg.png" alt="" class="animate__bounceIn">
     </div>
     <div class="ready__main">
+      <Subgame class="mb-10 subgame"/>
       <ReadyMatch />
       <ReadyRecord />
     </div>
@@ -13,6 +14,7 @@
 <script setup lang="ts">
 import ReadyMatch from './ReadyMatch.vue'
 import ReadyRecord from './ReadyRecord.vue'
+import Subgame from '../subgame/Subgame.vue';
 
 </script>
 
@@ -32,4 +34,10 @@ import ReadyRecord from './ReadyRecord.vue'
 .ready__main {
   @apply grid grid-cols-7 h-full gap-5;
 }
+@media (max-width : 640px) {
+  .subgame {
+    display : none;
+  }
+}
+
 </style>

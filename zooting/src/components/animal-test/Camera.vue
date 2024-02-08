@@ -299,8 +299,7 @@ const deer = ref(0);
 const turtle = ref(0);
 
 // 모델 경로
-
-const URL = `@/assets/animal_test_model/${gender.value}`;
+const URL = `/assets/animal_test_model/${gender.value}`;
 
 // 모델 로딩 후 웹캠 출력
 const init = async () => {
@@ -327,7 +326,7 @@ const setupWebcam = async () => {
     await webcam.setup();
   } catch (err) {
     if (err === "Could not open your camera. You may have denied access.") {
-      window.alert("카메라가 차단되어있어요. 브라우저 설정을 확인해주세요");
+      window.alert("카메라가 차단되어 있어요. 브라우저 설정을 확인해 주세요");
     }
   }
 

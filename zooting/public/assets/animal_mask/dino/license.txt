@@ -1,0 +1,8 @@
+Model Information:
+* title:	Prop132 Crocodile Head
+* source:	https://sketchfab.com/3d-models/prop132-crocodile-head-cefc97f0033641a8bf098991c5263020
+* author:	BaluCG (https://sketchfab.com/BaluCG)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works
