@@ -14,6 +14,7 @@ import { useRouter } from "vue-router"
 import { useAccessTokenStore } from "@/stores/store"
 import Social from '../components/home/Social.vue'
 import Ready from '../components/home/Ready.vue'
+import { connect } from 'http2'
 const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
@@ -34,20 +35,21 @@ onMounted(async () => {
   const result = await store.checkCompletedSignUp()
   if (result === 'USER') {
     store.getUserInfo()
-
-    // 소켓 통신 연결 요청
-    stompClient.connect(
-      {},
-      () => {
-        console.log('Connected to WebSocket')
-        onConnected()
-      },
-      () => {
-        console.log("Could not WebSocket server")
-      }
-    )
+    // 소켓 연결 요청을 여기서 하니까 요청을 보내지 않음. why??
   }
 })
+
+// 소켓 통신 연결 요청
+stompClient.connect(
+  {},
+  () => {
+    console.log('Connected to WebSocket')
+    onConnected()
+  },
+  () => {
+    console.log("Could not WebSocket server")
+  }
+)
 
 const readMessage = (sender: string) => {
   const index = newSender.value.indexOf(sender)
