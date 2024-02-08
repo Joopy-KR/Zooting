@@ -9,6 +9,7 @@ import com.zooting.api.domain.dm.entity.DMRoom;
 import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.friend.entity.FriendRequest;
 import com.zooting.api.domain.mask.entity.MaskInventory;
+import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.entity.MeetingLog;
 import jakarta.persistence.*;
 import lombok.*;
@@ -85,5 +86,20 @@ public class Member extends BaseEntity {
         this.dmRooms = Objects.nonNull(dmRooms) ? dmRooms : new ArrayList<>();
         this.dmRoomsReverse = Objects.nonNull(dmRoomsReverse) ? dmRoomsReverse : new ArrayList<>();
         this.role = Objects.nonNull(role) ? role : new ArrayList<>();
+    }
+
+    public MeetingMemberDto toMeetingMemberDto() {
+        return MeetingMemberDto.builder()
+                .email(this.email)
+                .gender(this.gender)
+                .nickname(this.nickname)
+                .address(this.address)
+                .personality(this.additionalInfo.getPersonality())
+                .animal(this.additionalInfo.getAnimal())
+                .interest(this.additionalInfo.getInterest())
+                .idealAnimal(this.additionalInfo.getIdealAnimal())
+                .animalFace(this.animalFace)
+                .blockFromList(this.blockFromList)
+                .build();
     }
 }
