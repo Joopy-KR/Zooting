@@ -349,7 +349,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const setPersonality = function (payload: string) {
     const personality = payload;
     axios({
-      method: "put",
+      method: "patch",
       url: `${API_URL}/api/members/characters`,
       data: {
         personality,
@@ -383,7 +383,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
+        const data = res.data;
+        const {accessToken, refreshToken} = data["result"];
+        if (accessToken && refreshToken) {
+          setAccessToken(accessToken);
+          setRefreshToken(refreshToken);
+        }
       })
       .catch((err) => {
         console.log(err);
