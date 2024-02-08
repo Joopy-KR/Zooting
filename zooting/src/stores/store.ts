@@ -736,21 +736,21 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     const noticeList = ref<Notice[]>([]);
     // 공지사항 리스트
     const getNoticeList = function (params: {'page': number, 'size':number}) {
-        axios({
-            method: "get",
-            url: `${API_URL}/api/notice`,
-            headers: {
-                Authorization: `Bearer ${getAccessToken()}`,
-            },
-            params : params,
-        })
-            .then((res) => {
-                noticePage.value = res.data.result;
-                noticeList.value = res.data.result["noticeResList"];
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+      axios({
+      method: "get",
+      url: `${API_URL}/api/notice`,
+      headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+      },
+      params : params,
+    })
+      .then((res) => {
+          noticePage.value = res.data.result;
+          noticeList.value = res.data.result["noticeResList"];
+      })
+      .catch((err) => {
+          console.log(err);
+      });
     };
 
   return {

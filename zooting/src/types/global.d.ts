@@ -84,13 +84,14 @@ declare interface DM {
 declare interface DmItem {
     dmRoomId: number;
     dmId: number;
+    type: string;
     sender: string;
     message: string;
-    dmFiles: DmFile[] | [];
+    files: DmFile[] | [];
 }
 
 declare interface DmFile {
-    fileId: number;
+    imgUrl: string;
     thumbnailUrl: string;
 }
 
