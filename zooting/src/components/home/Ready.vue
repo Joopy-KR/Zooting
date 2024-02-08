@@ -4,7 +4,7 @@
       <img src="/src/assets/images/logo/logo_lg.png" alt="" class="animate__bounceIn">
     </div>
     <div class="ready__main">
-      <Subgame class="mb-10"/>
+      <Subgame class="mb-10 subgame"/>
       <ReadyMatch />
       <ReadyRecord />
     </div>
@@ -34,4 +34,10 @@ import Subgame from '../subgame/Subgame.vue';
 .ready__main {
   @apply grid grid-cols-7 h-full gap-5;
 }
+@media (max-width : 640px) {
+  .subgame {
+    display : none;
+  }
+}
+
 </style>

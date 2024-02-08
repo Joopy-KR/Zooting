@@ -1,11 +1,14 @@
 import StopDogImg from '@/assets/images/sub_game/stopdog.png';
 import RunningDogImg from '@/assets/images/sub_game/runningdog.png';
-import StartDogImg from '@/assets/images/sub_game/startdog.png';
-
+import HamburgerImg from '@/assets/images/sub_game/obstacle_hamburger.png';
+import PotatoImg from '@/assets/images/sub_game/obstacle_potato.png';
+import PizzaImg from '@/assets/images/sub_game/obstacle_pizza.png';
 
 document.addEventListener('DOMContentLoaded', () => {
-
     let canvas = document.querySelector("#canvas") as HTMLCanvasElement
+    if (!canvas) {
+        return;
+    }
     let ctx = canvas.getContext('2d');
     canvas.width = 600; // 300 - canvas 너비
     canvas.height =200;   //215
@@ -16,9 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     dogImg.src = StopDogImg;
     let dino = {
         x: 0,
-        y: 130, // 땅에서 상자 크기만큼 위에서부터 그린다
+        y: 160, // 땅에서 상자 크기만큼 위에서부터 그린다
         width: 50,
-        height: 60,
+        height: 30,
         draw(){
             if (! ctx){
                 return;
@@ -26,10 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // ctx.fillStyle = 'green';
             // ctx.fillRect(this.x, this.y, this.width, this.height);
             ctx.drawImage(dogImg, this.x, this.y, this.width, this.height);
-            console.log(dogImg.src)
         }
     }
-    // let dogImgUrl = new URL('@/assets/images/sub_game/startdog.png', import.meta.url);
+
+    let obstacleImg = new Image();
+    obstacleImg.src = HamburgerImg;
     // 선인장 장애물
     class Cactus {
         width:number;
@@ -41,14 +45,23 @@ document.addEventListener('DOMContentLoaded', () => {
             this.height = 20 + getRandomInt(-5, 6);
             this.x = 560; // 가장 끝에서 약 30만큼 전
             this.y = 190 - this.height; // 땅위치에서 높이만큼 위에서 시작
+
         }
         draw() {
             if (! ctx) {
                 return;
             }
-            ctx.fillStyle = 'red';
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-
+            // ctx.fillStyle = 'red';
+            // ctx.fillRect(this.x, this.y, this.width, this.height);
+            // let num = getRandomInt(1, 3);
+            // if (num === 1) {
+            //     obstacleImg.src = HamburgerImg;
+            // }else if (num === 2) {
+            //     obstacleImg.src = PizzaImg;
+            // }else {
+            //     obstacleImg.src = PotatoImg;
+            // }
+            ctx.drawImage(obstacleImg, this.x, this.y, this.width, this.height);
         }
     }
 
@@ -67,21 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameState = 0; // 0 : end , 1: start
     let jumpState = 0; // 0 : default, 1 : jump
     let jumpTimer = 0;
-    let animation:number;
-    let life = 5;
+    let animation:number ;
     let score = 0;
 
-    let lifeElement = document.querySelector('#life');
-    if (lifeElement) {
-     lifeElement.innerHTML = life.toString();
-    }
     let scoreElement = document.querySelector('#score');
-    if(scoreElement) {
-        scoreElement.innerHTML = score.toString();
-    }
-
-
-
 
     function frameAction () {
         animation = requestAnimationFrame(frameAction);
@@ -112,41 +114,69 @@ document.addEventListener('DOMContentLoaded', () => {
         // 캐릭터 그리기
         dino.draw();
         // 스페이스 연타로 점프할때 jumptimer가 40이 되면 스페이스가 jump mode가 아니게 된다
-        if (jumpTimer > 40) {
+        if (jumpTimer > 10) {
+            console.log('44')
+            console.log(jumpTimer)
             jumpState = 0;
             jumpTimer = 0;
         }
         if(jumpState == 1){
-            jumpTimer++;
-            dino.y-= 0.8;
+            console.log('55')
+            console.log(jumpTimer, dino.y)
+            jumpTimer += 20;
+            dino.y-= 70;
         }
-        if(jumpState == 0) {
-            if(dino.y < 130) {
-                dino.y ++ ;
+        if(jumpState == 0) {    // 타이머가 다 돼서 state가 0이 되고 높이가 135보다 높으면 2.5씩 떨어진다
+            if(dino.y < 150) {
+                jumpState = 0
+                if (dino.y + 20 <= 160) {
+                    dino.y += 2 ;
+                } else if (dino.y + 20 >160) {
+                    dino.y = 160
+                }
+                console.log('!!!!')
             }
+
+        }
+        if (jumpTimer > 10) {
+            console.log('44')
+            console.log(jumpTimer)
+            jumpState = 0;
+            jumpTimer = 0;
         }
     }
-
+    let descriptionElement = document.querySelector("#description");
+    let recordElement = document.querySelector("#record");
     // 스페이스바 누르면 게임 화면 시작
     document.addEventListener('keydown', (e)=>{
         if (e.code == 'Space'){
             if (gameState == 0) {
+                if (descriptionElement) {
+                    descriptionElement.innerHTML = "";
+                }
+                if (recordElement) {
+                    recordElement.innerHTML = "score";
+                }
+                if(scoreElement) {
+                    scoreElement.innerHTML = score.toString();
+                }
+                initGame();
                 gameState = 1; // 게임 실행
                 frameAction();
 
-            } else if (gameState == 1) { // 게임실행 중일 때 스페이스 누르면
+            } else if (gameState == 1 && dino.y > 150) { // 게임실행 중일 때 스페이스 누르면
                 jumpState = 1; // 점프 중으로 변경
                 dogImg.src = RunningDogImg;
                 dino.draw();
             }
         }
     })
-    // 스페이스바 누르면 게임 화면 시작
+
     document.addEventListener('keyup', (e)=>{
         if (e.code == 'Space'){
             if (gameState == 1) { // 게임실행 중일 때 스페이스 누르면
                 jumpState = 1; // 점프 중으로 변경
-                dogImg.src = RunningDogImg;
+                dogImg.src = StopDogImg;
                 dino.draw();
             }
         }
@@ -168,17 +198,39 @@ document.addEventListener('DOMContentLoaded', () => {
         let yValue = cactus.y - ( dino.y + dino.height );
         if( xValue < 0 && yValue < 0 ){ // 충돌!
             // 충돌 시 실행되는 코드
-            life --;
-            if (lifeElement) {
-                lifeElement.innerHTML = life.toString();
-            }
             if (!animation || !ctx) {
                 return;
             }
-            alert('게임오버');
+            console.log(1)
             cancelAnimationFrame(animation);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            console.log(2)
+            setTimeout(()=> {
+                if (!ctx) {return;}
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                gameState = 0;
+                if (descriptionElement) {
+                    descriptionElement.innerHTML = "Game Over"
+                }
+                if (scoreElement) {
+                    scoreElement.innerHTML =""
+                }
+                if (recordElement) {
+                    recordElement.innerHTML =""
+                }
+            }, 0)
             // location.reload();
+            console.log(3)
+        }
+    }
+    function initGame() {
+        // 초기화할 변수들을 여기에 추가
+        timer = 0;
+        cactusArr = [];
+        jumpState = 0;
+        jumpTimer = 0;
+        score = 0;
+        if (scoreElement) {
+            scoreElement.innerHTML = score.toString();
         }
     }
 
