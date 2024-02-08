@@ -90,7 +90,7 @@ declare interface DmItem {
 }
 
 declare interface DmFile {
-    fileId: number;
+    imgUrl: string;
     thumbnailUrl: string;
 }
 

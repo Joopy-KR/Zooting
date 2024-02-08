@@ -36,7 +36,6 @@ onMounted(async () => {
   const result = await store.checkCompletedSignUp()
   if (result === 'USER') {
     store.getUserInfo()
-    // 소켓 연결 요청을 여기서 하니까 요청을 보내지 않음. why??
   }
 })
 
@@ -60,13 +59,20 @@ socket.onclose = () => {
 const onConnected = () => {
   stompClient.subscribe(`/api/sub/dm/${userInfo.value?.email}`,
   (message: any) => {
-    const dmReq = JSON.parse(message.body)
-    // 현재 open 된 dmRooId인 경우 메시지 전송
-    if (props.dmRoomId === dmReq.dmRoomId) {
-      emit('receiveMessage', dmReq)
-    } else {
-      // 새로운 메시지 알림
-      dmStore.newMessage.push(dmReq.sender)
+    const res = JSON.parse(message.body)
+    // DM
+    if (res.type === 'message') {
+      // 현재 open 된 dmRooId인 경우 메시지 전송
+      if (props.dmRoomId === res.dmRoomId) {
+        emit('receiveMessage', res)
+      } else {
+        // 새로운 메시지 알림
+        dmStore.newMessage.push(res.sender)
+      } 
+    } 
+    // Meeting
+    else {
+      console.log(res)
     }
   })
 }
