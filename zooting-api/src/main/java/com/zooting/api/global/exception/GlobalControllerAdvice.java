@@ -24,6 +24,7 @@ public class GlobalControllerAdvice {
      */
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ErrorResponse> handleAllExceptions(Exception e) {
+        e.printStackTrace();
         ErrorResponse response = ErrorResponse.of()
                 .code(ErrorCode.INTERNAL_SERVER_ERROR)
                 .message(e.getMessage())
@@ -33,6 +34,7 @@ public class GlobalControllerAdvice {
 
     @ExceptionHandler(RuntimeException.class)
     protected ResponseEntity<ErrorResponse> handleRuntimeExceptions(RuntimeException e) {
+        e.printStackTrace();
         ErrorResponse response = ErrorResponse.of()
                 .code(ErrorCode.INTERNAL_SERVER_ERROR)
                 .message(e.getMessage())

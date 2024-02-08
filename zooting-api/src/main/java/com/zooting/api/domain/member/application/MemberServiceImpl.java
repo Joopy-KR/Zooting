@@ -253,7 +253,7 @@ public class MemberServiceImpl implements MemberService {
             findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         }
         return findMembers.stream().map(mem -> new MemberSearchRes(mem.getEmail(), mem.getNickname(),
-                mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
+                mem.getGender(), mem.getAdditionalInfo().getAnimal())).toList();
     }
 
     @Transactional

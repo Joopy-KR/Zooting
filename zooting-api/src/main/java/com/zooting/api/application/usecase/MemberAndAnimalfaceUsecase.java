@@ -8,10 +8,18 @@ import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
+import com.zooting.api.global.jwt.dto.TokenDto;
+import com.zooting.api.global.jwt.service.JwtService;
+import com.zooting.api.global.security.userdetails.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 @Service
@@ -19,21 +27,23 @@ import java.util.Objects;
 public class MemberAndAnimalfaceUsecase {
     final private MemberRepository memberRepository;
     final private AnimalFaceRepository animalFaceRepository;
+    private final JwtService jwtService;
     public static final Long DEFAULT_ANIMAL_MODIFY_PRICE = 50L;
+
     @Transactional
-    public boolean saveMemberAndAnimal(String userId, MemberAndAnimalfaceReq animalfaceReq) {
-        Member member = memberRepository.findMemberByEmail(userId)
-                .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+    public TokenDto saveMemberAndAnimal(UserDetails userDetails, MemberAndAnimalfaceReq animalfaceReq) {
+        Member member = memberRepository.findMemberByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         // 동물상 변경하는 유저 - 잔여 포인트 확인
         if (member.getRole().contains(Privilege.USER)) {
             if (member.getPoint() < DEFAULT_ANIMAL_MODIFY_PRICE) {
-                return false;
+                throw new BaseExceptionHandler(ErrorCode.NOT_ENOUGH_POINT); // 포인트 부족 에러
             }
-            member.setPoint(member.getPoint()-DEFAULT_ANIMAL_MODIFY_PRICE);
+            member.setPoint(member.getPoint() - DEFAULT_ANIMAL_MODIFY_PRICE);
         }
         // animalFace 저장 - 동물상 닮은 비율 저장
         AnimalFace animalFace = member.getAnimalFace();
-        if (Objects.isNull(animalFace)){
+        if (Objects.isNull(animalFace)) {
             animalFace = new AnimalFace();
         }
 
@@ -56,15 +66,47 @@ public class MemberAndAnimalfaceUsecase {
 
         // 가장 닮은 동물상 저장
         member.getAdditionalInfo().setAnimal(memberAnimal);
-        // 멤버의 권한 수정 Anonymous 삭제하고 User 권한 부여
-        if (member.getRole().contains(Privilege.ANONYMOUS)) {
-            member.getRole().remove(Privilege.ANONYMOUS);
-            member.getRole().add(Privilege.USER);
-        }
+
+        TokenDto tokenDto = createNewToken(userDetails, member);
         memberRepository.save(member);
         animalFace.setMember(member);
         animalFaceRepository.save(animalFace);
-        return true;
+        return tokenDto;
+    }
+
+    // 새로운 토큰 생성
+    private TokenDto createNewToken(UserDetails userDetails, Member member) {
+        // 멤버의 권한 수정 Anonymous 삭제하고 User 권한 부여
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+        for (GrantedAuthority authority : authorities) {
+            if (authority.getAuthority().equals("ROLE_" + Privilege.ANONYMOUS)) {
+                member.getRole().remove(Privilege.ANONYMOUS);
+                if (!member.getRole().contains(Privilege.USER)) {
+                    member.getRole().add(Privilege.USER);
+                }
+
+                if (userDetails instanceof CustomUserDetails) {
+                    // ANONYMOUS 권한 제거
+                    userDetails.getAuthorities().removeIf(auth ->
+                            auth.getAuthority().equals("ROLE_" + Privilege.ANONYMOUS));
+
+                    Collection<GrantedAuthority> newAuth = new ArrayList<>();
+                    newAuth.add(new SimpleGrantedAuthority(Privilege.USER.name()));
+                    // USER 권한 추가
+                    CustomUserDetails user = CustomUserDetails.builder()
+                            .email(userDetails.getUsername())
+                            .nickname(((CustomUserDetails) userDetails).getNickname())
+                            .authorities(newAuth)
+                            .build();
+
+                    return new TokenDto(
+                            jwtService.createAccessToken(user),
+                            jwtService.createRefreshToken(user)
+                    );
+                }
+            }
+        }
+        return null;
     }
 }
 

@@ -8,15 +8,8 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-@Getter
-@Setter
 public class JwtClaimsParser {
-    private final Claims claims;
-    JwtClaimsParser(Claims claims){
-        this.claims = claims;
-    }
-
-    public Collection<GrantedAuthority> getPrivileges() {
+    public static Collection<GrantedAuthority> getPrivileges(Claims claims) {
         Object stringAuthorities = claims.get("Privilege");
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         if (stringAuthorities instanceof Collection<?>) {

@@ -12,9 +12,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Setter
 @Builder
 public class CustomUserDetails implements UserDetails {
-    String email;
-    String nickname;
-    Collection<? extends GrantedAuthority> authorities;
+    private final String email;
+    @Getter
+    private final String nickname;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
