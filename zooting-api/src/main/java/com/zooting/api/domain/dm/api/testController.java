@@ -10,4 +10,9 @@ public class testController {
     public String chat() {
         return "/chat.html";
     }
+
+    @GetMapping("/subtest")
+    public String subchat() {
+        return "/subtest.html";
+    }
 }
