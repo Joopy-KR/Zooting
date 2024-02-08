@@ -33,9 +33,9 @@
                 <!-- 메시지 -->
                 <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
                 <!-- 사진 -->
-                <div v-if="item.dmFiles && item.dmFiles.length > 0" :class="[item.dmFiles.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
-                  <div v-for="(file, index) in item.dmFiles" :key="index">
-                    <img :src="getPreviewUrl(item.sender, file)" class="h-32" alt="Preview">
+                <div v-if="item.files && item.files.length > 0" :class="[item.files.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
+                  <div v-for="(file, index) in item.files" :key="index" @click="zoomImg(file)">
+                    <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
                   </div>
                 </div>
               </div>
@@ -50,9 +50,9 @@
                 <!-- 메시지 -->
                 <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
                 <!-- 사진 -->
-                <div v-if="item.dmFiles && item.dmFiles.length > 0" :class="[item.dmFiles.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
-                  <div v-for="(file, index) in item.dmFiles" :key="index">
-                    <img :src="file.imageUrl" class="h-32" alt="Preview">
+                <div v-if="item.files && item.files.length > 0" :class="[item.files.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
+                  <div v-for="(file, index) in item.files" :key="index">
+                    <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
                   </div>
                 </div>
               </div>
@@ -66,13 +66,18 @@
               <!-- 메시지 -->
               <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
               <!-- 사진 -->
-              <div v-if="item.dmFiles && item.dmFiles.length > 0" :class="[item.dmFiles.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
-                <div v-for="(file, index) in item.dmFiles" :key="index">
+              <div v-if="item.files && item.files.length > 0" :class="[item.files.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
+                <div v-for="(file, index) in item.files" :key="index">
                   <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
                 </div>
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- 파일 확대 -->
+        <div>
+          
         </div>
       </div>
       
@@ -95,7 +100,7 @@
             <!-- 파일 image -->
             <div v-if="fileInput && fileInput.length > 0" :class="[fileInput?.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
               <div v-for="(item, index) in fileInput" :key="index">
-                <img :src="getPreviewUrl(sender, item)" class="h-32" alt="Preview">
+                <img :src="getPreviewUrl(item)" class="h-32" alt="Preview">
               </div>
             </div>
             <!-- 파일 input -->
@@ -194,21 +199,21 @@ const getProfileImage = () => {
   let imgUrl: URL;
   const animal = receiverInfo.value?.animal
   if (animal === '강아지') {
-    imgUrl = new URL('@/assets/images/animal/dog.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/dog.png', import.meta.url);
   } else if (animal === '고양이') {
-    imgUrl = new URL('@/assets/images/animal/cat.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/cat.png', import.meta.url);
   } else if (animal === '곰') {
-    imgUrl = new URL('@/assets/images/animal/bear.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/bear.png', import.meta.url);
   } else if (animal === '공룡') {
-    imgUrl = new URL('@/assets/images/animal/dino.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/dino.png', import.meta.url);
   } else if (animal === '펭귄') {
-    imgUrl = new URL('@/assets/images/animal/penguin.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/penguin.png', import.meta.url);
   } else if (animal === '토끼') {
-    imgUrl = new URL('@/assets/images/animal/rabbit.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/rabbit.png', import.meta.url);
   } else if (animal === '사슴') {
-    imgUrl = new URL('@/assets/images/animal/deer.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/deer.png', import.meta.url);
   } else {
-    imgUrl = new URL('@/assets/images/animal/animal_group.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/animal_group.png', import.meta.url);
   }
   return imgUrl.href;
 }
@@ -284,12 +289,12 @@ const handleFileChange = (event: Event) => {
   }
 }
 
-const getPreviewUrl = (sender: string, file: File | DmFile) => {
-  if (isSender(sender)) {
-    return URL.createObjectURL(file)
-  } else {
-    return file.thumbnailUrl
-  }
+const getPreviewUrl = (file: File) => {
+  return URL.createObjectURL(file)
+}
+
+const zoomImg = (file: any) => {
+  //
 }
 
 // Web socket -----------------------------------------------
@@ -316,12 +321,6 @@ async function sendMessage() {
       }
     }
 
-    // 새로운 메시지 추가 (전송되는 척)
-    sockDmList.value.push({
-      sender: sender.value,
-      message: messageInput.value,
-      dmFiles: fileInput.value,
-    })
     console.log(fileInput.value)
     try {
       if (fileInput.value && fileInput.value.length > 0) {
@@ -344,6 +343,15 @@ async function sendMessage() {
           }))
         }
       }
+      
+      // 새로운 메시지 추가 (전송되는 척)
+      sockDmList.value.push({
+        sender: sender.value,
+        message: messageInput.value,
+        files: fileList.value,
+      })
+      console.log(sockDmList.value)
+
       // 메시지 전송
       stompClient.send('/api/pub/dm/message', {}, JSON.stringify({
         dmRoomId: dmRoomId.value,

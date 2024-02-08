@@ -35,12 +35,7 @@ watch(()=> store.userInfo, (update)=>{
 onMounted(async () => {
   const result = await store.checkCompletedSignUp()
   if (result === 'USER') {
-<<<<<<< HEAD
-    store.getUserInfo()
-=======
     await store.getUserInfo()
-    // 소켓 연결 요청을 여기서 하니까 요청을 보내지 않음. why??
->>>>>>> f0773be23d765deb84345e523ac0b550e4123cd1
   }
 })
 
@@ -66,7 +61,7 @@ const onConnected = () => {
   (message: any) => {
     const res = JSON.parse(message.body)
     // DM
-    if (res.type === 'message') {
+    if (res.type === 'MESSAGE') {
       // 현재 open 된 dmRooId인 경우 메시지 전송
       if (props.dmRoomId === res.dmRoomId) {
         emit('receiveMessage', res)
