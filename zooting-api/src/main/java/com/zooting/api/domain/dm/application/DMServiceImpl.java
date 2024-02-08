@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.zooting.api.domain.dm.dao.DMRepository;
 import com.zooting.api.domain.dm.dao.DMRoomRepository;
 import com.zooting.api.domain.dm.dto.request.DMReq;
-import com.zooting.api.domain.dm.dto.response.DMDto;
-import com.zooting.api.domain.dm.dto.response.DMRoomRes;
 import com.zooting.api.domain.dm.dto.response.RedisDMRes;
 import com.zooting.api.domain.dm.dto.response.RedisDMRoomRes;
 import com.zooting.api.domain.dm.entity.DM;
@@ -29,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -102,33 +99,6 @@ public class DMServiceImpl implements DMService {
         RedisDMRes redisDMRes = new RedisDMRes(dmReq.dmRoomId(), dm.getId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(),
                 dmReq.files().stream().map(file -> new DMFileRes(file.imgUrl(), file.thumbnailUrl())).toList());
         redisTemplate.opsForList().rightPush("dmRoomId:" + dmReq.dmRoomId(), gson.toJson(redisDMRes));
-        redisTemplate.expire("dmRoomId:" + dmReq.dmRoomId(), 30, java.util.concurrent.TimeUnit.MINUTES);
-    }
-
-    @Override
-    @Transactional
-    public DMRoomRes enterDMRoom(String sender, String receiver) {
-        DMRoom dmRoom = getDMRoom(sender, receiver);
-        Long cursor = getStartCursor(dmRoom.getId(), sender);
-        List<DM> dmList = getAllDMList(dmRoom.getId(), cursor);
-        if (!dmList.isEmpty()) {
-            dmRoom.setSenderLastReadId(dmList.get(dmList.size() - 1).getId());
-            cursor = dmList.get(dmList.size() - 1).getId();
-        }
-        List<DMDto> dmDtoList = dmList
-                .stream()
-                .map(dm -> new DMDto(
-                                dmRoom.getId(), dm.getId(), dm.getSender(), dm.getMessage(), dm.getFiles()
-                                .stream()
-                                .map(file -> new DMFileRes(
-                                        file.getImgUrl(),
-                                        file.getThumbnailUrl()
-                                ))
-                                .toList()
-                        )
-                )
-                .toList();
-        return new DMRoomRes(dmRoom.getId(), dmDtoList, cursor);
     }
 
     @Override
@@ -139,7 +109,6 @@ public class DMServiceImpl implements DMService {
         /* redis에 데이터가 있다면 불러옴 */
         List<Object> objectList = redisTemplate.opsForList().range("dmRoomId:" + dmRoom.getId(), 0, -1);
         if (objectList != null && !objectList.isEmpty()) {
-            redisTemplate.expire("dmRoomId:" + dmRoom.getId(), 30, TimeUnit.SECONDS);
             List<RedisDMRes> redisDMResList = objectList.stream()
                     .map(obj -> gson.fromJson((String) obj, RedisDMRes.class))
                     .collect(Collectors.toList());
@@ -171,34 +140,13 @@ public class DMServiceImpl implements DMService {
         return new RedisDMRoomRes(dmRoom.getId(), redisDMResList, cursor);
     }
 
-    @Override
-    public DMRoomRes getDMRoomWithCursor(Long dmRoomId, Long cursor) {
-        Page<DM> dmList = getDMList(dmRoomId, cursor);
-        List<DMDto> dmDtoList = dmList
-                .stream()
-                .map(dm -> new DMDto(
-                                dmRoomId, dm.getId(), dm.getSender(), dm.getMessage(), dm.getFiles()
-                                .stream()
-                                .map(file -> new DMFileRes(
-                                        file.getImgUrl(),
-                                        file.getThumbnailUrl()
-                                ))
-                                .toList()
-                        )
-                )
-                .toList();
-        return new DMRoomRes(
-                dmRoomId,
-                dmDtoList,
-                !dmDtoList.isEmpty() ? dmDtoList.get(dmDtoList.size() - 1).dmId() : 0
-        );
-    }
 
     @Transactional
     @Override
     public void exitDmRoom(Long dmRoomId, String loginEmail) {
         DMRoom dmRoom = dmRoomRepository.findById(dmRoomId).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
+        redisTemplate.expire("dmRoomId:" + dmRoomId, 60, java.util.concurrent.TimeUnit.MINUTES);
         DM lastDm = dmRepository.findTopByDmRoomIdOrderByIdDesc(dmRoomId).orElse(null);
         log.info("lastdmid : {}", lastDm.getId());
         if (Objects.nonNull(lastDm)) {
