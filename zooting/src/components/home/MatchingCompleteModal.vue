@@ -14,15 +14,15 @@
                   <CheckIcon class="h-6 w-6 text-green-600" aria-hidden="true" />
                 </div>
                 <div class="mt-3 text-center sm:mt-5">
-                  <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">매칭 완료</DialogTitle>
-                  <div class="mt-2">
-                    <p class="text-sm text-gray-500">방에 입장하시겠습니까? </p>
+                  <DialogTitle as="h3" class=" font-semibold leading-6 text-gray-900 text-2xl">매칭 완료</DialogTitle>
+                  <div class="mt-5">
+                    <p class="text-lg text-gray-500">방에 입장하시겠습니까? </p>
                   </div>
                 </div>
               </div>
-              <div class="relative h-5 rounded-full overflow-hidden bg-gray-300 mt-20 mx-10">
+              <div class="relative h-5 rounded-full overflow-hidden bg-gray-300 mt-10 mx-10">
                 <div class="absolute top-0 bottom-0 left-0 rounded-full bg-gradient-to-r from-pink-500 to-purple-500"
-                     >
+                     :style="{ width : enterRoomTimeLimit +'%'}">
                 </div>
               </div>
               <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
@@ -47,15 +47,11 @@ import { CheckIcon } from '@heroicons/vue/24/outline'
 
 const open = ref(true)
 const enterRoomTimeLimit = ref(0)
-// const enterRoomSelect = function () {
-//   setTimeout(()=>{
-//     enterRoomTimeLimit.value ++;
-//   }, 500)
-// }
+// onmounted x 부모 컴포넌트에서 자식에 있는 함수 호출하는 식으로..!
 onMounted(()=>{
-  setTimeout(()=>{
-    enterRoomTimeLimit.value ++;
-  }, 500)
+  setInterval(()=>{
+    enterRoomTimeLimit.value += 0.2;
+  }, 20)
 })
 
 </script>

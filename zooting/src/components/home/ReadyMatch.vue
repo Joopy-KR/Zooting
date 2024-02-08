@@ -1,45 +1,16 @@
 <template>
   <div class="match__container">
-    <div class="match__page">
-<!--      <div v-show="isReady">-->
-<!--        <p @click="matchStop()">matching 취소</p>-->
-<!--        <div>-->
-<!--          <span>{{minute}}</span> : <span id="second-show">{{second}}</span>-->
-<!--        </div>-->
-<!--      </div>-->
-      <div class="button drag-prevent" v-show="!isReady" @click=""><p>MATCHING</p></div>
-
-
-
+    <div class="match__page mt-20">
+      <ReadyState/>
+      <div class="button drag-prevent" v-show="!isReady" @click="isReady=true"><p>MATCHING</p></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import {ref} from "vue";
+import ReadyState from '@/components/home/ReadyState.vue'
 
-// true일 때 매칭 버튼
-const isReady = ref(false);
-const minute = ref(0)
-const second = ref(0)
-const matchStart = ()=> {
-  isReady.value = true;
-  setInterval(()=>{
-    second.value ++;
-    if (second.value == 60) {
-      minute.value ++ ;
-      second.value = 0
-    }
-    // console.log(second.value);
-  }, 1000)
-}
-
-
-const matchStop = () => {
-  isReady.value = false;
-  second.value = 0;
-  minute.value = 0;
-}
 </script>
 
 <style lang="scss" scoped>

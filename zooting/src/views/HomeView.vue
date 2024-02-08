@@ -2,6 +2,7 @@
   <div class="home__container">
     <Social/>
     <Ready />
+    <MatchingCompleteModal v-if="isMatchingComplete" class="z-40"/>
   </div>
 </template>
 
@@ -10,6 +11,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useAccessTokenStore, useStore } from "@/stores/store"
 import Social from '../components/home/Social.vue'
 import Ready from '../components/home/Ready.vue'
+import MatchingCompleteModal from "@/components/home/MatchingCompleteModal.vue";
 const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
@@ -21,6 +23,8 @@ const emit = defineEmits(['receiveMessage'])
 
 const userInfo = ref(store.userInfo)
 
+// 매칭이 된 경우 모달창이 뜨는 조건
+const isMatchingComplete = ref(false)
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
 const stompClient = Stomp.over(socket)
 
