@@ -99,6 +99,7 @@ public class DMServiceImpl implements DMService {
         RedisDMRes redisDMRes = new RedisDMRes(dmReq.dmRoomId(), dm.getId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(),
                 dmReq.files().stream().map(file -> new DMFileRes(file.imgUrl(), file.thumbnailUrl())).toList());
         redisTemplate.opsForList().rightPush(dmReq.sender() + ":dmRoomId:" + dmReq.dmRoomId(), gson.toJson(redisDMRes));
+        redisTemplate.opsForList().rightPush(dmReq.receiver() + ":dmRoomId:" + dmReq.dmRoomId(), gson.toJson(redisDMRes));
     }
 
     @Override
