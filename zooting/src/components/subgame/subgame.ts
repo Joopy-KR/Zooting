@@ -3,6 +3,8 @@ import RunningDogImg from '@/assets/images/sub_game/runningdog.png';
 import HamburgerImg from '@/assets/images/sub_game/obstacle_hamburger.png';
 import PotatoImg from '@/assets/images/sub_game/obstacle_potato.png';
 import PizzaImg from '@/assets/images/sub_game/obstacle_pizza.png';
+import { playJumpSound, playCollisionSound, playGameOverSound} from "@/components/subgame/sound";
+
 
 document.addEventListener('DOMContentLoaded', () => {
     let canvas = document.querySelector("#canvas") as HTMLCanvasElement
@@ -102,39 +104,25 @@ document.addEventListener('DOMContentLoaded', () => {
         drawLine();
         // 캐릭터 그리기
         runner.draw();
-        // 스페이스 연타로 점프할때 jumptimer가 40이 되면 스페이스가 jump mode가 아니게 된다
-        if (jumpTimer > 10) {
-            console.log('44')
-            console.log(jumpTimer)
-            jumpState = 0;
-            jumpTimer = 0;
-        }
-        if(jumpState == 1){
-            console.log('55')
-            console.log(jumpTimer, runner.y)
-            jumpTimer += 20;
-            runner.y -= 130;
-            // if (runner.y - 70 > 0 ){
-            //     runner.y-= 120;
-            // } else {
-            //     runner.y += 0
-            // }
-        }
-        if(jumpState == 0) {    // 타이머가 다 돼서 state가 0이 되고 높이가 135보다 높으면 2.5씩 떨어진다
-            if(runner.y < 150) {
-                jumpState = 0
-                if (runner.y + 20 <= 160) {
-                    runner.y += 2 ;
-                } else if (runner.y + 20 >160) {
-                    runner.y = 160
-                }
+        if(jumpState == 1){ // 점프 상태일 때 타이머가 50이 될때까지 올라간다.
+            jumpTimer++;
+            if (jumpTimer <= 30) { // 30프레임까지는 올라감
+                runner.y -= 4;
+            } else if (jumpTimer <= 60) { // 60프레임까지는 멈춤
+                // 캐릭터를 제일 높은 지점에서 살짝 멈추게 함
+                console.log("공중에서 멈췄어용")
+            } else { // 그 이후에는 내려옴
+                runner.y += 3;
             }
-
         }
-        if (jumpTimer > 10) {
-            console.log(jumpTimer)
+        if(jumpTimer > 30){ // jump 시간이 50이 되면 시간 초기화, 점프 아닌 상태로 변경
             jumpState = 0;
             jumpTimer = 0;
+        }
+        if(jumpState == 0){ // 점프 상태가 아닐 때는 2씩 내려온다
+            if(runner.y < 160){ // 최대 160까지 올라갈 수 있음
+                runner.y +=2 ;
+            }
         }
     }
     let descriptionElement = document.querySelector("#description");
@@ -159,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } else if (gameState == 1 && runner.y > 150) { // 게임실행 중일 때 스페이스 누르면
                 jumpState = 1; // 점프 중으로 변경
+                playJumpSound();
                 dogImg.src = RunningDogImg;
                 runner.draw();
             } else if (gameState == 3) {
@@ -199,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             cancelAnimationFrame(animation);
+            playCollisionSound();
             setTimeout(()=> {
                 if (!ctx) {return;}
                 ctx.clearRect(0, 0, canvas.width, canvas.height);

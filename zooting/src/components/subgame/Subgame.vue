@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="canvas-size border-2" id="game" v-if = "pressStart" >
-      <span id="description" class="animate__shakeY absolute align-middle neon">Press Spacebar</span>
-      <span id="record" class="neon-mini ml-3 mt-3"></span><i id="score" class="neon-mini ml-2"></i>
-      <canvas id="canvas" class="z-40"></canvas>
+      <span id="description" class="animate__shakeY absolute align-middle neon drag-prevent">Press Spacebar</span>
+      <span id="record" class="neon-mini ml-3 mt-3 drag-prevent"></span><i id="score" class="neon-mini ml-2 drag-prevent"></i>
+      <canvas id="canvas" class="z-40 drag-prevent"></canvas>
     </div>
   </div>
 </template>
@@ -44,6 +44,13 @@ const pressStart = ref(true);
 #score {
   font-size: 20px;
   font-weight: bolder;
+}
+.drag-prevent{
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
 }
 .neon {
   color: #fff;
