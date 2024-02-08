@@ -354,6 +354,7 @@ async function sendMessage() {
 
       // 메시지 전송
       stompClient.send('/api/pub/dm/message', {}, JSON.stringify({
+        type: 'MESSAGE',
         dmRoomId: dmRoomId.value,
         sender: sender.value,
         receiver: receiver.value,

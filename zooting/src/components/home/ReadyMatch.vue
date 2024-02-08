@@ -16,20 +16,20 @@ import { useAccessTokenStore } from '@/stores/store'
 const store = useAccessTokenStore()
 
 const meetingRegister = function () {
-    axios({
-      method: "post",
-      url: `${VITE_SERVER_API_URL}/api/meeting/register`,
-      headers: {
-        Authorization: `Bearer ${store.getAccessToken()}`,
-      },
-    })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+	axios({
+		method: "post",
+		url: `${VITE_SERVER_API_URL}/api/meeting/register`,
+		headers: {
+			Authorization: `Bearer ${store.getAccessToken()}`,
+		},
+	})
+	.then((res) => {
+		console.log(res);
+	})
+	.catch((err) => {
+		console.log(err);
+	});
+};
 </script>
 
 <style lang="scss" scoped>
