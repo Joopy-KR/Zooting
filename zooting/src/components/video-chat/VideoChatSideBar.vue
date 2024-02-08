@@ -142,7 +142,7 @@ const doUnmute = function() {
 const getProfileImage = (animal: String) => {
   let imgUrl: URL;
   if (animal === '강아지') {
-    imgUrl = new URL('@/assets/images/animal/dogx.png', import.meta.url);
+    imgUrl = new URL('@/assets/images/animal/dog.png', import.meta.url);
   } else if (animal === '고양이') {
     imgUrl = new URL('@/assets/images/animal/cat.png', import.meta.url);
   } else if (animal === '곰') {

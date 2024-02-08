@@ -10,10 +10,9 @@ import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -121,7 +120,9 @@ public class MeetingService {
      * @return 유저가 등록한 대기실의 ID
      */
     private String registerMemberToWaitingRoom(WaitingRoom waitingRoom, MeetingMemberDto meetingMemberDto) {
-        Set<MeetingMemberDto> waitingRoomMembers = waitingRoom.getMeetingMembers();
+        Set<MeetingMemberDto> waitingRoomMembers = Optional.ofNullable(waitingRoom.getMeetingMembers()).orElseThrow(
+                ()-> new BaseExceptionHandler(ErrorCode.NOT_FOUND_WAITING_ROOM)
+        );
         log.info("유저가 입장할 대기방의 정보를 가져옵니다: {}", waitingRoomMembers.toString());
 
         waitingRoomMembers.add(meetingMemberDto);

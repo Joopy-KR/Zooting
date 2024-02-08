@@ -2,7 +2,12 @@
   <div class="home__container">
     <Social/>
     <Ready />
-    <MatchingCompleteModal v-if="isMatchingComplete" class="z-40"/>
+    <MatchingCompleteModal 
+      v-if="isMatchingComplete" 
+      class="z-40"
+      :room-id="roomId"
+      @handle-close="handleClose"
+      />
   </div>
 </template>
 
@@ -11,7 +16,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useAccessTokenStore, useStore } from "@/stores/store"
 import Social from '../components/home/Social.vue'
 import Ready from '../components/home/Ready.vue'
-import MatchingCompleteModal from "@/components/home/MatchingCompleteModal.vue";
+import MatchingCompleteModal from "@/components/home/MatchingCompleteModal.vue"
 const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
@@ -24,7 +29,9 @@ const emit = defineEmits(['receiveMessage'])
 const userInfo = ref(store.userInfo)
 
 // 매칭이 된 경우 모달창이 뜨는 조건
-const isMatchingComplete = ref(false)
+const isMatchingComplete = ref<boolean>(false)
+const roomId = ref<string>('')
+
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
 const stompClient = Stomp.over(socket)
 
@@ -32,11 +39,14 @@ watch(()=> store.userInfo, (update)=>{
   userInfo.value = update
 })
 
+const handleClose = () => {
+  isMatchingComplete.value = false
+}
+
 onMounted(async () => {
   const result = await store.checkCompletedSignUp()
   if (result === 'USER') {
     await store.getUserInfo()
-    // 소켓 연결 요청을 여기서 하니까 요청을 보내지 않음. why??
   }
 })
 
@@ -61,17 +71,26 @@ const onConnected = () => {
   console.log(`/api/sub/dm/${userInfo.value?.email}`)
   stompClient.subscribe(`/api/sub/dm/${userInfo.value?.email}`,
   (message: any) => {
-    const dmReq = JSON.parse(message.body)
-    if (dmReq.type === 'message') {
+    const res = JSON.parse(message.body)
+    console.log(res)
+    // MESSAGE
+    if (res.type === 'MESSAGE') {
       // 현재 open 된 dmRooId인 경우 메시지 전송
-      if (props.dmRoomId === dmReq.dmRoomId) {
-        emit('receiveMessage', dmReq)
+      if (props.dmRoomId === res.dmRoomId) {
+        emit('receiveMessage', res)
       } else {
         // 새로운 메시지 알림
-        dmStore.newMessage.push(dmReq.sender)
-      }
-    } else {
-      console.log(dmReq)
+        dmStore.newMessage.push(res.sender)
+      } 
+    } 
+    // match
+    else if (res.type === 'match') {
+      roomId.value = res.roomId
+      isMatchingComplete.value = true
+    }
+    // match accept
+    else if (res.type === 'openviduToken') {
+      console.log(res)
     }
   })
 }

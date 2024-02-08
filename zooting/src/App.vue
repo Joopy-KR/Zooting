@@ -4,12 +4,13 @@
       @current-dm-room-id="currentDmRoomId"
       :dm-req = "dmReq"
     />
-    <RouterView
+    <!-- <RouterView
       class="ms-14"
       :dm-room-id="dmRoomId"
       @receive-message="receiveMessage"
-    />
-    <!-- <VideoChatView class="ms-14"/> -->
+    /> -->
+    <VideoChatView class="ms-14"/>
+    <!-- <VideoChatCatchMind class="ms-14"/> -->
   </div>
 </template>
 
@@ -18,6 +19,7 @@ import { ref } from 'vue'
 import { RouterView } from 'vue-router'
 import TheSideBar from '@/components/TheSideBar.vue'
 import VideoChatView from './views/VideoChatView.vue'
+import VideoChatCatchMind from './components/video-chat/VideoChatCatchMind.vue'
 
 const dmRoomId = ref<number>(0)
 const dmReq = ref<any>(null)

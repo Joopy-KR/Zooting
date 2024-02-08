@@ -8,17 +8,28 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
-import axios from "axios";
+import axios from 'axios'
+const { VITE_SERVER_API_URL } = import.meta.env
 import ReadyState from '@/components/home/ReadyState.vue'
-import { useAccessTokenStore } from "@/stores/store"
-const { VITE_SERVER_API_URL } = import.meta.env;
+import { useAccessTokenStore } from '@/stores/store'
 
 const store = useAccessTokenStore()
 
-const meetingRegister = () => {
-	store.meetingRegister()
-}
+const meetingRegister = function () {
+	axios({
+		method: "post",
+		url: `${VITE_SERVER_API_URL}/api/meeting/register`,
+		headers: {
+			Authorization: `Bearer ${store.getAccessToken()}`,
+		},
+	})
+	.then((res) => {
+		console.log(res);
+	})
+	.catch((err) => {
+		console.log(err);
+	});
+};
 </script>
 
 <style lang="scss" scoped>

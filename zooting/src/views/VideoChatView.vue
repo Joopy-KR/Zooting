@@ -263,25 +263,23 @@ const createSession = async (sessionId) => {
   const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions', { customSessionId: sessionId }, {
     headers: { 
               'Content-Type': 'application/json',
-              // 'Authorization': `Bearer ${store.getAccessToken()}`
-              'Authorization': `Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA3MzgzOTgyLCJzdWIiOiJramg5NzExMkBuYXZlci5jb20iLCJQcml2aWxlZ2UiOlsiVVNFUiJdfQ.AVeGR1FpRzapx4LnyJ-9rT0euzYHlu6GzgWJreVoTlw`
+              'Authorization': `Bearer ${store.getAccessToken()}`
              },
   });
-  return response.data; // sessionId가 옴
+  return response.data; // The sessionId
 };
 
-// 토큰 만들어달라고 요청하는 axios (이후 서버가 줄 예정)
 const createToken = async (sessionId) => {
   const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions/' + sessionId + '/connections', {}, {
     headers: { 
               'Content-Type': 'application/json',
-              // 'Authorization': `Bearer ${store.getAccessToken()}`
-              'Authorization': `Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJab290aW5nIiwiZXhwIjoxNzA3MzgzOTgyLCJzdWIiOiJramg5NzExMkBuYXZlci5jb20iLCJQcml2aWxlZ2UiOlsiVVNFUiJdfQ.AVeGR1FpRzapx4LnyJ-9rT0euzYHlu6GzgWJreVoTlw`
+              'Authorization': `Bearer ${store.getAccessToken()}`
              },
   });
-  return response.data; // 토큰이 옴
+  return response.data; // The token
 };
 </script>
+
 
 
 <style scoped>
