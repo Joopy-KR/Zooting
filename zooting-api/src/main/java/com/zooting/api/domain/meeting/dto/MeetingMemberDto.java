@@ -1,14 +1,9 @@
 package com.zooting.api.domain.meeting.dto;
 
-import com.zooting.api.domain.animalface.entity.AnimalFace;
-import com.zooting.api.domain.block.entity.Block;
-import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,8 +22,7 @@ public class MeetingMemberDto {
     private String introduce;
     private String interest;
     private String idealAnimal;
-    private AnimalFace animalFace;
-    private List<Block> blockFromList;  // 내가 차단한 리스트
+    private List<String> blockFromList;  // 내가 차단한 리스트
 
     @Override
     public boolean equals(Object o) {

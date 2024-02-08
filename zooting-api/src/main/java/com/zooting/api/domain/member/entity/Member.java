@@ -98,8 +98,9 @@ public class Member extends BaseEntity {
                 .animal(this.additionalInfo.getAnimal())
                 .interest(this.additionalInfo.getInterest())
                 .idealAnimal(this.additionalInfo.getIdealAnimal())
-                .animalFace(this.animalFace)
-                .blockFromList(this.blockFromList)
+                .blockFromList(this.blockFromList.stream()
+                        .map(block -> block.getTo().getEmail())
+                        .toList())
                 .build();
     }
 }
