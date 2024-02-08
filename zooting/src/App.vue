@@ -4,13 +4,12 @@
       @current-dm-room-id="currentDmRoomId"
       :dm-req = "dmReq"
     />
-    <!-- <RouterView
+    <RouterView
       class="ms-14"
       :dm-room-id="dmRoomId"
       @receive-message="receiveMessage"
-    /> -->
-    <VideoChatView class="ms-14"/>
-    <!-- <VideoChatCatchMind class="ms-14"/> -->
+    />
+    <!-- <VideoChatView class="ms-14"/> -->
   </div>
 </template>
 

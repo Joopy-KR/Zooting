@@ -67,7 +67,8 @@ import VideoChatCatchMind from '@/components/video-chat/VideoChatCatchMind.vue'
 // 사이드바
 import VideoChatSideBarVue from '@/components/video-chat/VideoChatSideBar.vue'
 
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, onBeforeMount, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import { useAccessTokenStore } from '@/stores/store.ts'
@@ -76,20 +77,35 @@ axios.defaults.headers.post["Content-Type"] = "application/json"
 const { VITE_SERVER_API_URL } = import.meta.env
 const store = useAccessTokenStore()
 
-onMounted(() => {
-  startSession()
+// onMounted(() => {
+//   startSession()
+// })
+
+const route = useRoute()
+const router = useRouter()
+  
+watch((route.params.token), (new_Val) => {
+  if (new_Val !== null) {
+    startSession()
+  }
 })
 
 onUnmounted(() => {
   leaveSession()
 })
 
+
+const token = ref<any>('')
+
 // 진행을 위한 비동기 처리 함수
 async function startSession() {
-  await getUser()
-  await joinSession()
+  await router.isReady()
+  if (route.params.token) {
+    token.value = route.params.token
+    await getUser()
+    await joinSession()
+  } 
 }
-
 const canvasEl = ref(null)
 
 const receive = function(canvas) {
@@ -198,38 +214,45 @@ const joinSession = () => {
   // 유저 토큰 이용해 세션과 연결하기 (이 부분이 주어지는 토큰으로 대체)
 
   // Openvidu 배포 서버로부터 토큰 가져오기(이 부분이 바뀌어야함)
-  getToken(mySessionId.value).then((token) => {
+  // getToken(mySessionId.value).then((token) => {
 
     // 첫번째 인자는 토큰, 두번째 인자는 모든 유저에 의해 검색 가능
     // 'streamCreated'(Stream.connection.data의 속성), 유저 닉네임으로 DOM에 추가됨
-    session.value.connect(token, { nickname: myUserName.value, animal: myUserAnimal.value, gender: myGender.value }).then(() => {
-      
-      // 실제 publish 하는 부분, 이 부분에서 카메라와 오디오 소스 설정 가능
-      let pub = OV.value.initPublisher(undefined, {
-        audioSource: undefined,
-        videoSource: undefined,
-        publishAudio: true,
-        publishVideo: true,
-        resolution: "640x480",
-        frameRate: 30,
-        insertMode: "APPEND",
-        mirror: false,
-      });
 
-      // mainStream과 Publisher(나 자신)에 정보를 담고
-      mainStreamManager.value = pub;
-      publisher.value = pub;      
+  // const token = route.params.token
+  // console.log(route)
+  // // console.log(token)
 
-      // stream Publish 하기
-      session.value.publish(publisher.value);
-    })
-    .then(() => {
-      isLoaded.value = true
-    })
-    .catch((error) => {
-      console.log("세션과 연결중 에러가 발생했습니다:", error.code, error.message);
+  console.log(token.value)
+  console.log(route.params)
+  session.value.connect(token.value, { nickname: myUserName.value, animal: myUserAnimal.value, gender: myGender.value }).then(() => {
+    
+    // 실제 publish 하는 부분, 이 부분에서 카메라와 오디오 소스 설정 가능
+    let pub = OV.value.initPublisher(undefined, {
+      audioSource: undefined,
+      videoSource: undefined,
+      publishAudio: true,
+      publishVideo: true,
+      resolution: "640x480",
+      frameRate: 30,
+      insertMode: "APPEND",
+      mirror: false,
     });
+
+    // mainStream과 Publisher(나 자신)에 정보를 담고
+    mainStreamManager.value = pub;
+    publisher.value = pub;      
+
+    // stream Publish 하기
+    session.value.publish(publisher.value);
+  })
+  .then(() => {
+    isLoaded.value = true
+  })
+  .catch((error) => {
+    console.log("세션과 연결중 에러가 발생했습니다:", error.code, error.message);
   });
+  // });
 
   // 사용자가 화면을 나가버릴시 세션 나가기
   window.addEventListener("beforeunload", leaveSession);
@@ -252,32 +275,32 @@ const leaveSession = () => {
   window.removeEventListener("beforeunload", leaveSession);
 };
 
-// 토큰 가져오기 (이후 서버가 줄 예정)
-const getToken = async (mySessionId) => {
-  const sessionId = await createSession(mySessionId);
-  return await createToken(sessionId);
-};
+// // 토큰 가져오기 (이후 서버가 줄 예정)
+// const getToken = async (mySessionId) => {
+//   const sessionId = await createSession(mySessionId);
+//   return await createToken(sessionId);
+// };
 
-// 세션 만들도록 요청하는 axios (이후 서버가 줄 예정)
-const createSession = async (sessionId) => {
-  const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions', { customSessionId: sessionId }, {
-    headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${store.getAccessToken()}`
-             },
-  });
-  return response.data; // The sessionId
-};
+// // 세션 만들도록 요청하는 axios (이후 서버가 줄 예정)
+// const createSession = async (sessionId) => {
+//   const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions', { customSessionId: sessionId }, {
+//     headers: { 
+//               'Content-Type': 'application/json',
+//               'Authorization': `Bearer ${store.getAccessToken()}`
+//              },
+//   });
+//   return response.data; // The sessionId
+// };
 
-const createToken = async (sessionId) => {
-  const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions/' + sessionId + '/connections', {}, {
-    headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${store.getAccessToken()}`
-             },
-  });
-  return response.data; // The token
-};
+// const createToken = async (sessionId) => {
+//   const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions/' + sessionId + '/connections', {}, {
+//     headers: { 
+//               'Content-Type': 'application/json',
+//               'Authorization': `Bearer ${store.getAccessToken()}`
+//              },
+//   });
+//   return response.data; // The token
+// };
 </script>
 
 
