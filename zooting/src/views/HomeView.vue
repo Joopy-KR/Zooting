@@ -31,23 +31,24 @@ watch(()=> store.userInfo, (UpdateUser)=>{
 })
 
 onMounted(async () => {
-  const result = await store.checkCompletedSignUp();
-  if (result.includes('USER')) {
-    await store.getUserInfo()
-
-    // 소켓 통신 연결 요청
-    stompClient.connect(
-      {},
-      () => {
-        console.log('Connected to WebSocket')
-        onConnected()
-      },
-      () => {
-        console.log("Could not WebSocket server")
-      }
-    )
+  const result = await store.checkCompletedSignUp()
+  if (result === 'USER') {
+    store.getUserInfo()
+    // 소켓 연결 요청을 여기서 하니까 요청을 보내지 않음. why??
   }
 })
+
+// 소켓 통신 연결 요청
+stompClient.connect(
+  {},
+  () => {
+    console.log('Connected to WebSocket')
+    onConnected()
+  },
+  () => {
+    console.log("Could not WebSocket server")
+  }
+)
 
 const readMessage = (sender: string) => {
   const index = newSender.value.indexOf(sender)
