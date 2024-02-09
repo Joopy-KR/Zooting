@@ -31,11 +31,11 @@
             <div :class="[isSender(item.sender) ? 'justify-end': '', 'flex mb-4']">
               <div :class="[isSender(item.sender) ? 'bg-violet-200 rounded-s-xl rounded-b-xl': 'bg-gray-100 rounded-e-xl rounded-es-xl', 'dm__chat-item']">
                 <!-- 메시지 -->
-                <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
+                <p v-if="item.message" class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
                 <!-- 사진 -->
                 <div v-if="item.files && item.files.length > 0" :class="[item.files.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
                   <div v-for="(file, index) in item.files" :key="index" @click="zoomImg(file)">
-                    <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
+                    <img :src="file.thumbnailUrl" class="h-32 cursor-pointer" alt="Preview">
                   </div>
                 </div>
               </div>
@@ -48,11 +48,11 @@
             <div :class="[isSender(item.sender) ? 'justify-end': '', 'flex mb-4']">
               <div :class="[isSender(item.sender) ? 'bg-violet-200 rounded-s-xl rounded-b-xl': 'bg-gray-100 rounded-e-xl rounded-es-xl', 'dm__chat-item']">
                 <!-- 메시지 -->
-                <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
+                <p v-if="item.message" class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
                 <!-- 사진 -->
                 <div v-if="item.files && item.files.length > 0" :class="[item.files.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
-                  <div v-for="(file, index) in item.files" :key="index">
-                    <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
+                  <div v-for="(file, index) in item.files" :key="index" @click="zoomImg(file)">
+                    <img :src="file.thumbnailUrl" class="h-32 cursor-pointer" alt="Preview">
                   </div>
                 </div>
               </div>
@@ -64,20 +64,15 @@
           <div :class="[isSender(item.sender) ? 'justify-end': '', 'flex mb-4']">
             <div :class="[isSender(item.sender) ? 'bg-violet-200 rounded-s-xl rounded-b-xl': 'bg-gray-100 rounded-e-xl rounded-es-xl', 'dm__chat-item']">
               <!-- 메시지 -->
-              <p class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
+              <p v-if="item.message" class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
               <!-- 사진 -->
               <div v-if="item.files && item.files.length > 0" :class="[item.files.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
-                <div v-for="(file, index) in item.files" :key="index">
-                  <img :src="file.thumbnailUrl" class="h-32" alt="Preview">
+                <div v-for="(file, index) in item.files" :key="index" @click="zoomImg(file)">
+                  <img :src="file.thumbnailUrl" class="h-32 cursor-pointer" alt="Preview">
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- 파일 확대 -->
-        <div>
-          
         </div>
       </div>
       
@@ -121,20 +116,38 @@
           </svg>
         </button>
     </div>
+
+    <!-- 파일 확대 -->
+    <div class="zoom-file" v-if="isZoomImg">
+      <div class="zoom-file__box">
+        <div class="w-full h-full p-5">
+          <img :src="zoomImgUrl" alt="image" class="w-full">
+        </div>
+        <div class="flex justify-center">
+          <button class="download-button">
+            <svg class="w-4 h-4 mr-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
+            <span>Download</span>
+          </button>
+          <button class="close-file" @click="closeFile()">
+            <span>Close</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useAccessTokenStore } from "../stores/store"
-import type { Friend, DM, DmItem, DmFile } from "@/types/global"
+import type { Friend, DM, DmItem } from "@/types/global"
 import axios from 'axios'
 const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
 const emit = defineEmits(['closeTab', 'currentDmRoomId'])
 const props = defineProps<{
-  dmReq: any
+  dmRes: any
 }>()
 
 const dmInfo = ref<DM | null>(store.dmInfo)
@@ -150,6 +163,9 @@ const fileInput = ref<File[] | null>(null)
 const sender = ref<string>('')
 const receiver = ref<string>('')
 const dmRoomId = ref<number>(0)
+
+const isZoomImg = ref<boolean>(false)
+const zoomImgUrl = ref<string>('')
 
 watch(()=> store.dmInfo, (update)=>{
   dmInfo.value = update
@@ -184,15 +200,18 @@ watch(() => store.isEntryDmRoom, () => {
     sockDmList.value = []
     receiver.value = ''
     store.exitDmRoom(dmRoomId.value)
+    closeFile()
   }
 })
 
-watch(()=> props.dmReq, ()=>{
+watch(()=> props.dmRes, ()=>{
   sockDmList.value.push({
-    sender: props.dmReq.sender,
-    message: props.dmReq.message,
-    dmFiles: props.dmReq.files,
+    sender: props.dmRes.sender,
+    message: props.dmRes.message,
+    files: props.dmRes.files,
   })
+  console.log(sockDmList.value)
+  console.log(props.dmRes)
 })
 
 const getProfileImage = () => {
@@ -294,7 +313,13 @@ const getPreviewUrl = (file: File) => {
 }
 
 const zoomImg = (file: any) => {
-  //
+  isZoomImg.value = true
+  zoomImgUrl.value = file.imgUrl
+}
+
+const closeFile = () => {
+  isZoomImg.value = false
+  zoomImgUrl.value = ''
 }
 
 // Web socket -----------------------------------------------
@@ -308,7 +333,6 @@ async function sendMessage() {
     isOpenFileInput.value = false
     // FormData 객체 생성
     const formData = new FormData()
-    // formData로는 정수 append X, 서버에서 형변환 필요
     formData.append('dmRoomId', String(dmRoomId.value))
     formData.append('sender', sender.value)
     formData.append('receiver', receiver.value)
@@ -321,7 +345,6 @@ async function sendMessage() {
       }
     }
 
-    console.log(fileInput.value)
     try {
       if (fileInput.value && fileInput.value.length > 0) {
         // Axios를 사용하여 파일 업로드 요청 보내기
@@ -343,14 +366,6 @@ async function sendMessage() {
           }))
         }
       }
-      
-      // 새로운 메시지 추가 (전송되는 척)
-      sockDmList.value.push({
-        sender: sender.value,
-        message: messageInput.value,
-        files: fileList.value,
-      })
-      console.log(sockDmList.value)
 
       // 메시지 전송
       stompClient.send('/api/pub/dm/message', {}, JSON.stringify({
@@ -361,6 +376,12 @@ async function sendMessage() {
         message: messageInput.value,
         files: fileList.value
       }))
+
+      sockDmList.value.push({
+        sender: sender.value,
+        message: messageInput.value,
+        files: fileList.value
+      })
 
       // 입력 필드 초기화
       messageInput.value = ''
@@ -412,5 +433,17 @@ min-height: 300px;
 }
 .file-input__discription {
   @apply flex flex-col items-center justify-center pt-5 pb-6;
+}
+.zoom-file {
+  @apply absolute flex items-center justify-center w-full h-full;
+}
+.zoom-file__box {
+  @apply w-3/4 rounded-lg bg-[#FADCA5] shadow-lg;
+}
+.download-button {
+  @apply inline-flex items-center px-4 py-2 mb-5 text-white bg-[#FF9614] rounded hover:bg-[#FF8200] mx-1;
+}
+.close-file {
+  @apply inline-flex items-center px-4 py-2 mb-5 text-white bg-gray-400 rounded hover:bg-gray-500 mx-1;
 }
 </style>

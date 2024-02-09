@@ -2,7 +2,7 @@
   <div class="flex">
     <TheSideBar
       @current-dm-room-id="currentDmRoomId"
-      :dm-req = "dmReq"
+      :dm-res = "dmRes"
     />
     <RouterView
       class="ms-14"
@@ -18,14 +18,14 @@ import { RouterView } from 'vue-router'
 import TheSideBar from '@/components/TheSideBar.vue'
 
 const dmRoomId = ref<number>(0)
-const dmReq = ref<any>(null)
+const dmRes = ref<any>(null)
 
 const currentDmRoomId = (id: number) => {
   dmRoomId.value = id
 }
 
 const receiveMessage = (req: any) => {
-  dmReq.value = req
+  dmRes.value = req
 }
 </script>
 
