@@ -1,5 +1,5 @@
 import StopDogImg from '../../../public/assets/images/sub_game/stopdog.png';
-import RunningDogImg from '../../../public/assets/images/sub_game/stopdog.png';
+import RunningDogImg from '../../../public/assets/images/sub_game/runningdog.png';
 import HamburgerImg from '../../../public/assets/images/sub_game/obstacle_hamburger.png';
 import PotatoImg from '../../../public/assets/images/sub_game/obstacle_potato.png';
 import PizzaImg from '../../../public/assets/images/sub_game/obstacle_pizza.png';
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let scoreElement = document.querySelector('#score');
 
-    function frameAction () {
+    async function frameAction () {
         animation = requestAnimationFrame(frameAction);
         if (!ctx) {
             return;
@@ -107,9 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (! detectedCollision) {
                 collisionDetection(runner, a);
+                a.x --;
+                a.draw();
             }
-            a.x --;
-            a.draw();
         })
         // 바닥 그리기
         drawLine();
@@ -194,6 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function collisionDetection(runner:any, obstacle:any) {
         let xValue = obstacle.x - ( runner.x + runner.width );
         let yValue = obstacle.y - ( runner.y + runner.height );
+        if (detectedCollision) {
+            return;
+        }
         if( xValue <= 0 && yValue <= 0 ){ // 충돌!
             // 충돌 시 실행되는 코드
             if (!animation || !ctx) {
