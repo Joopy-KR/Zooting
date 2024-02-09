@@ -16,6 +16,9 @@
                 <div class="mt-3 text-center sm:mt-5">
                   <DialogTitle as="h3" class="text-2xl font-semibold leading-6 text-gray-900 ">매칭 완료</DialogTitle>
                   <div class="mt-5">
+                    <span class="font-mono text-6xl countdown">
+                      <span style="--value:10;"></span>
+                    </span>
                     <p class="text-lg text-gray-500">방에 입장하시겠습니까? </p>
                   </div>
                 </div>
