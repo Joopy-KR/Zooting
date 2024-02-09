@@ -25,6 +25,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -98,7 +99,11 @@ public class DMServiceImpl implements DMService {
         dm.setFiles(files);
         dmRepository.save(dm);
         RedisDMRes redisDMRes = new RedisDMRes(dmReq.dmRoomId(), dm.getId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(),
-                dmReq.files().stream().map(file -> new DMFileRes(file.S3Id(), file.imgUrl(), file.thumbnailUrl())).toList());
+                dmReq.files()
+                        .stream()
+                        .map(file -> new DMFileRes(file.S3Id(),file.imgUrl(), file.thumbnailUrl()))
+                        .toList(),
+                dm.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")));
         redisTemplate.opsForList().rightPush(dmReq.sender() + ":dmRoomId:" + dmReq.dmRoomId(), gson.toJson(redisDMRes));
         redisTemplate.opsForList().rightPush(dmReq.receiver() + ":dmRoomId:" + dmReq.dmRoomId(), gson.toJson(redisDMRes));
     }
@@ -132,8 +137,8 @@ public class DMServiceImpl implements DMService {
                                             file.getImgUrl(),
                                             file.getThumbnailUrl()
                                     ))
-                                    .toList()
-                            );
+                                    .toList(),
+                            dm.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")));
                             redisTemplate.opsForList().rightPush(sender + ":dmRoomId:" + dmRoom.getId(), gson.toJson(redisDMRes));
                             return redisDMRes;
                         }
@@ -182,8 +187,8 @@ public class DMServiceImpl implements DMService {
                                             file.getImgUrl(),
                                             file.getThumbnailUrl()
                                     ))
-                                    .toList()
-                            );
+                                    .toList(),
+                                    dm.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")));
                             redisTemplate.opsForList().leftPush(loginEmail + ":dmRoomId:" + dmRoomId, gson.toJson(redisDMRes));
                             return redisDMRes;
                         }
