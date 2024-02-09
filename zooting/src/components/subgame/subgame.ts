@@ -1,9 +1,9 @@
-import StopDogImg from '@/assets/images/sub_game/stopdog.png';
-import RunningDogImg from '@/assets/images/sub_game/runningdog.png';
-import HamburgerImg from '@/assets/images/sub_game/obstacle_hamburger.png';
-import PotatoImg from '@/assets/images/sub_game/obstacle_potato.png';
-import PizzaImg from '@/assets/images/sub_game/obstacle_pizza.png';
-import { playJumpSound, playCollisionSound, playGameOverSound} from "@/components/subgame/sound";
+import StopDogImg from '../../../public/assets/images/sub_game/stopdog.png';
+import RunningDogImg from '../../../public/assets/images/sub_game/stopdog.png';
+import HamburgerImg from '../../../public/assets/images/sub_game/obstacle_hamburger.png';
+import PotatoImg from '../../../public/assets/images/sub_game/obstacle_potato.png';
+import PizzaImg from '../../../public/assets/images/sub_game/obstacle_pizza.png';
+import { playJumpSound, playCollisionSound} from "@/components/subgame/sound";
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -34,29 +34,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    let obstacleImg = new Image();
-    obstacleImg.src = HamburgerImg;
+    let hamburgerImg = new Image();
+    hamburgerImg.src = HamburgerImg;
+    let potatoImg = new Image();
+    potatoImg.src = PotatoImg;
+    let pizzaImg = new Image();
+    pizzaImg.src = PizzaImg;
+    let obstacleImgArr:any[] = [hamburgerImg, potatoImg, pizzaImg];
+
     // 선인장 장애물
-    class Cactus {
+    class Obstacle {
         width:number;
         height:number;
         x:number;
         y:number;
+        image:any;
         constructor() {
             this.width = 32 + getRandomInt(-10, 6);
             this.height = 30 + getRandomInt(-10, 6);
             this.x = 560; // 가장 끝에서 약 30만큼 전
             this.y = 190 - this.height; // 땅위치에서 높이만큼 위에서 시작
+            this.image = obstacleImgArr[getRandomInt(0, 3)];
         }
         draw() {
             if (! ctx) {
                 return;
             }
-            ctx.drawImage(obstacleImg, this.x, this.y, this.width, this.height);
+            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
     }
 
-    let obstacle = new Cactus();
+    let obstacle = new Obstacle();
 
     function getRandomInt(min:number, max:number) {
         min = Math.ceil(min);
@@ -67,12 +75,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 프레임 단위로 선인장들이 다가 오게 하는 함수
     let timer = 0;
-    let obstacleArr:Cactus[] = [];
+    let obstacleArr:Obstacle[] = [];
     let gameState = 0; // 0 : end , 1: start, 3: gameover
     let jumpState = 0; // 0 : default, 1 : jump
     let jumpTimer = 0;
     let animation:number ;
     let score = 0;
+    let detectedCollision = false;
 
     let scoreElement = document.querySelector('#score');
 
@@ -85,8 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
         timer++;
 
         if (timer % 200  == 0 ) {
-            let cactus = new Cactus();
-            obstacleArr.push(cactus);
+            let obstacle = new Obstacle();
+            obstacleArr.push(obstacle);
         }
         obstacleArr.forEach((a, idx, o)=>{
             if(a.x < 0) {
@@ -96,7 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     scoreElement.innerHTML = score.toString();
                 }
             }
-            collisionDetection(runner, a);
+            if (! detectedCollision) {
+                collisionDetection(runner, a);
+            }
             a.x --;
             a.draw();
         })
@@ -108,14 +119,15 @@ document.addEventListener('DOMContentLoaded', () => {
             jumpTimer++;
             if (jumpTimer <= 30) { // 30프레임까지는 올라감
                 runner.y -= 4;
-            } else if (jumpTimer <= 60) { // 60프레임까지는 멈춤
-                // 캐릭터를 제일 높은 지점에서 살짝 멈추게 함
-                console.log("공중에서 멈췄어용")
             } else { // 그 이후에는 내려옴
-                runner.y += 3;
+                if (jumpTimer <= 40 ) {
+                    // 40 프레임까지는 공중에서 멈춘다
+                }else {
+                    runner.y += 3;
+                }
             }
         }
-        if(jumpTimer > 30){ // jump 시간이 50이 되면 시간 초기화, 점프 아닌 상태로 변경
+        if(jumpTimer > 40){ // jump 시간이 50이 되면 시간 초기화, 점프 아닌 상태로 변경
             jumpState = 0;
             jumpTimer = 0;
         }
@@ -129,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let recordElement = document.querySelector("#record");
     let restartNumber = 0;
     // 스페이스바 누르면 게임 화면 시작
-    document.addEventListener('keypress', (e)=>{
+    document.addEventListener('keydown', (e)=>{
         if (e.code == 'Space'){
             if (gameState == 0) {
                 if (descriptionElement) {
@@ -182,6 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function collisionDetection(runner:any, obstacle:any) {
         let xValue = obstacle.x - ( runner.x + runner.width );
         let yValue = obstacle.y - ( runner.y + runner.height );
+        console.log(gameState, detectedCollision, runner.y, xValue, yValue)
         if( xValue <= 0 && yValue <= 0 ){ // 충돌!
             // 충돌 시 실행되는 코드
             if (!animation || !ctx) {
@@ -189,9 +202,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             cancelAnimationFrame(animation);
             playCollisionSound();
+            detectedCollision = true;
             setTimeout(()=> {
-                if (!ctx) {return;}
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                setTimeout(()=>{
+                    if (!ctx) {return;}
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                })
                 gameState = 3;
                 if (descriptionElement) {
                     descriptionElement.innerHTML = "<div class='text-center'><p>Game Over</p><p style='font-size : 20px;'>press Spacebar twice to restart</p></div>"
@@ -204,6 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }, 0)
             // location.reload();
+            console.log(detectedCollision)
             console.log(3)
         }
     }
@@ -215,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
         jumpTimer = 0;
         restartNumber = 0;
         score = 0;
+        detectedCollision = false;
         if (scoreElement) {
             scoreElement.innerHTML = score.toString();
         }

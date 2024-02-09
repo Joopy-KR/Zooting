@@ -1,6 +1,6 @@
-import JumpSound from '@/assets/sounds/Jump High.mp3';
-import CollisionSound from '@/assets/sounds/Metal Clang Sound.mp3';
-import GameOverSound from '@/assets/sounds/Jump High.mp3';
+import JumpSound from '../../../public/assets/sounds/Jump High.mp3';
+import CollisionSound from '../../../public/assets/sounds/Metal Clang Sound.mp3';
+import GameOverSound from '../../../public/assets/sounds/Jump High.mp3';
 
 const jumpSound = new Audio(JumpSound);
 const collisionSound = new Audio(CollisionSound);

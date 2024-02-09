@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="canvas-size border-2" id="game" v-if = "pressStart" >
+    <div class="canvas-size background-image border-2" id="game" v-if = "pressStart" >
       <span id="description" class="animate__shakeY absolute align-middle neon drag-prevent">Press Spacebar</span>
       <span id="record" class="neon-mini ml-3 mt-3 drag-prevent"></span><i id="score" class="neon-mini ml-2 drag-prevent"></i>
       <canvas id="canvas" class="z-40 drag-prevent"></canvas>
@@ -18,11 +18,19 @@ const pressStart = ref(true);
 
 <style scoped>
 .canvas-size{
-  background-image: url("/assets/images/sub_game/background.gif");
-  background-size: 600px 200px;
   position: relative;
   width : 600px;
   height: 200px;
+}
+.background-image {
+  background: url("../../../public/assets/images/sub_game/background.gif") 0 center / 200px 600px repeat-x;
+  background-size: 600px 200px;
+  animation: movebg 40s linear infinite;
+
+}
+@keyframes movebg {
+  0% {background-position: 600px center;}
+  100% {background-position: 0 center;}
 }
 #canvas {
   width: 100%;
