@@ -34,6 +34,13 @@ declare interface Mask {
     isSelected: boolean;
 }
 
+declare interface Background {
+    backgroundId: number,
+    fileName: string | undefined,
+    imgUrl: string,
+    price: number,
+}
+
 declare interface TokenState {
     accessToken: string | null;
     refreshToken: string | null;
@@ -103,9 +110,9 @@ declare interface Notice {
 }
 
 declare interface NoticePage {
-    noticeList : Notice[];
-    currentPage : number;
-    totalPage : number;
+    noticeList: Notice[];
+    currentPage: number;
+    totalPage: number;
 }
 
 declare interface Notify {
@@ -116,5 +123,5 @@ declare interface Notify {
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
     PersonalityList, Personality, Friend, MaskReq, ReportUserReq,
-    DM, DmItem, FriendRequest, Notice, NoticePage, Notify
+    DM, DmItem, FriendRequest, Notice, NoticePage, Notify, Background
 };
