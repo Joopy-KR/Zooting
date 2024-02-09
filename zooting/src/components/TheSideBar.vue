@@ -37,8 +37,7 @@
             프로필
           </li>
           <li v-if="isLoggedIn">
-            <RouterLink :to="getProfileLink()" class="block px-4 py-2 hover:bg-gray-100" @click="closeTab">프로필
-            </RouterLink>
+            <div class="block px-4 py-2 text-sm cursor-pointer hover:bg-gray-100" @click="moveToMyPage">프로필</div>
           </li>
         </ul>
         <div class="py-2">
@@ -124,8 +123,10 @@ const isActivenotificationsTab = () => {
   }
 }
 
-const getProfileLink = () => {
-  return `/profile/${userInfo.value?.nickname}`
+const moveToMyPage = () => {
+  closeTab();
+  // router.replace({ name: "profile", params: { nickname: userInfo.value?.nickname } });
+  router.push(`/profile/${userInfo.value?.nickname}`);
 }
 
 const getProfileImage = () => {
