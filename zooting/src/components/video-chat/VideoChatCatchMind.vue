@@ -21,7 +21,6 @@
         <li v-for="(color, index) in colors" :key="index" :style="{ backgroundColor: color }" @click="setActiveColour(index)"></li>
       </ul>
       <button class="pencil__refresh btn" @click="clearCanvas">Clear</button>
-      <button class="pencil__submit btn" @click="savePNG">Save</button>
     </div>
   </div>
 </template>
@@ -50,7 +49,8 @@ const colors = [
   "#77dd77",
   "#ff6961",
   "#ffd1dc"
-];
+]
+
 let currentColorIndex = ref(0);
 let drawingCanvas = ref(null);
 let drawingCtx = ref(null);
@@ -85,13 +85,6 @@ const setActiveColour = (index) => {
 
 const clearCanvas = () => {
   drawingCtx.value.clearRect(0, 0, drawingCanvas.value.width, drawingCanvas.value.height);
-};
-
-const savePNG = () => {
-  const link = document.createElement('a');
-  link.download = 'drawing.png';
-  link.href = drawingCanvas.value.toDataURL('image/png');
-  link.click();
 };
 
 const handleMouseDown = (e) => {

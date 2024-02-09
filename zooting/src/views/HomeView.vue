@@ -93,8 +93,7 @@ const onConnected = () => {
     }
     // match accept
     else if (res.type === 'openviduToken') {
-      console.log(res.token)
-      router.push({ name: "video-chat", params: { token: res.token } })
+      store.pushMeetingRoom(res.token)
     }
   })
 }

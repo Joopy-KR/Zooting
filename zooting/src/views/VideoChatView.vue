@@ -67,45 +67,26 @@ import VideoChatCatchMind from '@/components/video-chat/VideoChatCatchMind.vue'
 // 사이드바
 import VideoChatSideBarVue from '@/components/video-chat/VideoChatSideBar.vue'
 
-import { ref, onMounted, onUnmounted, computed, onBeforeMount, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import axios from "axios";
+import { ref, onMounted, onUnmounted } from 'vue'
 import { OpenVidu } from "openvidu-browser";
 import { useAccessTokenStore } from '@/stores/store.ts'
-axios.defaults.headers.post["Content-Type"] = "application/json"
 
-const { VITE_SERVER_API_URL } = import.meta.env
 const store = useAccessTokenStore()
 
-// onMounted(() => {
-//   startSession()
-// })
-
-const route = useRoute()
-const router = useRouter()
-  
-watch((route.params.token), (new_Val) => {
-  if (new_Val !== null) {
-    startSession()
-  }
+onMounted(async () => {
+  startSession();
 })
 
 onUnmounted(() => {
   leaveSession()
 })
 
-
-const token = ref<any>('')
-
 // 진행을 위한 비동기 처리 함수
 async function startSession() {
-  await router.isReady()
-  if (route.params.token) {
-    token.value = route.params.token
-    await getUser()
-    await joinSession()
-  } 
+  await getUser()
+  await joinSession()
 }
+
 const canvasEl = ref(null)
 
 const receive = function(canvas) {
@@ -139,7 +120,6 @@ cameraWidth.value = 266
 
 // 현재 채팅 내용 (세션별로 관리해야됨)
 
-const mySessionId = ref("SessionA")
 const myUserName = ref<any>('')
 const myUserAnimal = ref<any>('')
 const myGender = ref<any>('')
@@ -160,6 +140,7 @@ const currentChat = ref([])
 
 
 const joinSession = () => {
+  console.log(1111)
   // Openvidu 객체 가져오기
   OV.value = new OpenVidu();
 
@@ -206,25 +187,16 @@ const joinSession = () => {
   // 현재 참가중인 동물목록에 자신 넣어주기
   currentAnimals.value.push(myUserAnimal.value)
 
-
   // const videoTrack = canvasEl.captureStream(60).getVideoTracks()[0]
 	// console.log(canvas_video)
-  // props.streamManager.addVideoElement(canvas_video)
+  // props.streamManager.addVideoElement(canvas_video
+  
+  const token = ref<any>('')
+  token.value = store.meetingRoomToken
 
-  // 유저 토큰 이용해 세션과 연결하기 (이 부분이 주어지는 토큰으로 대체)
-
-  // Openvidu 배포 서버로부터 토큰 가져오기(이 부분이 바뀌어야함)
-  // getToken(mySessionId.value).then((token) => {
-
-    // 첫번째 인자는 토큰, 두번째 인자는 모든 유저에 의해 검색 가능
-    // 'streamCreated'(Stream.connection.data의 속성), 유저 닉네임으로 DOM에 추가됨
-
-  // const token = route.params.token
-  // console.log(route)
-  // // console.log(token)
-
-  console.log(token.value)
-  console.log(route.params)
+  // 유저 토큰 이용해 세션과 연결하기
+  // 첫번째 인자는 토큰, 두번째 인자는 모든 유저에 의해 검색 가능
+  // 'streamCreated'(Stream.connection.data의 속성), 유저 닉네임으로 DOM에 추가됨
   session.value.connect(token.value, { nickname: myUserName.value, animal: myUserAnimal.value, gender: myGender.value }).then(() => {
     
     // 실제 publish 하는 부분, 이 부분에서 카메라와 오디오 소스 설정 가능
@@ -252,7 +224,6 @@ const joinSession = () => {
   .catch((error) => {
     console.log("세션과 연결중 에러가 발생했습니다:", error.code, error.message);
   });
-  // });
 
   // 사용자가 화면을 나가버릴시 세션 나가기
   window.addEventListener("beforeunload", leaveSession);
@@ -273,34 +244,7 @@ const leaveSession = () => {
 
   // 세션을 이미 나갔으니 화면 나갈때의 이벤트리스트 제거하기
   window.removeEventListener("beforeunload", leaveSession);
-};
-
-// // 토큰 가져오기 (이후 서버가 줄 예정)
-// const getToken = async (mySessionId) => {
-//   const sessionId = await createSession(mySessionId);
-//   return await createToken(sessionId);
-// };
-
-// // 세션 만들도록 요청하는 axios (이후 서버가 줄 예정)
-// const createSession = async (sessionId) => {
-//   const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions', { customSessionId: sessionId }, {
-//     headers: { 
-//               'Content-Type': 'application/json',
-//               'Authorization': `Bearer ${store.getAccessToken()}`
-//              },
-//   });
-//   return response.data; // The sessionId
-// };
-
-// const createToken = async (sessionId) => {
-//   const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions/' + sessionId + '/connections', {}, {
-//     headers: { 
-//               'Content-Type': 'application/json',
-//               'Authorization': `Bearer ${store.getAccessToken()}`
-//              },
-//   });
-//   return response.data; // The token
-// };
+}
 </script>
 
 
