@@ -2,17 +2,16 @@ package com.zooting.api.domain.member.application;
 
 import com.zooting.api.domain.background.dao.BackgroundInventoryRepository;
 import com.zooting.api.domain.background.entity.Background;
-import com.zooting.api.domain.background.entity.BackgroundInventory;
 import com.zooting.api.domain.block.entity.Block;
-import com.zooting.api.domain.mask.application.MaskInventoryService;
 import com.zooting.api.domain.mask.dao.MaskInventoryRepository;
-import com.zooting.api.domain.mask.dao.MaskRepository;
 import com.zooting.api.domain.mask.entity.Mask;
-import com.zooting.api.domain.mask.entity.MaskInventory;
 import com.zooting.api.domain.member.dao.ExtractObj;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.*;
+import com.zooting.api.domain.member.dto.response.MemberRes;
+import com.zooting.api.domain.member.dto.response.MemberSearchRes;
+import com.zooting.api.domain.member.dto.response.MyProfileReq;
+import com.zooting.api.domain.member.dto.response.PointRes;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.entity.Privilege;
@@ -27,8 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 
-import static com.zooting.api.domain.member.entity.QMember.member;
-
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +33,10 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final MaskInventoryRepository maskInventoryRepository;
     private final BackgroundInventoryRepository backgroundInventoryRepository;
-    public static final String DEFAULT_MASK = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Mask/dogMask.png";
-    public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Background/oilpaintart.jpg";public static final Long DEFAULT_MASK_ID = 99L;
+    public static final String DEFAULT_MASK = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Mask/animal_group.png";
+    public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Background/oilpaintart.jpg";
+    public static final Long DEFAULT_MASK_ID = 100L;
     public static final Long DEFAULT_BACKGROUND_ID = 100L;
-    public static final Long DEFAULT_POINT = 0L;
     public static final Long CHANGE_NICKNAME_PRICE = 100L;
 
     @Override
@@ -133,7 +130,6 @@ public class MemberServiceImpl implements MemberService {
         member.setBirth(sdf.parse(memberReq.birth()));
         member.setAddress(memberReq.address());
         member.setGender(memberReq.gender().toString());
-        member.setPoint(DEFAULT_POINT); // 추가 정보 저장 시 포인트 0으로 저장
 
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
         if (Objects.isNull(additionalInfo)) {
