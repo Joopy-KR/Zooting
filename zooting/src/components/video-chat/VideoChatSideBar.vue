@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 
 // 타이머 변수 및 함수
