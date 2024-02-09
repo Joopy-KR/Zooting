@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 
 // 타이머 변수 및 함수
@@ -142,21 +142,21 @@ const doUnmute = function() {
 const getProfileImage = (animal: String) => {
   let imgUrl: URL;
   if (animal === '강아지') {
-    imgUrl = new URL('@/assets/images/animal/dog.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/dog.png', import.meta.url);
   } else if (animal === '고양이') {
-    imgUrl = new URL('@/assets/images/animal/cat.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/cat.png', import.meta.url);
   } else if (animal === '곰') {
-    imgUrl = new URL('@/assets/images/animal/bear.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/bear.png', import.meta.url);
   } else if (animal === '공룡') {
-    imgUrl = new URL('@/assets/images/animal/dino.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/dino.png', import.meta.url);
   } else if (animal === '펭귄') {
-    imgUrl = new URL('@/assets/images/animal/penguin.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/penguin.png', import.meta.url);
   } else if (animal === '토끼') {
-    imgUrl = new URL('@/assets/images/animal/rabbit.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/rabbit.png', import.meta.url);
   } else if (animal === '사슴') {
-    imgUrl = new URL('@/assets/images/animal/deer.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/deer.png', import.meta.url);
   } else {
-    imgUrl = new URL('@/assets/images/animal/animal_group.png', import.meta.url);
+    imgUrl = new URL('/assets/images/animal/animal_group.png', import.meta.url);
   }
   return imgUrl.href;
 }
