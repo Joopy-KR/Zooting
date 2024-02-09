@@ -28,8 +28,11 @@
         <!-- 소켓 통신 -->
         <div>
           <div v-for="(item, index) in sockDmList" :key="index">
-            <div :class="[isSender(item.sender) ? 'justify-end': '', 'flex mb-4']">
-              <div :class="[isSender(item.sender) ? 'bg-violet-200 rounded-s-xl rounded-b-xl': 'bg-gray-100 rounded-e-xl rounded-es-xl', 'dm__chat-item']">
+            <div :class="[isSender(item.sender) ? 'chat-end': 'chat-start', 'chat']">
+              <div class="chat-footer">
+                <time class="opacity-50 text-2xs">{{ item.createdAt }}</time>
+              </div>
+              <div :class="[isSender(item.sender) ? 'bg-violet-200': 'bg-gray-100', 'chat-bubble']">
                 <!-- 메시지 -->
                 <p v-if="item.message" class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
                 <!-- 사진 -->
@@ -45,8 +48,11 @@
         <!-- 최근 대화 -->
         <div>
           <div v-for="(item, index) in dmInfo?.dmList" :key="index">
-            <div :class="[isSender(item.sender) ? 'justify-end': '', 'flex mb-4']">
-              <div :class="[isSender(item.sender) ? 'bg-violet-200 rounded-s-xl rounded-b-xl': 'bg-gray-100 rounded-e-xl rounded-es-xl', 'dm__chat-item']">
+            <div :class="[isSender(item.sender) ? 'chat-end': 'chat-start', 'chat']">
+              <div class="chat-footer">
+                <time class="opacity-50 text-2xs">{{ item.createdAt }}</time>
+              </div>
+              <div :class="[isSender(item.sender) ? 'bg-violet-200': 'bg-gray-100', 'chat-bubble']">
                 <!-- 메시지 -->
                 <p v-if="item.message" class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
                 <!-- 사진 -->
@@ -61,8 +67,11 @@
         </div>
         <!-- 이전 대화 (스크롤) -->
         <div v-for="(item, index) in pastDmList" :key="index">
-          <div :class="[isSender(item.sender) ? 'justify-end': '', 'flex mb-4']">
-            <div :class="[isSender(item.sender) ? 'bg-violet-200 rounded-s-xl rounded-b-xl': 'bg-gray-100 rounded-e-xl rounded-es-xl', 'dm__chat-item']">
+          <div :class="[isSender(item.sender) ? 'chat-end': 'chat-start', 'chat']">
+            <div class="chat-footer">
+                <time class="opacity-50 text-2xs">{{ item.createdAt }}</time>
+              </div>
+            <div :class="[isSender(item.sender) ? 'bg-violet-200': 'bg-gray-100', 'chat-bubble']">
               <!-- 메시지 -->
               <p v-if="item.message" class="py-2 text-sm text-gray-900 break-all">{{ item.message }}</p>
               <!-- 사진 -->
@@ -124,7 +133,7 @@
           <img :src="zoomImgUrl" alt="image" class="w-full">
         </div>
         <div class="flex justify-center">
-          <button class="download-button">
+          <button class="download-button" @click="fileDownload()">
             <svg class="w-4 h-4 mr-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
             <span>Download</span>
           </button>
@@ -166,6 +175,7 @@ const dmRoomId = ref<number>(0)
 
 const isZoomImg = ref<boolean>(false)
 const zoomImgUrl = ref<string>('')
+const zoomImgId = ref<string>('')
 
 watch(()=> store.dmInfo, (update)=>{
   dmInfo.value = update
@@ -210,8 +220,6 @@ watch(()=> props.dmRes, ()=>{
     message: props.dmRes.message,
     files: props.dmRes.files,
   })
-  console.log(sockDmList.value)
-  console.log(props.dmRes)
 })
 
 const getProfileImage = () => {
@@ -315,11 +323,28 @@ const getPreviewUrl = (file: File) => {
 const zoomImg = (file: any) => {
   isZoomImg.value = true
   zoomImgUrl.value = file.imgUrl
+  zoomImgId.value = file.S3Id
 }
 
 const closeFile = () => {
   isZoomImg.value = false
   zoomImgUrl.value = ''
+  zoomImgId.value = ''
+}
+
+const fileDownload = () => {
+  store.fileDownload(zoomImgId.value)
+}
+
+function getCurrentTime(): string {
+  const koreanOptions: Intl.DateTimeFormatOptions = {
+    timeZone: 'Asia/Seoul',
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+  }
+
+  return new Date().toLocaleTimeString('en-US', koreanOptions)
 }
 
 // Web socket -----------------------------------------------
@@ -374,7 +399,8 @@ async function sendMessage() {
         sender: sender.value,
         receiver: receiver.value,
         message: messageInput.value,
-        files: fileList.value
+        files: fileList.value,
+        createdAt: getCurrentTime()
       }))
 
       sockDmList.value.push({
@@ -412,9 +438,6 @@ min-height: 300px;
 .dm__input {
   @apply relative flex justify-center items-center h-16 border border-gray-300 rounded-lg py-7 px-3 mx-6 mb-7 shadow-md;
 }
-.dm__chat-item {
-  @apply flex flex-col max-w-[300px] py-2 px-6 border-gray-200;
-}
 .text-input {
   @apply flex-grow border border-none rounded-md;
 }
@@ -438,10 +461,10 @@ min-height: 300px;
   @apply absolute flex items-center justify-center w-full h-full;
 }
 .zoom-file__box {
-  @apply w-3/4 rounded-lg bg-[#FADCA5] shadow-lg;
+  @apply w-3/4 rounded-lg bg-gray-300 shadow-lg;
 }
 .download-button {
-  @apply inline-flex items-center px-4 py-2 mb-5 text-white bg-[#FF9614] rounded hover:bg-[#FF8200] mx-1;
+  @apply inline-flex items-center px-4 py-2 mb-5 text-white bg-violet-500 rounded hover:bg-violet-600 mx-1;
 }
 .close-file {
   @apply inline-flex items-center px-4 py-2 mb-5 text-white bg-gray-400 rounded hover:bg-gray-500 mx-1;

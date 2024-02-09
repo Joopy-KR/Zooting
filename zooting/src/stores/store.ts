@@ -732,6 +732,35 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         });
     };
 
+    // 파일 다운로드
+    const fileDownload = function (params: string) {
+      const S3Id = params;
+      axios({
+        method: "get",
+        url: `${API_URL}/api/file/download`,
+        params: {
+          S3Id,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+        responseType: 'arraybuffer',
+      })
+        .then((res) => {
+          console.log(res)
+          const blob = new Blob([res.data], { type: res.headers['content-type'] });
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = `zooting_image.jpg`;
+          link.click();
+          window.URL.revokeObjectURL(link.href);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    
+    // 매칭 요청
     const meetingRegister = function () {
       axios({
         method: "post",
@@ -748,9 +777,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         });
     };
 
+    // 공지사항 리스트
     const noticePage = ref<NoticePage>();
     const noticeList = ref<Notice[]>([]);
-    // 공지사항 리스트
     const getNoticeList = function (params: {'page': number, 'size':number}) {
       axios({
       method: "get",
@@ -822,5 +851,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       meetingRegister,
       meetingRoomToken,
       pushMeetingRoom,
+      fileDownload,
   };
 });
