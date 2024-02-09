@@ -10,8 +10,9 @@
 
 <script setup lang="ts">
 import axios from "axios";
+const { VITE_SERVER_API_URL } = import.meta.env
 
-const socket = new SockJS("/ws/dm");
+const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`);
 const stompClient = Stomp.over(socket);
 const sender = prompt("로그인 이메일.");
 const receiver = prompt("받는 사람 이메일.");
@@ -98,3 +99,78 @@ async function sendMessage() {
 <style scoped>
 
 </style>
+<!--
+<script setup lang="ts">
+import {onMounted, ref, watch} from "vue"
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+import {useAccessTokenStore} from "@/stores/store";
+
+const socket = ref(null);
+const stompClient = ref(null);
+const connection = ref(false);
+const store = useAccessTokenStore();
+
+// 소켓 통신 연결 요청
+const connect = () => {
+  if (!store.getAccessToken()) {
+    console.log("not found");
+    return
+  }
+  socket.value = new SockJS(`http://localhost:8080/ws/dm`);
+  stompClient.value = Stomp.over(socket.value);
+
+  var headers = {
+    "Authorization": "Bearer " + store.getAccessToken(),
+    // Add other headers if needed
+  };
+  stompClient.value.connect(
+      headers,
+      () => {
+        console.log("OKOKOKO");
+        // onConnected(props.chatRoom.roomId);
+      },
+      () => {
+        console.log("Could not WebSocket server. Retry!");
+        // 일정 시간 이후 재연결 시도
+        // setTimeout(this, 5000);
+      }
+  )
+};
+
+// 소켓 클라이언트 Subscribe 요청
+const onConnected = () => {
+  stompClient.value.subscribe("/api/sub", "uhyeon7399@kakao.com");
+  console.log("osnfsf")
+  // connection.value = true;
+  // stompClient.value.send(
+  //     "/pub/chat/enter",
+  //     {},
+  //     JSON.stringify({
+  //       roomId: roomId,
+  //       sender: me.value.nickname,
+  //       senderId: me.value.id,
+  //     })
+  // );
+};
+
+watch(() => store.isLogin, () => {
+  if (store.isLogin) {
+    connect();
+  }
+})
+
+onMounted(() => {
+  if (store.isLogin) {
+    connect();
+  }
+})
+</script>
+
+<template>
+
+</template>
+
+<style scoped>
+
+</style> -->

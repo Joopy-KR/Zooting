@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
+import { CheckIcon } from "@heroicons/vue/24/solid";
 
 const props = defineProps({
   title: String,
   message: String,
   successAlert: Boolean,
 });
-const emit = defineEmits(["setSuccessAlert"]);
+const emit = defineEmits(["setSuccessAlert", "onClickSubmit"]);
 
 const closeAlert = () => {
   emit("setSuccessAlert", false);
+  emit("onClickSubmit");
 };
 </script>
 <template>

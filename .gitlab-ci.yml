@@ -25,8 +25,6 @@ build: # JOB 이름
     - chmod +x gradlew # gradle 권한 부여
     - ./gradlew clean
     - ./gradlew bootjar
-    - cd ../zooting
-    - echo "$VUE_ENV" > ".env"
     # - ./gradlew build
   # artifacts 설정 (bulld를 통해 생성된 파일을 job artifacts에 보관하여 다음에 수행되는 JOB에서 가져다 활용할 수 있게 도와줌)
   artifacts:
@@ -80,6 +78,10 @@ deploy: # JOB 이름
     - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD # GitLab Container Registry에 로그인
   # 실행될 script 설정
   script:
+    - cd ./zooting
+    - echo "$VUE_ENV" > ".env"
+    - cat .env
+    - cd ..
     - docker system prune --volumes -f # 사용되지 않는 컨테이너, 이미지 삭제 및 볼륨 정리
     - docker-compose down # docker-compose 내리기
     - docker-compose pull # docker images pull

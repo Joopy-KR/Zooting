@@ -75,6 +75,7 @@ public enum ErrorCode {
     // 유저 에러 (CODE: 200)
     // 유저가 존재하지 않음
     NOT_FOUND_USER(404, "B200", "존재하지 않는 유저입니다."),
+    NOT_ENOUGH_POINT(404, "B021", "포인트가 부족합니다."),
     // 메뉴 에러 (CODE: 300)
     // 메뉴가 존재하지 않음 (CODE: 300)
     NOT_FOUND_MENU(404, "B300", "존재하지 않는 메뉴 입니다."),
@@ -86,7 +87,11 @@ public enum ErrorCode {
     // 친구 요청 에러 (CODE: 201)
     ALREADY_EXIST_FRIEND_REQUEST(404,"B201" ,"이미 요청을 보냈습니다" ),
     // 친구 에러 (CODE: 202)
-    ALREADY_EXIST_FRIEND(404,"B202" ,"이미 친구입니다" );
+    ALREADY_EXIST_FRIEND(404,"B202" ,"이미 친구입니다." ),
+    //매칭 에러 (CODE: 500)
+
+    NOT_MATCHING(404,"B501" , "매칭중이 아닙니다."),
+    NOT_FOUND_WAITING_ROOM(404, "B502", "존재하지 않는 대기실입니다.");
 
     /**
      * ******************************* Error Code Constructor ***************************************

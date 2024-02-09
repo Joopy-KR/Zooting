@@ -18,7 +18,7 @@ const pressStart = ref(true);
 
 <style scoped>
 .canvas-size{
-  background-image: url("/src/assets/images/sub_game/background.gif");
+  background-image: url("/assets/images/sub_game/background.gif");
   background-size: 600px 200px;
   position: relative;
   width : 600px;

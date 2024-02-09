@@ -36,26 +36,23 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final MaskInventoryRepository maskInventoryRepository;
     private final BackgroundInventoryRepository backgroundInventoryRepository;
-    public static final String DEFAULT_MASK = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/default_animal.png";
-    public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/zooting-background-default.jpg";
-    public static final Long DEFAULT_MASK_ID = 99L;
-    public static final Long DEFAULT_BACKGROUND_ID = 99L;
+    public static final String DEFAULT_MASK = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Mask/dogMask.png";
+    public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Background/oilpaintart.jpg";public static final Long DEFAULT_MASK_ID = 99L;
+    public static final Long DEFAULT_BACKGROUND_ID = 100L;
     public static final Long DEFAULT_POINT = 0L;
-    public static final Long CHANGE_NICKNAME_PRICE = 10L;
+    public static final Long CHANGE_NICKNAME_PRICE = 100L;
 
     @Override
     public boolean existNickname(String nickname) {
         return memberRepository.existsByNickname(nickname);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public boolean checkMemberPrivilege(String userId) {
+    public List<Privilege> checkMemberPrivilege(String userId) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        if(member.getRole().contains(Privilege.USER)){
-            return true;
-        }
-        return false;
+        return member.getRole();
     }
 
     @Override
@@ -196,6 +193,7 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
     }
 
+    @Transactional
     @Override
     public boolean changeMask(String memberId, MaskReq maskReq) {
         AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
@@ -209,7 +207,7 @@ public class MemberServiceImpl implements MemberService {
         }
         return false;
     }
-
+    @Transactional
     @Override
     public void changeBackground(String memberId, BackgroundReq backgroundReq) {
         AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
@@ -255,7 +253,7 @@ public class MemberServiceImpl implements MemberService {
             findMembers = memberRepository.findMemberByNicknameContaining(nickname);
         }
         return findMembers.stream().map(mem -> new MemberSearchRes(mem.getEmail(), mem.getNickname(),
-                mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
+                mem.getGender(), mem.getAdditionalInfo().getAnimal())).toList();
     }
 
     @Transactional

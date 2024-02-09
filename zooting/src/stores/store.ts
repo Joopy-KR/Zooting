@@ -3,11 +3,11 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {DM, Friend, Personality, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
+import type {DM, DmItem, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
-  const personality: Personality = {
+  const personality: PersonalityList = {
     INFP: {
       title: "설레는 봄",
       match: "포근한 겨울",
@@ -169,8 +169,11 @@ export const useStore = defineStore("store", () => {
       ],
     },
   };
-  return { personality };
-});
+
+  const newMessage = ref<string[]>([])
+
+  return { personality, newMessage };
+}, { persist: true });
 
 export const useAccessTokenStore = defineStore("access-token", () => {
   const API_URL: string = VITE_SERVER_API_URL;
@@ -229,21 +232,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 유저 정보
-  const isCompletedTest = ref<boolean>(false);
   const userInfo = ref<UserInfo | null>(null);
 
   const getUserInfo = async function () {
     await loadMyInfoApi(
       ({ data }: any) => {
         userInfo.value = data.result;
-
-        if (!isCompletedSignUp) {
-          router.push({ name: "signup" });
-        } else if (!userInfo.value?.animal) {
-          router.push({ name: "animal_test" });
-        } else if (!userInfo.value?.personality) {
-          router.push({ name: "personality_test" });
-        }
       },
       (error: any) => {
         console.log(error);
@@ -254,7 +248,21 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 로그인 상태 판별
   const isLogin = computed(() => {
-    return !!state.value.accessToken;
+    if (state.value.accessToken) {
+      return true;
+    } else {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (refreshToken) {
+        state.value.refreshToken = refreshToken;
+      }
+      if (accessToken) {
+        state.value.accessToken = accessToken;
+        return true;
+      }
+    }
+    return false;
   });
 
   // 로그아웃
@@ -263,10 +271,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     state.value.accessToken = null;
   };
 
-  // 추가 정보 저장 여부 확인
-  const isCompletedSignUp = ref<boolean>(false);
-  const checkCompletedSignUp = function () {
-    axios({
+  // 유저 권한 확인
+  const checkCompletedSignUp = async function () {
+    return await axios({
       method: "get",
       url: `${API_URL}/api/members/privilege/check`,
       headers: {
@@ -275,13 +282,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        isCompletedSignUp.value = res.data.result;
-        if (!isCompletedSignUp) {
-          router.push({ name: "signup" });
-        }
+        console.log(res);
+        return res.data.result;
       })
       .catch((err) => {
         console.log(err);
+        throw err;
       });
   };
 
@@ -346,7 +352,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const setPersonality = function (payload: string) {
     const personality = payload;
     axios({
-      method: "put",
+      method: "patch",
       url: `${API_URL}/api/members/characters`,
       data: {
         personality,
@@ -366,13 +372,13 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 동물상 테스트 결과 저장
-  const setAnimalFace = function (payload: number[]) {
-    const animalfaceList = payload;
+  const setAnimalFace = function (payload: {animal: string, percentage: number}[]) {
+    const animalFaceReqList = payload;
     axios({
       method: "post",
       url: `${API_URL}/api/animalface`,
       data: {
-        animalfaceList,
+        animalFaceReqList,
       },
       headers: {
         accept: "application/json",
@@ -380,7 +386,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
+        const data = res.data;
+        const {accessToken, refreshToken} = data["result"];
+        if (accessToken && refreshToken) {
+          setAccessToken(accessToken);
+          setRefreshToken(refreshToken);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -469,7 +480,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "post",
       url: `${API_URL}/api/friends`,
       data: {
-        nickname
+        nickname,
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -491,7 +502,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "post",
       url: `${API_URL}/api/friends/accept`,
       data: {
-        nickname
+        nickname,
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -508,8 +519,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 거절
-  const friendReject = function (payload: string) {
-    const nickname = payload;
+  const friendReject = function (params: string) {
+    const nickname = params;
     axios({
       method: "delete",
       url: `${API_URL}/api/friends/reject`,
@@ -530,8 +541,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 친구 요청 취소
-  const friendRequestCancel = function (payload: string) {
-    const nickname = payload;
+  const friendRequestCancel = function (params: string) {
+    const nickname = params;
     axios({
       method: "delete",
       url: `${API_URL}/api/friends/cancel`,
@@ -612,7 +623,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
       .then((res) => {
         searchResult.value = res.data.result;
-        // console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -634,7 +644,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
       .then((res) => {
         searchResult.value = res.data.result;
-        // console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -643,7 +652,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
     // DM 방 입장
     const isEntryDmRoom = ref<boolean>(false);
-    const DmInfo = ref<DM | null>(null);
+    const dmInfo = ref<DM | null>(null);
     const receiverInfo = ref<Friend | null>(null);
 
     const entryDmRoom = function (params: Friend) {
@@ -659,18 +668,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         },
       })
         .then((res) => {
-          // console.log(res);
-          DmInfo.value = res.data.result;
+          console.log(res);
+          dmInfo.value = res.data.result;
           receiverInfo.value = params;
-        })
-        .then((res) => {
-          if (DmInfo.value) {
-            const params = {
-              dmRoomId: DmInfo.value.dmRoomId,
-              cursor: DmInfo.value.cursor
-            };
-            cursorDmRoom(params);
-          }
         })
         .then((res) => {
           isEntryDmRoom.value = true;
@@ -679,58 +679,79 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           console.log(err);
         });
     };
-    // DM 커서
-    const isRefreshing = ref<boolean>(false)
-    const cursorDmRoom = function (params: { cursor: number | undefined; dmRoomId: number | undefined }) {
-        const {dmRoomId, cursor} = params;
-        axios({
-            method: "get",
-            url: `${API_URL}/api/dm/room/prev`,
-            params: {
-                dmRoomId,
-                cursor
-            },
-            headers: {
-                Authorization: `Bearer ${getAccessToken()}`,
-            },
-        })
-            .then((res) => {
-                // console.log(res);
-                if (DmInfo.value) {
-                    DmInfo.value.cursor = res.data.result.cursor;
-                    DmInfo.value.dmList = [...DmInfo.value.dmList, ...res.data.result.dmList];
-                }
-            })
-            .then((res) => {
-                isRefreshing.value = false
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
 
-  const noticePage = ref<NoticePage>();
-  const noticeList = ref<Notice[]>([]);
-  // 공지사항 리스트
-  const getNoticeList = function (params: {'page': number, 'size':number}) {
-    axios({
-      method: "get",
-      url: `${API_URL}/api/notice`,
-      headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
-      },
-      params : params,
-    })
+    // DM 커서
+    const isRefreshing = ref<boolean>(false);
+    const pastDmList = ref<DmItem[]>([])
+    const cursorDmRoom = function (params: { cursor: number; dmRoomId: number }) {
+      const {dmRoomId, cursor} = params;
+      axios({
+        method: "get",
+        url: `${API_URL}/api/dm/room/prev`,
+        params: {
+          dmRoomId,
+          cursor
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
         .then((res) => {
-          noticePage.value = res.data.result;
-          noticeList.value = res.data.result["noticeResList"];
+          console.log(res);
+          if (dmInfo.value) {
+            dmInfo.value.cursor = res.data.result.cursor;
+            pastDmList.value = [...pastDmList.value, ...res.data.result.dmList];
+          }
+        })
+        .then((res) => {
+          isRefreshing.value = false
         })
         .catch((err) => {
           console.log(err);
         });
-  };
+    };
 
+    // DM방 퇴장
+    const exitDmRoom = function (params: number) {
+      const dmRoomId = params;
+      axios({
+        method: "put",
+        url: `${API_URL}/api/dm/room/exit`,
+        params: {
+          dmRoomId,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
 
+    const noticePage = ref<NoticePage>();
+    const noticeList = ref<Notice[]>([]);
+    // 공지사항 리스트
+    const getNoticeList = function (params: {'page': number, 'size':number}) {
+      axios({
+      method: "get",
+      url: `${API_URL}/api/notice`,
+      headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+      },
+      params : params,
+    })
+      .then((res) => {
+          noticePage.value = res.data.result;
+          noticeList.value = res.data.result["noticeResList"];
+      })
+      .catch((err) => {
+          console.log(err);
+      });
+    };
 
   return {
       setAccessToken,
@@ -741,7 +762,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       getUserInfo,
       isLogin,
       signOut,
-      isCompletedSignUp,
       checkCompletedSignUp,
       setPersonality,
       saveAdditionalInfo,
@@ -767,10 +787,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       searchResult,
       entryDmRoom,
       isEntryDmRoom,
-      DmInfo,
+      dmInfo,
       receiverInfo,
       cursorDmRoom,
       isRefreshing,
+      pastDmList,
+      exitDmRoom,
       noticePage,
       noticeList,
       getNoticeList,

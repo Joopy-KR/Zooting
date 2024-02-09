@@ -3,6 +3,8 @@ import {ref} from "vue";
 import {Dialog, DialogPanel, TransitionChild, TransitionRoot,} from "@headlessui/vue";
 import type {ReportUserReq} from "@/types/global";
 import {reportUserApi} from "@/api/report";
+import SuccessNotification from "@/components/util/SuccessNotification.vue";
+import FailNotification from "@/components/util/FailNotification.vue";
 
 const emits = defineEmits([
   "setIsOpenReportDialog",
@@ -13,6 +15,16 @@ const props = defineProps({
 });
 
 const message = ref<string>("");
+const showSuccess = ref<boolean>(false);
+const showFail = ref<boolean>(false);
+
+const setShowSuccess = (status: boolean) => {
+  showSuccess.value = status;
+}
+const setShowFail = (status: boolean) => {
+  showFail.value = status;
+}
+
 
 const closeDialog = () => {
   emits("setIsOpenReportDialog", false);
@@ -30,7 +42,13 @@ const reportUser = (nickname: string | undefined, reason: string) => {
   };
   reportUserApi(
       reportUserReq,
-      ({data}:any) => {},
+      ({data}:any) => {
+        if (data.status === 200 || data.status === 201) {
+          setShowSuccess(true);
+        } else {
+          setShowFail(true);
+        }
+      },
       (error: any) => console.log(error)
   )
   closeDialog();
@@ -39,6 +57,18 @@ const reportUser = (nickname: string | undefined, reason: string) => {
 </script>
 
 <template>
+  <SuccessNotification
+      :show-from-parent="showSuccess"
+      title="신고 완료"
+      :content="nickname + '님의 신고가 완료되었습니다.'"
+      @set-parent-show="setShowSuccess"
+  />
+  <FailNotification
+      title="신고 실패"
+      :content="nickname + '님의 신고에 실패하였습니다.'"
+      :show-from-parent="showFail"
+      @set-parent-show="setShowFail"
+  />
   <TransitionRoot as="template" :show="isOpenReportDialog">
     <Dialog as="div" class="relative z-10" @close="closeDialog">
       <TransitionChild

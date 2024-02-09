@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 @RestController
-@RequestMapping("api/items/maskInventory")
+@RequestMapping("api/items/mask-inventory")
 @RequiredArgsConstructor
 @Tag(name="해금마스크", description = "해금마스크 관련 API")
 public class MaskInventoryController {

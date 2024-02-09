@@ -1,7 +1,7 @@
 <template>
   <div class="ready__container">
     <div class="ready__header">
-      <img src="/src/assets/images/logo/logo_lg.png" alt="" class="animate__bounceIn">
+      <img src="/assets/images/logo/logo_lg.png" alt="" class="animate__bounceIn">
     </div>
     <div class="ready__main">
       <Subgame class="mb-10 subgame"/>

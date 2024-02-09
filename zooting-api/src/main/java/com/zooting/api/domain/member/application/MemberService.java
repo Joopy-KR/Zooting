@@ -2,6 +2,7 @@ package com.zooting.api.domain.member.application;
 
 import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.*;
+import com.zooting.api.domain.member.entity.Privilege;
 
 
 import java.text.ParseException;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public interface MemberService {
     boolean existNickname(String nickname);
-    boolean checkMemberPrivilege(String userId);
+    List<Privilege> checkMemberPrivilege(String userId);
     MyProfileReq checkMyProfile(String userId, String nickname);
     MemberRes findMemberInfo(String userId);
     MemberRes findMemberInfoByNickname(String userId, String nickname);

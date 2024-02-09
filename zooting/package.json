@@ -24,7 +24,7 @@
     "flowbite": "^2.2.1",
     "flowbite-datepicker": "^1.2.6",
     "headlessui": "^0.0.0",
-    "openvidu-browser": "^2.20.0",
+    "openvidu-browser": "^2.29.1",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "sockjs-client": "^1.6.1",
@@ -34,7 +34,8 @@
     "v3-click-outside": "^1.1.0",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5",
-    "vue-tailwind-datepicker": "^1.6.1"
+    "vue-tailwind-datepicker": "^1.6.1",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",

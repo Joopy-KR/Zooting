@@ -67,7 +67,9 @@ const getPersonalityMsg = (animal: string | undefined, personality: string | und
 
   return mbti.title + " " + animal;
 }
-
+const getHeartClass = (gender: string | undefined) => {
+  return gender === 'man' ? 'w-5 h-5 text-blue-500 ms-1' : 'w-5 h-5 text-pink-500 ms-1';
+}
 const getAgeGroup = (birth: string) => {
   const birthDate: Date = new Date(birth);
   const currentDate: Date = new Date();
@@ -147,7 +149,7 @@ watch(() => props.userInfo?.interest,
       </div>
       <!-- 나의 동물상 마스크 -->
       <div class="flex justify-center p-4">
-        <div class="relative p-2 bg-gray-100 rounded-full w-2/5 min-w-48">
+        <div class="relative w-2/5 p-2 bg-gray-100 rounded-full min-w-48">
           <img :src="userInfo!.maskImgUrl" class="w-full p-2" :alt="userInfo!.maskImgUrl"/>
           <div v-if="isMyProfile" class="absolute bottom-1 right-1" @click="moveToMaskList">
             <svg
@@ -167,11 +169,19 @@ watch(() => props.userInfo?.interest,
     <div class="mx-8 my-4">
       <div class="flex items-center justify-center p-2">
         <div
-            class="lg:text-2xl relative font-bold underline text-stone-800 decoration-pink-300 decoration-wavy"
+            class="relative font-bold underline lg:text-2xl text-stone-800 decoration-pink-300 decoration-wavy"
         >
           {{ userInfo?.nickname }}
-          <div class="absolute text-xs bottom-0.5 -right-10 rounded-full" v-if="!isMyProfile">
+          <div class="absolute bottom-1 -right-6">
+            <svg :class="getHeartClass(userInfo?.gender)" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                 fill="currentColor" viewBox="0 0 24 24">
+              <path
+                  d="m12.7 20.7 6.2-7.1c2.7-3 2.6-6.5.8-8.7A5 5 0 0 0 16 3c-1.3 0-2.7.4-4 1.4A6.3 6.3 0 0 0 8 3a5 5 0 0 0-3.7 1.9c-1.8 2.2-2 5.8.8 8.7l6.2 7a1 1 0 0 0 1.4 0"/>
+            </svg>
+          </div>
+          <div class="absolute text-xs bottom-0.5 -right-14 rounded-full" v-if="!isMyProfile">
             <UserMenu
+                v-if="userInfo"
                 :user-info="userInfo"
                 @set-is-open-report-dialog="setIsOpenReportDialog"
                 @load-user-info="loadUserInfo"
@@ -180,17 +190,17 @@ watch(() => props.userInfo?.interest,
         </div>
       </div>
       <div class="flex flex-row px-2 py-3">
-        <div class="flex items-center justify-center w-1/3 lg:text-xl font-semibold">
+        <div class="flex items-center justify-center w-1/3 font-semibold lg:text-xl">
           {{ userInfo!.gender === "man" ? "남자" : "여자" }}
         </div>
-        <div class="flex items-center justify-center w-1/3 lg:text-xl font-semibold">
+        <div class="flex items-center justify-center w-1/3 font-semibold lg:text-xl">
           {{ ageGroup }}
         </div>
-        <div class="flex items-center justify-center w-1/3 lg:text-xl font-semibold">
+        <div class="flex items-center justify-center w-1/3 font-semibold lg:text-xl">
           {{ userInfo?.address }}
         </div>
       </div>
-      <div class="flex justify-center px-4 py-2 lg:text-3xl font-bold tracking-tight text-rose-600"
+      <div class="flex justify-center px-4 py-2 font-bold tracking-tight lg:text-3xl text-rose-600"
            @click="setIsOpenPersonalityDialog(true)">
         {{ getPersonalityMsg(userInfo?.animal, userInfo?.personality) }}
       </div>
@@ -198,13 +208,13 @@ watch(() => props.userInfo?.interest,
     <div class="interest__container">
       <div class="flex items-end justify-center h-max-full">
         <div class="relative w-2/3 m-4 shadow-inner rounded-3xl shadow-pink-200">
-          <div class="grid grid-cols-1 gap-4 py-6 px-8 sm:grid-cols-2">
+          <div class="grid grid-cols-1 gap-4 px-8 py-6 sm:grid-cols-2">
             <div
                 v-for="interest in interests"
                 :key="interest"
                 class="flex items-center justify-center px-4 py-2 space-x-6 bg-white rounded-lg shadow-lg border-rose-300 shadow-rose-200"
             >
-              <p class="lg:text-lg font-semibold text-center text-gray-900 truncate hover:text-wrap">
+              <p class="font-semibold text-center text-gray-900 truncate lg:text-lg hover:text-wrap">
                 # {{ interest }}
               </p>
             </div>

@@ -17,6 +17,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 const props = defineProps<{
   test: {
     id: number
@@ -34,7 +36,17 @@ const selectAnswer = (selectedOption: string) => {
   emit('selectAnswer', selectedOption)
 }
 
-const getImageUrl = () => `src/assets/images/personality/season${props.test.id}.png`
+const getImageUrl = () => {
+  if (props.test.id === 1) {
+    return new URL('/assets/images/personality/season1.png', import.meta.url).href
+  } else if (props.test.id === 2) {
+    return new URL('/assets/images/personality/season2.png', import.meta.url).href
+  } else if (props.test.id === 3) {
+    return new URL('/assets/images/personality/season3.png', import.meta.url).href
+  } else if (props.test.id === 4) {
+    return new URL('/assets/images/personality/season4.png', import.meta.url).href
+  }
+};
 </script>
 
 <style scoped>

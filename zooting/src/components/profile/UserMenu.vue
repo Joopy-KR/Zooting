@@ -1,4 +1,16 @@
 <template>
+  <SuccessNotification
+      :title="notification.title"
+      :message="notification.message"
+      :show-from-parent="showSuccess"
+      @set-parent-show="setShowSuccess"
+  />
+  <FailNotification
+      :title="notification.title"
+      :message="notification.message"
+      :show-from-parent="showFail"
+      @set-parent-show="setShowFail"
+  />
   <Popover class="relative">
     <PopoverButton class="inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
       <font-awesome-icon :icon="['fas', 'chevron-down']" style="font-size: 20px;"/>
@@ -25,12 +37,6 @@
                 </div>
               </div>
             </div>
-            <div v-if="isMyProfile" class="mt-5 sm:mt-6">
-              <button type="button"
-                      class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                      @click="open = false">Go back to dashboard
-              </button>
-            </div>
           </div>
         </div>
       </PopoverPanel>
@@ -41,11 +47,14 @@
 <script setup lang="ts">
 import {Popover, PopoverButton, PopoverPanel} from '@headlessui/vue'
 import {blockUserApi, disableBlockUserApi} from "@/api/block.js";
-import {EyeIcon, EyeSlashIcon, FaceFrownIcon, FaceSmileIcon, MegaphoneIcon} from '@heroicons/vue/20/solid'
+import {EyeIcon, EyeSlashIcon, MegaphoneIcon, UserPlusIcon, UsersIcon} from '@heroicons/vue/20/solid'
 import {useAccessTokenStore} from "@/stores/store"
-import {computed, onMounted, ref, watch} from "vue";
-import type {UserInfo} from "@/types/global";
-import {addFriendApi, disableFriendApi} from "@/api/friend";
+import {computed, ref, watch} from "vue";
+import type {Friend, Notify, UserInfo} from "@/types/global";
+import {addFriendApi, disableFriendApi, loadFriendRequestListApi} from "@/api/friend";
+import {UserMinusIcon} from "@heroicons/vue/16/solid";
+import SuccessNotification from "@/components/util/SuccessNotification.vue";
+import FailNotification from "@/components/util/FailNotification.vue";
 
 const store = useAccessTokenStore();
 const props = defineProps({
@@ -57,6 +66,24 @@ const emits = defineEmits([
   "loadUserInfo",
 ]);
 
+const friendList = ref<Friend[]>();
+const friendRequestList = ref<Friend[]>();
+const showSuccess = ref<boolean>(false);
+const showFail = ref<boolean>(false);
+const setShowSuccess = (status: boolean) => {
+  showSuccess.value = status;
+}
+const setShowFail = (status: boolean) => {
+  showFail.value = status;
+}
+const notification = ref<Notify>({
+  title: '',
+  message: ''
+});
+const setNotification = (title: string, message: any) => {
+  notification.value.title = title;
+  notification.value.message = message;
+}
 const setIsOpenReportDialog = () => {
   emits("setIsOpenReportDialog", true);
 }
@@ -70,11 +97,18 @@ const blockUser = () => {
         nickname: props.userInfo.nickname
       },
       ({data}: any) => {
+        if (data.status === 200 || data.status === 201) {
+          setNotification("차단 성공", data.result);
+          setShowSuccess(true);
+        } else {
+          setNotification("차단 실패", data.result);
+          setShowFail(true);
+        }
       },
       (error: any) => console.log(error)
   )
-  items.value[2].status = false;
-  items.value[3].status = true;
+  items.value[3].status = false;
+  items.value[4].status = true;
 }
 // 유저 차단 해제
 const disableBlockUser = () => {
@@ -82,11 +116,19 @@ const disableBlockUser = () => {
     return;
   }
   disableBlockUserApi(props.userInfo.nickname,
-      ({data}: any) => {},
+      ({data}: any) => {
+        if (data.status === 200 || data.status === 201) {
+          setNotification("차단해제 성공", data.result);
+          setShowSuccess(true);
+        } else {
+          setNotification("차단해제 실패", data.result);
+          setShowFail(true);
+        }
+      },
       (error: any) => console.log(error),
   )
-  items.value[2].status = true;
-  items.value[3].status = false;
+  items.value[3].status = true;
+  items.value[4].status = false;
 }
 
 const addFriend = () => {
@@ -95,11 +137,20 @@ const addFriend = () => {
   }
 
   addFriendApi({nickname: props.userInfo.nickname},
-      ({data}: any) => {},
+      ({data}: any) => {
+        if (data.status === 200 || data.status === 201) {
+          setNotification("친구 요청 성공", data.result);
+          setShowSuccess(true);
+        } else {
+          setNotification("친구 요청 실패", data.result);
+          setShowFail(true);
+        }
+      },
       (error: any) => console.log(error)
   );
   items.value[0].status = false;
   items.value[1].status = true;
+  items.value[2].status = false;
 }
 
 const disableFriend = () => {
@@ -108,14 +159,24 @@ const disableFriend = () => {
   }
 
   disableFriendApi(props.userInfo.nickname,
-      ({data}: any) => {},
+      ({data}: any) => {
+        if (data.status === 200 || data.status === 201) {
+          setNotification("친구 삭제 성공", data.result);
+          setShowSuccess(true);
+        } else {
+          setNotification("친구 삭제 실패", data.result);
+          setShowFail(true);
+        }
+      },
       (error: any) => console.log(error));
   items.value[0].status = true;
   items.value[1].status = false;
+  items.value[2].status = false;
 }
 const items = ref([
-  {name: '친구추가', icon: FaceSmileIcon, onclick: () => addFriend(), status: false},
-  {name: '친구해제', icon: FaceFrownIcon, onclick: () => disableFriend(), status: false},
+  {name: '친구추가', icon: UserPlusIcon, onclick: () => addFriend(), status: false},
+  {name: '친구요청중', icon: UsersIcon, status: false},
+  {name: '친구해제', icon: UserMinusIcon, onclick: () => disableFriend(), status: false},
   {name: '차단하기', icon: EyeSlashIcon, onclick: () => blockUser(), status: false},
   {name: '차단해제', icon: EyeIcon, onclick: () => disableBlockUser(), status: false},
   {name: '신고하기', icon: MegaphoneIcon, onclick: () => setIsOpenReportDialog(), status: true},
@@ -125,34 +186,76 @@ const activatedItems = computed(() => {
   return items.value.filter(item => item.status === true);
 })
 
-watch(props.userInfo,
-    (newUserInfo) => {
+const loadFriendRequestList = async () => {
+  if (!props.userInfo?.nickname) {
+    return;
+  }
+
+  await loadFriendRequestListApi(
+      ({data}: any) => {
+        const resultArray = data.result || [];
+        const result: Friend[] = [];
+
+        resultArray.forEach((item: any) => {
+          result.push({
+            email: item.email,
+            nickname: item.nickname,
+            animal: item.animal,
+            gender: item.gender,
+          });
+        })
+
+        friendList.value = result;
+        // friend update
+        updateFriendStatus();
+      },
+      (error: any) => console.log(error)
+  )
+}
+const updateFriendStatus = () => {
+  const find = friendList.value?.find(friend => friend.nickname === props.userInfo?.nickname);
+
+  // 친구 요청 중인 경우
+  if (!!find) {
+    items.value[0].status = false;
+    items.value[2].status = false;
+    items.value[1].status = true;
+  } else {
+    items.value[1].status = false;
+  }
+}
+
+watch((props.userInfo as UserInfo),
+    async (newUserInfo) => {
       if (!newUserInfo?.memberStatus) {
         items.value[0].status = false;
         items.value[1].status = false;
         items.value[2].status = false;
         items.value[3].status = false;
+        items.value[4].status = true;
         return;
       }
       // 현재 친구 상태
       if (newUserInfo.memberStatus.isFriend) {
         items.value[0].status = false;
-        items.value[1].status = true;
+        items.value[2].status = true;
       } else {
         items.value[0].status = true;
-        items.value[1].status = false;
+        items.value[2].status = false;
       }
       // 현재 차단 상태
       if (newUserInfo.memberStatus.isBlock) {
-        items.value[2].status = false;
-        items.value[3].status = true;
-      } else {
-        items.value[2].status = true;
         items.value[3].status = false;
+        items.value[4].status = true;
+      } else {
+        items.value[3].status = true;
+        items.value[4].status = false;
       }
       // 현재 신고된 상태
       if (newUserInfo.memberStatus.isReport) {
-        items.value[4].status = true;
+        items.value[5].status = true;
       }
+
+      await loadFriendRequestList();
     }, {deep: true});
 </script>

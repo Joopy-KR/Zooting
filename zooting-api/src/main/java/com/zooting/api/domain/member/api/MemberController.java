@@ -2,7 +2,11 @@ package com.zooting.api.domain.member.api;
 
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.*;
+import com.zooting.api.domain.member.dto.response.MemberRes;
+import com.zooting.api.domain.member.dto.response.MemberSearchRes;
+import com.zooting.api.domain.member.dto.response.MyProfileReq;
+import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
-@Tag(name = "유저", description = "Member 관련 API")
+@Tag(name = "멤버", description = "Member 관련 API")
 public class MemberController {
     private final MemberService memberService;
 
@@ -50,7 +54,7 @@ public class MemberController {
                     "false - 추가 정보 저장되지 않음" +
                     "true - 추가 정보 저장되어 있음")
     @GetMapping("/privilege/check")
-    public ResponseEntity<BaseResponse<Boolean>> checkPrivilege(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<BaseResponse<List<Privilege>>> checkPrivilege(@AuthenticationPrincipal UserDetails userDetails) {
         var result = memberService.checkMemberPrivilege(userDetails.getUsername());
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
@@ -58,7 +62,7 @@ public class MemberController {
         );
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
     @Operation(
             summary = "프로필 확인",
             description = "내 프로필이 맞다면 myprofile = true" +
@@ -143,7 +147,7 @@ public class MemberController {
 
     @Operation(summary = "포인트 차감 후 닉네임 변경")
     @PreAuthorize("hasAnyRole('USER')")
-    @PutMapping("/nickname")
+    @PatchMapping("/nickname")
     public ResponseEntity<BaseResponse<String>> modifyNickname(
             @Valid @RequestBody NicknameReq nicknameReq,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -161,7 +165,7 @@ public class MemberController {
 
     @Operation(summary = "관심사, 이상형 수정")
     @PreAuthorize("hasAnyRole('USER')")
-    @PutMapping("/interests")
+    @PatchMapping("/interests")
     public ResponseEntity<BaseResponse<String>> updateInterests(
             @Valid @RequestBody InterestsReq interestsReq,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -174,7 +178,7 @@ public class MemberController {
 
     @Operation(summary = "자기소개 수정")
     @PreAuthorize("hasAnyRole('USER')")
-    @PutMapping("/introduce")
+    @PatchMapping("/introduce")
     public ResponseEntity<BaseResponse<String>> updateIntroduce(
             @Valid @RequestBody IntroduceReq introduceReq,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -203,7 +207,7 @@ public class MemberController {
 
     @Operation(summary = "성격 수정")
     @PreAuthorize("hasAnyRole('ANONYMOUS', 'USER')")
-    @PutMapping("/characters")
+    @PatchMapping("/characters")
     public ResponseEntity<BaseResponse<String>> updatePersonality(
             @Valid @RequestBody PersonalityReq personalityReq,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -233,7 +237,7 @@ public class MemberController {
             description = "유저의 동물상과 일치할때만 마스크 변경 가능"
     )
     @PreAuthorize("hasAnyRole('USER')")
-    @PutMapping("/mask")
+    @PatchMapping("/mask")
     public ResponseEntity<BaseResponse<String>> changeMask(
             @RequestBody MaskReq maskReq,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -254,7 +258,7 @@ public class MemberController {
 
     @Operation(summary = "내 배경이미지 변경")
     @PreAuthorize("hasAnyRole('USER')")
-    @PutMapping("/background")
+    @PatchMapping("/background")
     public ResponseEntity<BaseResponse<String>> changeBackground(
             @RequestBody BackgroundReq backgroundReq,
             @AuthenticationPrincipal UserDetails userDetails) {
