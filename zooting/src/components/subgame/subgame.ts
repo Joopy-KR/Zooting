@@ -1,8 +1,8 @@
-import StopDogImg from '../../../public/assets/images/sub_game/stopdog.png';
-import RunningDogImg from '../../../public/assets/images/sub_game/runningdog.png';
-import HamburgerImg from '../../../public/assets/images/sub_game/obstacle_hamburger.png';
-import PotatoImg from '../../../public/assets/images/sub_game/obstacle_potato.png';
-import PizzaImg from '../../../public/assets/images/sub_game/obstacle_pizza.png';
+import StopDogImg from '/assets/images/sub_game/stopdog.png';
+import RunningDogImg from '/assets/images/sub_game/runningdog.png';
+import HamburgerImg from '/assets/images/sub_game/obstacle_hamburger.png';
+import PotatoImg from '/assets/images/sub_game/obstacle_potato.png';
+import PizzaImg from '/assets/images/sub_game/obstacle_pizza.png';
 import { playJumpSound, playCollisionSound} from "@/components/subgame/sound";
 
 
