@@ -1,6 +1,6 @@
 <template>
-  <TransitionRoot as="template" :show="$props.open">
-    <Dialog as="div" class="relative z-10" @close="$emit('handleClose')">
+  <TransitionRoot as="template" :show="$props.isMatchingComplete">
+    <Dialog as="div" class="relative z-10" @close="$emit('closeModal')">
       <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
       </TransitionChild>
@@ -43,15 +43,15 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { CheckIcon } from '@heroicons/vue/24/outline'
-import { useAccessTokenStore } from '../../stores/store'
+import { useAccessTokenStore } from '../stores/store'
 const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
 const props = defineProps<{
   roomId: string
-  open: boolean
+  isMatchingComplete: boolean
 }>()
-const emit = defineEmits(['handleClose'])
+const emit = defineEmits(['closeModal'])
 
 const enterRoomTimeLimit = ref(0)
 
@@ -74,7 +74,7 @@ const meetingAccept = function () {
   })
   .then((res) => {
     console.log(res)
-    emit('handleClose')
+    emit('closeModal')
   })
   .catch((err) => {
     console.log(err)
@@ -94,7 +94,7 @@ const meetingExit = function () {
   })
   .then((res) => {
     console.log(res)
-    emit('handleClose')
+    emit('closeModal')
   })
   .catch((err) => {
     console.log(err)

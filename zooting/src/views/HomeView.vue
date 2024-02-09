@@ -1,39 +1,28 @@
 <template>
   <div class="home__container">
     <Social/>
-    <Ready />
-    <MatchingCompleteModal 
-      v-if="isMatchingComplete" 
-      class="z-40"
-      :room-id="roomId"
-      @handle-close="handleClose"
-      :open="isMatchingComplete"
-      />
+    <Ready
+      :is-matching-complete="$props.isMatchingComplete"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router' 
 import { useAccessTokenStore, useStore } from "@/stores/store"
-import Social from '../components/home/Social.vue'
-import Ready from '../components/home/Ready.vue'
-import MatchingCompleteModal from "@/components/home/MatchingCompleteModal.vue"
+import Social from '@/components/home/Social.vue'
+import Ready from '@/components/home/Ready.vue'
 const { VITE_SERVER_API_URL } = import.meta.env
 
-const router = useRouter()
 const store = useAccessTokenStore()
 const dmStore = useStore()
 const props = defineProps<{
   dmRoomId: number
+  isMatchingComplete: boolean
 }>()
-const emit = defineEmits(['receiveMessage'])
+const emit = defineEmits(['receiveMessage', 'matchingComplete'])
 
 const userInfo = ref(store.userInfo)
-
-// 매칭이 된 경우 모달창이 뜨는 조건
-const isMatchingComplete = ref<boolean>(false)
-const roomId = ref<string>('')
 
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
 const stompClient = Stomp.over(socket)
@@ -41,10 +30,6 @@ const stompClient = Stomp.over(socket)
 watch(()=> store.userInfo, (update)=>{
   userInfo.value = update
 })
-
-const handleClose = () => {
-  isMatchingComplete.value = false
-}
 
 onMounted(async () => {
   const result = await store.checkCompletedSignUp()
@@ -86,12 +71,11 @@ const onConnected = () => {
         dmStore.newMessage.push(res.sender)
       } 
     } 
-    // match
+    // 매칭 완료
     else if (res.type === 'match') {
-      roomId.value = res.roomId
-      isMatchingComplete.value = true
+      emit('matchingComplete', res.roomId)
     }
-    // match accept
+    // 매칭 수락
     else if (res.type === 'openviduToken') {
       store.pushMeetingRoom(res.token)
     }
