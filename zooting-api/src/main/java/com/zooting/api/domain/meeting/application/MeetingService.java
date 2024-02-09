@@ -10,6 +10,7 @@ import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MeetingService {
-
     private final MemberRepository memberRepository;
     private final WaitingRoomRedisRepository waitingRoomRedisRepository;
     private final RedisMessageListenerContainer redisMessageListener;
@@ -100,6 +100,7 @@ public class MeetingService {
         WaitingRoom waitingRoom = WaitingRoom.builder()
                 .waitingRoomId(randomUUID)
                 .meetingMembers(new HashSet<>())
+                .createdTime(LocalDateTime.now())
                 .acceptCount(0)
                 .expirationSeconds(-1L)
                 .build();

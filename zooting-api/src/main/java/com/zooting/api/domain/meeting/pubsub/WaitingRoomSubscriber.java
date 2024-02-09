@@ -50,6 +50,8 @@ public class WaitingRoomSubscriber implements MessageListener {
         if (MessageType.REGISTER.getPrefix().contains(type) && count == MEETING_CAPACITY) {
             log.info("[onMessage] 유저 {}명이 대기열 등록을 완료했습니다. ", MEETING_CAPACITY);
             sendAcceptMessageToClient(waitingRoom);
+
+            // 매칭 완료되었울 경우 10초내로 수락 버튼 누르도록
             waitingRoom.setExpirationSeconds(10L);
             waitingRoomRedisRepository.save(waitingRoom);
         } else if (MessageType.ACCEPTANCE.getPrefix().contains(type) && count == MEETING_CAPACITY) {
@@ -59,7 +61,6 @@ public class WaitingRoomSubscriber implements MessageListener {
     }
 
     /**
-     * TODO: 유저가 중도 이탈할 경우, 거절 / 수락을 안 누르고 버틸 경우 대기실을 어떻게 파괴할 것인가?
      * 꽉 찬 대기실 유저들에게 매칭 수락 버튼 발송
      * @param waitingRoom 꽉 찬 대기실
      */

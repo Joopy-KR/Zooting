@@ -1,6 +1,8 @@
 package com.zooting.api.domain.meeting.application;
 
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
+
+import java.time.LocalDateTime;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +25,9 @@ public class WaitingRoom {
     @Id
     String waitingRoomId;
     int acceptCount;
+
+    LocalDateTime createdTime;
+
     Set<MeetingMemberDto> meetingMembers;
 
     @TimeToLive
