@@ -222,14 +222,14 @@ let video: HTMLVideoElement | null = null
 let avatar: Avatar | null = null
 
 // 각각의 가면들 주소 할당
-const bear = "src/assets/animal_mask/bear/scene.gltf"
-const cat = "src/assets/animal_mask/cat/scene.gltf"
-const deer = "src/assets/animal_mask/deer/scene.gltf"
-const dino = "src/assets/animal_mask/dino/scene.gltf"
-const dog = "src/assets/animal_mask/dog/scene.gltf"
-const penguin = "src/assets/animal_mask/penguin/scene.gltf"
-const rabbit = "src/assets/animal_mask/rabbit/scene.gltf"
-const raccoon = "src/assets/animal_mask/raccoon_head.glb"
+const bear = "/assets/animal_mask/bear/scene.gltf"
+const cat = "/assets/animal_mask/cat/scene.gltf"
+const deer = "/assets/animal_mask/deer/scene.gltf"
+const dino = "/assets/animal_mask/dino/scene.gltf"
+const dog = "/assets/animal_mask/dog/scene.gltf"
+const penguin = "/assets/animal_mask/penguin/scene.gltf"
+const rabbit = "/assets/animal_mask/rabbit/scene.gltf"
+const raccoon = "/assets/animal_mask/raccoon_head.glb"
 
 
 async function init() {
