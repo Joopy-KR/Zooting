@@ -194,7 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function collisionDetection(runner:any, obstacle:any) {
         let xValue = obstacle.x - ( runner.x + runner.width );
         let yValue = obstacle.y - ( runner.y + runner.height );
-        console.log(gameState, detectedCollision, runner.y, xValue, yValue)
         if( xValue <= 0 && yValue <= 0 ){ // 충돌!
             // 충돌 시 실행되는 코드
             if (!animation || !ctx) {
@@ -219,9 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     recordElement.innerHTML =""
                 }
             }, 0)
-            // location.reload();
-            console.log(detectedCollision)
-            console.log(3)
         }
     }
     function initGame() {
