@@ -99,7 +99,7 @@
           @keyup.enter="sendMessage"
         >
         <!-- 파일 등록 -->
-        <div class="file-input" v-show="isOpenFileInput">
+        <div class="file-input__div" v-show="isOpenFileInput">
           <label for="dropzone-file" class="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer h-50 bg-gray-50">
             <!-- 파일 image -->
             <div v-if="fileInput && fileInput.length > 0" :class="[fileInput?.length > 1 ? 'grid grid-cols-2 gap-2' : '', 'my-2']">
@@ -450,7 +450,7 @@ min-height: 300px;
 .file-button {
   @apply w-5 me-1 text-gray-500 cursor-pointer hover:text-gray-700 border-none;
 }
-.file-input {
+.file-input__div {
   @apply flex items-center justify-center absolute w-full;
   bottom: 70px;
 }
