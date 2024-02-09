@@ -54,7 +54,7 @@
           <DM
               @close-tab="closeTab"
               @current-dm-room-id="currentDmRoomId"
-              :dm-req = props.dmReq
+              :dm-res = props.dmRes
           />
         </section>
 
@@ -77,7 +77,7 @@ const store = useAccessTokenStore()
 const router = useRouter()
 const emit = defineEmits(['currentDmRoomId'])
 const props = defineProps<{
-  dmReq: any
+  dmRes: any
 }>()
 
 const isLoggedIn = computed(() => store.isLogin)
