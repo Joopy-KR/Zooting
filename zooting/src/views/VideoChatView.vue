@@ -23,39 +23,40 @@
       </div>
     </div>
 
-  <div class="main__container" v-show="isLoaded">
-    <!-- 자유 대화 -->
-    <VideoChatTalk
-    class="left-component"
-    :session="session"
-    :publisher="publisher"
-    :subscribers="subscribers"
-    :cameraHeight="cameraHeight"
-    :cameraWidth="cameraWidth"
-    v-if="currentStatus === 'talk'"
-    />
+    <div class="main__container" v-show="isLoaded">
+      <!-- 자유 대화 -->
+      <VideoChatTalk
+      class="left-component"
+      :session="session"
+      :publisher="publisher"
+      :subscribers="subscribers"
+      :cameraHeight="cameraHeight"
+      :cameraWidth="cameraWidth"
+      v-if="currentStatus === 'talk'"
+      />
 
-    <!-- 캐치마인드 -->
-    <VideoChatCatchMind class="left-component"
-    :session="session"
-    :publisher="publisher"
-    :subscribers="subscribers"
-    :cameraHeight="cameraHeight"
-    :cameraWidth="cameraWidth"
-    v-if="currentStatus === 'CatchMind'"
-    />
-    
-    <!-- 사이드바 -->
-    <VideoChatSideBarVue class="right-component"
-    :session="session"
-    :currentChat="currentChat"
-    :currentAnimals="currentAnimals"
-    :publisher="publisher"
-    :subscribers="subscribers"
-    :statusInfo="statusInfo"
-    /> 
+      <!-- 캐치마인드 -->
+      <VideoChatCatchMind class="left-component"
+      :session="session"
+      :publisher="publisher"
+      :subscribers="subscribers"
+      :cameraHeight="cameraHeight"
+      :cameraWidth="cameraWidth"
+      @send-canvas="receive"
+      v-if="currentStatus === 'CatchMind'"
+      />
+      
+      <!-- 사이드바 -->
+      <VideoChatSideBarVue class="right-component"
+      :session="session"
+      :currentChat="currentChat"
+      :currentAnimals="currentAnimals"
+      :publisher="publisher"
+      :subscribers="subscribers"
+      :statusInfo="statusInfo"
+      /> 
+    </div>
   </div>
-</div>
 </template>
 
 <script setup lang="ts">
@@ -67,16 +68,13 @@ import VideoChatCatchMind from '@/components/video-chat/VideoChatCatchMind.vue'
 import VideoChatSideBarVue from '@/components/video-chat/VideoChatSideBar.vue'
 
 import { ref, onMounted, onUnmounted } from 'vue'
-import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import { useAccessTokenStore } from '@/stores/store.ts'
-axios.defaults.headers.post["Content-Type"] = "application/json"
 
-const { VITE_SERVER_API_URL } = import.meta.env
 const store = useAccessTokenStore()
 
-onMounted(() => {
-  startSession()
+onMounted(async () => {
+  startSession();
 })
 
 onUnmounted(() => {
@@ -89,6 +87,12 @@ async function startSession() {
   await joinSession()
 }
 
+const canvasEl = ref(null)
+
+const receive = function(canvas) {
+  canvasEl.value = canvas
+  console.log('이제야 됨 느려텨저라 ')
+}
 // 로딩 완료를 나타내기 위한 플래그
 const isLoaded = ref(false)
 
@@ -116,7 +120,6 @@ cameraWidth.value = 266
 
 // 현재 채팅 내용 (세션별로 관리해야됨)
 
-const mySessionId = ref("SessionA")
 const myUserName = ref<any>('')
 const myUserAnimal = ref<any>('')
 const myGender = ref<any>('')
@@ -137,6 +140,7 @@ const currentChat = ref([])
 
 
 const joinSession = () => {
+  console.log(1111)
   // Openvidu 객체 가져오기
   OV.value = new OpenVidu();
 
@@ -183,40 +187,42 @@ const joinSession = () => {
   // 현재 참가중인 동물목록에 자신 넣어주기
   currentAnimals.value.push(myUserAnimal.value)
 
-  // 유저 토큰 이용해 세션과 연결하기 (이 부분이 주어지는 토큰으로 대체)
+  // const videoTrack = canvasEl.captureStream(60).getVideoTracks()[0]
+	// console.log(canvas_video)
+  // props.streamManager.addVideoElement(canvas_video
+  
+  const token = ref<any>('')
+  token.value = store.meetingRoomToken
 
-  // Openvidu 배포 서버로부터 토큰 가져오기(이 부분이 바뀌어야함)
-  getToken(mySessionId.value).then((token) => {
-
-    // 첫번째 인자는 토큰, 두번째 인자는 모든 유저에 의해 검색 가능
-    // 'streamCreated'(Stream.connection.data의 속성), 유저 닉네임으로 DOM에 추가됨
-    session.value.connect(token, { nickname: myUserName.value, animal: myUserAnimal.value, gender: myGender.value }).then(() => {
-
-      // 실제 publish 하는 부분, 이 부분에서 카메라와 오디오 소스 설정 가능
-      let pub = OV.value.initPublisher(undefined, {
-        audioSource: undefined,
-        videoSource: undefined,
-        publishAudio: true,
-        publishVideo: true,
-        resolution: "640x480",
-        frameRate: 30,
-        insertMode: "APPEND",
-        mirror: false,
-      });
-
-      // mainStream과 Publisher(나 자신)에 정보를 담고
-      mainStreamManager.value = pub;
-      publisher.value = pub;      
-
-      // stream Publish 하기
-      session.value.publish(publisher.value);
-    })
-    .then(() => {
-      isLoaded.value = true
-    })
-    .catch((error) => {
-      console.log("세션과 연결중 에러가 발생했습니다:", error.code, error.message);
+  // 유저 토큰 이용해 세션과 연결하기
+  // 첫번째 인자는 토큰, 두번째 인자는 모든 유저에 의해 검색 가능
+  // 'streamCreated'(Stream.connection.data의 속성), 유저 닉네임으로 DOM에 추가됨
+  session.value.connect(token.value, { nickname: myUserName.value, animal: myUserAnimal.value, gender: myGender.value }).then(() => {
+    
+    // 실제 publish 하는 부분, 이 부분에서 카메라와 오디오 소스 설정 가능
+    let pub = OV.value.initPublisher(undefined, {
+      audioSource: undefined,
+      videoSource: undefined,
+      publishAudio: true,
+      publishVideo: true,
+      resolution: "640x480",
+      frameRate: 30,
+      insertMode: "APPEND",
+      mirror: false,
     });
+
+    // mainStream과 Publisher(나 자신)에 정보를 담고
+    mainStreamManager.value = pub;
+    publisher.value = pub;      
+
+    // stream Publish 하기
+    session.value.publish(publisher.value);
+  })
+  .then(() => {
+    isLoaded.value = true
+  })
+  .catch((error) => {
+    console.log("세션과 연결중 에러가 발생했습니다:", error.code, error.message);
   });
 
   // 사용자가 화면을 나가버릴시 세션 나가기
@@ -238,36 +244,9 @@ const leaveSession = () => {
 
   // 세션을 이미 나갔으니 화면 나갈때의 이벤트리스트 제거하기
   window.removeEventListener("beforeunload", leaveSession);
-};
-
-// 토큰 가져오기 (이후 서버가 줄 예정)
-const getToken = async (mySessionId) => {
-  const sessionId = await createSession(mySessionId);
-  return await createToken(sessionId);
-};
-
-// 세션 만들도록 요청하는 axios (이후 서버가 줄 예정)
-const createSession = async (sessionId) => {
-  const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions', { customSessionId: sessionId }, {
-    headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${store.getAccessToken()}`
-             },
-  });
-  return response.data; // sessionId가 옴
-};
-
-// 토큰 만들어달라고 요청하는 axios (이후 서버가 줄 예정)
-const createToken = async (sessionId) => {
-  const response = await axios.post(VITE_SERVER_API_URL + '/api/sessions/' + sessionId + '/connections', {}, {
-    headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${store.getAccessToken()}`
-             },
-  });
-  return response.data; // 토큰이 옴
-};
+}
 </script>
+
 
 
 <style scoped>

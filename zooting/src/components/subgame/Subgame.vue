@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div class="canvas-size background-image border-2" id="game" v-if = "pressStart" >
-      <span id="description" class="animate__shakeY absolute align-middle neon drag-prevent">Press Spacebar</span>
-      <span id="record" class="neon-mini ml-3 mt-3 drag-prevent"></span><i id="score" class="neon-mini ml-2 drag-prevent"></i>
+    <div class="border-2 canvas-size background-image" id="game" v-if = "pressStart" >
+      <span id="description" class="absolute align-middle animate__shakeY neon drag-prevent">Press Spacebar</span>
+      <span id="record" class="mt-3 ml-3 neon-mini drag-prevent"></span><i id="score" class="ml-2 neon-mini drag-prevent"></i>
       <canvas id="canvas" class="z-40 drag-prevent"></canvas>
     </div>
   </div>
@@ -23,7 +23,7 @@ const pressStart = ref(true);
   height: 200px;
 }
 .background-image {
-  background: url("../../../public/assets/images/sub_game/background.gif") 0 center / 200px 600px repeat-x;
+  background: url("/assets/images/sub_game/background.gif") 0 center / 200px 600px repeat-x;
   background-size: 600px 200px;
   animation: movebg 40s linear infinite;
 

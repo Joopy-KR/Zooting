@@ -732,6 +732,22 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         });
     };
 
+    const meetingRegister = function () {
+      axios({
+        method: "post",
+        url: `${API_URL}/api/meeting/register`,
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
     const noticePage = ref<NoticePage>();
     const noticeList = ref<Notice[]>([]);
     // 공지사항 리스트
@@ -752,6 +768,13 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           console.log(err);
       });
     };
+  
+  // 매칭 완료시 미팅방으로 이동시키기
+  const meetingRoomToken = ref<String>('')
+  const pushMeetingRoom = function (token: String) {
+    meetingRoomToken.value = token
+    router.push({ name: "video-chat"})
+  }
 
   return {
       setAccessToken,
@@ -796,5 +819,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       noticePage,
       noticeList,
       getNoticeList,
+      meetingRegister,
+      meetingRoomToken,
+      pushMeetingRoom,
   };
 });

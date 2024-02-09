@@ -10,9 +10,8 @@
 
 <script setup lang="ts">
 import UserVideo from '@/components/video-chat/UserVideo.vue' 
-import { defineProps } from 'vue'
 
-const props = defineProps(['session', 'publisher', 'subscribers', 'cameraHeight', 'cameraWidth'])
+defineProps(['session', 'publisher', 'subscribers', 'cameraHeight', 'cameraWidth'])
 
 </script>
 
