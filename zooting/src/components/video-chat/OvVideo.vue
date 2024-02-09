@@ -241,7 +241,7 @@ async function init() {
   const maskURL = ref<any>('')
 
   // 가면 바꾸는 변수
-  maskURL.value = dog 
+  maskURL.value = dog  
 
   avatar.value = new Avatar(
     maskURL.value,
@@ -310,7 +310,7 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
       
       // 가면 위아래 위치 
       // 너구리 가면은 적용되지 않음.
-      if (avatar.value.url !== 'src/assets/animal_mask/raccoon_head.glb' ) {
+      if (avatar.value.url !== '/assets/animal_mask/raccoon_head.glb' ) {
         avatar.value.scene.position.y = -6
       }
       
