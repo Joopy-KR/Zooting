@@ -3,28 +3,24 @@
 		<ov-video
     :stream-manager="streamManager"  
     :cameraHeight="cameraHeight" 
-    :cameraWidth="cameraWidth"/>
-		<!-- <div><p>{{ clientData }}</p></div> -->
+    :cameraWidth="cameraWidth"
+    @send-canvas="sendCanvas"
+    />
 	</div>
 </template>
 
 <script setup lang="ts">
 import OvVideo from './OvVideo.vue';
-import { computed } from 'vue';
 
-const props = defineProps<{
+defineProps<{
   streamManager: any
   cameraHeight: Number
   cameraWidth: Number
 }>()
 
-const clientData = computed(() => {
-  const { clientData } = getConnectionData();
-  return clientData;
-});
+const emit = defineEmits(['sendCanvas'])
 
-const getConnectionData = () => {
-  const { connection } = props.streamManager.stream;
-  return JSON.parse(connection.data);
-};
+const sendCanvas = function(canvas) {
+  emit('sendCanvas', canvas)
+}
 </script>

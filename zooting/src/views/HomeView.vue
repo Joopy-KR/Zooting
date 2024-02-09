@@ -7,18 +7,21 @@
       class="z-40"
       :room-id="roomId"
       @handle-close="handleClose"
+      :open="isMatchingComplete"
       />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router' 
 import { useAccessTokenStore, useStore } from "@/stores/store"
 import Social from '../components/home/Social.vue'
 import Ready from '../components/home/Ready.vue'
 import MatchingCompleteModal from "@/components/home/MatchingCompleteModal.vue"
 const { VITE_SERVER_API_URL } = import.meta.env
 
+const router = useRouter()
 const store = useAccessTokenStore()
 const dmStore = useStore()
 const props = defineProps<{
@@ -68,6 +71,7 @@ socket.onclose = () => {
 }
 
 const onConnected = () => {
+  console.log(`/api/sub/dm/${userInfo.value?.email}`)
   stompClient.subscribe(`/api/sub/dm/${userInfo.value?.email}`,
   (message: any) => {
     const res = JSON.parse(message.body)
@@ -89,7 +93,7 @@ const onConnected = () => {
     }
     // match accept
     else if (res.type === 'openviduToken') {
-      console.log(res)
+      store.pushMeetingRoom(res.token)
     }
   })
 }
