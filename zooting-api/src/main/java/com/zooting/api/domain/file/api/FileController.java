@@ -9,17 +9,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.UUID;
 
 @Log4j2
 @PreAuthorize("hasRole('USER')")
@@ -53,12 +52,15 @@ public class FileController {
     }
 
     @Operation(summary = "파일 다운로드", description = "파일 다운로드")
-    @GetMapping("/download/{fileId}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable Long fileId) throws IOException {
-        var downloadFile = fileService.downloadFile(fileId);
+    @GetMapping("/download")
+    public ResponseEntity<byte[]> downloadFile(@RequestParam UUID S3Id) throws IOException {
+        var downloadFile = fileService.downloadFile(S3Id);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        httpHeaders.setContentDispositionFormData("attachment", (String) downloadFile[1]);
+//        httpHeaders.setContentDispositionFormData("attachment", (String) downloadFile[1]);
+        httpHeaders.setContentDisposition(ContentDisposition.builder("attachment")
+                .filename((String) downloadFile[1], Charset.forName("UTF-8"))
+                .build());
         return new ResponseEntity<>((byte[]) downloadFile[0], httpHeaders, HttpStatus.OK);
     }
 }

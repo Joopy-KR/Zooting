@@ -85,6 +85,7 @@ public class DMServiceImpl implements DMService {
                 .map(file -> {
                     File savedFile = File.builder()
                             .dm(dm)
+                            .s3ID(file.S3Id())
                             .fileName(file.fileName())
                             .imgUrl(file.imgUrl())
                             .fileDir(file.fileDir())
@@ -97,7 +98,7 @@ public class DMServiceImpl implements DMService {
         dm.setFiles(files);
         dmRepository.save(dm);
         RedisDMRes redisDMRes = new RedisDMRes(dmReq.dmRoomId(), dm.getId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(),
-                dmReq.files().stream().map(file -> new DMFileRes(file.imgUrl(), file.thumbnailUrl())).toList());
+                dmReq.files().stream().map(file -> new DMFileRes(file.S3Id(), file.imgUrl(), file.thumbnailUrl())).toList());
         redisTemplate.opsForList().rightPush(dmReq.sender() + ":dmRoomId:" + dmReq.dmRoomId(), gson.toJson(redisDMRes));
         redisTemplate.opsForList().rightPush(dmReq.receiver() + ":dmRoomId:" + dmReq.dmRoomId(), gson.toJson(redisDMRes));
     }
@@ -127,6 +128,7 @@ public class DMServiceImpl implements DMService {
                                     dm.getDmRoom().getId(), dm.getId(), "MESSAGE", dm.getMessage(), dm.getSender(), receiver, dm.getFiles()
                                     .stream()
                                     .map(file -> new DMFileRes(
+                                            file.getS3Id(),
                                             file.getImgUrl(),
                                             file.getThumbnailUrl()
                                     ))
@@ -176,6 +178,7 @@ public class DMServiceImpl implements DMService {
                                     dm.getDmRoom().getId(), dm.getId(), "MESSAGE", dm.getMessage(), dm.getSender(), dm.getDmRoom().getReceiver().getEmail(), dm.getFiles()
                                     .stream()
                                     .map(file -> new DMFileRes(
+                                            file.getS3Id(),
                                             file.getImgUrl(),
                                             file.getThumbnailUrl()
                                     ))

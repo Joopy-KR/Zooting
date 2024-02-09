@@ -39,6 +39,8 @@ public class QFile extends EntityPathBase<File> {
 
     public final StringPath originFileName = createString("originFileName");
 
+    public final ComparablePath<java.util.UUID> s3Id = createComparable("s3Id", java.util.UUID.class);
+
     public final StringPath thumbnailUrl = createString("thumbnailUrl");
 
     //inherited
