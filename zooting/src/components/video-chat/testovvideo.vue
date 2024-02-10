@@ -1,17 +1,11 @@
-<!-- OVvideo 테스트로 인해 임시로 옮겨놓은 컴포넌트. 이게 진짜 OVvideo임. -->
-
-
 <template>
-  <div id="conatiner" class="container">
-    <!-- style="overflow: hidden;" -->
-    <div v-show="is_loaded">
-      <video :id="'videoId-' + connectionId" autoplay playsinline></video>
+  <div>
+    <div v-show="is_mask_loaded">
+      <video id="landmark-video" autoplay playsinline></video>
     </div>
-    <div :id="'threeId-' + connectionId">
-
-    </div>
+    <div id="three-canvas-box"></div>
     
-    <div class="flex flex-col items-center justify-center" id="loading" v-show="!is_loaded" style="background-color: black; width: 533px; height: 300px;">
+    <div class="flex flex-col items-center justify-center" id="loading" v-show="!is_mask_loaded" style="background-color: black; width: 533px; height: 300px;">
       <p class="mb-8 text-5xl font-bold text-white">가면 벗겨짐</p>
       <h3 class="mb-5 text-white">카메라에 얼굴을 맞춰주세요</h3>
       <div class="flex items-center justify-center" role="status">
@@ -24,7 +18,7 @@
   </div>
 </template>
 
-<script setup lang="ts" type="module">
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted,watch } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
@@ -42,14 +36,8 @@ onUnmounted(() => {
   canvas.remove()
 })
 
-const props = defineProps<{
-  streamManager: any
-}>()
-
-const connectionId = ref(props.streamManager.stream.connection.connectionId)
-
 // 로딩 되었는지 판단할 변수
-const is_loaded = ref(false)
+const is_mask_loaded = ref(false)
 
 class BasicScene {
   scene: THREE.Scene
@@ -69,9 +57,9 @@ class BasicScene {
     this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 0.01, 5000)
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setSize(this.width, this.height)
-    const threeCanvas: any = document.getElementById(`threeId-${connectionId.value}`)
+    this.renderer.domElement.setAttribute('id', 'threeCanvas')
+    const threeCanvas: any = document.getElementById('three-canvas-box')
     threeCanvas.appendChild(this.renderer.domElement)
-    props.streamManager.addVideoElement(threeCanvas)
     
     // 조명 추가
     const ambientLight = new THREE.AmbientLight(0xffffff, 2)
@@ -90,7 +78,7 @@ class BasicScene {
     this.controls.update()
 
     // 재생되는 비디오로 백그라운드 설정
-    const video = document.getElementById(`videoId-${connectionId.value}`) as HTMLVideoElement
+    const video = document.getElementById('landmark-video') as HTMLVideoElement
     const inputFrameTexture = new THREE.VideoTexture(video)
     inputFrameTexture.colorSpace = THREE.SRGBColorSpace
     const inputFramesDepth = 500  // 카메라와 3D 평면의 거리
@@ -101,11 +89,12 @@ class BasicScene {
     )
     this.scene.add(inputFramesPlane)
     this.render()
+    // emit('sendCanvas', this.renderer.domElement)
     
     // 가면이 벗겨지면 카메라 끄기
     const canvas: any = document.querySelector("canvas")
-    watch(is_loaded, () => {
-      if (is_loaded.value === false) {
+    watch(is_mask_loaded, () => { 
+      if (is_mask_loaded.value === false) {
         canvas.style.visibility = "hidden"
       } else {
         canvas.style.visibility = "visible"
@@ -241,7 +230,7 @@ async function init() {
   const maskURL = ref<any>('')
 
   // 가면 바꾸는 변수
-  maskURL.value = dog 
+  maskURL.value = dog  
 
   avatar.value = new Avatar(
     maskURL.value,
@@ -318,10 +307,10 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
   }
   const blendshapes = landmarks.faceBlendshapes
 
-  is_loaded.value = false
+  is_mask_loaded.value = false
   
   if (blendshapes && blendshapes.length > 0) {
-    is_loaded.value = true
+    is_mask_loaded.value = true
     const coefsMap = retarget(blendshapes);
     avatar.value?.updateBlendshapes(coefsMap);
   }
@@ -360,7 +349,7 @@ function onVideoFrame(time: DOMHighResTimeStamp): void {
 
 // video 요소 할당 후 플레이
 async function streamWebcamThroughFaceLandmarker(): Promise<void> {
-  video = document.getElementById(`videoId-${connectionId.value}`) as HTMLVideoElement | null
+  video = document.getElementById('landmark-video') as HTMLVideoElement | null
 
   function onAcquiredUserMedia(stream: MediaStream): void {
     video!.srcObject = stream
@@ -389,7 +378,7 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
 
 
 <style>
-canvas {
+#threeCanvas {
   transform: scaleX(-1);
   /* z-index: 0; */
   /* margin-inline-start: 3.5rem; */
@@ -398,7 +387,7 @@ canvas {
 
 <style scoped>
 
-video {
+#landmark-video {
   display: none;
 }
 
