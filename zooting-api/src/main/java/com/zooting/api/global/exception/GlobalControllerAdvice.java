@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.Objects;
 
@@ -94,6 +95,15 @@ public class GlobalControllerAdvice {
                 .message(e.getMessage())
                 .build();
 
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+        ErrorResponse response = ErrorResponse.of()
+                .code(ErrorCode.FAILED_TO_UPLOAD_S3_FILE)
+                .message("Maximum upload size exceeded.")
+                .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
