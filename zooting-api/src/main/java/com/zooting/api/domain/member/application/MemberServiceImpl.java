@@ -2,20 +2,13 @@ package com.zooting.api.domain.member.application;
 
 import com.zooting.api.domain.background.dao.BackgroundInventoryRepository;
 import com.zooting.api.domain.background.entity.Background;
-import com.zooting.api.domain.background.entity.BackgroundInventory;
 import com.zooting.api.domain.block.entity.Block;
-import com.zooting.api.domain.mask.application.MaskInventoryService;
 import com.zooting.api.domain.mask.dao.MaskInventoryRepository;
-import com.zooting.api.domain.mask.dao.MaskRepository;
 import com.zooting.api.domain.mask.entity.Mask;
-import com.zooting.api.domain.mask.entity.MaskInventory;
 import com.zooting.api.domain.member.dao.ExtractObj;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.MemberRes;
-import com.zooting.api.domain.member.dto.response.MemberSearchRes;
-import com.zooting.api.domain.member.dto.response.MyProfileReq;
-import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.dto.response.*;
 import com.zooting.api.domain.member.entity.AdditionalInfo;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.domain.member.entity.Privilege;
@@ -31,8 +24,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
-
-import static com.zooting.api.domain.member.entity.QMember.member;
 
 
 @Service
@@ -202,10 +193,10 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     @Override
     public boolean changeMask(String memberId, MaskReq maskReq) {
-        AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
+        AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER)).getAdditionalInfo();
-        Mask myMask = maskInventoryRepository.findByMask_Id(maskReq.maskId()).orElseThrow(()->
-                        new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR)).getMask();
+        Mask myMask = maskInventoryRepository.findByMask_Id(maskReq.maskId()).orElseThrow(() ->
+                new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR)).getMask();
         if (myMask.getAnimal().equals(memberInfo.getAnimal())) {
             memberInfo.setMaskId(myMask.getId());
             memberInfo.setMaskUrl(myMask.getFile().getImgUrl());
@@ -213,12 +204,13 @@ public class MemberServiceImpl implements MemberService {
         }
         return false;
     }
+
     @Transactional
     @Override
     public void changeBackground(String memberId, BackgroundReq backgroundReq) {
-        AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(()->
+        AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER)).getAdditionalInfo();
-        Background myBackground = backgroundInventoryRepository.findBackgroundInventoryByBackground_Id(backgroundReq.backgroundId()).orElseThrow(()->
+        Background myBackground = backgroundInventoryRepository.findBackgroundInventoryByBackground_Id(backgroundReq.backgroundId()).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR)).getBackground();
         memberInfo.setBackgroundId(myBackground.getId());
         memberInfo.setBackgroundUrl(myBackground.getFile().getImgUrl());
@@ -266,7 +258,7 @@ public class MemberServiceImpl implements MemberService {
                 findMembers = memberRepository.findMemberByNicknameContaining(pageable, nickname);
             }
         }
-        return new MemberSearchPageRes(findMembers.getContent(), findMembers.getNumber(),  findMembers.getTotalPages());
+        return new MemberSearchPageRes(findMembers.getContent(), findMembers.getNumber(), findMembers.getTotalPages());
 
     }
 
@@ -312,7 +304,7 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         ExtractObj extractObj = new ExtractObj();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        extractObj.setMemberBirthYear(member.getBirth().getYear()+1900);
+        extractObj.setMemberBirthYear(member.getBirth().getYear() + 1900);
         extractObj.setUserId(userId);
         extractObj.setBlockToList(member.getBlockToList().stream().map(block -> block.getFrom().getEmail()).toList());
         extractObj.setBlockFromList(member.getBlockFromList().stream().map(block -> block.getTo().getEmail()).toList());
