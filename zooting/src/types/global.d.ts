@@ -39,6 +39,8 @@ declare interface Background {
     fileName: string | undefined,
     imgUrl: string,
     price: number,
+    status: boolean,
+    isSelected: boolean,
 }
 
 declare interface TokenState {

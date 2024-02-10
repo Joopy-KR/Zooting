@@ -73,6 +73,7 @@ onMounted(() => {
   />
   <!--  배경이미지 수정-->
   <EditBackground
+      :user-info="userInfo"
       :show-from-parent="showEditBackground"
       @set-parent-show="setShowEditBackground"
   />

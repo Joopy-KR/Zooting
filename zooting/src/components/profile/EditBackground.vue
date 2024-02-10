@@ -26,22 +26,34 @@
                            leave-from="opacity-100 translate-y-0 sm:scale-100"
                            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel
-                class="relative transform overflow-hidden rounded-lg bg-white px-10 pb-8 pt-5 text-left shadow-xl transition-all max-h-fit">
-              <div class="pb-5">
+                class="relative transform overflow-hidden rounded-lg bg-white px-6 pb-8 pt-5 text-left shadow-xl transition-all max-h-fit min-w-72">
+              <div class="absolute top-3 right-1">
+        <span
+            class="inline-flex items-center rounded-full bg-green-200/60 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-8"
+        >
+          <div class="flex items-center justify-center tracking-tighter">
+            <p class="px-2 py-1 lg:text-lg font-semibold text-center font-sans text-gray-900">
+              {{ userInfo?.point ? userInfo.point : 0 }}
+            </p>
+            <p class="text-lg pr-2 py-2 font-medium text-center font-sans">Point</p>
+          </div>
+        </span>
+              </div>
+              <div class="pb-5 flex flex-row justify-center">
                 <p class="text-center font-bold text-gray-900 lg:text-xl">배경 이미지</p>
               </div>
               <div>
                 <!-- Content -->
                 <ul role="list"
                     class="grid grid-cols-1 gap-x-10 gap-y-8 sm:gap-x-6 sm:grid-cols-1 lg:grid-cols-2 md:grid-cols-2">
-                  <li v-for="image in images" :key="image.source" class="relative lg:min-w-96 md:min-w-60 sm:min-w-44">
-                    <div
-                        class="group aspect-h-7 aspect-w-10 block w-full overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-                      <img :src="image.source" alt="" class="pointer-events-none object-cover group-hover:opacity-75"/>
-                      <button type="button" class="absolute inset-0 focus:outline-none"/>
-                    </div>
-                    <p class="pointer-events-none mt-2 block truncate font-semibold text-gray-900">
-                      {{ image.title }}</p>
+                  <li v-for="image in images" :key="image.backgroundId"
+                      class="relative lg:min-w-96 lg:min-h-56 md:min-w-60 sm:min-w-44">
+                    <BackgroundItem
+                        v-if="image"
+                        :key="image.backgroundId"
+                        :image="image"
+                        :user-info="userInfo"
+                    />
                   </li>
                 </ul>
               </div>
@@ -65,15 +77,17 @@ import {onMounted, ref} from "vue";
 import {Dialog, DialogPanel, TransitionChild, TransitionRoot} from '@headlessui/vue'
 import SuccessNotification from "@/components/util/SuccessNotification.vue";
 import FailNotification from "@/components/util/FailNotification.vue";
-import type {Background, Notify} from "@/types/global";
+import type {Background, Notify, UserInfo} from "@/types/global";
 import {
   changeDefaultBackgroundImageApi,
   loadBackgroundImageApi,
   loadMyBackgroundImageApi,
   purchaseBackgroundImageApi
 } from "@/api/background";
+import BackgroundItem from "@/components/profile/BackgroundItem.vue";
 
 const props = defineProps({
+  userInfo: Object as () => UserInfo,
   showFromParent: {
     type: Boolean,
     default: false,
@@ -102,8 +116,6 @@ const setNotify = (title: string, message: any) => {
   notify.value.message = message;
 }
 
-interface BackgroundImage
-
 const myImages = ref<Background[]>([]);
 const images = ref<Background[]>([]);
 const currentPage = ref<number>(0);
@@ -111,20 +123,45 @@ const totalPage = ref<number>(0);
 const DEFAULT_SIZE = 4;
 
 onMounted(async () => {
-
+  await loadMyBackgroundImage();
+  await loadBackgroundImage(0);
 });
 // 배경 이미지 조회 (한번에 4개씩)
 const loadBackgroundImage = async (page: number) => {
   await loadBackgroundImageApi({page: page, size: DEFAULT_SIZE},
       ({data}: any) => {
+        console.log("DDDDDDDDDDDDDDDDDD", data);
         if (data.status === 200 || data.status === 201) {
-          const result = data["result"];
+          const result = data["result"]["backgroundRes"]; // 이미지 리스트
+          currentPage.value = data["result"]["currentPage"] ? data["result"]["currentPage"] : 0;
+          totalPage.value = data["result"]["totalPage"] ? data["result"]["totalPage"] : 0;
 
           // TODO 이미지 저장, 저장시 소유 여부 및 기본 이미지 인지 확인 필요
           for (const r of result) {
+            let img: Background = {
+              backgroundId: r.backgroundId,
+              fileName: r.fileName,
+              imgUrl: r.imgUrl,
+              price: r.price,
+              status: false,
+              isSelected: false,
+            }
+
+            const result = myImages.value.find(i => i.backgroundId === img.backgroundId);
+            // 내가 소유한 배경의 경우
+            if (result) {
+              img.status = true;
+            }
+            // 현재 나의 배경인 경우
+            if (img.backgroundId === props.userInfo?.backgroundId) {
+              img.isSelected = true;
+            }
+
+            images.value.push(img);
           }
         } else {
-
+          setNotify("배경 불러오기 실패", "배경 목록 조회에 실패하였습니다.");
+          setShowFail(true);
         }
       },
       (error: any) => console.log(error)
@@ -134,6 +171,7 @@ const loadBackgroundImage = async (page: number) => {
 const loadMyBackgroundImage = async () => {
   await loadMyBackgroundImageApi(
       ({data}: any) => {
+        console.log("AAAAAAAAAAAAAAAAAA", data);
         if (data.status === 200 || data.status === 201) {
           const result = data["result"];
 
@@ -143,7 +181,9 @@ const loadMyBackgroundImage = async () => {
               backgroundId: r.backgroundId,
               fileName: r.fileName,
               imgUrl: r.imgUrl,
-              price: r.price
+              price: r.price,
+              status: true,
+              isSelected: false,
             })
           }
         } else {
@@ -193,32 +233,6 @@ const changeDefaultBackgroundImage = async (backgroundId: number) => {
   );
 }
 
-const jimages = [
-  {
-    title: 'IMG_4985.HEIC',
-    size: '3.9 MB',
-    source:
-        'https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Background/oilpaintart.jpg',
-  },
-  {
-    title: 'IMG_4985.HEIC',
-    size: '3.9 MB',
-    source:
-        'https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Background/oilpaintart.jpg',
-  },
-  {
-    title: 'IMG_4985.HEIC',
-    size: '3.9 MB',
-    source:
-        'https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Background/oilpaintart.jpg',
-  },
-  {
-    title: 'IMG_4985.HEIC',
-    size: '3.9 MB',
-    source:
-        'https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Background/oilpaintart.jpg',
-  },
-]
 </script>
 
 <style scoped>

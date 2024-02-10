@@ -11,7 +11,7 @@ async function loadBackgroundImageApi(params: { page: number, size: number }, su
 // 내 배경 이미지 로딩
 async function loadMyBackgroundImageApi(success: any, fail: any) {
     local.defaults.headers["Authorization"] = `Bearer ${localStorage.getItem("accessToken")}`;
-    await local.delete(`/api/items/background-inventory`).then(success).catch(fail);
+    await local.get(`/api/items/background-inventory`).then(success).catch(fail);
 }
 
 // 배경 이미지 구입
