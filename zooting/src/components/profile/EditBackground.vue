@@ -27,7 +27,7 @@
                            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel
                 class="relative transform overflow-hidden rounded-lg bg-white px-6 pb-8 pt-5 text-left shadow-xl transition-all max-h-fit min-w-72">
-              <div class="absolute top-3 right-1">
+              <div class="absolute top-3 right-3">
         <span
             class="inline-flex items-center rounded-full bg-green-200/60 px-2 py-1 text-xs font-medium text-gray-600 w-auto h-8"
         >
@@ -47,7 +47,7 @@
                 <ul role="list"
                     class="grid grid-cols-1 gap-x-10 gap-y-8 sm:gap-x-6 sm:grid-cols-1 lg:grid-cols-2 md:grid-cols-2">
                   <li v-for="image in images" :key="image.backgroundId"
-                      class="relative lg:min-w-96 lg:min-h-56 md:min-w-60 sm:min-w-44">
+                      class="relative lg:min-w-96 lg:max-w-96 md:min-w-60 sm:min-w-44">
                     <BackgroundItem
                         v-if="image"
                         :key="image.backgroundId"
@@ -57,8 +57,29 @@
                   </li>
                 </ul>
               </div>
+              <!-- 페이징 네비바 -->
+              <nav class="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
+                <div class="hidden md:-mt-px md:flex">
+                  <a href="#"
+                     class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">1</a>
+                  <!-- Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" -->
+                  <a href="#"
+                     class="inline-flex items-center border-t-2 border-indigo-500 px-4 pt-4 text-sm font-medium text-indigo-600"
+                     aria-current="page">2</a>
+                  <a href="#"
+                     class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">3</a>
+                  <span
+                      class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500">...</span>
+                  <a href="#"
+                     class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">8</a>
+                  <a href="#"
+                     class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">9</a>
+                  <a href="#"
+                     class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">10</a>
+                </div>
+              </nav>
               <!-- 확인 버튼 -->
-              <div class="flex justify-center mt-5 sm:mt-6 pt-6">
+              <div class="flex justify-center mt-5 sm:mt-6 pt-3">
                 <button type="button"
                         class="w-1/2 rounded-md bg-violet-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
                         @click="closeDialog">돌아가기
@@ -78,6 +99,7 @@ import {Dialog, DialogPanel, TransitionChild, TransitionRoot} from '@headlessui/
 import SuccessNotification from "@/components/util/SuccessNotification.vue";
 import FailNotification from "@/components/util/FailNotification.vue";
 import type {Background, Notify, UserInfo} from "@/types/global";
+import { ArrowLongLeftIcon, ArrowLongRightIcon } from '@heroicons/vue/20/solid'
 import {
   changeDefaultBackgroundImageApi,
   loadBackgroundImageApi,
