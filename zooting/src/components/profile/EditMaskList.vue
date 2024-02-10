@@ -127,7 +127,7 @@ const purchaseMask = (maskId: number) => {
   purchaseMaskApi({maskId: maskId},
       ({data}: any) => {
         if (data.status === 200 || data.status === 201) {
-          setNotify("마스크 구매", data.result); // TODO 마스크를 구매할지 확인 메시지 필요
+          setNotify("마스크 구매", data.result);
           setShowSuccess(true);
           emits("loadMyInfo");
           getMyMaskList(props.userInfo?.animal);
