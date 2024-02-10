@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, computed } from 'vue'
 import { useAccessTokenStore } from '@/stores/store'
-import Search from '@/components/Search.vue'
+import Search from '@/components/home/Search.vue'
 import SocialTabBar from '@/components/home/SocialTabBar.vue'
 import SocialFriendList from '@/components/home/SocialFriendList.vue'
 import SocialRequestList from '@/components/home/SocialRequestList.vue'
