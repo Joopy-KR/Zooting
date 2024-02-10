@@ -39,9 +39,7 @@ public class FriendServiceImpl implements FriendService {
 
     public FriendSearchPageRes searchFriend(Pageable pageable, String nickname, String loginEmail) {
         //search friend contating nickname
-        System.out.println(nickname);
         Page<Friend> friendInfo = friendRepository.findFriendsByFollower_EmailAndFollowing_NicknameContaining(pageable, loginEmail, nickname);
-        System.out.println(friendInfo.toString());
         List<FriendSearchRes> friendInfoContent = friendInfo.getContent().stream().map(info -> new FriendSearchRes(info.getFollowing().getNickname(), info.getFollowing().getGender())).toList();
         return new FriendSearchPageRes(friendInfoContent, friendInfo.getNumber(), friendInfo.getTotalPages());
     }
