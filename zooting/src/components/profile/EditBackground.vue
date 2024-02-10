@@ -53,33 +53,29 @@
                         :key="image.backgroundId"
                         :image="image"
                         :user-info="userInfo"
+                        @set-show-success="setShowSuccess"
+                        @set-show-fail="setShowFail"
+                        @set-notify="setNotify"
+                        @load-my-info="loadMyInfo"
                     />
                   </li>
                 </ul>
               </div>
               <!-- 페이징 네비바 -->
-              <nav class="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
-                <div class="hidden md:-mt-px md:flex">
-                  <a href="#"
-                     class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">1</a>
-                  <!-- Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" -->
-                  <a href="#"
-                     class="inline-flex items-center border-t-2 border-indigo-500 px-4 pt-4 text-sm font-medium text-indigo-600"
-                     aria-current="page">2</a>
-                  <a href="#"
-                     class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">3</a>
-                  <span
-                      class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500">...</span>
-                  <a href="#"
-                     class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">8</a>
-                  <a href="#"
-                     class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">9</a>
-                  <a href="#"
-                     class="inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">10</a>
-                </div>
-              </nav>
+              <div class="flex justify-center py-4">
+                <nav class="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
+                  <div class="hidden md:-mt-px md:flex">
+                    <div v-for="pageNumber in getPageRange()" :key="pageNumber">
+                      <div :class="currentPage === pageNumber ? 'nav__item__selected': 'nav__item__not_selected'"
+                           @click="loadBackgroundImage(pageNumber)">
+                        {{ pageNumber + 1 }}
+                      </div>
+                    </div>
+                  </div>
+                </nav>
+              </div>
               <!-- 확인 버튼 -->
-              <div class="flex justify-center mt-5 sm:mt-6 pt-3">
+              <div class="flex justify-center">
                 <button type="button"
                         class="w-1/2 rounded-md bg-violet-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500"
                         @click="closeDialog">돌아가기
@@ -99,13 +95,7 @@ import {Dialog, DialogPanel, TransitionChild, TransitionRoot} from '@headlessui/
 import SuccessNotification from "@/components/util/SuccessNotification.vue";
 import FailNotification from "@/components/util/FailNotification.vue";
 import type {Background, Notify, UserInfo} from "@/types/global";
-import { ArrowLongLeftIcon, ArrowLongRightIcon } from '@heroicons/vue/20/solid'
-import {
-  changeDefaultBackgroundImageApi,
-  loadBackgroundImageApi,
-  loadMyBackgroundImageApi,
-  purchaseBackgroundImageApi
-} from "@/api/background";
+import {loadBackgroundImageApi, loadMyBackgroundImageApi} from "@/api/background";
 import BackgroundItem from "@/components/profile/BackgroundItem.vue";
 
 const props = defineProps({
@@ -115,7 +105,7 @@ const props = defineProps({
     default: false,
   },
 })
-const emits = defineEmits(["setParentShow"])
+const emits = defineEmits(["setParentShow", "loadMyInfo"]);
 
 const closeDialog = () => {
   emits("setParentShow", false);
@@ -127,6 +117,10 @@ const notify = ref<Notify>({
   title: '',
   message: undefined,
 });
+
+const loadMyInfo = () => {
+  emits("loadMyInfo");
+}
 const setShowSuccess = (status: boolean) => {
   showSuccess.value = status;
 }
@@ -143,22 +137,27 @@ const images = ref<Background[]>([]);
 const currentPage = ref<number>(0);
 const totalPage = ref<number>(0);
 const DEFAULT_SIZE = 4;
+const DEFAULT_NAV_SIZE = 5;
 
-onMounted(async () => {
-  await loadMyBackgroundImage();
-  await loadBackgroundImage(0);
-});
+const getPageRange = () => {
+  let start = Math.max(currentPage.value - 3, 0);
+  let end = totalPage.value - start + 1 > DEFAULT_NAV_SIZE ? start + DEFAULT_NAV_SIZE - 1 : totalPage.value;
+
+  console.log(start, end);
+  return Array.from({length: end - start + 1}, (_, i) => start + i);
+}
+
+
 // 배경 이미지 조회 (한번에 4개씩)
 const loadBackgroundImage = async (page: number) => {
   await loadBackgroundImageApi({page: page, size: DEFAULT_SIZE},
       ({data}: any) => {
-        console.log("DDDDDDDDDDDDDDDDDD", data);
         if (data.status === 200 || data.status === 201) {
           const result = data["result"]["backgroundRes"]; // 이미지 리스트
           currentPage.value = data["result"]["currentPage"] ? data["result"]["currentPage"] : 0;
-          totalPage.value = data["result"]["totalPage"] ? data["result"]["totalPage"] : 0;
+          totalPage.value = data["result"]["totalPage"] ? data["result"]["totalPage"] - 1 : 0;
 
-          // TODO 이미지 저장, 저장시 소유 여부 및 기본 이미지 인지 확인 필요
+          images.value = [];
           for (const r of result) {
             let img: Background = {
               backgroundId: r.backgroundId,
@@ -193,7 +192,6 @@ const loadBackgroundImage = async (page: number) => {
 const loadMyBackgroundImage = async () => {
   await loadMyBackgroundImageApi(
       ({data}: any) => {
-        console.log("AAAAAAAAAAAAAAAAAA", data);
         if (data.status === 200 || data.status === 201) {
           const result = data["result"];
 
@@ -216,48 +214,22 @@ const loadMyBackgroundImage = async () => {
       (error: any) => console.log(error)
   );
 }
-// 배경 이미지 구매
-const purchaseBackgroundImage = async (backgroundId: number) => {
-  await purchaseBackgroundImageApi(
-      {backgroundId: backgroundId},
-      ({data}: any) => {
-        if (data.status === 200 || data.status === 201) {
-          setNotify("배경 이미지 구매 성공", data["result"]);
-          setShowSuccess(true);
-        } else {
-          setNotify("배경 이미지 구매 실패", data["result"]);
-          setShowFail(true);
-        }
-      }, (error: any) => {
-        console.log(error);
-        setNotify("배경 이미지 변경 실패", "서버 에러 발생");
-        setShowFail(true);
-      }
-  );
-}
-// 배경 이미지 변경
-const changeDefaultBackgroundImage = async (backgroundId: number) => {
-  await changeDefaultBackgroundImageApi(
-      {backgroundId: backgroundId},
-      ({data}: any) => {
-        if (data.status === 200 || data.status === 201) {
-          setNotify("배경 이미지 변경 성공", data["result"]);
-          setShowSuccess(true);
-        } else {
-          setNotify("배경 이미지 변경 실패", data["result"]);
-          setShowFail(true);
-        }
-      }, (error: any) => {
-        console.log(error);
-        setNotify("배경 이미지 변경 실패", "서버 에러 발생");
-        setShowFail(true);
-      }
-  );
-}
 
+onMounted(async () => {
+  await loadMyBackgroundImage();
+  await loadBackgroundImage(0);
+});
 </script>
 
 <style scoped>
+
+.nav__item__not_selected {
+  @apply inline-flex items-center border-t-2 border-transparent px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700;
+}
+
+.nav__item__selected {
+  @apply inline-flex items-center border-t-2 border-indigo-500 px-4 pt-4 text-sm font-medium text-indigo-600;
+}
 
 .group {
   position: relative;
