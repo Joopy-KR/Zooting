@@ -18,7 +18,11 @@ const props = defineProps({
   },
 });
 const emits = defineEmits([
-  "setNotify", "setShowSuccess", "setShowFail", "loadMyInfo",
+  "setNotify",
+  "setShowSuccess",
+  "setShowFail",
+  "loadMyInfo",
+  "updateImgStatus"
 ]);
 
 // 배경 이미지 구매
@@ -30,6 +34,7 @@ const purchaseBackgroundImage = async (backgroundId: number) => {
           emits("loadMyInfo");
           emits("setNotify", "배경 이미지 구매 성공", data["result"]);
           emits("setShowSuccess", true);
+          emits("updateImgStatus", true, undefined, props.image.backgroundId);
         } else {
           emits("setNotify", "배경 이미지 구매 실패", data["result"]);
           emits("setShowFail", true);
@@ -50,6 +55,7 @@ const changeDefaultBackgroundImage = async (backgroundId: number) => {
           emits("loadMyInfo");
           emits("setNotify", "배경 이미지 변경 성공", data["result"]);
           emits("setShowSuccess", true);
+          emits("updateImgStatus", undefined, true, props.image.backgroundId);
         } else {
           emits("setNotify", "배경 이미지 변경 실패", data["result"]);
           emits("setShowFail", true);
@@ -98,7 +104,7 @@ const getConfirmButtonText = () => {
   return '';
 }
 
-const clickConfirmBtn = async ()=> {
+const clickConfirmBtn = async () => {
   // 이미지 구매
   if (!props.image.status) {
     await purchaseBackgroundImage(props.image.backgroundId);

@@ -57,6 +57,7 @@
                         @set-show-fail="setShowFail"
                         @set-notify="setNotify"
                         @load-my-info="loadMyInfo"
+                        @update-img-status="updateImgStatus"
                     />
                   </li>
                 </ul>
@@ -130,6 +131,18 @@ const setShowFail = (status: boolean) => {
 const setNotify = (title: string, message: any) => {
   notify.value.title = title;
   notify.value.message = message;
+}
+const updateImgStatus = (status: boolean | undefined, isSelected: boolean | undefined, imageId: number) => {
+  const image = images.value.find(background => background.backgroundId === imageId);
+  if (!image) return;
+
+  if (status) {
+    image.status = status;
+  }
+  if (isSelected) {
+    images.value.forEach(value => value.isSelected = false);
+    image.isSelected = isSelected;
+  }
 }
 
 const myImages = ref<Background[]>([]);
