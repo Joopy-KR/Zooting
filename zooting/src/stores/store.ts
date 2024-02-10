@@ -759,23 +759,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           console.log(err);
         });
     };
-    
-    // 매칭 요청
-    const meetingRegister = function () {
-      axios({
-        method: "post",
-        url: `${API_URL}/api/meeting/register`,
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
 
     // 공지사항 리스트
     const noticePage = ref<NoticePage>();
@@ -798,12 +781,125 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       });
     };
   
-  // 매칭 완료시 미팅방으로 이동시키기
-  const meetingRoomToken = ref<String>('')
-  const pushMeetingRoom = function (token: String) {
-    meetingRoomToken.value = token
-    router.push({ name: "video-chat"})
-  }
+    // --------------------------매칭---------------------------
+    // 매칭 대기
+    const isMatching = ref<boolean>(false)
+    // 매칭 완료 여부
+    const isMatchingComplete = ref<boolean>(false) // default false
+    // 매칭 대기 시간
+    const formattedTimer = ref("00:00")
+    let timerInterval: any = null
+
+    // 타이머 시작
+    function startTimer() {
+      let seconds = 0;
+      timerInterval = setInterval(() => {
+        seconds++
+        formattedTimer.value = formatTime(seconds)
+      }, 1000)
+    }
+    
+    // 타이머 종료
+    function resetTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval)
+        timerInterval = null
+        formattedTimer.value = "00:00"
+      }
+    }
+
+    // 타이머 포맷
+    function formatTime(seconds: number) {
+      const minutes = Math.floor(seconds / 60)
+      const remainingSeconds = seconds % 60
+      const formattedMinutes = String(minutes).padStart(2, "0")
+      const formattedSeconds = String(remainingSeconds).padStart(2, "0")
+      return `${formattedMinutes}:${formattedSeconds}`
+    }
+    
+    // 매칭 대기 종료
+    const matchingEnd = function () {
+      isMatching.value = false
+      resetTimer()
+    }
+
+    // 매칭 요청
+    const meetingRegister = function () {
+      if (isMatching.value) {
+        console.log('이미 매칭 중입니다')
+        return
+      }
+      axios({
+        method: "post",
+        url: `${VITE_SERVER_API_URL}/api/meeting/register`,
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+      .then((res) => {
+        console.log(res)
+        isMatching.value = true
+        startTimer()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+
+    // 매칭 수락
+    const meetingAccept = function (params: string) {
+      const room = params
+      axios({
+        method: "post",
+        url: `${VITE_SERVER_API_URL}/api/meeting/accept`,
+        params: {
+          room,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+      .then((res) => {
+        console.log(res)
+        isMatching.value = false
+        isMatchingComplete.value = false
+        resetTimer()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+    
+    // 매칭 거절
+    const meetingExit = function (params: string) {
+      const room = params
+      axios({
+        method: "delete",
+        url: `${VITE_SERVER_API_URL}/api/meeting/exit`,
+        params: {
+          room,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+      .then((res) => {
+        console.log(res)
+        isMatching.value = false
+        isMatchingComplete.value = false
+        resetTimer()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+
+    // 매칭 완료시 미팅방으로 이동시키기
+    const meetingRoomToken = ref<String>('')
+    const pushMeetingRoom = function (token: String) {
+      meetingRoomToken.value = token
+      router.push({ name: "video-chat"})
+    }
 
   return {
       setAccessToken,
@@ -852,5 +948,11 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       meetingRoomToken,
       pushMeetingRoom,
       fileDownload,
+      formattedTimer,
+      isMatching,
+      isMatchingComplete,
+      meetingAccept,
+      meetingExit,
+      matchingEnd,
   };
 });

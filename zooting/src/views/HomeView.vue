@@ -1,9 +1,7 @@
 <template>
   <div class="home__container">
     <Social/>
-    <Ready
-      :is-matching-complete="$props.isMatchingComplete"
-    />
+    <Ready/>
   </div>
 </template>
 
@@ -18,7 +16,6 @@ const store = useAccessTokenStore()
 const dmStore = useStore()
 const props = defineProps<{
   dmRoomId: number
-  isMatchingComplete: boolean
 }>()
 const emit = defineEmits(['receiveMessage', 'matchingComplete'])
 
@@ -72,6 +69,8 @@ const onConnected = () => {
     // 매칭 완료
     else if (res.type === 'match') {
       emit('matchingComplete', res.roomId)
+      store.isMatchingComplete = true
+      store.matchingEnd()
     }
     // 매칭 수락
     else if (res.type === 'openviduToken') {
