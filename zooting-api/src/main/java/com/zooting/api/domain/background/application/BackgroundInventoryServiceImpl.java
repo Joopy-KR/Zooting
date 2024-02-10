@@ -19,7 +19,7 @@ public class BackgroundInventoryServiceImpl implements BackgroundInventoryServic
     public List<BackgroundRes> findAllBackgroundInventory(String memberId) {
         return backgroundInventoryRepository.findAllByMember_Email(memberId)
                 .stream().map(back-> new BackgroundRes(
-                        back.getId(),
+                        back.getBackground().getId(),
                         back.getBackground().getFile().getFileName(),
                         back.getBackground().getFile().getImgUrl(),
                         back.getBackground().getPrice()) ).toList();
