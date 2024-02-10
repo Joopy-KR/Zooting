@@ -1,6 +1,7 @@
 <template>
   <div class="flex">
     <TheSideBar
+      v-if="store.isLogin"
       @current-dm-room-id="currentDmRoomId"
       :dm-res = "dmRes"
     />
@@ -25,11 +26,13 @@ import { ref } from 'vue'
 import { RouterView } from 'vue-router'
 import TheSideBar from '@/components/TheSideBar.vue'
 import MatchingCompleteModal from "@/components/MatchingCompleteModal.vue"
+import { useAccessTokenStore } from './stores/store'
 
+const store = useAccessTokenStore()
 const dmRoomId = ref<number>(0)
 const dmRes = ref<any>(null)
 const videoRoomId = ref<string>('')
-const isMatchingComplete = ref<boolean>(true)
+const isMatchingComplete = ref<boolean>(false)
 
 const currentDmRoomId = (id: number) => {
   dmRoomId.value = id

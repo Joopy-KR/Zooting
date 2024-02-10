@@ -319,7 +319,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
       .then((res) => {
         console.log(res);
-        router.push({ name: "animal_test" });
+        router.push({ name: "animal-test" });
       })
       .catch((err) => {
         console.log(err);

@@ -6,7 +6,7 @@
     <div class="ready__main">
       <Subgame class="mb-10 subgame"/>
       <ReadyMatch />
-      <ReadyRecord />
+      <!-- <ReadyRecord /> -->
     </div>
   </div>
 </template>
