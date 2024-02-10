@@ -296,7 +296,7 @@ onMounted(async () => {
       </div>
       <span
           class="inline-flex items-center px-4 py-3 text-sm text-gray-800 rounded-full bg-gray-50 ring-1 ring-inset ring-gray-500/10"
-      >탈퇴</span
+      >떠나기</span
       >
     </div>
     <div class="flex justify-center items-center w-full">

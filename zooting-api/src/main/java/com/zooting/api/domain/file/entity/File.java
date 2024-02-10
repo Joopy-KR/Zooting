@@ -5,6 +5,8 @@ import com.zooting.api.domain.dm.entity.DM;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Entity
@@ -16,6 +18,8 @@ public class File extends BaseEntity {
     @Column(name = "file_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
+    private UUID s3Id;
     @ManyToOne
     @JoinColumn(name = "dm_id")
     private DM dm;
@@ -27,7 +31,8 @@ public class File extends BaseEntity {
     private String thumbnailUrl; // 썸네일 파일 링크
 
     @Builder
-    public File(DM dm, String fileName, String imgUrl, String fileDir, String thumbnailUrl, String originFileName) {
+    public File(UUID s3ID, DM dm, String fileName, String imgUrl, String fileDir, String thumbnailUrl, String originFileName) {
+        this.s3Id = s3ID;
         this.dm = dm;
         this.fileName = fileName;
         this.imgUrl = imgUrl;

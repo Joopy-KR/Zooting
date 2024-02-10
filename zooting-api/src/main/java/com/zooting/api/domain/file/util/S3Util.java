@@ -27,7 +27,6 @@ public class S3Util {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
     private final AmazonS3 amazonS3;
-    private final FileRepository fileRepository;
 
     // 파일 업로드
     @Transactional

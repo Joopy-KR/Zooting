@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Log4j2
 @Service
@@ -39,8 +40,8 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Object[] downloadFile(Long fileId) throws IOException {
-        File file = fileRepository.findById(fileId).orElseThrow(() ->
+    public Object[] downloadFile(UUID S3Id) throws IOException {
+        File file = fileRepository.findByS3Id(S3Id).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_S3FILE));
         return new Object[]{s3Util.downloadFile(file.getFileDir() + file.getFileName()),
                 file.getOriginFileName()};

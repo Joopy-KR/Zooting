@@ -3,6 +3,7 @@ package com.zooting.api.domain.member.application;
 import com.zooting.api.domain.member.dto.request.*;
 import com.zooting.api.domain.member.dto.response.*;
 import com.zooting.api.domain.member.entity.Privilege;
+import org.springframework.data.domain.Pageable;
 
 
 import java.text.ParseException;
@@ -21,7 +22,7 @@ public interface MemberService {
     boolean changeMask(String memberId, MaskReq maskReq);
     void changeBackground(String memberId, BackgroundReq backgroundReq);
     boolean modifyNickname(String memberId, NicknameReq nicknameReq);
-    List<MemberSearchRes> findMemberList(String userId, String nickname);
+    MemberSearchPageRes findMemberList(Pageable pageable, String userId, String nickname);
     void updatePersonality(String userId, PersonalityReq personalityReq);
     PointRes findPoints(String userId);
     Boolean deductPoints(String userId, Long price);

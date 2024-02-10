@@ -19,10 +19,10 @@ public class MaskServiceImpl implements MaskService{
     final private MaskRepository maskRepository;
     @Override
     public MaskPageRes findMask(Pageable pageable, String animal) {
-
         // 전체 조회
         if (Objects.isNull(animal)) {
             Page<Mask> result =  maskRepository.findMasksBy(pageable);
+            System.out.println("####" + result);
             List<MaskRes> maskResList = result.stream().map(mask->new MaskRes(
                     mask.getId(),
                     mask.getAnimal(),
@@ -35,8 +35,7 @@ public class MaskServiceImpl implements MaskService{
             return new MaskPageRes(maskResList, pageable.getPageNumber(), result.getTotalPages());
         }
         else {
-            Page<Mask> result =  maskRepository.findMasksByAnimal(pageable, animal);
-            System.out.println(result);
+            Page<Mask> result =  maskRepository.findMasksByAnimal(animal, pageable);
             List<MaskRes> maskResList = result.stream().map(mask->new MaskRes(
                     mask.getId(),
                     mask.getAnimal(),

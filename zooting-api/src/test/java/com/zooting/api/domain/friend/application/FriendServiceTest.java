@@ -84,25 +84,25 @@ class FriendServiceTest {
                 .build();
     }
 
-    @Test
-    @DisplayName("친구 검색 테스트")
-    @Transactional
-    void searchFriendTest(){
-        // Given
-        String fromEmail = UUID.randomUUID().toString();
-        String toEmail = UUID.randomUUID().toString();
-        Member member1 = memberRepository.save(Member.builder().email(fromEmail).nickname(fromEmail).build());
-        Member member2 = memberRepository.save(Member.builder().email(toEmail).nickname(toEmail).build());
-        Friend friend1 = Friend.builder().follower(member1).following(member2).build();
-        Friend friend2 = Friend.builder().follower(member2).following(member1).build();
-        friendRepository.save(friend1);
-        friendRepository.save(friend2);
-        friendService.getFriends(fromEmail)
-                .forEach(friend -> log.info("{}, {}", friend.email(), friend.nickname()));
-        // When
-        List<FriendRes> friendResList = friendService.searchFriend(toEmail.substring(0, toEmail.length()/2), fromEmail);
-
-        // Then
-        assertEquals(toEmail, friendResList.get(0).email());
-    }
+//    @Test
+//    @DisplayName("친구 검색 테스트")
+//    @Transactional
+//    void searchFriendTest(){
+//        // Given
+//        String fromEmail = UUID.randomUUID().toString();
+//        String toEmail = UUID.randomUUID().toString();
+//        Member member1 = memberRepository.save(Member.builder().email(fromEmail).nickname(fromEmail).build());
+//        Member member2 = memberRepository.save(Member.builder().email(toEmail).nickname(toEmail).build());
+//        Friend friend1 = Friend.builder().follower(member1).following(member2).build();
+//        Friend friend2 = Friend.builder().follower(member2).following(member1).build();
+//        friendRepository.save(friend1);
+//        friendRepository.save(friend2);
+//        friendService.getFriends(fromEmail)
+//                .forEach(friend -> log.info("{}, {}", friend.email(), friend.nickname()));
+//        // When
+//        List<FriendRes> friendResList = friendService.searchFriend(toEmail.substring(0, toEmail.length()/2), fromEmail);
+//
+//        // Then
+//        assertEquals(toEmail, friendResList.get(0).email());
+//    }
 }

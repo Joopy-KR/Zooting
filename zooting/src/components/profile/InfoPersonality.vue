@@ -40,7 +40,7 @@ const moveToPersonalityTest = () => {
   router.push({name: "personality_test"})
 }
 
-watch(props.userInfo, (newValue) => {
+watch(props.userInfo!, (newValue) => {
   if (newValue?.personality) {
     personality.value = store.personality[newValue.personality.toUpperCase()];
   }
