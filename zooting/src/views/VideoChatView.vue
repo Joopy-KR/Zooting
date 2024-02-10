@@ -182,16 +182,6 @@ class BasicScene {
     this.controls.target = orbitTarget
     this.controls.update()
 
-    // 가면이 벗겨지면 카메라 끄기 (이 부분이 송출 부분에 포함되어야 함)
-    // watch(is_mask_loaded, () => { 
-    //   if (is_mask_loaded.value === false) {
-    //     canvas.style.visibility = "hidden"
-    //   } else {
-    //     canvas.style.visibility = "visible"
-    //   }
-    // })
-
-
     // 재생되는 비디오로 백그라운드 설정
     const video = document.getElementById('landmark-video') as HTMLVideoElement
     const inputFrameTexture = new THREE.VideoTexture(video)
@@ -205,6 +195,7 @@ class BasicScene {
     this.scene.add(inputFramesPlane)
     this.render()
 
+    // 가면 벗겨진 여부에 따라 카메라 토글
     watch(is_mask_loaded, () => { 
       if (is_mask_loaded.value === false) {
         this.scene.remove(inputFramesPlane)
@@ -594,7 +585,7 @@ const joinSession = () => {
       resolution: "640x480",
       frameRate: 30,
       insertMode: "APPEND",
-      mirror: true,
+      mirror: false,
     });
     pub.stream.typeOfVideo = "CUSTOM"
     
