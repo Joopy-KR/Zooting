@@ -28,7 +28,7 @@
       <div v-show="is_mask_loaded">
         <video id="landmark-video" autoplay playsinline></video>
       </div>
-      <!-- <div id="three-canvas-box"></div> -->
+      <div id="three-canvas-box"></div>
       
       <div class="flex flex-col items-center justify-center" id="loading" v-show="!is_mask_loaded" style="background-color: black; width: 533px; height: 300px;">
         <p class="mb-8 text-5xl font-bold text-white">가면 벗겨짐</p>
@@ -88,7 +88,7 @@ import VideoChatCatchMind from '@/components/video-chat/VideoChatCatchMind.vue'
 // 사이드바
 import VideoChatSideBarVue from '@/components/video-chat/VideoChatSideBar.vue'
 // Vue
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useAccessTokenStore } from '@/stores/store.ts'
 // Three.js
 import * as THREE from 'three'
@@ -103,26 +103,61 @@ import { OpenVidu } from "openvidu-browser";
 const store = useAccessTokenStore()
 
 onMounted(async () => {
+  // 동물상 모델 렌더 시작
   init()
 })
 
 onUnmounted(() => {
   leaveSession()
-  const canvas: any = document.querySelector("canvas")
-  canvas.remove()
 })
 
 // 진행을 위한 비동기 처리 함수
 async function startSession() {
+  // 유저 정보 받아오기
   await getUser()
+  // 세션 연결 시작
   await joinSession()
 }
 
-// 로딩 되었는지 판단할 변수
+// 마스크 로딩 되었는지 판단할 플래그
 const is_mask_loaded = ref(false)
 
+// 세션 로딩 완료를 판단할 플래그
+const isLoaded = ref(false)
 
-// 동물상 가면
+// 현재 진행중인 컴포넌트
+const currentStatus = ref<String>('')  // 현재 진행중인 프로그램 (FreeTalk, CatchMind 등) 
+const statusInfo = ref<String>('')  // 사이드바에 나타나는 현재 진행중인 프로그램
+currentStatus.value = 'CatchMind'
+
+// 카메라 사이즈 조정
+const cameraHeight = ref<Number>(0)
+const cameraWidth = ref<Number>(0)
+
+// 초기 변수 속성 설저 
+// 현재 진행중인 프로그램 이름
+if (currentStatus.value === 'CatchMind') {
+    statusInfo.value = "캐치마인드"
+    cameraHeight.value = 160
+    cameraWidth.value = 266
+  } else if (currentStatus.value === 'FreeTalk') {
+    statusInfo.value = "자유 대화 시간"
+    cameraHeight.value = 200
+    cameraWidth.value = 400
+  }
+
+// watch로 현재 진행중인 프로그램에 따라 변수 변경
+watch(currentStatus.value, ()=> {
+  if (currentStatus.value === 'CatchMind') {
+    statusInfo.value = "캐치마인드"
+    cameraHeight.value = 160
+    cameraWidth.value = 266
+  } else if (currentStatus.value === 'FreeTalk') {
+    statusInfo.value = "자유 대화 시간"
+  }
+})
+
+// 동물상 가면 설정
 class BasicScene {
   scene: THREE.Scene
   width: number
@@ -133,10 +168,8 @@ class BasicScene {
   lastTime: number = 0
 
   constructor() {
-    // const containerElement = document.getElementById("conatiner")
-    // this.height = window.innerHeight;
-    this.height = 140
-    this.width = (this.height * 1920) / 1080
+    this.height = cameraHeight.value
+    this.width = cameraWidth.value
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(60, this.width / this.height, 0.01, 5000)
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
@@ -144,6 +177,10 @@ class BasicScene {
     this.renderer.domElement.setAttribute('id', 'threeCanvas')
     const threeCanvas: any = document.getElementById('three-canvas-box')
     threeCanvas.appendChild(this.renderer.domElement)
+    // 화면에서 canvas 공간 없애기
+    const canvas: any = document.getElementById('threeCanvas')
+    canvas.style.visibility = "hidden"
+    canvas.style.position = "absolute"
     
     // 조명 추가
     const ambientLight = new THREE.AmbientLight(0xffffff, 2)
@@ -173,19 +210,18 @@ class BasicScene {
     )
     this.scene.add(inputFramesPlane)
     this.render()
-    // emit('sendCanvas', this.renderer.domElement)
 
+    // 렌더가 끝났다면 세션 연결 시작하기
     startSession()
     
-    // 가면이 벗겨지면 카메라 끄기
-    const canvas: any = document.getElementById('threeCanvas')
-    watch(is_mask_loaded, () => { 
-      if (is_mask_loaded.value === false) {
-        canvas.style.visibility = "hidden"
-      } else {
-        canvas.style.visibility = "visible"
-      }
-    })
+    // 가면이 벗겨지면 카메라 끄기 (이 부분이 송출 부분에 포함되어야 함)
+    // watch(is_mask_loaded, () => { 
+    //   if (is_mask_loaded.value === false) {
+    //     canvas.style.visibility = "hidden"
+    //   } else {
+    //     canvas.style.visibility = "visible"
+    //   }
+    // })
   }
   
     // 실제 랜더 함수
@@ -200,7 +236,6 @@ interface MatrixRetargetOptions {
   decompose?: boolean
   scale?: number
 }
-
 
 // 아바타 설정
 class Avatar {
@@ -306,17 +341,32 @@ const penguin = "/assets/animal_mask/penguin/scene.gltf"
 const rabbit = "/assets/animal_mask/rabbit/scene.gltf"
 const raccoon = "/assets/animal_mask/raccoon_head.glb"
 
-
 async function init() {
   const scene = ref<BasicScene | null>(null)
   scene.value = new BasicScene()
 
-  avatar = ref<Avatar | null>(null)
-
+  const avatar = ref<any>(null)
   const maskURL = ref<any>('')
+  const animal = store.userInfo?.animal
 
   // 가면 바꾸는 변수
-  maskURL.value = dog  
+  if (animal === '강아지') {
+    maskURL.value = dog
+  } else if (animal === '고양이') {
+    maskURL.value = cat
+  } else if (animal === '곰') {
+    maskURL.value = bear
+  } else if (animal === '공룡') {
+    maskURL.value = dino
+  } else if (animal === '펭귄') {
+    maskURL.value = penguin
+  } else if (animal === '토끼') {
+    maskURL.value = rabbit
+  } else if (animal === '사슴') {
+    maskURL.value = deer
+  } else {
+    maskURL.value = raccoon
+  }
 
   avatar.value = new Avatar(
     maskURL.value,
@@ -330,7 +380,7 @@ async function runDemo() {
   await streamWebcamThroughFaceLandmarker();
   const vision = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.1.0-alpha-16/wasm"
-  );
+  )
   faceLandmarker = await FaceLandmarker.createFromModelPath(
     vision,
     "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task"
@@ -388,7 +438,6 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
       if (avatar.value.url !== '/assets/animal_mask/raccoon_head.glb' ) {
         avatar.value.scene.position.y = -6
       }
-      
       avatar.value?.applyMatrix(matrix, { scale: 50 })
   }
   const blendshapes = landmarks.faceBlendshapes
@@ -463,33 +512,10 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
 
 // 세션 연결
 
-// 로딩 완료를 나타내기 위한 플래그
-const isLoaded = ref(false)
-
-
-// 현재 진행중인 컴포넌트
-const currentStatus = ref('')
-const statusInfo = ref('')  // 사이드바에 나타나는 현재 진행중인 프로그램
-currentStatus.value = 'CatchMind'
-
-if (currentStatus.value = 'CatchMind') {
-  statusInfo.value = '캐치마인드'
-} else {
-  statusInfo.value = '자유 대화 시간'
-}
-
 // 현재 참가중인 동물 목록
 const currentAnimals = ref([])
 
-// 카메라 사이즈 조정
-const cameraHeight = ref(0)
-const cameraWidth = ref(0)
-
-cameraHeight.value = 160
-cameraWidth.value = 266
-
-// 현재 채팅 내용 (세션별로 관리해야됨)
-
+// 현재 채팅 정보 (세션별로 관리됨)
 const myUserName = ref<any>('')
 const myUserAnimal = ref<any>('')
 const myGender = ref<any>('')
@@ -510,7 +536,6 @@ const currentChat = ref([])
 
 
 const joinSession = () => {
-  console.log(1111)
   // Openvidu 객체 가져오기
   OV.value = new OpenVidu();
 
@@ -581,6 +606,7 @@ const joinSession = () => {
       insertMode: "APPEND",
       mirror: false,
     });
+    pub.stream.typeOfVideo = "CUSTOM"
 
     // mainStream과 Publisher(나 자신)에 정보를 담고
     mainStreamManager.value = pub;
@@ -613,6 +639,10 @@ const leaveSession = () => {
   OV.value = undefined
   currentAnimals.value = []
 
+  // 동물상 canvas 지우기
+  const canvas: any = document.getElementById('threeCanvas')
+  canvas.remove()
+
   // 세션을 이미 나갔으니 화면 나갈때의 이벤트리스트 제거하기
   window.removeEventListener("beforeunload", leaveSession);
 }
@@ -642,8 +672,8 @@ const leaveSession = () => {
 
 <style>
 #threeCanvas {
-  transform: scaleX(-1);
-  display: none;
+  transform: scaleX(-1); 
+  visibility: hidden;
   /* z-index: 0; */
   /* margin-inline-start: 3.5rem; */
 }

@@ -75,7 +75,6 @@ const onConnected = () => {
   stompClient.subscribe(`/api/sub/dm/${userInfo.value?.email}`,
   (message: any) => {
     const res = JSON.parse(message.body)
-    console.log(res)
     // MESSAGE
     if (res.type === 'MESSAGE') {
       // 현재 open 된 dmRooId인 경우 메시지 전송
