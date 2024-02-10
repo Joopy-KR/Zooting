@@ -80,8 +80,12 @@
             </transition>
           </Popover>
         </div>
-
-        <div class="mt-14 md:mt-48 show-button" v-show="showButton">
+        
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mt-7 md:mt-40 animate-bounce">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+        </svg>
+        
+        <div class="mt-12 md:mt-17 show-button" v-show="showButton">
           <a href="javascript:void(0)" class="rounded" @click="stop">
             <svg
               version="1.1"
@@ -101,7 +105,7 @@
           </a>
         </div>
 
-        <div class="mt-14 md:mt-48 hide-button" v-show="!showButton">
+        <div class="mt-12 md:mt-17 hide-button" v-show="!showButton">
           <div href="#" class="rounded">
             <svg
               version="1.1"
@@ -270,12 +274,12 @@ const displayVideoDetections = async (detections: Detection[]) => {
   // 예상치 측정
   for (let detection of detections) {
     isPlaying.value = true;
-    // 유사도가 89 이상이면 촬영 버튼 출력
+    // 유사도가 90 이상이면 촬영 버튼 출력
     if (Math.round(parseFloat(String(detection.categories[0].score)) * 100) >= 90) {
-      // 유사도가 89 이상일때 촬영버튼 출력
+      // 유사도가 90 이상일때 촬영버튼 출력
       showButton.value = true;
     } else {
-      // 유사도가 89 미만일때 촬영버튼 숨김
+      // 유사도가 90 미만일때 촬영버튼 숨김
       showButton.value = false;
     }
   }

@@ -2,17 +2,10 @@
   <div class="flex flex-col h-screen p-4">
     <!-- 카메라 -->
     <div class="grid h-40 grid-cols-4 gap-3">
-      <user-video :stream-manager="publisher" 
-      :cameraHeight="cameraHeight" 
-      :cameraWidth="cameraWidth"
-      @send-canvas="sendCanvas"
-      />
+      <user-video :stream-manager="publisher" />
       <user-video v-for="sub in subscribers" 
       :key="sub.stream.connection.connectionId" 
       :stream-manager="sub" 
-      :cameraHeight="cameraHeight" 
-      :cameraWidth="cameraWidth"
-      @send-canvas="sendCanvas"
       />
     </div>
     <!-- 캐치마인드 게임 -->
@@ -33,15 +26,7 @@ defineProps({
   session: Object,
   publisher: Object,
   subscribers: Object,
-  cameraHeight: Number,
-  cameraWidth: Number
   })
-
-const emit = defineEmits(['sendCanvas'])
-
-const sendCanvas = function(canvas) {
-  emit('sendCanvas', canvas)
-}
 
 const colors = [
   "#100c08",
@@ -125,12 +110,6 @@ const handleMouseMove = (e) => {
 
 
 <style scoped>
-.camera-box {
-  @apply bg-slate-400;
-  /* width: 248px;  */
-  height: 140px;
-}
-
 .catch-mind {
   @apply border-2 border-gray-300 border-solid flex-grow;
 }  

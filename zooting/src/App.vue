@@ -27,6 +27,7 @@ const currentDmRoomId = (id: number) => {
 const receiveMessage = (req: any) => {
   dmRes.value = req
 }
+
 </script>
 
 <style scoped>
