@@ -786,6 +786,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     const isMatching = ref<boolean>(false)
     // 매칭 완료 여부
     const isMatchingComplete = ref<boolean>(false) // default false
+    // 미팅방 id
+    const roomId = ref<string>('')
     // 매칭 대기 시간
     const formattedTimer = ref("00:00")
     let timerInterval: any = null
@@ -817,12 +819,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       return `${formattedMinutes}:${formattedSeconds}`
     }
     
-    // 매칭 대기 종료
-    const matchingEnd = function () {
-      isMatching.value = false
-      resetTimer()
-    }
-
     // 매칭 요청
     const meetingRegister = function () {
       if (isMatching.value) {
@@ -838,6 +834,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
       .then((res) => {
         console.log(res)
+        roomId.value = res.data.result
         isMatching.value = true
         startTimer()
       })
@@ -847,13 +844,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     }
 
     // 매칭 수락
-    const meetingAccept = function (params: string) {
-      const room = params
+    const meetingAccept = function () {
       axios({
         method: "post",
         url: `${VITE_SERVER_API_URL}/api/meeting/accept`,
         params: {
-          room,
+          room: roomId.value,
         },
         headers: {
           Authorization: `Bearer ${getAccessToken()}`,
@@ -871,13 +867,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     }
     
     // 매칭 거절
-    const meetingExit = function (params: string) {
-      const room = params
+    const meetingExit = function () {
       axios({
         method: "delete",
         url: `${VITE_SERVER_API_URL}/api/meeting/exit`,
         params: {
-          room,
+          room: roomId.value,
         },
         headers: {
           Authorization: `Bearer ${getAccessToken()}`,
@@ -953,6 +948,5 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       isMatchingComplete,
       meetingAccept,
       meetingExit,
-      matchingEnd,
   };
 });

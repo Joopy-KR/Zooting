@@ -70,7 +70,6 @@ const onConnected = () => {
     else if (res.type === 'match') {
       emit('matchingComplete', res.roomId)
       store.isMatchingComplete = true
-      store.matchingEnd()
     }
     // 매칭 수락
     else if (res.type === 'openviduToken') {

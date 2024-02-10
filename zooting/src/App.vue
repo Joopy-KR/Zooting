@@ -9,11 +9,9 @@
       class="ms-14"
       :dm-room-id="dmRoomId"
       @receive-message="receiveMessage"
-      @match-complete="matchingComplete"
     />
     <MatchingCompleteModal
       class="z-40"
-      :room-id="videoRoomId"
       />
   </div>
 </template>
@@ -28,7 +26,6 @@ import { useAccessTokenStore } from './stores/store'
 const store = useAccessTokenStore()
 const dmRoomId = ref<number>(0)
 const dmRes = ref<any>(null)
-const videoRoomId = ref<string>('')
 
 const currentDmRoomId = (id: number) => {
   dmRoomId.value = id
@@ -36,10 +33,6 @@ const currentDmRoomId = (id: number) => {
 
 const receiveMessage = (req: any) => {
   dmRes.value = req
-}
-
-const matchingComplete = (id: string) => {
-  videoRoomId.value = id
 }
 </script>
 

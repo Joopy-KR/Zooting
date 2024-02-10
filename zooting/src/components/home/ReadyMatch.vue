@@ -1,7 +1,7 @@
 <template>
   <div class="match__container">
-    <div class="matching-button" @click="meetingRegister">
-      <img :src="matchingButton()" alt="matching-button">
+    <div class="matching-button">
+      <img :src="matchingButton()" alt="matching-button" @click="meetingRegister">
     </div>
     <div class="matching" v-show="store.isMatching">
       <div class="matching__text">
@@ -10,7 +10,7 @@
       <div class="matching__timer">
 				{{ store.formattedTimer }}      
 			</div>
-			<button class="btn-hover color-11" @click="matchingEnd">Cancel</button>
+			<button class="btn-hover color-11" @click="meetingExit">Cancel</button>
     </div>
   </div>
 </template>
@@ -34,8 +34,8 @@ const meetingRegister = () => {
   store.meetingRegister()
 }
 
-const matchingEnd = () => {
-	store.matchingEnd()
+const meetingExit = () => {
+	store.meetingExit()
 }
 </script>
 
