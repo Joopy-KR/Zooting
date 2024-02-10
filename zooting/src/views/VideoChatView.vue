@@ -110,7 +110,7 @@ const isLoaded = ref(false)
 // 현재 진행중인 컴포넌트
 const currentStatus = ref<String>('')  // 현재 진행중인 프로그램 (FreeTalk, CatchMind 등) 
 const statusInfo = ref<any>('')  // 사이드바에 나타나는 현재 진행중인 프로그램
-currentStatus.value = 'FreeTalk'
+currentStatus.value = 'CatchMind'
 
 // 카메라 사이즈 조정
 const cameraHeight = ref<Number>(0)
