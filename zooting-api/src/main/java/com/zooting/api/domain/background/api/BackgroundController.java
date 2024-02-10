@@ -25,7 +25,7 @@ public class BackgroundController {
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping
     public ResponseEntity<BaseResponse<BackgroundPageRes>> findAllBackgroundImg(
-            @PageableDefault(sort="createdAt", direction = Sort.Direction.DESC, page=0) Pageable pageable
+            @PageableDefault(sort="id", direction = Sort.Direction.DESC, page=0) Pageable pageable
     ) {
         BackgroundPageRes result = backgroundService.findAllBackgroundImg(pageable);
         return BaseResponse.success(
