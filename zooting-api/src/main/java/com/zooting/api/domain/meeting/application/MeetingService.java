@@ -86,7 +86,7 @@ public class MeetingService {
             log.info("유저가 입장 가능한 대기열이 있습니다.");
             for (WaitingRoom waitingRoom : waitingRooms) {
                 Set<MeetingMemberDto> meetingMembers = waitingRoom.getMeetingMembers();
-                if (meetingMembers.size() < 4) {
+                if (meetingMembers.size() < 2) {
                     return waitingRoom;
                 }
             }
