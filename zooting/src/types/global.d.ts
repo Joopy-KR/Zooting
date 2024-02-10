@@ -95,6 +95,7 @@ declare interface DmFile {
     S3Id: string;
     imgUrl: string;
     thumbnailUrl: string;
+    fileName: string;
 }
 
 declare interface Notice {

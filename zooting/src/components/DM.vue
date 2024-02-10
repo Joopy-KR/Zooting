@@ -176,16 +176,17 @@ const dmRoomId = ref<number>(0)
 const isZoomImg = ref<boolean>(false)
 const zoomImgUrl = ref<string>('')
 const zoomImgId = ref<string>('')
+const zoomImgName = ref<string>('')
 
-watch(()=> store.dmInfo, (update)=>{
+watch(()=> store.dmInfo, (update) => {
   dmInfo.value = update
 })
 
-watch(()=> store.receiverInfo, (update)=>{
+watch(()=> store.receiverInfo, (update) => {
   receiverInfo.value = update
 })
 
-watch(()=> store.pastDmList, (update)=>{
+watch(()=> store.pastDmList, (update) => {
   pastDmList.value = update
 })
 
@@ -214,7 +215,8 @@ watch(() => store.isEntryDmRoom, () => {
   }
 })
 
-watch(()=> props.dmRes, ()=>{
+watch(()=> props.dmRes, () => {
+  console.log(props.dmRes)
   sockDmList.value.push({
     sender: props.dmRes.sender,
     message: props.dmRes.message,
@@ -324,6 +326,7 @@ const zoomImg = (file: any) => {
   isZoomImg.value = true
   zoomImgUrl.value = file.imgUrl
   zoomImgId.value = file.S3Id
+  zoomImgName.value = file.fileName
 }
 
 const closeFile = () => {
@@ -333,7 +336,7 @@ const closeFile = () => {
 }
 
 const fileDownload = () => {
-  store.fileDownload(zoomImgId.value)
+  store.fileDownload(zoomImgId.value, zoomImgName.value)
 }
 
 function getCurrentTime(): string {
@@ -406,7 +409,8 @@ async function sendMessage() {
       sockDmList.value.push({
         sender: sender.value,
         message: messageInput.value,
-        files: fileList.value
+        files: fileList.value,
+        createdAt: getCurrentTime()
       })
 
       // 입력 필드 초기화

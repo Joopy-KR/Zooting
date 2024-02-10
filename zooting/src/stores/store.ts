@@ -733,7 +733,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     };
 
     // 파일 다운로드
-    const fileDownload = function (params: string) {
+    const fileDownload = function (params: string, zoomImgName: string) {
       const S3Id = params;
       axios({
         method: "get",
@@ -751,7 +751,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           const blob = new Blob([res.data], { type: res.headers['content-type'] });
           const link = document.createElement('a');
           link.href = window.URL.createObjectURL(blob);
-          link.download = `zooting_image.jpg`;
+          link.download = zoomImgName;
           link.click();
           window.URL.revokeObjectURL(link.href);
         })
