@@ -1,7 +1,6 @@
 package com.zooting.api.domain.file.api;
 
 import com.zooting.api.domain.file.application.FileService;
-import com.zooting.api.domain.file.dto.request.FileReq;
 import com.zooting.api.domain.file.dto.response.FileRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;

@@ -14,7 +14,7 @@ public record DMReq(
         Long dmRoomId,
         @Schema(description = "Type")
         @NotNull
-        String type, // 1이면 메세지, 2면 토큰
+        String type,
         @Schema(description = "메시지")
         @NotNull
         String message,
