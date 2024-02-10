@@ -41,7 +41,7 @@ public class MemberServiceImpl implements MemberService {
     public static final String DEFAULT_MASK = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Mask/dogMask.png";
     public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Background/oilpaintart.jpg";public static final Long DEFAULT_MASK_ID = 99L;
     public static final Long DEFAULT_BACKGROUND_ID = 100L;
-    public static final Long DEFAULT_POINT = 0L;
+    public static final Long DEFAULT_POINT = 1000L;
     public static final Long CHANGE_NICKNAME_PRICE = 100L;
 
     @Override
