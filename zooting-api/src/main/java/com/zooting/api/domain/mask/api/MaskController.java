@@ -37,7 +37,7 @@ public class MaskController {
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping
     public ResponseEntity<BaseResponse<MaskPageRes>> findMasks(
-            @PageableDefault(sort="createdAt", direction = Sort.Direction.DESC, page=0) Pageable pageable,
+            @PageableDefault(sort="id", direction = Sort.Direction.DESC, page=0) Pageable pageable,
             @RequestParam(value="animal", required=false) String animal
     )  {
         MaskPageRes result = maskService.findMask(pageable, animal);

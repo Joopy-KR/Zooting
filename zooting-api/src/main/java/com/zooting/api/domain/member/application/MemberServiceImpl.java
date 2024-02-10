@@ -19,6 +19,8 @@ import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -238,22 +240,30 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<MemberSearchRes> findMemberList(String userId, String nickname) {
+    public MemberSearchPageRes findMemberList(Pageable pageable, String userId, String nickname) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        Page<MemberSearchRes> findMembers;
 
         // 나를 차단한 유저 리스트 추출
         List<Block> blockList = member.getBlockToList();
-        List<Member> findMembers;
 
         if (!blockList.isEmpty()) {
             List<String> blockMemberNicknames = blockList.stream().map(block -> block.getFrom().getNickname()).toList();
-            findMembers = memberRepository.findByNicknameContainingAndNicknameNotIn(nickname, blockMemberNicknames);
+            if (Objects.isNull(nickname)) {
+                findMembers = memberRepository.findMembersBy(pageable);
+            } else {
+                findMembers = memberRepository.findByNicknameContainingAndNicknameNotIn(pageable, nickname, blockMemberNicknames);
+            }
         } else {
-            findMembers = memberRepository.findMemberByNicknameContaining(nickname);
+            if (Objects.isNull(nickname)) {
+                findMembers = memberRepository.findMembersBy(pageable);
+            } else {
+                findMembers = memberRepository.findMemberByNicknameContaining(pageable, nickname);
+            }
         }
-        return findMembers.stream().map(mem -> new MemberSearchRes(mem.getEmail(), mem.getNickname(),
-                mem.getGender(), mem.getAdditionalInfo().getAnimal())).toList();
+        return new MemberSearchPageRes(findMembers.getContent(), findMembers.getNumber(),  findMembers.getTotalPages());
+
     }
 
     @Transactional
@@ -307,7 +317,7 @@ public class MemberServiceImpl implements MemberService {
         extractObj.setMemberIdeals(member.getAdditionalInfo().getIdealAnimal().lines().toList());
         extractObj.setRangeYear(extractingReq.rangeYear());
         System.out.println(extractObj.getMemberIdeals());
-        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(), mem.getNickname(), mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
+        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getNickname(), mem.getGender())).toList();
     }
 
     @Override
@@ -315,8 +325,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         return member.getBlockFromList().stream()
-                .map(block -> new MemberSearchRes(block.getTo().getEmail(), block.getTo().getNickname()
-                        , block.getTo().getGender().toString(), block.getTo().getAdditionalInfo().getAnimal())).toList();
+                .map(block -> new MemberSearchRes(block.getTo().getNickname(), block.getTo().getGender())).toList();
 
 
     }
