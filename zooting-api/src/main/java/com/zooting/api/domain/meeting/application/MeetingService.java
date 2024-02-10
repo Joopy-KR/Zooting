@@ -5,12 +5,12 @@ import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.pubsub.MessageType;
 import com.zooting.api.domain.meeting.pubsub.RedisPublisher;
 import com.zooting.api.domain.meeting.pubsub.WaitingRoomSubscriber;
-import com.zooting.api.domain.meeting.redisdto.WaitingRoom;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MeetingService {
-
     private final MemberRepository memberRepository;
     private final WaitingRoomRedisRepository waitingRoomRedisRepository;
     private final RedisMessageListenerContainer redisMessageListener;
@@ -41,10 +40,8 @@ public class MeetingService {
     public synchronized String registerToWaitingRoom(UserDetails userDetails) {
         Member member = loadMemberFromDatabase(userDetails);
         MeetingMemberDto meetingMemberDto = member.toMeetingMemberDto();
-        log.info("유저를 대기열에 등록합니다. : {}", meetingMemberDto.getEmail());
 
         Iterable<WaitingRoom> waitingRooms = waitingRoomRedisRepository.findAll();
-
         WaitingRoom idealWaitingRoom = findIdealWaitingRoom(waitingRooms, meetingMemberDto);
 
         return registerMemberToWaitingRoom(idealWaitingRoom, meetingMemberDto);
@@ -103,7 +100,9 @@ public class MeetingService {
         WaitingRoom waitingRoom = WaitingRoom.builder()
                 .waitingRoomId(randomUUID)
                 .meetingMembers(new HashSet<>())
+                .createdTime(LocalDateTime.now())
                 .acceptCount(0)
+                .expirationSeconds(-1L)
                 .build();
 
         ChannelTopic channel = new ChannelTopic(MessageType.REDIS_HASH.getPrefix() + randomUUID);
@@ -123,6 +122,7 @@ public class MeetingService {
         Set<MeetingMemberDto> waitingRoomMembers = Optional.ofNullable(waitingRoom.getMeetingMembers()).orElseThrow(
                 ()-> new BaseExceptionHandler(ErrorCode.NOT_FOUND_WAITING_ROOM)
         );
+
         log.info("유저가 입장할 대기방의 정보를 가져옵니다: {}", waitingRoomMembers.toString());
 
         waitingRoomMembers.add(meetingMemberDto);

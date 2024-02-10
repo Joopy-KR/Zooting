@@ -101,7 +101,7 @@ public class DMServiceImpl implements DMService {
         RedisDMRes redisDMRes = new RedisDMRes(dmReq.dmRoomId(), dm.getId(), "MESSAGE", dmReq.message(), dmReq.sender(), dmReq.receiver(),
                 dmReq.files()
                         .stream()
-                        .map(file -> new DMFileRes(file.S3Id(),file.imgUrl(), file.thumbnailUrl()))
+                        .map(file -> new DMFileRes(file.S3Id(), file.originFileName(), file.imgUrl(), file.thumbnailUrl()))
                         .toList(),
                 dm.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")));
         redisTemplate.opsForList().rightPush(dmReq.sender() + ":dmRoomId:" + dmReq.dmRoomId(), gson.toJson(redisDMRes));
@@ -134,11 +134,12 @@ public class DMServiceImpl implements DMService {
                                     .stream()
                                     .map(file -> new DMFileRes(
                                             file.getS3Id(),
+                                            file.getOriginFileName(),
                                             file.getImgUrl(),
                                             file.getThumbnailUrl()
                                     ))
                                     .toList(),
-                            dm.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")));
+                                    dm.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")));
                             redisTemplate.opsForList().rightPush(sender + ":dmRoomId:" + dmRoom.getId(), gson.toJson(redisDMRes));
                             return redisDMRes;
                         }
@@ -171,7 +172,7 @@ public class DMServiceImpl implements DMService {
     @Override
     public RedisDMRoomRes getDMRoomWithCursorRedis(Long dmRoomId, Long cursor, String loginEmail) {
         Object lastDm = redisTemplate.opsForList().index(loginEmail + ":dmRoomId:" + dmRoomId, 0);
-        if(lastDm != null){
+        if (lastDm != null) {
             RedisDMRes redisDMRes = gson.fromJson((String) lastDm, RedisDMRes.class);
             cursor = redisDMRes.dmId();
         }
@@ -184,6 +185,7 @@ public class DMServiceImpl implements DMService {
                                     .stream()
                                     .map(file -> new DMFileRes(
                                             file.getS3Id(),
+                                            file.getOriginFileName(),
                                             file.getImgUrl(),
                                             file.getThumbnailUrl()
                                     ))

@@ -8,6 +8,8 @@ import java.util.UUID;
 public record DMFileRes(
         @Schema(description = "파일 S3아이디")
         UUID S3Id,
+        @Schema(description = "파일 이름")
+        String fileName,
         @Schema(description = "파일 경로")
         String imgUrl,
         @Schema(description = "썸네일 경로")
