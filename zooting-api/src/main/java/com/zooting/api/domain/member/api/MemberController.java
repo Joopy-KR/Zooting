@@ -2,12 +2,10 @@ package com.zooting.api.domain.member.api;
 
 import com.zooting.api.domain.member.application.MemberService;
 import com.zooting.api.domain.member.dto.request.*;
-import com.zooting.api.domain.member.dto.response.MemberRes;
-import com.zooting.api.domain.member.dto.response.MemberSearchRes;
-import com.zooting.api.domain.member.dto.response.MyProfileReq;
-import com.zooting.api.domain.member.dto.response.PointRes;
+import com.zooting.api.domain.member.dto.response.*;
 import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.BaseResponse;
+import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +13,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -157,8 +158,8 @@ public class MemberController {
                     "닉네임 변경 완료"
             );
         }
-        return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
+        return BaseResponse.error(
+                ErrorCode.FAILED_TO_UPDATE_MEMBER,
                 "닉네임 변경 실패 - 잔여 포인트 부족 / 닉네임 중복"
         );
     }
@@ -190,15 +191,16 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "유저 검색",
+            summary = "멤버 검색",
             description = "검색한 키워드에 해당하는 멤버 중 나를 차단한 사람 제외하고 리스트로 반환"
     )
     @PreAuthorize("hasAnyRole('USER')")
     @GetMapping("/searchlist")
-    public ResponseEntity<BaseResponse<List<MemberSearchRes>>> findMemberList(
-            @RequestParam(name = "nickname") String nickname,
+    public ResponseEntity<BaseResponse<MemberSearchPageRes>> findMemberList(
+            @PageableDefault(sort="nickname", direction = Sort.Direction.DESC, page=0) Pageable pageable,
+            @RequestParam(name = "nickname", required = false) String nickname,
             @AuthenticationPrincipal UserDetails userDetails) {
-        List<MemberSearchRes> memberResList = memberService.findMemberList(userDetails.getUsername(), nickname);
+        MemberSearchPageRes memberResList = memberService.findMemberList(pageable, userDetails.getUsername(), nickname);
         return BaseResponse.success(
                 SuccessCode.SELECT_SUCCESS,
                 memberResList
@@ -248,8 +250,8 @@ public class MemberController {
                     "마스크 변경 완료"
             );
         }
-        return BaseResponse.success(
-                SuccessCode.CHECK_SUCCESS,
+        return BaseResponse.error(
+                ErrorCode.FAILED_TO_UPDATE_MEMBER,
                 "동물상 변경 실패 - 유저의 동물상과 불일치 / 잘못된 마스크 id 접근"
         );
 

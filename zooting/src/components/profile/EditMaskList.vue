@@ -7,6 +7,7 @@ import {changeDefaultMaskApi, getMaskListApi, getMyMaskListApi, purchaseMaskApi}
 import type {Mask, UserInfo, Notify} from "@/types/global";
 import SuccessNotify from "@/components/util/SuccessNotification.vue";
 import FailNotify from "@/components/util/FailNotification.vue";
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const props = defineProps({
@@ -44,6 +45,28 @@ const loadMyInfo = () => {
   emits("loadMyInfo");
 }
 
+const clickMaskAlert = (title: string, text: string, type: string, mask: Mask) => Swal.fire({
+  title: title,
+  text: text,
+  imageUrl: mask.imgUrl,
+  imageWidth: 400,
+  imageHeight: 400,
+  imageAlt: "mask image",
+  showCancelButton: true,
+  cancelButtonText: "취소",
+  cancelButtonColor: "#ee8585",
+  showConfirmButton: true,
+  confirmButtonColor: "#ad7ae7",
+  confirmButtonText: type === 'purchase' ? "구매" : "변경",
+}).then((result) => {
+  if (result.isConfirmed) {
+    if (type === "purchase") {
+      purchaseMask(mask.maskId);
+    } else {
+      changeDefaultMask(mask.maskId);
+    }
+  }
+});
 const clickMask = (mask: Mask) => {
   if (!props.userInfo?.animal) {
     return;
@@ -55,15 +78,25 @@ const clickMask = (mask: Mask) => {
   }
   // 내가 소유한 mask가 아니라면 구매
   if (!mask.status) {
-    purchaseMask(mask.maskId);
+    clickMaskAlert(
+        "마스크 구매",
+        `새로운 마스크와 함께해요. (${mask.price}포인트)`,
+        "purchase",
+        mask
+    );
   } // 내가 소유한 마스크이면 default 마스크로 변경
   else {
     // 현재 마스크와 동일한 경우
     if (mask.isSelected) {
-     setNotify("동물상 가면 변경 실패", "현재 마스크와 일치합니다.");
-     setShowFail(true);
+      setNotify("동물상 가면 변경 실패", "현재 마스크와 일치합니다.");
+      setShowFail(true);
     } else {
-      changeDefaultMask(mask.maskId);
+      clickMaskAlert(
+          "마스크 변경",
+          "이 마스크와 함께 하시나요?",
+          "change",
+          mask
+      );
     }
   }
 }
@@ -94,7 +127,7 @@ const purchaseMask = (maskId: number) => {
   purchaseMaskApi({maskId: maskId},
       ({data}: any) => {
         if (data.status === 200 || data.status === 201) {
-          setNotify("마스크 구매", data.result); // TODO 마스크를 구매할지 확인 메시지 필요
+          setNotify("마스크 구매", data.result);
           setShowSuccess(true);
           emits("loadMyInfo");
           getMyMaskList(props.userInfo?.animal);

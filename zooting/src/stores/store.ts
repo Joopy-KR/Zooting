@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
 import type {DM, DmItem, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
+import { faLessThanEqual } from "@fortawesome/free-solid-svg-icons";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -785,7 +786,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     // 매칭 대기
     const isMatching = ref<boolean>(false)
     // 매칭 완료 여부
-    const isMatchingComplete = ref<boolean>(false) // default false
+    const isMatchingComplete = ref<boolean>(true) // default false
     // 미팅방 id
     const roomId = ref<string>('')
     // 매칭 대기 시간
@@ -821,6 +822,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     
     // 매칭 요청
     const meetingRegister = function () {
+      isMatching.value = true
+      startTimer()
       if (isMatching.value) {
         console.log('이미 매칭 중입니다')
         return
@@ -835,8 +838,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       .then((res) => {
         console.log(res)
         roomId.value = res.data.result
-        isMatching.value = true
-        startTimer()
       })
       .catch((err) => {
         console.log(err)
@@ -845,6 +846,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
     // 매칭 수락
     const meetingAccept = function () {
+      isMatching.value = false
+      isMatchingComplete.value = false
+      resetTimer()
       axios({
         method: "post",
         url: `${VITE_SERVER_API_URL}/api/meeting/accept`,
@@ -857,9 +861,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
       .then((res) => {
         console.log(res)
-        isMatching.value = false
-        isMatchingComplete.value = false
-        resetTimer()
       })
       .catch((err) => {
         console.log(err)
@@ -868,6 +869,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     
     // 매칭 거절
     const meetingExit = function () {
+      isMatching.value = false
+      isMatchingComplete.value = false
+      resetTimer()
       axios({
         method: "delete",
         url: `${VITE_SERVER_API_URL}/api/meeting/exit`,
@@ -880,9 +884,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
       .then((res) => {
         console.log(res)
-        isMatching.value = false
-        isMatchingComplete.value = false
-        resetTimer()
       })
       .catch((err) => {
         console.log(err)

@@ -22,7 +22,6 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, ref} from 'vue'
 import type { Notice } from "@/types/global";
 const props = defineProps(["noticeList"])
 const emits = defineEmits(["noticeContents", "openDetailModal"])

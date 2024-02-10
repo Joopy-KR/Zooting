@@ -4,6 +4,7 @@ import com.zooting.api.application.dto.request.MemberAndBackgroundReq;
 import com.zooting.api.application.dto.response.MemberAndBackgroundRes;
 import com.zooting.api.application.usecase.MemberAndBackgroundUsecase;
 import com.zooting.api.global.common.BaseResponse;
+import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,8 +38,8 @@ public class MemberAndBackgroundController {
                     "구매 완료"
             );
         }
-        return BaseResponse.success(
-                SuccessCode.UPDATE_SUCCESS,
+        return BaseResponse.error(
+                ErrorCode.FAILED_TO_UPDATE_MEMBER,
                 "구매 실패 - 잔여 포인트 부족 혹은 이미 보유한 배경이미지"
         );
 

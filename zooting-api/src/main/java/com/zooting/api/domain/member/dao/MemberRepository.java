@@ -1,7 +1,10 @@
 package com.zooting.api.domain.member.dao;
 
+import com.zooting.api.domain.member.dto.response.MemberSearchRes;
 import com.zooting.api.domain.member.dto.response.MemberStatus;
 import com.zooting.api.domain.member.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,10 +18,11 @@ public interface MemberRepository extends JpaRepository<Member, String>, MemberR
     Optional<Member> findMemberByEmail(String email);
 
     Optional<Member> findMemberByNickname(String nickname);
+    Page<MemberSearchRes> findMembersBy(Pageable pageable);
 
-    List<Member> findMemberByNicknameContaining(String nickname);
+    Page<MemberSearchRes> findMemberByNicknameContaining(Pageable pageable, String nickname);
 
-    List<Member> findByNicknameContainingAndNicknameNotIn(String nickname, List<String> nicknames);
+    Page<MemberSearchRes> findByNicknameContainingAndNicknameNotIn(Pageable pageable, String nickname, List<String> nicknames);
 
     Optional<Member> findByEmail(String email);
 
