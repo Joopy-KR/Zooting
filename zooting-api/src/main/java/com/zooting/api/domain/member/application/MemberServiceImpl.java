@@ -2,9 +2,13 @@ package com.zooting.api.domain.member.application;
 
 import com.zooting.api.domain.background.dao.BackgroundInventoryRepository;
 import com.zooting.api.domain.background.entity.Background;
+import com.zooting.api.domain.background.entity.BackgroundInventory;
 import com.zooting.api.domain.block.entity.Block;
+import com.zooting.api.domain.mask.application.MaskInventoryService;
 import com.zooting.api.domain.mask.dao.MaskInventoryRepository;
+import com.zooting.api.domain.mask.dao.MaskRepository;
 import com.zooting.api.domain.mask.entity.Mask;
+import com.zooting.api.domain.mask.entity.MaskInventory;
 import com.zooting.api.domain.member.dao.ExtractObj;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.request.*;
@@ -18,6 +22,8 @@ import com.zooting.api.domain.member.entity.Privilege;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +31,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
+
+import static com.zooting.api.domain.member.entity.QMember.member;
 
 
 @Service
@@ -37,6 +45,7 @@ public class MemberServiceImpl implements MemberService {
     public static final String DEFAULT_BACKGROUND = "https://zooting-s3-bucket.s3.ap-northeast-2.amazonaws.com/Background/oilpaintart.jpg";
     public static final Long DEFAULT_MASK_ID = 100L;
     public static final Long DEFAULT_BACKGROUND_ID = 100L;
+    public static final Long DEFAULT_POINT = 1000L;
     public static final Long CHANGE_NICKNAME_PRICE = 100L;
 
     @Override
@@ -130,6 +139,7 @@ public class MemberServiceImpl implements MemberService {
         member.setBirth(sdf.parse(memberReq.birth()));
         member.setAddress(memberReq.address());
         member.setGender(memberReq.gender().toString());
+        member.setPoint(DEFAULT_POINT); // 추가 정보 저장 시 포인트 0으로 저장
 
         AdditionalInfo additionalInfo = member.getAdditionalInfo();
         if (Objects.isNull(additionalInfo)) {
@@ -234,22 +244,30 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<MemberSearchRes> findMemberList(String userId, String nickname) {
+    public MemberSearchPageRes findMemberList(Pageable pageable, String userId, String nickname) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        Page<MemberSearchRes> findMembers;
 
         // 나를 차단한 유저 리스트 추출
         List<Block> blockList = member.getBlockToList();
-        List<Member> findMembers;
 
         if (!blockList.isEmpty()) {
             List<String> blockMemberNicknames = blockList.stream().map(block -> block.getFrom().getNickname()).toList();
-            findMembers = memberRepository.findByNicknameContainingAndNicknameNotIn(nickname, blockMemberNicknames);
+            if (Objects.isNull(nickname)) {
+                findMembers = memberRepository.findMembersBy(pageable);
+            } else {
+                findMembers = memberRepository.findByNicknameContainingAndNicknameNotIn(pageable, nickname, blockMemberNicknames);
+            }
         } else {
-            findMembers = memberRepository.findMemberByNicknameContaining(nickname);
+            if (Objects.isNull(nickname)) {
+                findMembers = memberRepository.findMembersBy(pageable);
+            } else {
+                findMembers = memberRepository.findMemberByNicknameContaining(pageable, nickname);
+            }
         }
-        return findMembers.stream().map(mem -> new MemberSearchRes(mem.getEmail(), mem.getNickname(),
-                mem.getGender(), mem.getAdditionalInfo().getAnimal())).toList();
+        return new MemberSearchPageRes(findMembers.getContent(), findMembers.getNumber(),  findMembers.getTotalPages());
+
     }
 
     @Transactional
@@ -303,7 +321,7 @@ public class MemberServiceImpl implements MemberService {
         extractObj.setMemberIdeals(member.getAdditionalInfo().getIdealAnimal().lines().toList());
         extractObj.setRangeYear(extractingReq.rangeYear());
         System.out.println(extractObj.getMemberIdeals());
-        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getEmail(), mem.getNickname(), mem.getGender().toString(), mem.getAdditionalInfo().getAnimal())).toList();
+        return memberRepository.extractMatchingMember(extractObj).stream().map(mem -> new MemberSearchRes(mem.getNickname(), mem.getGender())).toList();
     }
 
     @Override
@@ -311,8 +329,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         return member.getBlockFromList().stream()
-                .map(block -> new MemberSearchRes(block.getTo().getEmail(), block.getTo().getNickname()
-                        , block.getTo().getGender().toString(), block.getTo().getAdditionalInfo().getAnimal())).toList();
+                .map(block -> new MemberSearchRes(block.getTo().getNickname(), block.getTo().getGender())).toList();
 
 
     }

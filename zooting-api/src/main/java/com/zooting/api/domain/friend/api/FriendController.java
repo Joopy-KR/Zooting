@@ -2,6 +2,7 @@ package com.zooting.api.domain.friend.api;
 
 import com.zooting.api.domain.friend.application.FriendService;
 import com.zooting.api.domain.friend.dto.response.FriendRes;
+import com.zooting.api.domain.friend.dto.response.FriendSearchPageRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,9 +40,12 @@ public class FriendController {
                 friendResList
         );
     }
+    @Operation(summary = "친구 검색", description = "페이징 정보 포함 친구 조회")
     @GetMapping("/search")
-    public ResponseEntity<BaseResponse<List<FriendRes>>> searchFriend(@Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails){
-        List<FriendRes> friendSearchList = friendService.searchFriend(nickname, userDetails.getUsername());
+    public ResponseEntity<BaseResponse<FriendSearchPageRes>> searchFriend(
+            @PageableDefault(sort="id", direction = Sort.Direction.DESC, page=0) Pageable pageable,
+            @Valid @NotNull @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails){
+        FriendSearchPageRes friendSearchList = friendService.searchFriend(pageable, nickname, userDetails.getUsername());
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,
                 friendSearchList
