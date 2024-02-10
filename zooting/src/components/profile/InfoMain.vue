@@ -76,6 +76,7 @@ onMounted(() => {
       :user-info="userInfo"
       :show-from-parent="showEditBackground"
       @set-parent-show="setShowEditBackground"
+      @load-my-info="loadMyInfo"
   />
   <div class="flex flex-col h-screen">
     <!--    배경 이미지-->
