@@ -143,7 +143,6 @@ const getPageRange = () => {
   let start = Math.max(currentPage.value - 3, 0);
   let end = totalPage.value - start + 1 > DEFAULT_NAV_SIZE ? start + DEFAULT_NAV_SIZE - 1 : totalPage.value;
 
-  console.log(start, end);
   return Array.from({length: end - start + 1}, (_, i) => start + i);
 }
 
