@@ -1,10 +1,10 @@
 package com.zooting.api.domain.meeting.application;
 
+import com.zooting.api.domain.friend.entity.Friend;
 import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
+import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
-import com.zooting.api.domain.meeting.pubsub.MessageType;
-import com.zooting.api.domain.meeting.pubsub.RedisPublisher;
-import com.zooting.api.domain.meeting.pubsub.WaitingRoomSubscriber;
+import com.zooting.api.domain.meeting.pubsub.*;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.code.ErrorCode;
@@ -13,10 +13,12 @@ import com.zooting.api.global.exception.BaseExceptionHandler;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,8 @@ public class MeetingService {
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisPublisher redisPublisher;
     private final WaitingRoomSubscriber waitingRoomSubscriber;
-
+    private final OpenVidu openVidu;
+    private final SimpMessageSendingOperations webSocketTemplate;
     /**
      * TODO: synchronized VS Lettuce의 Spin Lock VS Redisson의 분산락
      *   Mutex / Semaphore / Monitoring (Java의 synchronized 구현 방식)
@@ -161,5 +164,34 @@ public class MeetingService {
     private WaitingRoom loadWaitingRoomFromRedis(String waitingRoomId) {
         Optional<WaitingRoom> waitingRoom = waitingRoomRedisRepository.findById(waitingRoomId);
         return waitingRoom.orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_WAITING_ROOM));
+    }
+
+    /* 1대1 미팅 신청 */
+    public void requestMeeting(String nickname, String loginEmail){
+        Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        sendAcceptMessageToClient(friend, loginMember);
+    }
+    private void sendAcceptMessageToClient(Member friend, Member loginMember) {
+        FriendMeetingDto friendMeetingDto = new FriendMeetingDto("meeting", loginMember.getEmail(), loginMember.getNickname());
+        log.info("[sendAcceptMessageToClient] email: {} {} {} {}", friend.getEmail(), friendMeetingDto.type(), loginMember.getEmail(), loginMember.getNickname());
+        webSocketTemplate.convertAndSend("/api/sub/dm/" + friend.getEmail(), friendMeetingDto);
+    }
+
+    /* 1대1 미팅 수락 */
+    public void sendOpenViduTokenToClient(String nickname, String loginEmail) {
+        Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        try {
+            Session session = openVidu.createSession();
+            log.info("세션을 만들었습니다.");
+            Connection connection = session.createConnection();
+            OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes("openviduToken", connection.getToken());
+            webSocketTemplate.convertAndSend("/api/sub/dm/" + loginEmail, openviduTokenRes);
+            connection = session.createConnection();
+            openviduTokenRes = new OpenviduTokenRes("openviduToken", connection.getToken());
+            webSocketTemplate.convertAndSend("/api/sub/dm/" + friend.getEmail(), openviduTokenRes);
+        } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

@@ -9,11 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/meeting")
@@ -43,6 +39,20 @@ public class MeetingController {
     public ResponseEntity<BaseResponse<String>> acceptMatching(
             @RequestParam(name = "room") String waitingRoomId) {
         meetingService.acceptMatching(waitingRoomId);
+        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅을 수락했습니다.");
+    }
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/request/friend")
+    @Operation(summary = "친구 목록 기반 1대1 미팅 신청", description = "1대1 미팅 신청")
+    public ResponseEntity<BaseResponse<String>> requestMeeting(@RequestBody String nickname, @AuthenticationPrincipal UserDetails userDetails) {
+        meetingService.requestMeeting(nickname, userDetails.getUsername());
+        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 신청에 성공했습니다.");
+    }
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/accept/friend")
+    @Operation(summary = "1대1 매칭 수락", description = "1대1 매칭 수락")
+    public ResponseEntity<BaseResponse<String>> acceptFriendMeeting(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
+        meetingService.sendOpenViduTokenToClient(nickname, userDetails.getUsername());
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅을 수락했습니다.");
     }
 }
