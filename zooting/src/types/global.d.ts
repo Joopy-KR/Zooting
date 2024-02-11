@@ -121,12 +121,22 @@ declare interface NoticePage {
 }
 
 declare interface Notify {
-    title: string,
-    message: any,
+    title: string;
+    message: any;
 }
+
+declare interface Search {
+    searchResList: {
+        nickname: string;
+        gender: string;
+    }[]
+    currentPage: number;
+    totalPage: number;
+}
+
 
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
     PersonalityList, Personality, Friend, MaskReq, ReportUserReq,
-    DM, DmItem, FriendRequest, Notice, NoticePage, Notify, Background
+    DM, DmItem, FriendRequest, Notice, NoticePage, Notify, Background, Search
 };

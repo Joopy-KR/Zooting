@@ -131,9 +131,9 @@ const toggleSearchType = () => {
   isGlobal.value = !isGlobal.value
   if (searchQuery.value) {
     if (isGlobal.value) {
-      store.userSearch(searchQuery.value)
+      store.userSearch({page:0, size:2, sort:[]})
     } else {
-      store.friendSearch(searchQuery.value)
+      store.friendSearch({page:0, size:2, sort:[], nickname: searchQuery.value})
     }
   }
 }
@@ -142,9 +142,9 @@ const handleSearch = function (event: any) {
   searchQuery.value = event.target.value
   if (searchQuery.value) {
     if (isGlobal.value) {
-      store.userSearch(searchQuery.value)
+      store.userSearch({page:0, size:2, sort:[]})
     } else {
-      store.friendSearch(searchQuery.value)
+      store.friendSearch({page:0, size:2, sort:[], nickname: searchQuery.value})
     }
   }
 }

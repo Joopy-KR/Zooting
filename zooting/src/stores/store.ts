@@ -3,7 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {DM, DmItem, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
+import type {DM, DmItem, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage, Search} from "@/types/global";
 import { faLessThanEqual } from "@fortawesome/free-solid-svg-icons";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
@@ -607,43 +607,39 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       });
   };
 
-    const searchResult = ref<Friend[]>([])
+    const searchResult = ref<Search[]>([])
 
     // 친구 검색
-    const friendSearch = function (params: string) {
-      const nickname = params
+    const friendSearch = function (params: {page: number, size: number, sort: string[], nickname: string}) {
       axios({
         method: "get",
         url: `${API_URL}/api/friends/search`,
-        params: {
-          nickname,
-        },
+        params: params,
         headers: {
           Authorization: `Bearer ${getAccessToken()}`,
         },
       })
       .then((res) => {
+        console.log(res);
         searchResult.value = res.data.result;
       })
       .catch((err) => {
         console.log(err);
       });
     };
-
+    
     // 유저 검색
-    const userSearch = function (params: string) {
-      const nickname = params;
+    const userSearch = function (params: {page: number, size: number, sort: string[]}) {
       axios({
         method: "get",
         url: `${API_URL}/api/members/searchlist`,
-        params: {
-          nickname,
-        },
+        params: params,
         headers: {
           Authorization: `Bearer ${getAccessToken()}`,
         },
       })
       .then((res) => {
+        console.log(res);
         searchResult.value = res.data.result;
       })
       .catch((err) => {
