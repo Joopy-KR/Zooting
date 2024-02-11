@@ -16,7 +16,7 @@
                 <div class="mt-3 text-center sm:mt-5">
                   <DialogTitle as="h3" class="text-2xl font-semibold leading-6 text-gray-900 ">매칭 완료</DialogTitle>
                   <div class="mt-5">
-                    <p class="text-lg text-gray-500">방에 입장하시겠습니까? </p>
+                    <p class="text-lg text-gray-500">곧 입장해요 준비되셨나요?</p>
                   </div>
                 </div>
               </div>
@@ -25,8 +25,7 @@
                      :style="{ width : enterRoomTimeLimit +'%'}">
                 </div>
               </div>
-              <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                <div class="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm cursor-pointer hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2" @click="meetingAccept">입장</div>
+              <div class="mt-5 sm:mt-6">
                 <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="meetingExit">취소</div>
               </div>
             </DialogPanel>
@@ -47,9 +46,14 @@ import { useAccessTokenStore } from '../stores/store'
 const store = useAccessTokenStore()
 const enterRoomTimeLimit = ref<any>(0)
 
-onMounted(()=>{
-  setInterval(()=>{
-    enterRoomTimeLimit.value += 0.2
+onMounted(() => {
+  const intervalId = setInterval(() => {
+    enterRoomTimeLimit.value += 0.5
+
+    if (enterRoomTimeLimit.value >= 100) {
+      clearInterval(intervalId)
+      meetingAccept()
+    }
   }, 20)
 })
 
