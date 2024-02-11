@@ -44,7 +44,7 @@ public class MeetingController {
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/request/friend")
     @Operation(summary = "친구 목록 기반 1대1 미팅 신청", description = "1대1 미팅 신청")
-    public ResponseEntity<BaseResponse<String>> requestMeeting(@RequestBody String nickname, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<BaseResponse<String>> requestMeeting(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
         meetingService.requestMeeting(nickname, userDetails.getUsername());
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 신청에 성공했습니다.");
     }
