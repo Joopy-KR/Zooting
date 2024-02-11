@@ -301,6 +301,15 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
         return true;
     }
+    @Transactional
+    @Override
+    public void addPoints(String userId, Long points) {
+        Member member = memberRepository.findMemberByEmail(userId)
+                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        Long memberPoints = member.getPoint();
+        member.setPoint(memberPoints + points);
+        memberRepository.save(member);
+    }
 
     @Override
     public List<MemberSearchRes> extractMembers(String userId, ExtractingReq extractingReq) {
