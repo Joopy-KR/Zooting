@@ -6,9 +6,6 @@
       <button v-if="store.isMatching" class="btn-hover color-2" @click="meetingExit">Cancel</button>
     </div>
     <div class="matching" v-show="store.isMatching">
-      <div class="matching__text">
-        Matching...
-      </div>
       <div class="matching__timer">
         {{ store.formattedTimer }}      
       </div>
@@ -56,11 +53,8 @@ const meetingExit = () => {
 .matching {
   @apply absolute flex flex-col justify-center items-center gap-2;
 }
-.matching__text {
-  @apply text-5xl;
-}
 .matching__timer {
-  @apply text-3xl;
+  @apply text-5xl;
 }
 .btn-hover {
 	@apply absolute -bottom-24;
