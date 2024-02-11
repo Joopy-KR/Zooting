@@ -1,6 +1,7 @@
 package com.zooting.api.domain.meeting.api;
 
 import com.zooting.api.domain.meeting.application.MeetingService;
+import com.zooting.api.domain.meeting.dto.MeetingSelectDto;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/meeting")
@@ -33,6 +36,7 @@ public class MeetingController {
         meetingService.exitFromWaitingRoom(userDetails, waitingRoomId);
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 대기방 등록 취소에 성공했습니다.");
     }
+
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/accept")
     @Operation(summary = "매칭 수락", description = "매칭 수락")
@@ -41,6 +45,7 @@ public class MeetingController {
         meetingService.acceptMatching(waitingRoomId);
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅을 수락했습니다.");
     }
+
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/request/friend")
     @Operation(summary = "친구 목록 기반 1대1 미팅 신청", description = "1대1 미팅 신청")
@@ -48,11 +53,38 @@ public class MeetingController {
         meetingService.requestMeeting(nickname, userDetails.getUsername());
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 신청에 성공했습니다.");
     }
+
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/accept/friend")
     @Operation(summary = "1대1 매칭 수락", description = "1대1 매칭 수락")
     public ResponseEntity<BaseResponse<String>> acceptFriendMeeting(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
         meetingService.sendOpenViduTokenToClient(nickname, userDetails.getUsername());
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅을 수락했습니다.");
+    }
+
+    /* 간단한 버전 */
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/select")
+    @Operation(summary = "화상채팅 종료 시 사람 선택", description = "화상채팅 종료 시 사람 선택")
+    public ResponseEntity<BaseResponse<String>> selectPerson(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
+        meetingService.selectPerson(nickname, userDetails.getUsername());
+        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, nickname + "을 선택했습니다.");
+    }
+
+    /* 복잡한 버전 */
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/selects")
+    @Operation(summary = "화상채팅 종료 시 사람 선택2", description = "화상채팅 종료 시 사람 선택2")
+    public ResponseEntity<BaseResponse<String>> selectsPerson(@RequestParam String sessionId, @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
+        meetingService.selectsPerson(sessionId, nickname, userDetails.getUsername());
+        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, nickname + "을 선택했습니다.");
+    }
+
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/selects/result")
+    @Operation(summary = "선택 결과 보기", description = "화상채팅 종료 시 사람 선택2")
+    public ResponseEntity<BaseResponse<List<MeetingSelectDto>>> showResult(@RequestParam String sessionId, @AuthenticationPrincipal UserDetails userDetails) {
+        List<MeetingSelectDto> meetingSelectDtos = meetingService.showResult(sessionId);
+        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, meetingSelectDtos);
     }
 }

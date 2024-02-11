@@ -1,8 +1,10 @@
 package com.zooting.api.domain.meeting.application;
 
+import com.google.gson.Gson;
 import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
+import com.zooting.api.domain.meeting.dto.MeetingSelectDto;
 import com.zooting.api.domain.meeting.pubsub.MessageType;
 import com.zooting.api.domain.meeting.pubsub.OpenviduTokenRes;
 import com.zooting.api.domain.meeting.pubsub.RedisPublisher;
@@ -14,6 +16,7 @@ import com.zooting.api.global.exception.BaseExceptionHandler;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -21,10 +24,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -37,6 +38,8 @@ public class MeetingService {
     private final WaitingRoomSubscriber waitingRoomSubscriber;
     private final OpenVidu openVidu;
     private final SimpMessageSendingOperations webSocketTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final Gson gson;
 
     /**
      * TODO: synchronized VS Lettuce의 Spin Lock VS Redisson의 분산락
@@ -198,5 +201,33 @@ public class MeetingService {
         } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    /* 화상채팅 종료 시 사람 선택 */
+    public void selectPerson(String nickname, String loginEmail) {
+        Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        MeetingSelectDto meetingSelectDto = new MeetingSelectDto("select", loginMember.getNickname(), friend.getNickname());
+        webSocketTemplate.convertAndSend("/api/sub/dm/" + friend.getEmail(), meetingSelectDto);
+    }
+
+    public void selectsPerson(String sessionId, String nickname, String loginEmail) {
+        Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        MeetingSelectDto meetingSelectDto = new MeetingSelectDto("select", loginMember.getNickname(), friend.getNickname());
+        redisTemplate.opsForList().rightPush(sessionId, gson.toJson(meetingSelectDto));
+        redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
+    }
+
+    public List<MeetingSelectDto> showResult(String sessionId) {
+        List<Object> objectList = redisTemplate.opsForList().range(sessionId, 0, -1);
+        if (objectList != null && !objectList.isEmpty()) {
+            List<MeetingSelectDto> meetingSelectDtoList = objectList.stream()
+                    .map(obj -> gson.fromJson((String) obj, MeetingSelectDto.class))
+                    .collect(Collectors.toList());
+            redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
+            return meetingSelectDtoList;
+        }
+        return Collections.emptyList();
     }
 }
