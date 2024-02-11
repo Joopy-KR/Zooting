@@ -11,6 +11,7 @@
       @receive-message="receiveMessage"
     />
     <MatchingCompleteModal
+      v-if="store.isLogin"
       class="z-40"
       />
   </div>
