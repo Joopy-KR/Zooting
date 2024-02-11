@@ -4,9 +4,17 @@ import HamburgerImg from '/assets/images/sub_game/obstacle_hamburger.png';
 import PotatoImg from '/assets/images/sub_game/obstacle_potato.png';
 import PizzaImg from '/assets/images/sub_game/obstacle_pizza.png';
 import { playJumpSound, playCollisionSound} from "@/components/subgame/sound";
+import { addPointsApi} from "@/api/subgame";
+import {ref, nextTick} from "vue";
+import axios from "axios";
+const { VITE_SERVER_API_URL } = import.meta.env;
 
- window.onload = function () {
-     console.log('흠냐')
+
+const points = ref(0);
+
+
+
+window.onload = function () {
     let canvas:any;
     let ctx:any;
     let descriptionElement = document.querySelector("#description");
@@ -142,7 +150,6 @@ import { playJumpSound, playCollisionSound} from "@/components/subgame/sound";
             setTimeout(()=> {
                 if (!ctx) {return;}
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                canvas.remove();
                 gameState = 3;
                 if (descriptionElement) {
                     descriptionElement.innerHTML = "<div class='text-center'><p>Try again?</p><p style='font-size : 20px;'>your score is " + score.toString() + "</p></div>"
@@ -154,6 +161,13 @@ import { playJumpSound, playCollisionSound} from "@/components/subgame/sound";
                     recordElement.innerHTML =""
                 }
             }, 0)
+                if (score != 0) {
+                    points.value = score / 10
+                    // Vue.js의 nextTick 메소드를 사용하여 값이 업데이트될 때까지 대기
+                    nextTick(() => {
+                        addPoints(points.value);
+                    });
+                }
         }
     }
 
@@ -226,6 +240,7 @@ import { playJumpSound, playCollisionSound} from "@/components/subgame/sound";
         detectedCollision = false;
         flag = false;
         dogImg.src = StopDogImg;
+        points.value = 0;
 
         if (descriptionElement) {
             descriptionElement.innerHTML = "";
@@ -259,4 +274,19 @@ import { playJumpSound, playCollisionSound} from "@/components/subgame/sound";
     }
 
 };
+
+const addPoints = async (points:number) => {
+    console.log(points );
+    await addPointsApi(
+        {points : points as number},
+        ({data}: any) => {
+            if (data.status == 200 || data.status == 201) {
+                console.log("포인트 추가 성공")
+            }
+        },
+        (error: any) => {
+            console.log("포인트 증가 실패")
+        })
+}
+
 

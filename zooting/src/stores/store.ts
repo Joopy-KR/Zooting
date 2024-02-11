@@ -781,7 +781,32 @@ export const useAccessTokenStore = defineStore("access-token", () => {
           console.log(err);
       });
     };
-  
+
+    // 미니게임 포인트 부여
+  const addPoints = function (payload: {points:number}) {
+    const {points} = payload;
+    axios({
+      method: "patch",
+      url: `${API_URL}/api/members/points`,
+      data : {
+        points
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+        .then((res) => {
+          noticePage.value = res.data.result;
+          noticeList.value = res.data.result["noticeResList"];
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  };
+
+
+
+
     // --------------------------매칭---------------------------
     // 매칭 대기
     const isMatching = ref<boolean>(false)
@@ -897,6 +922,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       router.push({ name: "video-chat"})
     }
 
+
+
   return {
       setAccessToken,
       getAccessToken,
@@ -949,5 +976,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       isMatchingComplete,
       meetingAccept,
       meetingExit,
+      addPoints,
   };
 });
