@@ -74,13 +74,21 @@
         <div v-if="searchQuery" class="search__result">
           <ul v-if="searchResult?.length > 0">
             <li v-for="result in searchResult" :key="result.nickname">
-              <RouterLink :to="getProfileLink(result.nickname)" class="hover:font-semibold ms-1">
-              {{ result.nickname }}
-              </RouterLink>
-              <button v-if="!isRequestInList(result) && !isFriendInList(result) && !(result.nickname===store.userInfo?.nickname)" @click="sendFriendRequest(result.nickname)">
+              <div class="flex items-center">
+                <RouterLink :to="getProfileLink(result.nickname)" class="flex items-center gap-4">
+                  <img class="search__result__img" :src="getProfileImage(result.animal)" alt="profile">
+                  {{ result.nickname }}
+                </RouterLink>
+                <div>
+                  <svg :class="getHeartClass(result.gender)" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="m12.7 20.7 6.2-7.1c2.7-3 2.6-6.5.8-8.7A5 5 0 0 0 16 3c-1.3 0-2.7.4-4 1.4A6.3 6.3 0 0 0 8 3a5 5 0 0 0-3.7 1.9c-1.8 2.2-2 5.8.8 8.7l6.2 7a1 1 0 0 0 1.4 0"/>
+                  </svg>
+                </div>
+              </div>
+              <button v-show="!isRequestInList(result) && !isFriendInList(result) && !(result.nickname===store.userInfo?.nickname)" @click="sendFriendRequest(result.nickname)">
                 <!-- 친구 신청 아이콘 -->
                 <svg
-                  class="w-6 h-6 text-gray-500 cursor-pointer hover:text-gray-700 me-1"
+                  class="text-gray-500 cursor-pointer w-7 h-7 hover:text-gray-700 "
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -90,11 +98,14 @@
                   <path
                     stroke="currentColor"
                     stroke-linecap="round"
-                    stroke-width="1.5"
+                    stroke-width="1.4"
                     d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1c0 .6-.4 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                   />
                 </svg>
               </button>
+              <div v-show="result.nickname === store.userInfo?.nickname" class="text-gray-500 me-1">
+                me
+              </div>
             </li>
           </ul>
           <div v-else class="flex justify-center h-10 mt-1">
@@ -171,11 +182,35 @@ const isFriendInList = (result: Result) => {
 const getProfileLink = (value: string) => {
   return `/profile/${value}`
 }
+
+const getProfileImage = (animal: string) => {
+  let imgUrl: URL;
+  if (animal === '강아지') {
+    imgUrl = new URL('/assets/images/animal/dog.png', import.meta.url);
+  } else if (animal === '고양이') {
+    imgUrl = new URL('/assets/images/animal/cat.png', import.meta.url);
+  } else if (animal === '곰') {
+    imgUrl = new URL('/assets/images/animal/bear.png', import.meta.url);
+  } else if (animal === '공룡') {
+    imgUrl = new URL('/assets/images/animal/dino.png', import.meta.url);
+  } else if (animal === '펭귄') {
+    imgUrl = new URL('/assets/images/animal/penguin.png', import.meta.url);
+  } else if (animal === '토끼') {
+    imgUrl = new URL('/assets/images/animal/rabbit.png', import.meta.url);
+  } else if (animal === '사슴') {
+    imgUrl = new URL('/assets/images/animal/deer.png', import.meta.url);
+  } else {
+    imgUrl = new URL('/assets/images/animal/animal_group.png', import.meta.url);
+  }
+  return imgUrl.href;
+}
+
+const getHeartClass = (gender: string) => (
+  gender === 'man' ? 'w-4 h-4 text-blue-500 ms-1' : 'w-4 h-4 text-pink-500 ms-1'
+)
 </script>
 
 <style scoped>
-.search__container {
-}
 .search__input-container {
   @apply mt-3 mb-1 mx-3 flex items-center;
 }
@@ -190,12 +225,19 @@ const getProfileLink = (value: string) => {
   @apply absolute z-10 right-4 top-1/2 transform -translate-y-1/2;
 }
 .search__result {
-  @apply absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-xl shadow-sm text-sm;
+  @apply absolute z-10 mt-1 w-full max-h-[50vh] bg-white border border-gray-300 rounded-xl shadow-md;
+  overflow-y: auto; 
+}
+.search__result__img {
+  @apply w-10 h-10 rounded-full;
+}
+.search__result::-webkit-scrollbar {
+  @apply hidden;
 }
 .search__result ul {
   @apply divide-y divide-gray-200 px-1;
 }
 .search__result li {
-  @apply p-2 flex justify-between items-center h-12;
+  @apply p-2 flex justify-between items-center h-16;
 }
 </style>

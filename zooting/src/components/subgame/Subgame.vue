@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="border-2 canvas-size background-image" id="game" v-if = "pressStart" >
+    <div class="canvas-size background-image" id="game" v-if = "pressStart" >
       <span id="description" class="absolute align-middle animate__shakeY neon drag-prevent">Press Spacebar</span>
       <span id="record" class="mt-3 ml-3 neon-mini drag-prevent"></span><i id="score" class="ml-2 neon-mini drag-prevent"></i>
       <canvas id="canvas" class="z-40 drag-prevent"></canvas>
@@ -17,7 +17,8 @@ const pressStart = ref(true);
 </script>
 
 <style scoped>
-.canvas-size{
+.canvas-size {
+  @apply border-[#E1BAFF] border-4 rounded-lg shadow-lg m-5;
   position: relative;
   width : 600px;
   height: 200px;

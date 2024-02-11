@@ -14,11 +14,11 @@
 <script setup lang="ts">
 import { ref, shallowRef, onMounted, computed } from 'vue'
 import { useAccessTokenStore } from '@/stores/store'
-import Search from '../Search.vue'
-import SocialTabBar from './SocialTabBar.vue'
-import SocialFriendList from './SocialFriendList.vue'
-import SocialRequestList from './SocialRequestList.vue'
-import SocialBlockList from './SocialBlockList.vue'
+import Search from '@/components/home/Search.vue'
+import SocialTabBar from '@/components/home/SocialTabBar.vue'
+import SocialFriendList from '@/components/home/SocialFriendList.vue'
+import SocialRequestList from '@/components/home/SocialRequestList.vue'
+import SocialBlockList from '@/components/home/SocialBlockList.vue'
 
 const store = useAccessTokenStore()
 
@@ -62,7 +62,7 @@ const handleTabSelected = (currentTab: string) => {
 
 <style scoped>
 .social__container {
-  @apply flex flex-col h-screen;
+  @apply flex flex-col h-screen bg-white;
   border-right: 1.5px rgb(205, 205, 205) solid;
   min-width: 430px;
 }

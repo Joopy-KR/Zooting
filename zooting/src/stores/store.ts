@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
 import type {DM, DmItem, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage} from "@/types/global";
+import { faLessThanEqual } from "@fortawesome/free-solid-svg-icons";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -319,7 +320,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
       .then((res) => {
         console.log(res);
-        router.push({ name: "animal_test" });
+        router.push({ name: "animal-test" });
       })
       .catch((err) => {
         console.log(err);
@@ -732,25 +733,37 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         });
     };
 
-    const meetingRegister = function () {
+    // 파일 다운로드
+    const fileDownload = function (params: string, zoomImgName: string) {
+      const S3Id = params;
       axios({
-        method: "post",
-        url: `${API_URL}/api/meeting/register`,
+        method: "get",
+        url: `${API_URL}/api/file/download`,
+        params: {
+          S3Id,
+        },
         headers: {
           Authorization: `Bearer ${getAccessToken()}`,
         },
+        responseType: 'arraybuffer',
       })
         .then((res) => {
-          console.log(res);
+          console.log(res)
+          const blob = new Blob([res.data], { type: res.headers['content-type'] });
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = zoomImgName;
+          link.click();
+          window.URL.revokeObjectURL(link.href);
         })
         .catch((err) => {
           console.log(err);
         });
     };
 
+    // 공지사항 리스트
     const noticePage = ref<NoticePage>();
     const noticeList = ref<Notice[]>([]);
-    // 공지사항 리스트
     const getNoticeList = function (params: {'page': number, 'size':number}) {
       axios({
       method: "get",
@@ -769,12 +782,120 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       });
     };
   
-  // 매칭 완료시 미팅방으로 이동시키기
-  const meetingRoomToken = ref<String>('')
-  const pushMeetingRoom = function (token: String) {
-    meetingRoomToken.value = token
-    router.push({ name: "video-chat"})
-  }
+    // --------------------------매칭---------------------------
+    // 매칭 대기
+    const isMatching = ref<boolean>(false)
+    // 매칭 완료 여부
+    const isMatchingComplete = ref<boolean>(false) // default false
+    // 미팅방 id
+    const roomId = ref<string>('')
+    // 매칭 대기 시간
+    const formattedTimer = ref("00:00")
+    let timerInterval: any = null
+
+    // 타이머 시작
+    function startTimer() {
+      let seconds = 0;
+      timerInterval = setInterval(() => {
+        seconds++
+        formattedTimer.value = formatTime(seconds)
+      }, 1000)
+    }
+    
+    // 타이머 종료
+    function resetTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval)
+        timerInterval = null
+        formattedTimer.value = "00:00"
+      }
+    }
+
+    // 타이머 포맷
+    function formatTime(seconds: number) {
+      const minutes = Math.floor(seconds / 60)
+      const remainingSeconds = seconds % 60
+      const formattedMinutes = String(minutes).padStart(2, "0")
+      const formattedSeconds = String(remainingSeconds).padStart(2, "0")
+      return `${formattedMinutes}:${formattedSeconds}`
+    }
+    
+    // 매칭 요청
+    const meetingRegister = function () {
+      startTimer()
+      if (isMatching.value) {
+        console.log('이미 매칭 중입니다')
+        return
+      }
+      axios({
+        method: "post",
+        url: `${VITE_SERVER_API_URL}/api/meeting/register`,
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+      .then((res) => {
+        console.log(res)
+        roomId.value = res.data.result
+        isMatching.value = true
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+
+    // 매칭 수락
+    const meetingAccept = function () {
+      isMatching.value = false
+      isMatchingComplete.value = false
+      resetTimer()
+      axios({
+        method: "post",
+        url: `${VITE_SERVER_API_URL}/api/meeting/accept`,
+        params: {
+          room: roomId.value,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+    
+    // 매칭 거절
+    const meetingExit = function () {
+      isMatching.value = false
+      isMatchingComplete.value = false
+      resetTimer()
+      axios({
+        method: "delete",
+        url: `${VITE_SERVER_API_URL}/api/meeting/exit`,
+        params: {
+          room: roomId.value,
+        },
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      })
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+
+    // 매칭 완료시 미팅방으로 이동시키기
+    const meetingRoomToken = ref<String>('')
+    const pushMeetingRoom = function (token: String) {
+      meetingRoomToken.value = token
+      router.push({ name: "video-chat"})
+    }
 
   return {
       setAccessToken,
@@ -822,5 +943,11 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       meetingRegister,
       meetingRoomToken,
       pushMeetingRoom,
+      fileDownload,
+      formattedTimer,
+      isMatching,
+      isMatchingComplete,
+      meetingAccept,
+      meetingExit,
   };
 });

@@ -97,11 +97,14 @@ declare interface DmItem {
     sender: string;
     message: string;
     files: DmFile[] | [];
+    createdAt: string;
 }
 
 declare interface DmFile {
+    S3Id: string;
     imgUrl: string;
     thumbnailUrl: string;
+    fileName: string;
 }
 
 declare interface Notice {

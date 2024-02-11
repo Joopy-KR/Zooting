@@ -34,8 +34,8 @@ const router = createRouter({
       component: SignUpView,
     },
     {
-      path: "/animal_test",
-      name: "animal_test",
+      path: "/animal-test",
+      name: "animal-test",
       component: AnimalTestView,
     },
     {
@@ -44,8 +44,8 @@ const router = createRouter({
       component: VideoChatView
     },
     {
-      path: "/personality_test",
-      name: "personality_test",
+      path: "/personality-test",
+      name: "personality-test",
       component: PersonalityTestView,
     },
     {
@@ -119,6 +119,8 @@ router.beforeEach((to, from) => {
   if (store.isLogin) {
     if (to.name === 'home') {
       store.getUserInfo()
+    } else if (to.name === 'signin') {
+      store.signOut()
     }
     return;
   }

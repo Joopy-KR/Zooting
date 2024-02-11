@@ -55,7 +55,7 @@ const props = defineProps({
 const router = useRouter()
 
 const goPersonalityTest = function() {
-  router.push({ name: 'personality_test' })
+  router.push({ name: 'personality-test' })
 }
 
 // ApexCharts 설정
