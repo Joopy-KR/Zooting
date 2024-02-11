@@ -36,7 +36,7 @@ public class WaitingRoomSubscriber implements MessageListener {
 
     @Override
     public void onMessage(@NonNull Message message, byte[] pattern) {
-        final int MEETING_CAPACITY = 4;
+        final int MEETING_CAPACITY = 6;
         final WaitingRoomMessageDto parsedMessage = waitingRoomMessageParser(message);
         final String waitingRoomId = parsedMessage.getId();
         final String type = parsedMessage.getType();
