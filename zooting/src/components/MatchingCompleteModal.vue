@@ -1,5 +1,5 @@
 <template>
-  <TransitionRoot as="template" :show="isMatchingComplete && enterRoomTimeLimit < 100">
+  <TransitionRoot as="template" :show="isMatchingComplete">
     <Dialog as="div" class="relative z-10">
       <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
@@ -25,8 +25,7 @@
                      :style="{ width : enterRoomTimeLimit +'%'}">
                 </div>
               </div>
-              <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                <div class="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm cursor-pointer hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2" @click="meetingAccept">입장</div>
+              <div class="mt-5 sm:mt-6">
                 <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="meetingExit">취소</div>
               </div>
             </DialogPanel>
@@ -48,21 +47,20 @@ const store = useAccessTokenStore()
 const enterRoomTimeLimit = ref<any>(0)
 const isMatchingComplete = ref<boolean>(false)
 
-watch(()=> store.isMatchingComplete, (update)=>{
+watch(()=> store.isMatchingComplete, (update) => {
   isMatchingComplete.value = update
 
-  const intervalId = setInterval(() => {
-    if (store.isMatchingComplete) {
-    enterRoomTimeLimit.value += 0.2
-    } else if (!store.isMatchingComplete || enterRoomTimeLimit.value >= 100) {
-    clearInterval(intervalId)
-  }
+  if (store.isMatchingComplete) {
+    const intervalId = setInterval(() => {
+      enterRoomTimeLimit.value += 0.5
+  
+      if (enterRoomTimeLimit.value >= 100) {
+        clearInterval(intervalId)
+        store.meetingAccept()
+      }
     }, 20)
+  }
 })
-
-const meetingAccept = () => {
-  store.meetingAccept()
-}
 
 const meetingExit = () => {
   store.meetingExit()
