@@ -84,7 +84,7 @@ const isLoggedIn = computed(() => store.isLogin)
 
 const isSideTabOpen = ref<boolean>(false)
 const currentSideTab = ref<string | null>(null)
-const DEFAULT_PAGE_SIZE = 6
+const DEFAULT_PAGE_SIZE = 2 // MEMO 매칭 인원
 
 const userInfo = ref(store.userInfo)
 
