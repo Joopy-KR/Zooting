@@ -129,7 +129,7 @@ declare interface Search {
     searchResList: {
         nickname: string;
         gender: string;
-    }[]
+    }[];
     currentPage: number;
     totalPage: number;
 }

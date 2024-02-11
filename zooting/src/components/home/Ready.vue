@@ -16,6 +16,7 @@ import ReadyRecordList from '@/components/home/ReadyRecordList.vue'
 .ready__container {
   @apply flex flex-col grow h-full relative;
   min-width: 955px;
+  min-height: 800px;
   overflow: hidden;
   margin:0;
   background-image: url("/assets/images/login/background.png");

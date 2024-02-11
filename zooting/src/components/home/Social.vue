@@ -1,11 +1,18 @@
 <template>
   <div class="social__container">
-    <Search />
+    <Search 
+      @search-state="searchState"
+    />
+    <SearchResult
+    v-show="isSearching"
+    />
     <SocialTabBar 
+      v-show="!isSearching"
       :tabs="tabs"
       @select-tab="handleTabSelected"
     />
-    <component 
+    <component
+      v-show="!isSearching"
       :is="currentList"
     />
   </div>
@@ -15,18 +22,19 @@
 import { ref, shallowRef, onMounted, computed } from 'vue'
 import { useAccessTokenStore } from '@/stores/store'
 import Search from '@/components/home/Search.vue'
+import SearchResult from '@/components/home/SearchResult.vue'
 import SocialTabBar from '@/components/home/SocialTabBar.vue'
 import SocialFriendList from '@/components/home/SocialFriendList.vue'
 import SocialRequestList from '@/components/home/SocialRequestList.vue'
 import SocialBlockList from '@/components/home/SocialBlockList.vue'
 
 const store = useAccessTokenStore()
-
 const tabs = ref<{name: string, count: any}[]>([
   { name: '친구', count: 0 },
   { name: '친구 요청', count: 0 },
   { name: '차단', count: 0 },
 ])
+const isSearching = ref<boolean>(false)
 
 onMounted(async () => {
   store.getFriendList()
@@ -57,6 +65,10 @@ const handleTabSelected = (currentTab: string) => {
   } else {
     currentList.value = SocialBlockList
   }
+}
+
+const searchState = (bool: boolean) => {
+  isSearching.value = bool
 }
 </script>
 

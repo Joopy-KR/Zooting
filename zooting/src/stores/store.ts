@@ -4,7 +4,6 @@ import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
 import type {DM, DmItem, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage, Search} from "@/types/global";
-import { faLessThanEqual } from "@fortawesome/free-solid-svg-icons";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -607,298 +606,300 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       });
   };
 
-    const searchResult = ref<Search[]>([])
+  // 유저 검색
+  const searchResult = ref<Search | null>(null)
+  type SearchParams = { page: number; size: number; sort: string[]; nickname: string } | { page: number; size: number; sort: string[] };
 
-    // 친구 검색
-    const friendSearch = function (params: {page: number, size: number, sort: string[], nickname: string}) {
-      axios({
-        method: "get",
-        url: `${API_URL}/api/friends/search`,
-        params: params,
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        searchResult.value = res.data.result;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    };
-    
-    // 유저 검색
-    const userSearch = function (params: {page: number, size: number, sort: string[]}) {
-      axios({
-        method: "get",
-        url: `${API_URL}/api/members/searchlist`,
-        params: params,
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        searchResult.value = res.data.result;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    };
-
-    // DM 방 입장
-    const isEntryDmRoom = ref<boolean>(false);
-    const dmInfo = ref<DM | null>(null);
-    const receiverInfo = ref<Friend | null>(null);
-
-    const entryDmRoom = function (params: Friend) {
-      const receiver = params.email;
-      axios({
-        method: "get",
-        url: `${API_URL}/api/dm/room`,
-        params: {
-          receiver,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-        .then((res) => {
-          console.log(res);
-          dmInfo.value = res.data.result;
-          receiverInfo.value = params;
-        })
-        .then((res) => {
-          isEntryDmRoom.value = true;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-
-    // DM 커서
-    const isRefreshing = ref<boolean>(false);
-    const pastDmList = ref<DmItem[]>([])
-    const cursorDmRoom = function (params: { cursor: number; dmRoomId: number }) {
-      const {dmRoomId, cursor} = params;
-      axios({
-        method: "get",
-        url: `${API_URL}/api/dm/room/prev`,
-        params: {
-          dmRoomId,
-          cursor
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-        .then((res) => {
-          console.log(res);
-          if (dmInfo.value) {
-            dmInfo.value.cursor = res.data.result.cursor;
-            pastDmList.value = [...pastDmList.value, ...res.data.result.dmList];
-          }
-        })
-        .then((res) => {
-          isRefreshing.value = false
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-
-    // DM방 퇴장
-    const exitDmRoom = function (params: number) {
-      const dmRoomId = params;
-      axios({
-        method: "put",
-        url: `${API_URL}/api/dm/room/exit`,
-        params: {
-          dmRoomId,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-
-    // 파일 다운로드
-    const fileDownload = function (params: string, zoomImgName: string) {
-      const S3Id = params;
-      axios({
-        method: "get",
-        url: `${API_URL}/api/file/download`,
-        params: {
-          S3Id,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-        responseType: 'arraybuffer',
-      })
-        .then((res) => {
-          console.log(res)
-          const blob = new Blob([res.data], { type: res.headers['content-type'] });
-          const link = document.createElement('a');
-          link.href = window.URL.createObjectURL(blob);
-          link.download = zoomImgName;
-          link.click();
-          window.URL.revokeObjectURL(link.href);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-
-    // 공지사항 리스트
-    const noticePage = ref<NoticePage>();
-    const noticeList = ref<Notice[]>([]);
-    const getNoticeList = function (params: {'page': number, 'size':number}) {
-      axios({
+  const userSearch = function (params: SearchParams) {
+    axios({
       method: "get",
-      url: `${API_URL}/api/notice`,
+      url: `${API_URL}/api/members/searchlist`,
+      params: params,
       headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
+        Authorization: `Bearer ${getAccessToken()}`,
       },
-      params : params,
     })
       .then((res) => {
-          noticePage.value = res.data.result;
-          noticeList.value = res.data.result["noticeResList"];
+        console.log(res);
+        searchResult.value = res.data.result;
       })
       .catch((err) => {
-          console.log(err);
+        console.log(err);
       });
-    };
+  };
+
+  // 친구 검색
+  const friendSearch = function (params: {page: number, size: number, sort: string[], nickname: string}) {
+    axios({
+      method: "get",
+      url: `${API_URL}/api/friends/search`,
+      params: params,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        searchResult.value = res.data.result;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+    
+
+  // DM 방 입장
+  const isEntryDmRoom = ref<boolean>(false);
+  const dmInfo = ref<DM | null>(null);
+  const receiverInfo = ref<Friend | null>(null);
+
+  const entryDmRoom = function (params: Friend) {
+    const receiver = params.email;
+    axios({
+      method: "get",
+      url: `${API_URL}/api/dm/room`,
+      params: {
+        receiver,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+        dmInfo.value = res.data.result;
+        receiverInfo.value = params;
+      })
+      .then((res) => {
+        isEntryDmRoom.value = true;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // DM 커서
+  const isRefreshing = ref<boolean>(false);
+  const pastDmList = ref<DmItem[]>([])
+  const cursorDmRoom = function (params: { cursor: number; dmRoomId: number }) {
+    const {dmRoomId, cursor} = params;
+    axios({
+      method: "get",
+      url: `${API_URL}/api/dm/room/prev`,
+      params: {
+        dmRoomId,
+        cursor
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+    .then((res) => {
+      console.log(res);
+      if (dmInfo.value) {
+        dmInfo.value.cursor = res.data.result.cursor;
+        pastDmList.value = [...pastDmList.value, ...res.data.result.dmList];
+      }
+    })
+      .then((res) => {
+        isRefreshing.value = false
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // DM방 퇴장
+  const exitDmRoom = function (params: number) {
+    const dmRoomId = params;
+    axios({
+      method: "put",
+      url: `${API_URL}/api/dm/room/exit`,
+      params: {
+        dmRoomId,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // 파일 다운로드
+  const fileDownload = function (params: string, zoomImgName: string) {
+  const S3Id = params;
+  axios({
+    method: "get",
+    url: `${API_URL}/api/file/download`,
+    params: {
+      S3Id,
+    },
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+    responseType: 'arraybuffer',
+  })
+    .then((res) => {
+      console.log(res)
+      const blob = new Blob([res.data], { type: res.headers['content-type'] });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = zoomImgName;
+      link.click();
+      window.URL.revokeObjectURL(link.href);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  };
+
+  // 공지사항 리스트
+  const noticePage = ref<NoticePage>();
+  const noticeList = ref<Notice[]>([]);
+  const getNoticeList = function (params: {'page': number, 'size':number}) {
+    axios({
+    method: "get",
+    url: `${API_URL}/api/notice`,
+    headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+    },
+    params : params,
+  })
+    .then((res) => {
+        noticePage.value = res.data.result;
+        noticeList.value = res.data.result["noticeResList"];
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+  };
   
-    // --------------------------매칭---------------------------
-    // 매칭 대기
-    const isMatching = ref<boolean>(false)
-    // 매칭 완료 여부
-    const isMatchingComplete = ref<boolean>(false) // default false
-    // 미팅방 id
-    const roomId = ref<string>('')
-    // 매칭 대기 시간
-    const formattedTimer = ref("00:00")
-    let timerInterval: any = null
+  // --------------------------매칭---------------------------
+  // 매칭 대기
+  const isMatching = ref<boolean>(false)
+  // 매칭 완료 여부
+  const isMatchingComplete = ref<boolean>(false) // default false
+  // 미팅방 id
+  const roomId = ref<string>('')
+  // 매칭 대기 시간
+  const formattedTimer = ref("00:00")
+  let timerInterval: any = null
 
-    // 타이머 시작
-    function startTimer() {
-      let seconds = 0;
-      timerInterval = setInterval(() => {
-        seconds++
-        formattedTimer.value = formatTime(seconds)
-      }, 1000)
+  // 타이머 시작
+  function startTimer() {
+    let seconds = 0;
+    timerInterval = setInterval(() => {
+      seconds++
+      formattedTimer.value = formatTime(seconds)
+    }, 1000)
+  }
+  
+  // 타이머 종료
+  function resetTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval)
+      timerInterval = null
+      formattedTimer.value = "00:00"
     }
-    
-    // 타이머 종료
-    function resetTimer() {
-      if (timerInterval) {
-        clearInterval(timerInterval)
-        timerInterval = null
-        formattedTimer.value = "00:00"
-      }
-    }
-    
-    // 타이머 포맷
-    function formatTime(seconds: number) {
-      const minutes = Math.floor(seconds / 60)
-      const remainingSeconds = seconds % 60
-      const formattedMinutes = String(minutes).padStart(2, "0")
-      const formattedSeconds = String(remainingSeconds).padStart(2, "0")
-      return `${formattedMinutes}:${formattedSeconds}`
-    }
-    
-    // 매칭 완료
-    const MatchingComplete = function () {
-      isMatchingComplete.value = true
-      isMatching.value = false
-      resetTimer()
-    }
+  }
+  
+  // 타이머 포맷
+  function formatTime(seconds: number) {
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    const formattedMinutes = String(minutes).padStart(2, "0")
+    const formattedSeconds = String(remainingSeconds).padStart(2, "0")
+    return `${formattedMinutes}:${formattedSeconds}`
+  }
+  
+  // 매칭 완료
+  const MatchingComplete = function () {
+    isMatchingComplete.value = true
+    isMatching.value = false
+    resetTimer()
+  }
 
-    // 매칭 요청
-    const meetingRegister = function () {
-      startTimer()
-      if (isMatching.value) {
-        console.log('이미 매칭 중입니다')
-        return
-      }
-      axios({
-        method: "post",
-        url: `${VITE_SERVER_API_URL}/api/meeting/register`,
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-      .then((res) => {
-        console.log(res)
-        roomId.value = res.data.result
-        isMatching.value = true
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+  // 매칭 요청
+  const meetingRegister = function () {
+    startTimer()
+    if (isMatching.value) {
+      console.log('이미 매칭 중입니다')
+      return
     }
+    axios({
+      method: "post",
+      url: `${VITE_SERVER_API_URL}/api/meeting/register`,
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+    .then((res) => {
+      console.log(res)
+      roomId.value = res.data.result
+      isMatching.value = true
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
 
-    // 매칭 수락
-    const meetingAccept = function () {
-      isMatching.value = false
-      isMatchingComplete.value = false
-      resetTimer()
-      axios({
-        method: "post",
-        url: `${VITE_SERVER_API_URL}/api/meeting/accept`,
-        params: {
-          room: roomId.value,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-      .then((res) => {
-        console.log(res)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-    }
-    
-    // 매칭 거절
-    const meetingExit = function () {
-      isMatching.value = false
-      isMatchingComplete.value = false
-      resetTimer()
-      axios({
-        method: "delete",
-        url: `${VITE_SERVER_API_URL}/api/meeting/exit`,
-        params: {
-          room: roomId.value,
-        },
-        headers: {
-          Authorization: `Bearer ${getAccessToken()}`,
-        },
-      })
-      .then((res) => {
-        console.log(res)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-    }
+  // 매칭 수락
+  const meetingAccept = function () {
+    isMatching.value = false
+    isMatchingComplete.value = false
+    resetTimer()
+    axios({
+      method: "post",
+      url: `${VITE_SERVER_API_URL}/api/meeting/accept`,
+      params: {
+        room: roomId.value,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+    .then((res) => {
+      console.log(res)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
+  
+  // 매칭 거절
+  const meetingExit = function () {
+    isMatching.value = false
+    isMatchingComplete.value = false
+    resetTimer()
+    axios({
+      method: "delete",
+      url: `${VITE_SERVER_API_URL}/api/meeting/exit`,
+      params: {
+        room: roomId.value,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+    .then((res) => {
+      console.log(res)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
 
-    // 매칭 완료시 미팅방으로 이동시키기
-    const meetingRoomToken = ref<String>('')
-    const pushMeetingRoom = function (token: String) {
-      meetingRoomToken.value = token
-      router.push({ name: "video-chat"})
-    }
+  // 매칭 완료시 미팅방으로 이동시키기
+  const meetingRoomToken = ref<String>('')
+  const pushMeetingRoom = function (token: String) {
+    meetingRoomToken.value = token
+    router.push({ name: "video-chat"})
+  }
 
   return {
       setAccessToken,
