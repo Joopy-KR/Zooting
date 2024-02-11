@@ -8,7 +8,7 @@
 				Matching...
       </div>
       <div class="matching__timer">
-				{{ store.formattedTimer }}      
+				{{ store.formattedTimer }}
 			</div>
 			<button class="btn-hover color-11" @click="meetingExit">Cancel</button>
     </div>

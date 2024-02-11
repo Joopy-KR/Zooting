@@ -3,7 +3,7 @@
     <div>
       <div class="notice-title">공지사항</div>
     </div>
-    <NoticeList :noticeList="noticeList" @notice-contents="getNoticeDetail" @open-detail-modal="openDetailModal"/>
+    <NoticeList class="word" :noticeList="noticeList" @notice-contents="getNoticeDetail" @open-detail-modal="openDetailModal"/>
     <div class="page-number-list-container">
       <ul class="page-number-list-ul">
         <li v-for="idx in totalPage" class="page-number-list-li">
@@ -119,4 +119,5 @@ function openDetailModal(data : Boolean) {
 .page-number-list-li {
   @apply float-left pr-3.5
 }
+
 </style>

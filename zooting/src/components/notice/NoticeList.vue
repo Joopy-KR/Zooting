@@ -69,9 +69,8 @@ const getNoticeContents = (item : Notice) => {
 }
 .notice-list__content {
   @apply text-sm text-gray-500;
+
 }
-
-
 button {
   @apply rounded bg-white px-4 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 h-8;
 }
