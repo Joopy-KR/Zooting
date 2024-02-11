@@ -215,7 +215,7 @@ const getHeartClass = (gender: string) => (
   @apply mt-3 mb-1 mx-3 flex items-center;
 }
 .search__input {
-  @apply border border-gray-300 shadow-sm rounded-3xl text-sm w-full; 
+  @apply border border-gray-300 shadow-sm rounded-3xl text-sm w-full;  
   padding: 10px 18px 10px 45px;
 }
 .search__toggle {

@@ -1,5 +1,5 @@
 <template>
-  <TransitionRoot as="template" :show="store.isMatchingComplete && enterRoomTimeLimit < 100">
+  <TransitionRoot as="template" :show="isMatchingComplete">
     <Dialog as="div" class="relative z-10">
       <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
@@ -38,28 +38,29 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { CheckIcon } from '@heroicons/vue/24/outline'
 import { useAccessTokenStore } from '../stores/store'
 
 const store = useAccessTokenStore()
 const enterRoomTimeLimit = ref<any>(0)
+const isMatchingComplete = ref<boolean>(false)
 
-onMounted(() => {
-  const intervalId = setInterval(() => {
-    enterRoomTimeLimit.value += 0.5
+watch(()=> store.isMatchingComplete, (update)=>{
+  isMatchingComplete.value = update
 
-    if (enterRoomTimeLimit.value >= 100) {
-      clearInterval(intervalId)
-      meetingAccept()
-    }
-  }, 20)
+  if (store.isMatchingComplete) {
+    const intervalId = setInterval(() => {
+      enterRoomTimeLimit.value += 0.5
+  
+      if (enterRoomTimeLimit.value >= 100) {
+        clearInterval(intervalId)
+        store.meetingAccept()
+      }
+    }, 20)
+  }
 })
-
-const meetingAccept = () => {
-  store.meetingAccept()
-}
 
 const meetingExit = () => {
   store.meetingExit()

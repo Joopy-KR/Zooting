@@ -810,7 +810,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         formattedTimer.value = "00:00"
       }
     }
-
+    
     // 타이머 포맷
     function formatTime(seconds: number) {
       const minutes = Math.floor(seconds / 60)
@@ -820,6 +820,13 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       return `${formattedMinutes}:${formattedSeconds}`
     }
     
+    // 매칭 완료
+    const MatchingComplete = function () {
+      isMatchingComplete.value = true
+      isMatching.value = false
+      resetTimer()
+    }
+
     // 매칭 요청
     const meetingRegister = function () {
       startTimer()
@@ -949,5 +956,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       isMatchingComplete,
       meetingAccept,
       meetingExit,
+      MatchingComplete,
   };
 });

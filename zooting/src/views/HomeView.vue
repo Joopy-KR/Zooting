@@ -17,7 +17,7 @@ const dmStore = useStore()
 const props = defineProps<{
   dmRoomId: number
 }>()
-const emit = defineEmits(['receiveMessage', 'matchingComplete'])
+const emit = defineEmits(['receiveMessage'])
 
 const userInfo = ref(store.userInfo)
 
@@ -68,8 +68,7 @@ const onConnected = () => {
     } 
     // 매칭 완료
     else if (res.type === 'match') {
-      emit('matchingComplete', res.roomId)
-      store.isMatchingComplete = true
+      store.MatchingComplete()
     }
     // 매칭 수락
     else if (res.type === 'openviduToken') {

@@ -48,7 +48,7 @@
           <div class="py-2">
             <div class="block px-4 py-2 text-sm text-red-700 cursor-pointer hover:bg-gray-100" @click="friendDelete(item.nickname)">친구 삭제</div>
           </div>
-      </div>
+        </div>
       </li>
     </ul>
   </div>
