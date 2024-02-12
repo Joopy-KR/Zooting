@@ -262,7 +262,9 @@ public class MemberController {
     @PreAuthorize("hasAnyRole('USER')")
     @PatchMapping("/points")
     public ResponseEntity<BaseResponse<String>> addPoints(
-            @AuthenticationPrincipal UserDetails userDetails, PointsReq pointsReq) {
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody PointsReq pointsReq) {
+        System.out.println(pointsReq.points());
         memberService.addPoints(userDetails.getUsername(), pointsReq.points());
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
