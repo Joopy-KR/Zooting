@@ -36,6 +36,7 @@ const props = defineProps({
   publisher: Object,
   subscribers: Object,
 	drawData: Object,
+  currentDrawingUserId: Object
 })
 
 let painting = false;
@@ -47,20 +48,41 @@ onMounted(() => {
     canvas.width = 1000;
     canvas.height = 700;
     ctx.strokeStyle = "#2c2c2c";
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.5; 
 
     function startPainting() {
+        if (props.currentDrawingUserId) {
+        alert('다른 사용자가 이미 그림을 그리고 있습니다. 잠시 기다려주세요.');
+        return;
+        }
+
+        // 그림 그리기 시작 알림
+        props.session?.signal({
+          type: 'drawingStart',
+          data: JSON.stringify({ userId: props.session.connection.connectionId }),
+        });
+
         painting = true;
     }
 
     function stopPainting() {
         painting = false;
+        props.session?.signal({
+          type: 'drawingEnd',
+          data: JSON.stringify({ userId: props.session.connection.connectionId }),
+        });
     }
 
     function onMouseMove(event: any) {
         const x = event.offsetX;
         const y = event.offsetY;
-				const data = { isPainting: painting, x: event.offsetX, y: event.offsetY, color: ctx.strokeStyle, lineWidth: ctx.lineWidth }
+				const data = { 
+          userId: props.session?.connection.connectionId,
+          isPainting: painting, 
+          x: event.offsetX, 
+          y: event.offsetY, 
+          color: ctx.strokeStyle, 
+          lineWidth: ctx.lineWidth }
         if(!painting) {
             ctx.beginPath();
             ctx.moveTo(x, y);
@@ -119,11 +141,9 @@ watch(() => props.drawData, (newVal, oldVal) => {
       if (!newVal.isPainting) {
 				ctx.beginPath()
 				ctx.moveTo(newVal.x, newVal.y)
-				console.log(11)
 			} else {
 				ctx.lineTo(newVal.x, newVal.y); // 선 그리기
 				ctx.stroke(); // 선 완성
-				console.log(22)
 			}
     }
   }

@@ -47,6 +47,7 @@
       :publisher="publisher"
       :subscribers="subscribers"
       :drawData="drawData"
+      :currentDrawingUserId="currentDrawingUserId"
       v-if="currentStatus === 'CatchMind'"
       />
 
@@ -113,7 +114,7 @@ const isLoaded = ref(false)
 // 현재 진행중인 컴포넌트
 const currentStatus = ref<String>('')  // 현재 진행중인 프로그램 (FreeTalk, CatchMind 등) 
 const statusInfo = ref<any>('')  // 사이드바에 나타나는 현재 진행중인 프로그램
-currentStatus.value = 'FreeTalk'
+currentStatus.value = 'CatchMind'
 
 // 카메라 사이즈 조정
 const cameraHeight = ref<Number>(0)
@@ -521,6 +522,7 @@ const publisher = ref(undefined);
 const subscribers = ref([]);
 const currentChat = ref([])
 const drawData = ref(undefined)
+const currentDrawingUserId = ref(undefined)
 
 
 const joinSession = () => {
@@ -568,6 +570,20 @@ const joinSession = () => {
 
   session.value.on('signal:drawing', (event) => {
     drawData.value = JSON.parse(event.data);
+  })
+
+  session.value.on('signal:drawingStart', (event) => {
+    const data = JSON.parse(event.data);
+    currentDrawingUserId.value = data.userId;
+  });
+
+  session.value.on('signal:drawingEnd', (event) => {
+    console.log(event.data)
+    console.log(currentDrawingUserId.value)
+    const data = JSON.parse(event.data);
+    if (currentDrawingUserId.value === data.userId) {
+      currentDrawingUserId.value = undefined
+    }
   })
 
   // 현재 참가중인 동물목록에 자신 넣어주기

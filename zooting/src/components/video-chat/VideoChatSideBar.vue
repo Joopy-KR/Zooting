@@ -126,7 +126,7 @@ const send = function() {
 }
 
 // 음소거 기능
-const is_muted = ref(true)
+const is_muted = ref(false)
 
 const doMute = function() {
   console.log(props.publisher.publishAudio)
