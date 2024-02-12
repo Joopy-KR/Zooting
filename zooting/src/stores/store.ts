@@ -607,7 +607,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // 유저 검색
-  const searchResult = ref<Search | null>(null)
+  const searchResult = ref<Search | null>(null);
   type SearchParams = { page: number; size: number; sort: string[]; nickname: string } | { page: number; size: number; sort: string[] };
 
   const userSearch = function (params: SearchParams) {
@@ -620,8 +620,14 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
-        searchResult.value = res.data.result;
+        if (params.page === 0) {
+          searchResult.value = res.data.result;
+        } else {
+          if (searchResult.value) {
+            searchResult.value.currentPage = res.data.result.currentPage;
+            searchResult.value.searchResList = [...searchResult.value.searchResList, ...res.data.result.searchResList]
+          }
+        }
       })
       .catch((err) => {
         console.log(err);

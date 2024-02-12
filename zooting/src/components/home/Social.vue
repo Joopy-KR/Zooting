@@ -2,9 +2,11 @@
   <div class="social__container">
     <Search 
       @search-state="searchState"
+      @search-query="handleSearchQuery"
     />
     <SearchResult
     v-show="isSearching"
+    :search-query="searchQuery"
     />
     <SocialTabBar 
       v-show="!isSearching"
@@ -35,6 +37,7 @@ const tabs = ref<{name: string, count: any}[]>([
   { name: '차단', count: 0 },
 ])
 const isSearching = ref<boolean>(false)
+const searchQuery = ref<string>('')
 
 onMounted(async () => {
   store.getFriendList()
@@ -69,6 +72,10 @@ const handleTabSelected = (currentTab: string) => {
 
 const searchState = (bool: boolean) => {
   isSearching.value = bool
+}
+
+const handleSearchQuery = (query: string) => {
+  searchQuery.value = query
 }
 </script>
 
