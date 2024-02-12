@@ -57,7 +57,7 @@ const selectTab = (selectedTab: string) => {
   position: relative;
 }
 .tab-bar__item--active {
-  @apply border-indigo-500 text-indigo-600;
+  @apply border-[#A297F6] text-[#8072EF];
 }
 .tab-bar__item--inactive {
   @apply border-transparent text-gray-400 hover:border-gray-200 hover:text-gray-500;
@@ -67,7 +67,7 @@ const selectTab = (selectedTab: string) => {
   position: absolute;
 }
 .tab-bar__text--active {
-  @apply bg-indigo-100 text-indigo-600;
+  @apply bg-indigo-50 text-[#8072EF];
 }
 .tab-bar__text--inactive {
   @apply bg-gray-100 text-gray-900;

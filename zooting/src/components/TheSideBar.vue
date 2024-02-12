@@ -84,7 +84,7 @@ const isLoggedIn = computed(() => store.isLogin)
 
 const isSideTabOpen = ref<boolean>(false)
 const currentSideTab = ref<string | null>(null)
-const DEFAULT_PAGE_SIZE = 6
+const DEFAULT_PAGE_SIZE = 2 // MEMO 매칭 인원
 
 const userInfo = ref(store.userInfo)
 
@@ -217,8 +217,8 @@ const currentDmRoomId = (dmRoomId: number) => {
 }
 
 .side-tab {
-  @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 rounded-tr-3xl rounded-br-3xl z-20;
-  width: 450px;
+  @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 z-20;
+  width: 430px;
 }
 
 .side-tab-transition-enter-active,

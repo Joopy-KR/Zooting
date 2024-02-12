@@ -1,6 +1,6 @@
 <template>
-  <TransitionRoot as="template" :show="true">
-    <Dialog as="div" class="relative z-10" @close="$emit('handleClose')">
+  <TransitionRoot as="template" :show="isMatchingComplete">
+    <Dialog as="div" class="relative z-10">
       <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
       </TransitionChild>
@@ -16,7 +16,7 @@
                 <div class="mt-3 text-center sm:mt-5">
                   <DialogTitle as="h3" class="text-2xl font-semibold leading-6 text-gray-900 ">매칭 완료</DialogTitle>
                   <div class="mt-5">
-                    <p class="text-lg text-gray-500">방에 입장하시겠습니까? </p>
+                    <p class="text-lg text-gray-500">곧 입장해요 준비되셨나요?</p>
                   </div>
                 </div>
               </div>
@@ -25,9 +25,8 @@
                      :style="{ width : enterRoomTimeLimit +'%'}">
                 </div>
               </div>
-              <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                <button class="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2" @click="meetingAccept">수락</button>
-                <button class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="meetingExit">거부</button>
+              <div class="mt-5 sm:mt-6">
+                <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="meetingExit">취소</div>
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -39,65 +38,31 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import axios from 'axios'
+import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { CheckIcon } from '@heroicons/vue/24/outline'
-import { useAccessTokenStore } from '../../stores/store'
-const { VITE_SERVER_API_URL } = import.meta.env
+import { useAccessTokenStore } from '../stores/store'
 
 const store = useAccessTokenStore()
-const props = defineProps<{
-  roomId: string
-  open: boolean
-}>()
-const emit = defineEmits(['handleClose'])
+const enterRoomTimeLimit = ref<any>(0)
+const isMatchingComplete = ref<boolean>(false)
 
-const enterRoomTimeLimit = ref(0)
+watch(()=> store.isMatchingComplete, (update) => {
+  isMatchingComplete.value = update
 
-onMounted(()=>{
-  setInterval(()=>{
-    enterRoomTimeLimit.value += 0.2
-  }, 20)
+  if (store.isMatchingComplete) {
+    const intervalId = setInterval(() => {
+      enterRoomTimeLimit.value += 0.5
+  
+      if (enterRoomTimeLimit.value >= 100) {
+        clearInterval(intervalId)
+        store.meetingAccept()
+      }
+    }, 20)
+  }
 })
 
-const meetingAccept = function () {
-  axios({
-    method: "post",
-    url: `${VITE_SERVER_API_URL}/api/meeting/accept`,
-    params: {
-      room: props.roomId
-    },
-    headers: {
-      Authorization: `Bearer ${store.getAccessToken()}`,
-    },
-  })
-  .then((res) => {
-    console.log(res)
-    emit('handleClose')
-  })
-  .catch((err) => {
-    console.log(err)
-  })
-}
-
-const meetingExit = function () {
-  axios({
-    method: "delete",
-    url: `${VITE_SERVER_API_URL}/api/meeting/exit`,
-    params: {
-      room: props.roomId
-    },
-    headers: {
-      Authorization: `Bearer ${store.getAccessToken()}`,
-    },
-  })
-  .then((res) => {
-    console.log(res)
-    emit('handleClose')
-  })
-  .catch((err) => {
-    console.log(err)
-  })
+const meetingExit = () => {
+  store.meetingExit()
 }
 </script>

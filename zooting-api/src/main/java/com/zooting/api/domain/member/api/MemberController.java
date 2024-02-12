@@ -256,6 +256,22 @@ public class MemberController {
         );
 
     }
+    @Operation(
+            summary = "내 포인트 추가"
+    )
+    @PreAuthorize("hasAnyRole('USER')")
+    @PatchMapping("/points")
+    public ResponseEntity<BaseResponse<String>> addPoints(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody PointsReq pointsReq) {
+        System.out.println(pointsReq.points());
+        memberService.addPoints(userDetails.getUsername(), pointsReq.points());
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                "포인트 추가 완료"
+        );
+
+    }
 
 
     @Operation(summary = "내 배경이미지 변경")

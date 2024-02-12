@@ -7,7 +7,9 @@
           <div class="friend-list__item__chat">
             <div class="flex items-center gap-4">
               <!-- 프로필 이미지 -->
-              <img class="friend-list__img" :src="getProfileImage(item.animal)" alt="profile">
+              <RouterLink :to="getProfileLink(item.nickname)">
+                <img class="friend-list__img" :src="getProfileImage(item.animal)" alt="profile">
+              </RouterLink>
               <div class="font-medium">
                 <div class="flex items-center">
                   {{ item.nickname }}
@@ -18,8 +20,6 @@
                     </svg>
                   </div>
                 </div>
-                <!-- 현재 접속 상태 -->
-                <div class="friend-list__content">Content</div>
               </div>
             </div>
           </div>
@@ -48,7 +48,7 @@
           <div class="py-2">
             <div class="block px-4 py-2 text-sm text-red-700 cursor-pointer hover:bg-gray-100" @click="friendDelete(item.nickname)">친구 삭제</div>
           </div>
-      </div>
+        </div>
       </li>
     </ul>
   </div>
@@ -152,10 +152,6 @@ const isNewSender = computed(() => (email: string) => dmStore.newMessage.include
 .friend-list__img {
   @apply w-10 h-10 rounded-full;
 }
-.friend-list__content {
-  @apply text-sm text-gray-500;
-}
-
 .buttons {
   @apply flex items-center relative;
 }
@@ -169,6 +165,6 @@ const isNewSender = computed(() => (email: string) => dmStore.newMessage.include
   @apply relative w-6 h-6 text-gray-800 cursor-pointer;
 }
 .menu {
-  @apply absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 left-[470px];
+  @apply absolute z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 left-[470px] p-0;
 }
 </style>

@@ -97,11 +97,14 @@ declare interface DmItem {
     sender: string;
     message: string;
     files: DmFile[] | [];
+    createdAt: string;
 }
 
 declare interface DmFile {
+    S3Id: string;
     imgUrl: string;
     thumbnailUrl: string;
+    fileName: string;
 }
 
 declare interface Notice {
@@ -118,12 +121,26 @@ declare interface NoticePage {
 }
 
 declare interface Notify {
-    title: string,
-    message: any,
+    title: string;
+    message: any;
+}
+
+declare interface Search {
+    searchResList: {
+        nickname: string;
+        gender: string;
+    }[];
+    currentPage: number;
+    totalPage: number;
+}
+
+
+declare interface PointsReq {
+    points : number;
 }
 
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
-    PersonalityList, Personality, Friend, MaskReq, ReportUserReq,
-    DM, DmItem, FriendRequest, Notice, NoticePage, Notify, Background
+    PersonalityList, Personality, Friend, MaskReq, ReportUserReq, PointsReq
+    DM, DmItem, FriendRequest, Notice, NoticePage, Notify, Background, Search
 };
