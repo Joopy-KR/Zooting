@@ -28,7 +28,7 @@ public class MemberHeartbeatController {
         template.convertAndSend("/api/sub/" + request.memberId(), heartcheck);
     }
 
-    @Scheduled(cron = "0 0/2 * * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void checkAllMemberOnline() {
         memberHeartbeatService.updateMemberStatus();
     }

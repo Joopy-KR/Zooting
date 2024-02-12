@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
     private static final SocketType SOCKET_TYPE = SocketType.HEARTBEAT;
     private static final String HEARTBEAT_HASH = "heartbeat:";
-    private static final Long TIME_TO_LIVE = 120L;
+    private static final Long TIME_TO_LIVE = 30L;
     private final FriendRepository friendRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
