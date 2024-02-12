@@ -9,6 +9,7 @@ import com.zooting.api.global.common.SocketBaseDtoRes;
 import com.zooting.api.global.common.SocketType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,8 @@ import java.util.stream.Collectors;
 public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
     private static final SocketType SOCKET_TYPE = SocketType.HEARTBEAT;
     private static final String HEARTBEAT_HASH = "heartbeat:";
-    private static final Long TIME_TO_LIVE = 30L;
+    @Value("${heartbeat.interval.time}")
+    private Long TIME_TO_LIVE;
     private final FriendRepository friendRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
