@@ -99,7 +99,6 @@ const onConnected = () => {
             startHeartbeat();
           }
           const onlineFriends: String[] = res.onlineFriends;
-          console.log(onlineFriends);
           for (const friend of store.friendList) {
             friend.isOnline = onlineFriends.includes(friend.nickname);
           }
