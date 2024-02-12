@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MatchingAlgorithm {
-    private final int MEETING_CAPACITY = 4;
+    private final int MEETING_CAPACITY = 2;
     private final int GENDER_CAPACITY = MEETING_CAPACITY / 2;
 
     public boolean isUnderMeetingCapacity(WaitingRoom waitingRoom){
