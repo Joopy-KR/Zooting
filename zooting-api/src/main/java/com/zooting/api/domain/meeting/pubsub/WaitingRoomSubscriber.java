@@ -73,7 +73,7 @@ public class WaitingRoomSubscriber implements MessageListener {
             String email = meetingMemberDto.getEmail();
             RedisMatchRes redisMatchRes = new RedisMatchRes(waitingRoom.getWaitingRoomId());
             log.info("[onMessage] email: {} {}", email, redisMatchRes.roomId());
-            webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.DM, waitingRoom.getWaitingRoomId()));
+            webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.MATCH, waitingRoom.getWaitingRoomId()));
         }
     }
 

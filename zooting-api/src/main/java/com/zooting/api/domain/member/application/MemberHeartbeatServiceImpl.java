@@ -30,32 +30,22 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
 
     @Transactional(readOnly = true)
     public SocketBaseDtoRes<HeartBeatRes> loadOnlineFriends(HeartBeatReq heartBeatReq) {
-        var online = redisTemplate.getExpire(HEARTBEAT_HASH + heartBeatReq.memberId(), TimeUnit.SECONDS);
+        var online = redisTemplate.getExpire(HEARTBEAT_HASH + heartBeatReq.nickname(), TimeUnit.SECONDS);
 
         Set<String> onlineFriends;
         // 처음 접속하는 경우
         if (Objects.isNull(online) || online < TIME_TO_LIVE) {
             onlineFriends = checkFriendOnline(heartBeatReq);
-            addOnlineFriends(heartBeatReq, onlineFriends);
         } // 저장되어 있다면 저장된 데이터 호출하고 expire 증가
         else {
             onlineFriends = getOnlineFriends(heartBeatReq);
         }
-
-        redisTemplate.expire(HEARTBEAT_HASH + heartBeatReq.memberId(), TIME_TO_LIVE * 3, TimeUnit.SECONDS);
+        redisTemplate.expire(HEARTBEAT_HASH + heartBeatReq.nickname(), TIME_TO_LIVE * 3, TimeUnit.SECONDS);
         return new SocketBaseDtoRes<>(SOCKET_TYPE, new HeartBeatRes(onlineFriends.stream().toList()));
     }
 
-    private void addOnlineFriends(HeartBeatReq heartBeatReq, Set<String> onlineFriends) {
-        String key = HEARTBEAT_HASH + heartBeatReq.memberId();
-        // 각 원소를 Set에 추가
-        for (String friend : onlineFriends) {
-            redisTemplate.opsForSet().add(key, friend);
-        }
-    }
-
     private Set<String> getOnlineFriends(HeartBeatReq heartBeatReq) {
-        var result = redisTemplate.opsForSet().members(HEARTBEAT_HASH + heartBeatReq.memberId());
+        var result = redisTemplate.opsForSet().members(HEARTBEAT_HASH + heartBeatReq.nickname());
         if (Objects.isNull(result)) return Set.of();
         return result.stream().map(Object::toString).collect(Collectors.toSet());
     }
@@ -65,12 +55,16 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         Set<String> onlineFriends = new HashSet<>();
         var friends = friendRepository.findFriendByFollower(heartBeatReq.memberId());
         for (var friend : friends) {
-            var check = redisTemplate.getExpire(HEARTBEAT_HASH + friend.getFollowing());
+            var check = redisTemplate.getExpire(HEARTBEAT_HASH + friend.getFollowing().getNickname());
             // 친구가 접속해 있는 경우 내가 접속해 있다는 것도 알린다.
             if (Objects.nonNull(check) && check >= TIME_TO_LIVE) {
                 onlineFriends.add(friend.getFollowing().getNickname());
-                redisTemplate.opsForSet().add(HEARTBEAT_HASH + friend.getFollowing(), heartBeatReq.nickname());
+                redisTemplate.opsForSet().add(HEARTBEAT_HASH + friend.getFollowing().getNickname(), heartBeatReq.nickname());
+                redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.nickname(), friend.getFollowing().getNickname());
             }
+        }
+        if (onlineFriends.isEmpty()) {
+            redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.nickname(), heartBeatReq.nickname());
         }
         return onlineFriends;
     }
@@ -78,34 +72,38 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
     public void updateMemberStatus() {
         // 접속 해제한 유저 정보 불러오기
         AccessMemberStatus accessMemberStatus = updateOfflineMemberStatus();
-        log.info("online: {}, offline: {}", accessMemberStatus.onlineMemberIds().size(), accessMemberStatus.offlineMemberIds().size());
+        log.info("online: {}, offline: {}", accessMemberStatus.onlineMembers().size(), accessMemberStatus.offlineMembers().size());
         // 친구 정보에서 삭제 처리하기
         updateOnlineMemberStatus(accessMemberStatus);
     }
 
     private void updateOnlineMemberStatus(AccessMemberStatus accessMemberStatus) {
-        for (var onlineMember : accessMemberStatus.onlineMemberIds()) {
-            redisTemplate.opsForSet().remove(HEARTBEAT_HASH + onlineMember, accessMemberStatus.offlineMemberIds());
+        if (accessMemberStatus.offlineMembers().isEmpty()) return;
+
+        for (var onlineMember : accessMemberStatus.onlineMembers()) {
+            var removed = redisTemplate.opsForSet().remove(HEARTBEAT_HASH + onlineMember,
+                    accessMemberStatus.offlineMembers().toArray(new String[0]));
         }
     }
 
     private AccessMemberStatus updateOfflineMemberStatus() {
-        var memberIds = redisTemplate.keys(HEARTBEAT_HASH); // 저장된 멤버의 키 로드
-        if (Objects.isNull(memberIds) || memberIds.isEmpty())
+        var hashIds = redisTemplate.keys(HEARTBEAT_HASH + "*"); // 저장된 멤버의 키 로드
+        if (Objects.isNull(hashIds) || hashIds.isEmpty())
             return new AccessMemberStatus(List.of(), List.of());
 
-        List<String> onlineMemberIds = new ArrayList<>();
-        List<String> offlineMemberIds = new ArrayList<>();
-        for (var memberId : memberIds) {
-            var expireTime = redisTemplate.getExpire(HEARTBEAT_HASH + memberId);
+        List<String> onlineMembers = new ArrayList<>();
+        List<String> offlineMembers = new ArrayList<>();
+        for (var hashId : hashIds) {
+            var expireTime = redisTemplate.getExpire(hashId);
+            var nickname = hashId.substring(HEARTBEAT_HASH.length());
             if (Objects.isNull(expireTime) || expireTime < TIME_TO_LIVE) {
-                offlineMemberIds.add(memberId);
+                offlineMembers.add(nickname);
             } else {
-                onlineMemberIds.add(memberId);
+                onlineMembers.add(nickname);
             }
         }
         // 오프라인 유저의 데이터 삭제
-        redisTemplate.delete(offlineMemberIds.stream().map(s -> HEARTBEAT_HASH + s).toList());
-        return new AccessMemberStatus(onlineMemberIds, offlineMemberIds);
+        redisTemplate.delete(offlineMembers.stream().map(s -> HEARTBEAT_HASH + s).toList());
+        return new AccessMemberStatus(onlineMembers, offlineMembers);
     }
 }

@@ -1,5 +1,5 @@
 package com.zooting.api.global.common;
 
 public enum SocketType {
-    DM, MATCH, OPENVIDU, HEARTBEAT
+    MESSAGE, MATCH, OPENVIDU, HEARTBEAT
 }
