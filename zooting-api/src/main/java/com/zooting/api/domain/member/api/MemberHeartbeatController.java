@@ -1,5 +1,6 @@
 package com.zooting.api.domain.member.api;
 
+import com.zooting.api.domain.friend.dao.FriendRepository;
 import com.zooting.api.domain.member.application.MemberHeartbeatService;
 import com.zooting.api.domain.member.dto.request.HeartBeatReq;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,17 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "멤버 접속 상태", description = "멤버 접속 상태 Socket API")
 public class MemberHeartbeatController {
-    private final String JOB_NAME = "CHECK_HEARTBEAT";
     private final SimpMessageSendingOperations template;
     private final MemberHeartbeatService memberHeartbeatService;
+    private final FriendRepository friendRepository;
 
     @Operation(summary = "Heartbeat 메시지 수신")
     @MessageMapping("/member/heartbeat")
     public void memberHeartbeatCheck(HeartBeatReq request) {
+        var heartcheck = memberHeartbeatService.loadOnlineFriends(request);
+        template.convertAndSend("/api/sub" + request.memberId(), heartcheck);
     }
 
     @Scheduled(cron = "0 0/2 * * * ?")
     public void checkAllMemberOnline() {
-        var offLineMembers = memberHeartbeatService.checkAllMemberOnline();
     }
 }

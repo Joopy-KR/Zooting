@@ -1,10 +1,8 @@
 package com.zooting.api.domain.member.dto.response;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 public record HeartBeatRes(
-        String nickname,
-        boolean status,
-        LocalDateTime time
+        List<String> onlineFriends
 ) {
 }
