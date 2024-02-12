@@ -29,9 +29,10 @@
 
 <script setup lang="ts">
 import UserVideo from '@/components/video-chat/UserVideo.vue'
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 
-const props = defineProps({
+const { drawData } = defineProps({
+	drawData: Object,
   session: Object,
   publisher: Object,
   subscribers: Object,
@@ -80,19 +81,6 @@ onMounted(() => {
 			.catch(error => console.error(error));
 		}
 
-		// 그리기 수신
-		props.session?.on('signal:drawing', (event) => {
-      const data = JSON.parse(event.data);
-
-      // 수신된 그림 데이터로 캔버스에 그림을 그립니다.
-      ctx.beginPath(); // 그리기 시작
-      ctx.strokeStyle = data.color; // 수신된 색상으로 설정
-      ctx.lineWidth = data.lineWidth; // 수신된 선 굵기로 설정
-      ctx.moveTo(data.x, data.y); // 이동할 시작점
-      ctx.lineTo(data.x, data.y); // 선 그리기
-      ctx.stroke(); // 선 완성
-    });
-
     canvas.addEventListener("mousemove", onMouseMove);
     canvas.addEventListener("mousedown", startPainting);
     canvas.addEventListener("mouseup", stopPainting);
@@ -118,6 +106,26 @@ onUnmounted(() => {
   const canvas: any = document.getElementById("jsCanvas")
 	canvas.remove()
 })
+
+watch(drawData, (newVal, oldVal) => {
+	console.log('여기까진 옴')
+  if (newVal) {
+    // 캔버스에 그림을 그리는 로직...
+    const canvas = document.getElementById("jsCanvas");
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+			console.log(newVal)
+      // 예: ctx.beginPath(); ctx.moveTo(newVal.x, newVal.y); ...
+			// 수신된 그림 데이터로 캔버스에 그림을 그립니다.
+			// ctx.beginPath(); // 그리기 시작
+			// ctx.strokeStyle = data.color; // 수신된 색상으로 설정
+			// ctx.lineWidth = data.lineWidth; // 수신된 선 굵기로 설정
+			// ctx.moveTo(data.x, data.y); // 이동할 시작점
+			// ctx.lineTo(data.x, data.y); // 선 그리기
+			// ctx.stroke(); // 선 완성
+    }
+  }
+}, { deep: true });
 
 </script>
 

@@ -46,6 +46,7 @@
       :session="session"
       :publisher="publisher"
       :subscribers="subscribers"
+      :drawData="drawData"
       v-if="currentStatus === 'CatchMind'"
       />
 
@@ -519,6 +520,7 @@ const mainStreamManager = ref(undefined);
 const publisher = ref(undefined);
 const subscribers = ref([]);
 const currentChat = ref([])
+const drawData = ref(undefined)
 
 
 const joinSession = () => {
@@ -563,6 +565,10 @@ const joinSession = () => {
     }
     currentChat.value.push(chatData)
   });
+
+  session.value.on('signal:drawing', (event) => {
+    drawData.value = JSON.parse(event.data);
+  })
 
   // 현재 참가중인 동물목록에 자신 넣어주기
   currentAnimals.value.push(myUserAnimal.value)
