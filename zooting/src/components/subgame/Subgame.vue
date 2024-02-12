@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="canvas-size background-image" id="game" v-if = "pressStart" >
-      <span id="description" class="absolute align-middle animate__shakeY neon drag-prevent">Press Spacebar</span>
+      <span id="description" class="absolute align-middle animate__shakeY neon drag-prevent">START</span>
       <span id="record" class="mt-3 ml-3 neon-mini drag-prevent"></span><i id="score" class="ml-2 neon-mini drag-prevent"></i>
-      <canvas id="canvas" class="z-40 drag-prevent"></canvas>
+      <canvas id="canvas" class="z-50 drag-prevent"></canvas>
     </div>
   </div>
 </template>

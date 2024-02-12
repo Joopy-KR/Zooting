@@ -7,7 +7,7 @@
     </div>
     <div class="matching" v-show="store.isMatching">
       <div class="matching__timer">
-        {{ store.formattedTimer }}      
+        {{ store.formattedTimer }}
       </div>
     </div>
   </div>
@@ -88,7 +88,7 @@ const meetingExit = () => {
   box-shadow: 0 4px 15px 0 rgba(65, 132, 234, 0.75);
 }
 .btn-hover.color-2 {
-  background-image: linear-gradient(to right, #eb3941, #f15e64, #e14e53, #e2373f);  
+  background-image: linear-gradient(to right, #eb3941, #f15e64, #e14e53, #e2373f);
   box-shadow: 0 5px 15px rgba(242, 97, 103, .4);
 }
 </style>
