@@ -49,7 +49,7 @@
 
     <!-- Side tab -->
     <transition name="side-tab-transition">
-      <div class="side-tab" v-show="isSideTabOpen" v-click-outside="ClickOustsideTab">
+      <div class="side-tab" v-show="isSideTabOpen">
         <section v-show="currentSideTab == 'messagesTab'" class="h-full">
           <DM
               @close-tab="closeTab"
@@ -175,16 +175,6 @@ const ClickOustsideProfileMenu = (isOutSide: boolean, e: Event) => {
   if (isOutSide) {
     if (e.target !== profileRef.value) {
       isOpenProfileMenu.value = false
-    }
-  }
-}
-
-const tabRef = ref<HTMLElement | null>(null)
-
-const ClickOustsideTab = (isOutSide: boolean, e: Event) => {
-  if (isOutSide) {
-    if ((e.target !== tabRef.value) && (e.target !== profileRef.value)) {
-      closeTab()
     }
   }
 }
