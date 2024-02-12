@@ -95,6 +95,8 @@ dependencies {
     // jackson 날짜 시간설정
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
+    // spring batch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
 }
 
 asciidoctor {

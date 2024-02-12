@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,12 +23,10 @@ public class MemberHeartbeatController {
     @Operation(summary = "Heartbeat 메시지 수신")
     @MessageMapping("/member/heartbeat")
     public void memberHeartbeatCheck(HeartBeatReq request) {
-
     }
 
     @Scheduled(cron = "0 0/2 * * * ?")
-    @Bean(JOB_NAME)
     public void checkAllMemberOnline() {
-
+        var offLineMembers = memberHeartbeatService.checkAllMemberOnline();
     }
 }

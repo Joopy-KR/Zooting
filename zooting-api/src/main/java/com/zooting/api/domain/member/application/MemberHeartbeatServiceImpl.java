@@ -75,7 +75,6 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         if (Objects.isNull(memberIds) || memberIds.isEmpty()) return List.of();
 
         List<String> offLineMemberIds = new ArrayList<>();
-
         LocalDateTime curTime = LocalDateTime.now();
         for (var memberId : memberIds) {
             LocalDateTime accessTime = gson.fromJson((String) redisTemplate.opsForValue().get(HEARTBEAT_HASH + memberId), LocalDateTime.class);
