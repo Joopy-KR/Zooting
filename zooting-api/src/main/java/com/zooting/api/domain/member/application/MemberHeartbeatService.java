@@ -6,4 +6,5 @@ import com.zooting.api.global.common.SocketBaseDtoRes;
 
 public interface MemberHeartbeatService {
     SocketBaseDtoRes<HeartBeatRes> loadOnlineFriends(HeartBeatReq heartBeatReq);
+    void updateMemberStatus();
 }

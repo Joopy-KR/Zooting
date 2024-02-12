@@ -33,8 +33,8 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         var online = redisTemplate.getExpire(HEARTBEAT_HASH + heartBeatReq.memberId(), TimeUnit.SECONDS);
 
         Set<String> onlineFriends;
-        // 저장되어 있지 않거나 2ttl 이하이면 접속한 다른 유저 정보를 호출
-        if (Objects.isNull(online) || online < 0) {
+        // 처음 접속하는 경우
+        if (Objects.isNull(online) || online < TIME_TO_LIVE) {
             onlineFriends = checkFriendOnline(heartBeatReq);
             addOnlineFriends(heartBeatReq, onlineFriends);
         } // 저장되어 있다면 저장된 데이터 호출하고 expire 증가
@@ -66,29 +66,33 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         var friends = friendRepository.findFriendByFollower(heartBeatReq.memberId());
         for (var friend : friends) {
             var check = redisTemplate.getExpire(HEARTBEAT_HASH + friend.getFollowing());
-            // 친구가 접속해 있는 경우
-            if (Objects.nonNull(check) && check > TIME_TO_LIVE) {
+            // 친구가 접속해 있는 경우 내가 접속해 있다는 것도 알린다.
+            if (Objects.nonNull(check) && check >= TIME_TO_LIVE) {
                 onlineFriends.add(friend.getFollowing().getNickname());
+                redisTemplate.opsForSet().add(HEARTBEAT_HASH + friend.getFollowing(), heartBeatReq.nickname());
             }
         }
         return onlineFriends;
     }
-    public void updateMemberStatus() {
-        AccessMemberStatus accessMemberStatus = updateOfflineMemberStatus();
-        if (Objects.isNull(accessMemberStatus)) return;
 
+    public void updateMemberStatus() {
+        // 접속 해제한 유저 정보 불러오기
+        AccessMemberStatus accessMemberStatus = updateOfflineMemberStatus();
+        log.info("online: {}, offline: {}", accessMemberStatus.onlineMemberIds().size(), accessMemberStatus.offlineMemberIds().size());
+        // 친구 정보에서 삭제 처리하기
         updateOnlineMemberStatus(accessMemberStatus);
     }
 
     private void updateOnlineMemberStatus(AccessMemberStatus accessMemberStatus) {
         for (var onlineMember : accessMemberStatus.onlineMemberIds()) {
-
+            redisTemplate.opsForSet().remove(HEARTBEAT_HASH + onlineMember, accessMemberStatus.offlineMemberIds());
         }
     }
 
     private AccessMemberStatus updateOfflineMemberStatus() {
         var memberIds = redisTemplate.keys(HEARTBEAT_HASH); // 저장된 멤버의 키 로드
-        if (Objects.isNull(memberIds) || memberIds.isEmpty()) return null;
+        if (Objects.isNull(memberIds) || memberIds.isEmpty())
+            return new AccessMemberStatus(List.of(), List.of());
 
         List<String> onlineMemberIds = new ArrayList<>();
         List<String> offlineMemberIds = new ArrayList<>();
