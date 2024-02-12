@@ -9,220 +9,183 @@
       />
     </div>
     <!-- 캐치마인드 게임 -->
-    <div class="catch-mind">
-      <ul class="colours">
-        <li v-for="(color, index) in colors" :key="index" :style="{ backgroundColor: color }" @click="setActiveColour(index)"></li>
-      </ul>
-      <button class="pencil__refresh btn" @click="clearCanvas">Clear</button>
-    </div>
+		<div class="catchMind--body">
+			<canvas id="jsCanvas" class="canvas"></canvas>
+			<div class="controls">
+				<div class="flex flex-col controls__colors" id="jsColors">
+						<div class="controls__color" id="change-black" style="background-color: #2c2c2c;"></div>
+						<div class="controls__color" id="change-red" style="background-color: #FF3B30;"></div>
+						<div class="controls__color" id="change-orange" style="background-color: #FF9500;"></div>
+						<div class="controls__color" id="change-green" style="background-color: #4CD963;"></div>
+						<div class="controls__color" id="change-blue" style="background-color: #0579FF;"></div>
+				</div>
+				<div class="controls__btns">
+					<button id="all-clear">전체 지우기</button>
+				</div>
+			</div>
+		</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import UserVideo from '@/components/video-chat/UserVideo.vue' 
-import { ref, onMounted } from 'vue';
+import UserVideo from '@/components/video-chat/UserVideo.vue'
+import { ref, onMounted, onUnmounted } from 'vue';
 
-defineProps({
+const props = defineProps({
   session: Object,
   publisher: Object,
   subscribers: Object,
-  })
+})
 
-const colors = [
-  "#100c08",
-  "#759BA9",
-  "#77dd77",
-  "#ff6961",
-  "#ffd1dc"
-]
-
-let currentColorIndex = ref(0);
-let drawingCanvas = ref(null);
-let drawingCtx = ref(null);
-let isDrawing = ref(false);
-let newlyUp = ref(false);
-let lastPoint = { x: null, y: null };
+let painting = false;
 
 onMounted(() => {
-  drawingCanvas.value = document.createElement('canvas');
-  drawingCtx.value = drawingCanvas.value.getContext('2d');
-  
-  drawingCanvas.value.width = window.innerWidth;
-  drawingCanvas.value.height = window.innerHeight;
-  drawingCanvas.value.style.position = 'fixed';
-  drawingCanvas.value.style.left = '0';
-  drawingCanvas.value.style.top = '0';
-  drawingCanvas.value.style.zIndex = '1';
-  
-  document.body.appendChild(drawingCanvas.value);
-  
-  document.addEventListener('mousedown', handleMouseDown);
-  document.addEventListener('mouseup', handleMouseUp);
-  document.addEventListener('mousemove', handleMouseMove);
-  document.addEventListener('touchstart', handleMouseDown, { passive: false });
-  document.addEventListener('touchend', handleMouseUp, { passive: false });
-  document.addEventListener('touchmove', handleMouseMove, { passive: false });
-});
+  const canvas: any = document.getElementById("jsCanvas");
+  if (canvas) {
+    const ctx = canvas.getContext("2d");
+    canvas.width = 1000;
+    canvas.height = 700;
+    ctx.strokeStyle = "#2c2c2c";
+    ctx.lineWidth = 1.5;
 
-const setActiveColour = (index) => {
-  currentColorIndex.value = index;
-};
+    function startPainting() {
+        painting = true;
+    }
 
-const clearCanvas = () => {
-  drawingCtx.value.clearRect(0, 0, drawingCanvas.value.width, drawingCanvas.value.height);
-};
+    function stopPainting() {
+        painting = false;
+    }
 
-const handleMouseDown = (e) => {
-  isDrawing.value = true;
-};
+    function onMouseMove(event: any) {
+        const x = event.offsetX;
+        const y = event.offsetY;
+				const data = { x: event.offsetX, y: event.offsetY, color: ctx.strokeStyle, lineWidth: ctx.lineWidth }
+        if(!painting) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        } else {
+            ctx.lineTo(x, y);
+            ctx.stroke();
+						sendDrawing(data)
+        }
+    }
 
-const handleMouseUp = () => {
-  isDrawing.value = false;
-  newlyUp.value = true;
-  setTimeout(() => (newlyUp.value = false), 50);
-};
+		// 그리기 송신
+		function sendDrawing(data) {
+			props.session?.signal({
+				data: JSON.stringify(data), // 그리기 이벤트 데이터
+				to: [],
+				type: 'drawing', // 이벤트 타입 지정
+			})
+			.catch(error => console.error(error));
+		}
 
-const handleMouseMove = (e) => {
-  if (!isDrawing.value) return;
-  let clientX = e.clientX;
-  let clientY = e.clientY;
+		// 그리기 수신
+		props.session?.on('signal:drawing', (event) => {
+      const data = JSON.parse(event.data);
 
-  if (e.touches) {
-    clientX = e.touches[0].clientX;
-    clientY = e.touches[0].clientY;
+      // 수신된 그림 데이터로 캔버스에 그림을 그립니다.
+      ctx.beginPath(); // 그리기 시작
+      ctx.strokeStyle = data.color; // 수신된 색상으로 설정
+      ctx.lineWidth = data.lineWidth; // 수신된 선 굵기로 설정
+      ctx.moveTo(data.x, data.y); // 이동할 시작점
+      ctx.lineTo(data.x, data.y); // 선 그리기
+      ctx.stroke(); // 선 완성
+    });
+
+    canvas.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("mousedown", startPainting);
+    canvas.addEventListener("mouseup", stopPainting);
+    canvas.addEventListener("mouseleave", stopPainting);
+
+		const changeBlack = document.getElementById("change-black")
+		changeBlack?.addEventListener("click", () => ctx.strokeStyle = "#2c2c2c")
+		const changeRed = document.getElementById("change-red")
+		changeRed?.addEventListener("click", () => ctx.strokeStyle = "#FF3B30")
+		const changeOrange = document.getElementById("change-orange")
+		changeOrange?.addEventListener("click", () => ctx.strokeStyle = "#FF9500")
+		const changeGreen = document.getElementById("change-green")
+		changeGreen?.addEventListener("click", () => ctx.strokeStyle = "#4CD963")
+		const changeBlue = document.getElementById("change-blue")
+		changeBlue?.addEventListener("click", () => ctx.strokeStyle = "#0579FF")
+
+		const allClear = document.getElementById("all-clear")
+		allClear?.addEventListener("click", () => ctx.clearRect(0, 0, canvas.width, canvas.height))
   }
+})
 
-  if (lastPoint.x == null || lastPoint.y == null) {
-    lastPoint = { x: clientX, y: clientY };
-    return;
-  }
-
-  drawingCtx.value.beginPath();
-  drawingCtx.value.strokeStyle = colors[currentColorIndex.value];
-  drawingCtx.value.moveTo(lastPoint.x, lastPoint.y);
-  drawingCtx.value.lineTo(clientX, clientY);
-  drawingCtx.value.stroke();
-
-  lastPoint = { x: clientX, y: clientY };
-};
+onUnmounted(() => {
+  const canvas: any = document.getElementById("jsCanvas")
+	canvas.remove()
+})
 
 </script>
 
 
 <style scoped>
-.catch-mind {
-  @apply border-2 border-gray-300 border-solid flex-grow;
-}  
+.catchMind--body {
+  background-color: #f6f9fc;
+  display: flex;
+	justify-content: center;
+  align-items: center;
+  padding-top: 50px;
+}
+
+.canvas {
+  width: 1000px;
+  height: 700px;
+  background-color: white;
+  border-radius: 30px;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.controls {
+  margin-top: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.controls .controls__colors {
+  display: flex;
+}
+
+.controls__colors .controls__color {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+	margin-bottom: 10px;
+	margin-left: 10px;
+}
+
+.controls .controls__btns {
+  margin-bottom: 30px;
+	margin-left: 10px;
+}
+
+.controls__btns button {
+  all: unset;
+  cursor: pointer;
+  background-color: white;
+  padding: 5px 0;
+  width: 80px;
+  text-align: center;
+  border-radius: 5px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  color: rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  font-weight: 800;
+  font-size: 12px;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.controls__btns button:active {
+  transform: scale(0.97);
+}
+
+.controls .controls__range {
+  margin-bottom: 30px;
+}
 </style> 
-
-<!-- SCSS는 그림판 코드 -->
-<style lang="scss" scoped>
-#mfPreviewBar {
-	display: none !important;
-}
-
-html,
-body {
-  position: fixed;
-  overflow: hidden;
-	touch-action: none;
-}
-
-body {
-	background-color: #f7f4f0;
-	cursor: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/605067/cursor.png'), auto;
-	font-family: 'Galano Grotesque Semi Bold';
-	margin: 0;
-	overflow: hidden;
-}
-
-button {
-	font-family: 'Galano Grotesque Semi Bold';
-}
-
-.colours {
-	bottom: 30px;
-	display: none;
-	left: 50%;
-	list-style-type: none;
-	padding-left: 0;
-	position: absolute;
-	transform: translateX(-50%);
-	z-index: 10;
-	
-	@media (min-width: 1024px) {
-		display: flex;
-	}
-	
-	li {
-		border-radius: 50%;
-		display: inline-block;
-		height: 14px;
-		margin: 0 12px;
-		width: 14px;
-		
-		&:nth-child(1){
-			background-color: #100c08;
-		}
-		&:nth-child(2){
-			background-color: #759BA9;
-		}
-		&:nth-child(3){
-			background-color: #77dd77;
-		}
-		&:nth-child(4){
-			background-color: #ff6961;
-		}
-		&:nth-child(5){
-			background-color: #ffd1dc;
-		}
-	}
-}
-
-.pencil__refresh {
-	background-color: #FCF4EA;
-	border: none;
-	border-radius: 50%;
-	bottom: 18px;
-	cursor: pointer;
-	height: 26px;
-	padding: 4px 1px 0px;
-	position: absolute;
-	left: 50%;
-	text-align: center;
-	transform: translateX(-50%);
-	width: auto;
-	z-index: 3;
-				
-	@media (min-width: 1024px) {
-		bottom: 27px;
-		left: 30px;
-		transform: none;
-	}
-}
-
-.pencil__submit {
-	bottom: 27px;
-	display: none;
-	position: absolute;
-	right: 30px;
-	z-index: 4;
-				
-	@media (min-width: 1024px) {
-	 display: block;
-	}
-}
-
-.btn {
-	background-color: transparent;
-	border: none;
-	cursor: pointer;
-	font-size: 13px;
-	letter-spacing: .05em;
-	outline: none;
-	padding: 5px 10px 1px 10px;
-	text-transform: uppercase;
-	user-select: none;
-	-moz-user-select: none;
-}
-</style>

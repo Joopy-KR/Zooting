@@ -115,6 +115,7 @@ const send = function() {
   props.session?.signal({
     data: inputChat.value,  // 현재 입력한 내용
     to: [],                 // [] - Broadcast
+    type: 'chat',
   })
   .then(() => {
     inputChat.value = ''  // 현재 입력한 내용 지우기

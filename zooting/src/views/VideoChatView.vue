@@ -48,7 +48,7 @@
       :subscribers="subscribers"
       v-if="currentStatus === 'CatchMind'"
       />
-      
+
       <!-- 사이드바 -->
       <VideoChatSideBarVue class="right-component"
       :session="session"
@@ -72,6 +72,8 @@ import VideoChatSideBarVue from '@/components/video-chat/VideoChatSideBar.vue'
 // Vue
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useAccessTokenStore } from '@/stores/store.ts'
+import axios from 'axios'
+const { VITE_SERVER_API_URL } = import.meta.env
 // Three.js
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
@@ -329,6 +331,7 @@ async function init() {
   const scene = ref<BasicScene | null>(null)
   scene.value = new BasicScene()
 
+  // 이 앞에 자료형 붙이지 말것. 에러의 주 원인
   avatar = ref<any>(null)
   const maskURL = ref<any>('')
   const animal = store.userInfo?.animal
@@ -419,7 +422,7 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
       
       // 가면 위아래 위치 
       // 너구리 가면은 적용되지 않음.
-      if (avatar.value.url !== '/assets/animal_mask/raccoon_head.glb' ) {
+      if (avatar.value.url !== '/assets/animal_mask/raccoon_head.glb') {
         avatar.value.scene.position.y = -6
       }
       avatar.value?.applyMatrix(matrix, { scale: 50 })
@@ -495,7 +498,6 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
 
 
 // 세션 연결
-
 // 현재 참가중인 동물 목록
 const currentAnimals = ref([])
 
@@ -544,14 +546,14 @@ const joinSession = () => {
       subscribers.value.splice(index, 1);
     }
   });
-  
+
   // 비동기 예외 발생시
   session.value.on("exception", ({ exception }) => {
     console.warn(exception);
   });
 
-
-  session.value.on('signal', (event) => {
+  // 채팅 이벤트 발생시
+  session.value.on('signal:chat', (event) => {
     const fromData = JSON.parse(event.from.data)
     const chatData: any = {
       'animal': fromData.animal,
@@ -575,7 +577,7 @@ const joinSession = () => {
   // 첫번째 인자는 토큰, 두번째 인자는 모든 유저에 의해 검색 가능
   // 'streamCreated'(Stream.connection.data의 속성), 유저 닉네임으로 DOM에 추가됨
   session.value.connect(token.value, { nickname: myUserName.value, animal: myUserAnimal.value, gender: myGender.value }).then(() => {
-    
+
     // 실제 publish 하는 부분, 이 부분에서 카메라와 오디오 소스 설정 가능
     let pub = OV.value.initPublisher(undefined, {
       audioSource: undefined,
@@ -588,7 +590,7 @@ const joinSession = () => {
       mirror: false,
     });
     pub.stream.typeOfVideo = "CUSTOM"
-    
+
     // mainStream과 Publisher(나 자신)에 정보를 담고
     mainStreamManager.value = pub;
     publisher.value = pub;      
@@ -600,7 +602,7 @@ const joinSession = () => {
     isLoaded.value = true
   })
   .catch((error) => {
-    console.log("세션과 연결중 에러가 발생했습니다:", error.code, error.message);
+      console.log("세션과 연결중 에러가 발생했습니다:", error.code, error.message);
   });
 
   // 사용자가 화면을 나가버릴시 세션 나가기
@@ -628,7 +630,6 @@ const leaveSession = () => {
   window.removeEventListener("beforeunload", leaveSession);
 }
 </script>
-
 
 
 <style scoped>
