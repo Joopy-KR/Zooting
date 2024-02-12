@@ -658,6 +658,8 @@ const leaveSession = () => {
 .main__container {
   @apply flex w-screen h-screen;
   min-width: 1420px;
+  background-color: white;
+  color: black;
 }
 
 .left-component {

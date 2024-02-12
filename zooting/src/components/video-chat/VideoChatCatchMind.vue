@@ -67,32 +67,32 @@ onMounted(() => {
 
     function stopPainting() {
         painting = false;
+        sendDrawing({ userId: props.session?.connection.connectionId, type: 'end' }); // 그림 그리기 종료 이벤트 전송
         props.session?.signal({
           type: 'drawingEnd',
           data: JSON.stringify({ userId: props.session.connection.connectionId }),
         });
     }
 
-    function onMouseMove(event: any) {
-        const x = event.offsetX;
-        const y = event.offsetY;
-				const data = { 
-          userId: props.session?.connection.connectionId,
-          isPainting: painting, 
-          x: event.offsetX, 
-          y: event.offsetY, 
-          color: ctx.strokeStyle, 
-          lineWidth: ctx.lineWidth }
-        if(!painting) {
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-						sendDrawing(data)
-        } else {
-            ctx.lineTo(x, y);
-            ctx.stroke();
-						sendDrawing(data)
-        }
-    }
+    function onMouseMove(event) {
+      const x = event.offsetX;
+      const y = event.offsetY;
+      const data = { 
+        userId: props.session?.connection.connectionId, // 사용자 고유 ID 추가
+        type: painting ? 'move' : 'start', // 그림 그리기 시작 또는 이동
+        x: x, 
+        y: y, 
+        color: ctx.strokeStyle, 
+        lineWidth: ctx.lineWidth 
+      };
+      sendDrawing(data);
+      if (painting) {
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      } else {
+        ctx.moveTo(x, y);
+      }
+}
 
 		// 그리기 송신
 		function sendDrawing(data) {
@@ -130,21 +130,40 @@ onUnmounted(() => {
 	canvas.remove()
 })
 
-watch(() => props.drawData, (newVal, oldVal) => {
+const userPaths: any = {};
+
+watch(() => props.drawData, (newVal) => {
   if (newVal) {
-    // 캔버스에 그림을 그리는 로직...
+    const { userId, type, x, y, color, lineWidth } = newVal;
     const canvas = document.getElementById("jsCanvas");
     if (canvas) {
       const ctx = canvas.getContext("2d");
-			ctx.strokeStyle = newVal.color;
-			ctx.lineWidth = newVal.lineWidth;
-      if (!newVal.isPainting) {
-				ctx.beginPath()
-				ctx.moveTo(newVal.x, newVal.y)
-			} else {
-				ctx.lineTo(newVal.x, newVal.y); // 선 그리기
-				ctx.stroke(); // 선 완성
-			}
+      // 사용자별 그림 그리기 경로가 없으면 초기화
+      if (!userPaths[userId]) {
+        userPaths[userId] = { x, y, path: new Path2D() };
+        userPaths[userId].path.moveTo(x, y);
+      }
+      
+      switch (type) {
+        case 'start':
+          // 그림 그리기 세션 시작 시, 시작점 업데이트
+          userPaths[userId] = { x, y, path: new Path2D() };
+          userPaths[userId].path.moveTo(x, y);
+          break;
+        case 'move':
+          // 그림 그리기 이동 시, 현재 경로에 선 추가
+          if (userPaths[userId]) {
+            userPaths[userId].path.lineTo(x, y);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            ctx.stroke(userPaths[userId].path);
+          }
+          break;
+        case 'end':
+          // 그림 그리기 세션 종료 시, 사용자별 경로 삭제
+          delete userPaths[userId];
+          break;
+      }
     }
   }
 }, { deep: true });
