@@ -69,6 +69,11 @@ const getNoticeContents = (item : Notice) => {
 }
 .notice-list__content {
   @apply text-sm text-gray-500;
+  white-space : normal;
+  display : -webkit-box;;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical ;
+  overflow: hidden;
 
 }
 button {
