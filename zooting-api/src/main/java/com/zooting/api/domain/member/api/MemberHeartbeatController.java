@@ -25,7 +25,7 @@ public class MemberHeartbeatController {
     @MessageMapping("/member/heartbeat")
     public void memberHeartbeatCheck(HeartBeatReq request) {
         var heartcheck = memberHeartbeatService.loadOnlineFriends(request);
-        template.convertAndSend("/api/sub" + request.memberId(), heartcheck);
+        template.convertAndSend("/api/sub/" + request.memberId(), heartcheck);
     }
 
     @Scheduled(cron = "0 0/2 * * * ?")
