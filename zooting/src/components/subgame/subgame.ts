@@ -109,7 +109,6 @@ window.onload = function () {
 
     // 스페이스 누를 때 점프 및 이미지 변경
     document.addEventListener('keydown', (e)=>{
-        e.preventDefault()
         if (e.code == 'Space'){
              if (gameState == 1 && runner.y > 150) {
                 jumpState = 1; // 점프 중으로 변경
@@ -121,7 +120,6 @@ window.onload = function () {
     })
 
     document.addEventListener('keyup', (e)=>{
-        e.preventDefault()
         if (e.code == 'Space'){
             if (gameState == 1) { // 게임실행 중일 때 스페이스 누르면
                 dogImg.src = StopDogImg;
