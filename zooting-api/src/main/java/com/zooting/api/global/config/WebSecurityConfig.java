@@ -30,7 +30,7 @@ public class WebSecurityConfig {
     private static final String[] URL_WHITE_LIST = {"/error", "/login", "/favicon.ico",
             "/health", "/api-docs/**", "/swagger-ui/**",
             "/swagger-resources/**", "/swagger-ui.html", "/api/token/**",
-            "/ws/dm/**", "/api/sub/**", "/api/pub/**"
+            "/ws/**", "/api/sub/**", "/api/pub/**"
     };
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOAuth2FailHandler customOAuth2FailHandler;
