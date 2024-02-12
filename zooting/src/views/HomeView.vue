@@ -21,7 +21,9 @@ const emit = defineEmits(['receiveMessage'])
 
 const userInfo = ref(store.userInfo)
 
+// @ts-ignore
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
+// @ts-ignore
 const stompClient = Stomp.over(socket)
 
 watch(()=> store.userInfo, (update)=>{
