@@ -652,7 +652,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         console.log(err);
       });
   };
-    
+
 
   // DM 방 입장
   const isEntryDmRoom = ref<boolean>(false);
@@ -764,37 +764,62 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     });
   };
 
-  // 공지사항 리스트
-  const noticePage = ref<NoticePage>();
-  const noticeList = ref<Notice[]>([]);
-  const getNoticeList = function (params: {'page': number, 'size':number}) {
-    axios({
-    method: "get",
-    url: `${API_URL}/api/notice`,
-    headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
-    },
-    params : params,
-  })
-    .then((res) => {
-        noticePage.value = res.data.result;
-        noticeList.value = res.data.result["noticeResList"];
+    // 공지사항 리스트
+    const noticePage = ref<NoticePage>();
+    const noticeList = ref<Notice[]>([]);
+    const getNoticeList = function (params: {'page': number, 'size':number}) {
+      axios({
+      method: "get",
+      url: `${API_URL}/api/notice`,
+      headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+      },
+      params : params,
     })
-    .catch((err) => {
-        console.log(err);
-    });
+      .then((res) => {
+          noticePage.value = res.data.result;
+          noticeList.value = res.data.result["noticeResList"];
+      })
+      .catch((err) => {
+          console.log(err);
+      });
+    };
+
+    // 미니게임 포인트 부여
+  const addPoints = function (payload: {points:number}) {
+    const {points} = payload;
+    axios({
+      method: "patch",
+      url: `${API_URL}/api/members/points`,
+      data : {
+        points
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+        .then((res) => {
+          noticePage.value = res.data.result;
+          noticeList.value = res.data.result["noticeResList"];
+        })
+        .catch((err) => {
+          console.log(err);
+        });
   };
-  
-  // --------------------------매칭---------------------------
-  // 매칭 대기
-  const isMatching = ref<boolean>(false)
-  // 매칭 완료 여부
-  const isMatchingComplete = ref<boolean>(false) // default false
-  // 미팅방 id
-  const roomId = ref<string>('')
-  // 매칭 대기 시간
-  const formattedTimer = ref("00:00")
-  let timerInterval: any = null
+
+
+
+
+    // --------------------------매칭---------------------------
+    // 매칭 대기
+    const isMatching = ref<boolean>(false)
+    // 매칭 완료 여부
+    const isMatchingComplete = ref<boolean>(false) // default false
+    // 미팅방 id
+    const roomId = ref<string>('')
+    // 매칭 대기 시간
+    const formattedTimer = ref("00:00")
+    let timerInterval: any = null
 
   // 타이머 시작
   function startTimer() {
@@ -804,7 +829,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       formattedTimer.value = formatTime(seconds)
     }, 1000)
   }
-  
+
   // 타이머 종료
   function resetTimer() {
     if (timerInterval) {
@@ -813,7 +838,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       formattedTimer.value = "00:00"
     }
   }
-  
+
   // 타이머 포맷
   function formatTime(seconds: number) {
     const minutes = Math.floor(seconds / 60)
@@ -822,7 +847,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     const formattedSeconds = String(remainingSeconds).padStart(2, "0")
     return `${formattedMinutes}:${formattedSeconds}`
   }
-  
+
   // 매칭 완료
   const MatchingComplete = function () {
     isMatchingComplete.value = true
@@ -876,7 +901,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       console.log(err)
     })
   }
-  
+
   // 매칭 거절
   const meetingExit = function () {
     isMatching.value = false
@@ -959,6 +984,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       isMatchingComplete,
       meetingAccept,
       meetingExit,
+      addPoints,
       MatchingComplete,
   };
 });

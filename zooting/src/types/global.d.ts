@@ -135,8 +135,12 @@ declare interface Search {
 }
 
 
+declare interface PointsReq {
+    points : number;
+}
+
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
-    PersonalityList, Personality, Friend, MaskReq, ReportUserReq,
+    PersonalityList, Personality, Friend, MaskReq, ReportUserReq, PointsReq
     DM, DmItem, FriendRequest, Notice, NoticePage, Notify, Background, Search
 };
