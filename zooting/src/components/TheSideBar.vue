@@ -187,7 +187,7 @@ const currentDmRoomId = (dmRoomId: number) => {
 
 <style scoped>
 .side-bar {
-  @apply fixed flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-30;
+  @apply fixed flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-40;
 }
 
 .logo {
@@ -207,7 +207,7 @@ const currentDmRoomId = (dmRoomId: number) => {
 }
 
 .side-tab {
-  @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 z-20;
+  @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 z-30;
   width: 430px;
 }
 

@@ -45,7 +45,7 @@ function localAxios() {
   instance.interceptors.response.use(
     // 요청 성공
     (response) => {
-      console.log(response);
+      // console.log(response);
       return response;
     },
     // 요청 실패

@@ -10,6 +10,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useAccessTokenStore, useStore } from "@/stores/store"
 import Social from '@/components/home/Social.vue'
 import Ready from '@/components/home/Ready.vue'
+import DmSound from '/assets/sounds/dm.mp3'
 const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
@@ -23,6 +24,13 @@ const userInfo = ref(store.userInfo)
 
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
 const stompClient = Stomp.over(socket)
+
+const dmSound = new Audio(DmSound)
+
+function playSound(sound:any) {
+    sound.currentTime = 0
+    sound.play()
+}
 
 watch(()=> store.userInfo, (update)=>{
   userInfo.value = update
@@ -64,6 +72,7 @@ const onConnected = () => {
       } else {
         // 새로운 메시지 알림
         dmStore.newMessage.push(res.sender)
+        playSound(dmSound)
       } 
     } 
     // 매칭 완료
@@ -73,6 +82,15 @@ const onConnected = () => {
     // 매칭 수락
     else if (res.type === 'openviduToken') {
       store.pushMeetingRoom(res.token)
+    }
+    // 일대일 미팅 요청 수신
+    else if (res.type === 'meeting') {
+      store.meetingSender = res.nickname
+      store.isRecieveMeeting = true
+    }
+    // 미팅 무응답
+    else if (res.type === 'reject') {
+      
     }
   })
 }
