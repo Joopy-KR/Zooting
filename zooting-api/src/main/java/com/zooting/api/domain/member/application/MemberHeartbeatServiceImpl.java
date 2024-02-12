@@ -26,7 +26,6 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
     private static final Long TIME_TO_LIVE = 120L;
     private final FriendRepository friendRepository;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final Gson gson;
 
     @Transactional(readOnly = true)
     public SocketBaseDtoRes<HeartBeatRes> loadOnlineFriends(HeartBeatReq heartBeatReq) {
@@ -81,7 +80,7 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         if (accessMemberStatus.offlineMembers().isEmpty()) return;
 
         for (var onlineMember : accessMemberStatus.onlineMembers()) {
-            var removed = redisTemplate.opsForSet().remove(HEARTBEAT_HASH + onlineMember,
+            redisTemplate.opsForSet().remove(HEARTBEAT_HASH + onlineMember,
                     accessMemberStatus.offlineMembers().toArray(new String[0]));
         }
     }

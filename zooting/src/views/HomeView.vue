@@ -23,12 +23,12 @@ const emit = defineEmits(['receiveMessage'])
 const userInfo = ref(store.userInfo)
 
 // @ts-ignore
-const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
+const socket = new SockJS(`${VITE_SERVER_API_URL}/ws`)
 // @ts-ignore
 const stompClient = Stomp.over(socket)
 let intervalId: any;
-const START_HEART_CHECK = 10 * 1000;
-const HEART_CHECK_INTERVAL = 60 * 1000;
+const START_HEART_CHECK = 5 * 1000;
+const HEART_CHECK_INTERVAL = 2 * 60 * 1000;
 const intervalTime = ref<number>(START_HEART_CHECK);
 
 watch(() => store.userInfo, (update) => {
