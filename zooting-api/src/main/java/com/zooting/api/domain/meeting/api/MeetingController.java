@@ -53,6 +53,14 @@ public class MeetingController {
         meetingService.requestMeeting(nickname, userDetails.getUsername());
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 신청에 성공했습니다.");
     }
+    /* 1대1 미팅 거절 */
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/reject/friend")
+    @Operation(summary = "친구 목록 기반 1대1 미팅 거절", description = "1대1 미팅 거절")
+    public ResponseEntity<BaseResponse<String>> rejectMeeting(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
+        meetingService.rejectMeeting(nickname, userDetails.getUsername());
+        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 거절에 성공했습니다.");
+    }
 
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/accept/friend")

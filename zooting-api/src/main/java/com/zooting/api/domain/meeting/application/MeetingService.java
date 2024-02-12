@@ -228,4 +228,11 @@ public class MeetingService {
         }
         return Collections.emptyList();
     }
+
+    public void rejectMeeting(String nickname, String loginEmail) {
+        Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        FriendMeetingDto friendMeetingDto = new FriendMeetingDto("reject", loginMember.getEmail(), loginMember.getNickname());
+        webSocketTemplate.convertAndSend("/api/sub/dm/" + friend.getEmail(), friendMeetingDto);
+    }
 }
