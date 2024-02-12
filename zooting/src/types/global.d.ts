@@ -63,6 +63,7 @@ declare interface Friend {
     nickname: string;
     animal: string;
     gender: string;
+    isOnline: boolean
 }
 
 declare interface MaskReq {
