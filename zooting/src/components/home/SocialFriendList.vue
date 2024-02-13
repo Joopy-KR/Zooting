@@ -108,6 +108,17 @@ const getHeartClass = (gender: string) => (
   gender === 'man' ? 'w-4 h-4 text-blue-500 ms-1' : 'w-4 h-4 text-pink-500 ms-1'
 )
 
+const getAvatarPretty = (item: Friend) => {
+  if (!item.isOnline) {
+    return "friend-list__img__offline"
+  }
+  if (item.gender === 'man') {
+    return "friend-list__img__man__online"
+  } else {
+    return "friend-list__img__woman__online"
+  }
+}
+
 const getProfileImage = (animal: string) => {
   let imgUrl: URL;
   if (animal === '강아지') {
@@ -200,7 +211,13 @@ const meetingRequestFriend = (reciever: string) => {
 .friend-list__item__chat {
   @apply flex items-center justify-between gap-4;
 }
-.friend-list__img {
+.friend-list__img__woman__online {
+  @apply w-10 h-10 rounded-full border-red-500 border-2;
+}
+.friend-list__img__man__online {
+  @apply w-10 h-10 rounded-full border-blue-500 border-2;
+}
+.friend-list__img__offline {
   @apply w-10 h-10 rounded-full;
 }
 .buttons {
