@@ -223,6 +223,22 @@ const moveToMyPage = () => {
   });
 };
 
+const moveToLeft = async () => {
+  if (currentPage.value > 0) {
+    currentPage.value = currentPage.value - 1;
+    await getMaskList(animalType.value, currentPage.value);
+    await getMyMaskList(animalType.value);
+  }
+}
+
+const moveToRight = async () => {
+  if (currentPage.value < totalPage.value - 1) {
+    currentPage.value = currentPage.value + 1;
+    await getMaskList(animalType.value, currentPage.value);
+    await getMyMaskList(animalType.value);
+  }
+}
+
 watch(myMaskList, (newMyMaskList) => {
   if (!newMyMaskList) return;
 
@@ -318,11 +334,21 @@ onMounted(() => {
         </span>
       </div>
     </div>
-    <div class="flex items-center content-center justify-center w-2/3 mx-auto">
+    <div class="flex flex-row items-center content-center justify-center w-2/3 mx-auto">
+      <div v-if="currentPage > 0" @click="moveToLeft">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 stroke-violet-400 hover:stroke-violet-600/80">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5" />
+        </svg>
+      </div>
       <div class="grid grid-cols-3 gap-3 px-12 py-8 m-4">
         <EditMaskItem v-for="mask in filterMaskByAnimal" :key="mask.maskId" :mask="mask"
                       :selected-mask-id="selectedMaskId" @load-my-info="loadMyInfo"
                       @click="clickMask(mask)"/>
+      </div>
+      <div v-if="currentPage < totalPage - 1" @click="moveToRight">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 stroke-violet-400 hover:stroke-violet-600/80">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+        </svg>
       </div>
     </div>
     <div class="flex justify-center">
