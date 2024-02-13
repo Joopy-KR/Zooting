@@ -11,7 +11,7 @@ import {useAccessTokenStore, useStore} from "@/stores/store"
 import Social from '@/components/home/Social.vue'
 import Ready from '@/components/home/Ready.vue'
 
-const {VITE_SERVER_API_URL} = import.meta.env
+const {VITE_SERVER_API_URL, VITE_HEART_CHECK_INTERVAL } = import.meta.env
 
 const store = useAccessTokenStore()
 const dmStore = useStore()
@@ -28,7 +28,7 @@ const socket = new SockJS(`${VITE_SERVER_API_URL}/ws`)
 const stompClient = Stomp.over(socket)
 let intervalId: any;
 const START_HEART_CHECK = 5 * 1000;
-const HEART_CHECK_INTERVAL = 30 * 1000;
+const HEART_CHECK_INTERVAL = VITE_HEART_CHECK_INTERVAL * 1000;
 const intervalTime = ref<number>(START_HEART_CHECK);
 
 watch(() => store.userInfo, (update) => {
