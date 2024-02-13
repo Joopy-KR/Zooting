@@ -927,8 +927,10 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 매칭 완료시 미팅방으로 이동시키기
   const meetingRoomToken = ref<String>('')
-  const pushMeetingRoom = function (token: String) {
-    meetingRoomToken.value = token
+  const oppositeGenderList = ref<any>(null)
+  const pushMeetingRoom = function (Info: any) {
+    meetingRoomToken.value = Info.token
+    oppositeGenderList.value = Info.oppositeGenderList
     router.push({ name: "video-chat"})
   }
 
@@ -977,6 +979,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       getNoticeList,
       meetingRegister,
       meetingRoomToken,
+      oppositeGenderList,
       pushMeetingRoom,
       fileDownload,
       formattedTimer,

@@ -14,6 +14,8 @@
       v-if="store.isLogin"
       class="z-40"
       />
+    <!-- <VideoChatResult 
+    class="ms-14"/> -->
   </div>
 </template>
 
@@ -23,6 +25,8 @@ import { RouterView } from 'vue-router'
 import TheSideBar from '@/components/TheSideBar.vue'
 import MatchingCompleteModal from "@/components/MatchingCompleteModal.vue"
 import { useAccessTokenStore } from './stores/store'
+
+import VideoChatResult from './components/video-chat/VideoChatResult.vue'
 
 const store = useAccessTokenStore()
 const dmRoomId = ref<number>(0)

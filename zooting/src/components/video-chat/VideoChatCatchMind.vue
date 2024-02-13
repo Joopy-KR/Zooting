@@ -7,6 +7,7 @@
       :key="sub.stream.connection.connectionId" 
       :stream-manager="sub" 
       />
+    
     </div>
     <!-- 캐치마인드 게임 -->
 		<div class="catchMind--body">

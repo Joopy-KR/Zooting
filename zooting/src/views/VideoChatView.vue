@@ -59,7 +59,13 @@
       :publisher="publisher"
       :subscribers="subscribers"
       :statusInfo="statusInfo"
+      v-if="currentStatus !== 'Result'"
       /> 
+
+      <!-- 결과 선택 -->
+      <VideoChatResult
+      v-if="currentStatus === 'Result'"
+      />
     </div>
   </div>
 </template>
@@ -71,8 +77,11 @@ import VideoChatTalk from '@/components/video-chat/VideoChatTalk.vue'
 import VideoChatCatchMind from '@/components/video-chat/VideoChatCatchMind.vue'
 // 사이드바
 import VideoChatSideBarVue from '@/components/video-chat/VideoChatSideBar.vue'
+// 결과 페이지
+import VideoChatResult from '@/components/video-chat/VideoChatResult.vue'
 // Vue
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 import { useAccessTokenStore } from '@/stores/store.ts'
 import axios from 'axios'
 const { VITE_SERVER_API_URL } = import.meta.env
@@ -97,6 +106,22 @@ onUnmounted(() => {
   leaveSession()
 })
 
+// 미팅 중인지 판단할 플래그 (미팅 중에 나가면 탈주처리)
+const isMeeting = ref(true)
+
+onBeforeRouteLeave((to, from) => {
+  if (isMeeting.value) {
+    const answer = window.confirm('정말 떠나실 건가요?\n탈주시 100포인트가 차감됩니다.')
+    if (answer === false) {
+      return false
+    } else {
+      // 여기에 포인트 차감 axios 차감 들어감
+
+      return true
+    }
+  }
+})
+
 // 진행을 위한 비동기 처리 함수
 async function startSession() {
   // 유저 정보 받아오기
@@ -114,7 +139,7 @@ const isLoaded = ref(false)
 // 현재 진행중인 컴포넌트
 const currentStatus = ref<String>('')  // 현재 진행중인 프로그램 (FreeTalk, CatchMind 등) 
 const statusInfo = ref<any>('')  // 사이드바에 나타나는 현재 진행중인 프로그램
-currentStatus.value = 'CatchMind'
+currentStatus.value = 'Result'
 
 // 카메라 사이즈 조정
 const cameraHeight = ref<Number>(0)
@@ -578,8 +603,6 @@ const joinSession = () => {
   });
 
   session.value.on('signal:drawingEnd', (event) => {
-    console.log(event.data)
-    console.log(currentDrawingUserId.value)
     const data = JSON.parse(event.data);
     if (currentDrawingUserId.value === data.userId) {
       currentDrawingUserId.value = undefined
