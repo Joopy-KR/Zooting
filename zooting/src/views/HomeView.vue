@@ -34,7 +34,7 @@ const dmSound = new Audio(DmSound)  // dm 알림 소리
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws`)
 // @ts-ignore
 const stompClient = Stomp.over(socket)
-stompClient.debug = null;
+stompClient.debug = null
 let intervalId: any;
 const START_HEART_CHECK = 5 * 1000;
 const HEART_CHECK_INTERVAL = 15 * 1000; // heartbeat check interval time
@@ -92,6 +92,8 @@ const onConnected = () => {
     const type = JSON.parse(message.body).type;
     const time = JSON.parse(message.body).time;
     const res = JSON.parse(message.body).result;
+    // 1970년 1월 1일 00:00:00 UTC로부터 지난 시간을 밀리초로 변환
+    const time = Date.parse(JSON.parse(message.body).time)
     // MESSAGE
     if (type === 'MESSAGE') {
       // 현재 open 된 dmRooId인 경우 메시지 전송
@@ -110,7 +112,7 @@ const onConnected = () => {
     }
     // 매칭 수락
     else if (type === 'OPENVIDU') {
-      store.pushMeetingRoom(res)
+      store.pushMeetingRoom(res, time)
       store.isRequesting = false
     }
     // 유저 상태 정보

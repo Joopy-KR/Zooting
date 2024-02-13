@@ -934,9 +934,17 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   // 매칭 완료 시 미팅방으로 이동시키기
   const meetingRoomToken = ref<String>('')
   const oppositeGenderList = ref<any>(null)
-  const pushMeetingRoom = function (Info: any) {
+  // 세션이 끝나야하는 시간 (시작 시간 + 10분 15초)
+  const sessionEndTime = ref<number>(0)
+  const pushMeetingRoom = function (Info: any, time: number) {
+    // 토큰
     meetingRoomToken.value = Info.token
+    // 이성 정보
     oppositeGenderList.value = Info.oppositeGenderList
+    // 끝나는 시간
+    // 615000 = 10분 15초
+    // 테스트를 위해 10초 미팅으로 바꿔둠 (10000)
+    sessionEndTime.value = time + 10000
     router.push({ name: "video-chat"})
   }
 
@@ -1055,6 +1063,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       meetingRegister,
       meetingRoomToken,
       oppositeGenderList,
+      sessionEndTime,
       pushMeetingRoom,
       fileDownload,
       formattedTimer,

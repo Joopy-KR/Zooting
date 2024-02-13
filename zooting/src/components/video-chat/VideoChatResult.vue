@@ -62,15 +62,15 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import axios from 'axios'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { useAccessTokenStore } from '@/stores/store.ts'
-import axios from 'axios'
+const { VITE_SERVER_API_URL } = import.meta.env
 
+const props = defineProps(['sessionId'])
 const store = useAccessTokenStore()
-
 const oppositeGenderList = store.oppositeGenderList
-
 const selectNickname = ref('')
 
 // 동물 선택하기 (selectNickname에 값 들어감)
@@ -105,11 +105,6 @@ const getProfileImage = (animal: String) => {
   return imgUrl.href;
 }
 
-// 대기 함수
-function wait(sec) {
-    return new Promise(resolve => setTimeout(resolve, sec * 1000));
-}
-
 // 타이머
 const enterRoomTimeLimit = ref<any>(0)
 // 선택시간 끝났는지 판단할 플래그
@@ -118,22 +113,39 @@ const isTimeOver = ref(false)
 // 0.1에 20이 20초. 시연을 위해 빨리 해두기
 onMounted(() => {
   const intervalId = setInterval(() => {
-    enterRoomTimeLimit.value += 1
+    enterRoomTimeLimit.value += 0.5
  
     if (enterRoomTimeLimit.value >= 100) {
-      clearInterval(intervalId)
-      axios
-
-
-
       isTimeOver.value = true
+      // 3~5초의 간격
+      if (enterRoomTimeLimit.value >= 180) {
+        console.log('3초인가?')
+        clearInterval(intervalId)
+        // 선택한 이성 보내는 API
+        if (selectNickname.value !== '') {
+          axios({
+          method: "post",
+          url: `${VITE_SERVER_API_URL}/api/meeting/picks`,
+          params: {
+            sessionId: props.sessionId,
+            nickname: selectNickname.value
+          },
+          headers: {
+            Authorization: `Bearer ${store.getAccessToken()}`,
+          },
+          })
+          .then((res) => {
+            // 이 부분에서 홈으로 넘어가야함 (홈으로 넘어갔을시 모달을 띄워야 하므로 store이용)
+            console.log(res)
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+        }
+      }
     }
   }, 20)
 })
-
-const afterFinish = async function() {
-  
-}
 </script>
 
 <style scoped>

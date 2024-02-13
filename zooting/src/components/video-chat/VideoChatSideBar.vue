@@ -62,27 +62,58 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useAccessTokenStore } from '@/stores/store.ts'
 
+const store = useAccessTokenStore()
+const emit = defineEmits(['timeOver'])
+
+const props = defineProps({
+  session: Object,
+  currentChat: Object,
+  currentAnimals: Object,
+  publisher: Object,
+  subscribers: Object,
+  statusInfo: String,
+  isOneToOne: Boolean,
+  })
 
 // 타이머 변수 및 함수
 let stTime = ref(0)
-let timerStart = ref(null)
+let timerStart = ref<any>(null)
 let min = ref('00')
 let sec = ref('00')
 
 const addZero = (num) => (num < 10 ? '0' + num : '' + num)
 
 const StartWatch = () => {
+  const Endtime = store.sessionEndTime
+
   if (!stTime.value) {
     stTime.value = Date.now()
   } 
   
   if (!timerStart.value) {
-    timerStart.value = setInterval(() => {
+    // 미팅
+    if (!props.isOneToOne) {
+      timerStart.value = setInterval(() => {
+        const leftTime = new Date(Endtime - Date.now())
+        min.value = addZero(leftTime.getMinutes())
+        sec.value = addZero(leftTime.getSeconds())
+  
+        // 남은 시간이 0.05초 미만이라면 끝났다고 emit 보내기
+        if (Number(leftTime) <= 50) {
+          emit('timeOver')
+        }
+      }, 1)
+    } 
+    // 1:1 채팅
+    else {
+      timerStart.value = setInterval(() => {
       const nowTime = new Date(Date.now() - stTime.value)
       min.value = addZero(nowTime.getMinutes())
       sec.value = addZero(nowTime.getSeconds())
     }, 1)
+    }
   }
 };
 
@@ -97,15 +128,6 @@ onUnmounted(() => {
 })
 
 // 채팅 기능
-const props = defineProps({
-  session: Object,
-  currentChat: Object,
-  currentAnimals: Object,
-  publisher: Object,
-  subscribers: Object,
-  statusInfo: String,
-  })
-
 const inputChat = ref('')
 const onInput = function(event) {
   inputChat.value = event.currentTarget.value
