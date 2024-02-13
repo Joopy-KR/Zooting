@@ -186,8 +186,7 @@ const meetingRequestFriend = (reciever: string) => {
   openedMenuNickname.value = null
   // 요청 중이 아닌 상태에서 요청
   if (!store.isRequesting &&  !store.isMatching) {
-    // store.meetingRequestFriend(reciever)  
-    store.meetingRequestFriend('윤죠이')  
+    store.meetingRequestFriend(reciever)
     isSuccessRequest.value = true
   } else {
     isSuccessRequest.value = false
