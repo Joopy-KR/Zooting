@@ -223,11 +223,13 @@ public class MeetingService {
         redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
     }
 
-    public List<MeetingPickDto> showResult(String sessionId) {
+    public List<MeetingPickDto> showResult(String sessionId, String loginEmail) {
+        Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         List<Object> objectList = redisTemplate.opsForList().range(sessionId, 0, -1);
         if (objectList != null && !objectList.isEmpty()) {
             List<MeetingPickDto> meetingPickDtoList = objectList.stream()
                     .map(obj -> gson.fromJson((String) obj, MeetingPickDto.class))
+                    .filter(meetingPickDto -> meetingPickDto.pickedNickname().equals(loginMember.getNickname()))
                     .collect(Collectors.toList());
             redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
             return meetingPickDtoList;
