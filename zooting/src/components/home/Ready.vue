@@ -1,8 +1,12 @@
 <template>
   <div class="ready__container">
-    <Subgame class="subgame"/>
-    <ReadyRecordList class="record"/>
-    <ReadyMatch/>
+    <div class="flex justify-between">
+      <Subgame class="subgame"/>
+      <ReadyRecordList class="record"/>
+    </div>
+    <div>
+      <ReadyMatch/>
+    </div>
   </div>
 </template>
 
@@ -14,11 +18,9 @@ import ReadyRecordList from '@/components/home/ReadyRecordList.vue'
 
 <style scoped>
 .ready__container {
-  @apply flex flex-col grow h-full relative;
+  @apply flex flex-col grow h-full p-5 gap-5;
   min-width: 955px;
-  min-height: 800px;
   overflow: hidden;
-  margin:0;
   background-image: url("/assets/images/login/background.png");
   background-size: cover;
   background-repeat: no-repeat;
@@ -29,11 +31,5 @@ import ReadyRecordList from '@/components/home/ReadyRecordList.vue'
 }
 .ready__main {
   @apply h-full;
-}
-.subgame {
-  @apply absolute;
-}
-.record {
-  @apply absolute;
 }
 </style>
