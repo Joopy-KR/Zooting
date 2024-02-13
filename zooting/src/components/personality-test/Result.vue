@@ -19,7 +19,7 @@
             {{ personality.match }}
           </span> 유형과 궁합이 맞아요.</li>
         </div>
-        <button class="test-completed" @click.prevent="completedTest">미팅 하러 가기</button>
+        <button class="test-completed w-full" @click.prevent="completedTest">미팅 하러 가기</button>
       </div>
     </transition>
     </div>

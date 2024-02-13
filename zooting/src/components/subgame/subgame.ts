@@ -26,6 +26,8 @@ window.onload = function () {
 
     let jumpState = 0; // 0 : default, 1 : jump
     let jumpTimer = 0;
+    let rightMoveState = 0;
+    let leftMoveState = 0;
     let animation:number ;
     let score = 0;
     let detectedCollision = false;
@@ -56,7 +58,7 @@ window.onload = function () {
         timer++;    // 한 프레임 당 timer += 1
         
         // timer가 200이 될 때 장애물 추가
-        if (timer % (200 + getRandomInt(-100, 100)) == 0 ) {
+        if (timer % (200 + getRandomInt(-3, 3)) == 0 ) {
             let obstacle = new Obstacle();
             obstacleArr.push(obstacle);
         }
@@ -81,6 +83,22 @@ window.onload = function () {
         // drawLine();
         // 캐릭터 그리기
         runner.draw();
+
+        // 좌우 이동
+        if (rightMoveState == 1 && runner.x < 600 - runner.width) {
+            if (jumpState == 0) {
+                runner.x += 1;
+            }else {
+                runner.x += 0.7            }
+        }
+        else if (leftMoveState == 1 && runner.x > 0) {
+            if (jumpState == 0) {
+                runner.x -= 1
+            } else {
+                runner.x -= 0.7
+            }
+        }
+
 
         // 점프 - 점프 시간 동안 jumptimer 값 상승
         if(jumpState == 1){ // 점프 상태일 때 타이머가 50이 될때까지 올라간다.
@@ -151,29 +169,38 @@ window.onload = function () {
     document.addEventListener('keydown', (e)=>{
         if (e.code == 'ArrowRight'){
             if (gameState == 1) { // 게임실행 중일 때 스페이스 누르면
-                if (runner.x< 160) {
-                    runner.x += 5
-                }
+                rightMoveState = 1;
             }
         }
         else if (e.code == 'ArrowLeft') {
             if (gameState == 1) {
-                if (runner.x > 0) {
-                    runner.x -= 5
-                }
+                leftMoveState = 1;
             }
+        }
+    })
+    document.addEventListener('keyup', (e)=>{
+        if (e.code == 'ArrowRight'){
+            rightMoveState = 0;
+        }
+        else if (e.code == 'ArrowLeft') {
+            leftMoveState = 0;
         }
     })
 
     // 충돌 시 게임 종료
     function collisionDetection(runner:any, obstacle:any) {
-        let xValue = obstacle.x - ( runner.x + runner.width );
+        let xValue = 0;
         let yValue = obstacle.y - ( runner.y + runner.height );
 
+        if (obstacle.x > runner.x) {
+            xValue = obstacle.x - ( runner.x + runner.width );
+        }else {
+            xValue = runner.x - (obstacle.x + obstacle.width) ;
+        }
         if (detectedCollision) {
             return;
         }
-        if( xValue <= 0 && yValue <= 0 ){ // 충돌!
+        if( xValue < 0 && yValue < 0 ){ // 충돌!
             if (!animation || !ctx) {
                 return;
             }
