@@ -18,7 +18,7 @@ import TheSideBar from '@/components/TheSideBar.vue'
 import Social from '@/components/home/Social.vue'
 import Ready from '@/components/home/Ready.vue'
 import DmSound from '/assets/sounds/dm.mp3'
-const { VITE_SERVER_API_URL } = import.meta.env
+const { VITE_SERVER_API_URL , VITE_HEART_CHECK_INTERVAL } = import.meta.env
 
 const store = useAccessTokenStore()
 const dmStore = useStore()
@@ -36,7 +36,7 @@ const socket = new SockJS(`${VITE_SERVER_API_URL}/ws`)
 const stompClient = Stomp.over(socket)
 let intervalId: any;
 const START_HEART_CHECK = 5 * 1000;
-const HEART_CHECK_INTERVAL = 30 * 1000;
+const HEART_CHECK_INTERVAL = VITE_HEART_CHECK_INTERVAL * 1000;
 const intervalTime = ref<number>(START_HEART_CHECK);
 
 function playSound(sound:any) {
@@ -61,6 +61,9 @@ onMounted(async () => {
 })
 
 const startHeartbeat = () => {
+  console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  console.log("INTERVAL TIME LOG: ", intervalTime.value);
+  console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   intervalId = setInterval(() => {
     stompClient.send('/api/pub/member/heartbeat', {}, JSON.stringify({
       memberId: userInfo.value?.email,
