@@ -11,10 +11,10 @@ import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
- * QMeetingParticipants is a Querydsl query type for MeetingParticipants
+ * QMeetingParticipants is a Querydsl query type for MeetingRoom
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QMeetingParticipants extends EntityPathBase<MeetingParticipants> {
+public class QMeetingParticipants extends EntityPathBase<MeetingRoom> {
 
     private static final long serialVersionUID = 497511078L;
 
@@ -41,10 +41,10 @@ public class QMeetingParticipants extends EntityPathBase<MeetingParticipants> {
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QMeetingParticipants(String variable) {
-        this(MeetingParticipants.class, forVariable(variable), INITS);
+        this(MeetingRoom.class, forVariable(variable), INITS);
     }
 
-    public QMeetingParticipants(Path<? extends MeetingParticipants> path) {
+    public QMeetingParticipants(Path<? extends MeetingRoom> path) {
         this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
@@ -53,10 +53,10 @@ public class QMeetingParticipants extends EntityPathBase<MeetingParticipants> {
     }
 
     public QMeetingParticipants(PathMetadata metadata, PathInits inits) {
-        this(MeetingParticipants.class, metadata, inits);
+        this(MeetingRoom.class, metadata, inits);
     }
 
-    public QMeetingParticipants(Class<? extends MeetingParticipants> type, PathMetadata metadata, PathInits inits) {
+    public QMeetingParticipants(Class<? extends MeetingRoom> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.meetingId = inits.isInitialized("meetingId") ? new QMeetingLog(forProperty("meetingId"), inits.get("meetingId")) : null;
         this.participant1 = inits.isInitialized("participant1") ? new com.zooting.api.domain.member.entity.QMember(forProperty("participant1"), inits.get("participant1")) : null;

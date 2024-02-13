@@ -1,10 +1,12 @@
 package com.zooting.api.domain.meeting.application;
 
 import com.google.gson.Gson;
+import com.zooting.api.domain.meeting.dao.MeetingLogRepository;
 import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.dto.MeetingPickDto;
+import com.zooting.api.domain.meeting.entity.MeetingLog;
 import com.zooting.api.domain.meeting.pubsub.MessageType;
 import com.zooting.api.domain.meeting.pubsub.OpenviduTokenRes;
 import com.zooting.api.domain.meeting.pubsub.RedisPublisher;
@@ -23,6 +25,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +38,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MeetingService {
     private final MemberRepository memberRepository;
+    private final MeetingLogRepository meetingLogRepository;
     private final MatchingAlgorithm matchingAlgorithm;
     private final WaitingRoomRedisRepository waitingRoomRedisRepository;
     private final RedisMessageListenerContainer redisMessageListener;
@@ -174,6 +178,18 @@ public class MeetingService {
         return waitingRoom.orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_WAITING_ROOM));
     }
 
+    public OpenviduTokenRes refreshOpenviduToken(String sessionId) {
+        Session session = Optional.ofNullable(openVidu.getActiveSession(sessionId)).orElseThrow(
+                () -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
+
+        try {
+            Connection connection = session.createConnection();
+            return new OpenviduTokenRes(connection.getToken());
+        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /* 1대1 미팅 신청 */
     public void requestMeeting(String nickname, String loginEmail) {
         Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
@@ -236,5 +252,9 @@ public class MeetingService {
         Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         FriendMeetingDto friendMeetingDto = new FriendMeetingDto(loginMember.getEmail(), loginMember.getNickname());
         return Map.of(friend.getEmail(), friendMeetingDto);
+    }
+
+    public List<Member> findRecentMeetingMembers(UserDetails userDetails){
+
     }
 }

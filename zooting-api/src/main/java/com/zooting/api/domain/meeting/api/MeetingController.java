@@ -3,6 +3,7 @@ package com.zooting.api.domain.meeting.api;
 import com.zooting.api.domain.meeting.application.MeetingService;
 import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingPickDto;
+import com.zooting.api.domain.meeting.entity.MeetingLog;
 import com.zooting.api.domain.meeting.pubsub.OpenviduTokenRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.SocketBaseDtoRes;
@@ -53,6 +54,17 @@ public class MeetingController {
         meetingService.acceptMatching(waitingRoomId);
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅을 수락했습니다.");
     }
+
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/refresh")
+    @Operation(summary = "접속이 끊긴 유저에게 Openvidu Token 재발급",
+            description = "접속이 끊긴 유저에게 Openvidu Token 재발급")
+    public ResponseEntity<BaseResponse<OpenviduTokenRes>> refreshOpenviduToken(
+            @RequestParam(name = "sessionId") String sessionId) {
+        OpenviduTokenRes openviduTokenRes = meetingService.refreshOpenviduToken(sessionId);
+        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, openviduTokenRes);
+    }
+
 
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/request/friend")
@@ -110,4 +122,9 @@ public class MeetingController {
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 거절에 성공했습니다.");
     }
 
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/meeting-log")
+    public ResponseEntity<BaseResponse<MeetingLog>> findRecentMeetingRoomMembers(@AuthenticationPrincipal UserDetails userDetails){
+
+    }
 }
