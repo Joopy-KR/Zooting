@@ -1,6 +1,5 @@
 package com.zooting.api.domain.member.application;
 
-import com.google.gson.Gson;
 import com.zooting.api.domain.friend.dao.FriendRepository;
 import com.zooting.api.domain.member.dto.request.HeartBeatReq;
 import com.zooting.api.domain.member.dto.response.AccessMemberStatus;

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberHeartbeatController {
     private final SimpMessageSendingOperations template;
     private final MemberHeartbeatService memberHeartbeatService;
-    private final FriendRepository friendRepository;
 
     @Operation(summary = "Heartbeat 메시지 수신")
     @MessageMapping("/member/heartbeat")
