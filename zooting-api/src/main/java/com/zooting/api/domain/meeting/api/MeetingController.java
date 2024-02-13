@@ -3,6 +3,7 @@ package com.zooting.api.domain.meeting.api;
 import com.zooting.api.domain.meeting.application.MeetingService;
 import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingPickDto;
+import com.zooting.api.domain.meeting.dto.response.MeetingMemberRes;
 import com.zooting.api.domain.meeting.dto.response.OpenviduTokenRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.SocketBaseDtoRes;
@@ -55,6 +56,17 @@ public class MeetingController {
     }
 
     @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/refresh")
+    @Operation(summary = "접속이 끊긴 유저에게 Openvidu Token 재발급",
+            description = "접속이 끊긴 유저에게 Openvidu Token 재발급")
+    public ResponseEntity<BaseResponse<OpenviduTokenRes>> refreshOpenviduToken(
+            @RequestParam(name = "sessionId") String sessionId) {
+        OpenviduTokenRes openviduTokenRes = meetingService.refreshOpenviduToken(sessionId);
+        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, openviduTokenRes);
+    }
+
+
+    @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/request/friend")
     @Operation(summary = "친구 목록 기반 1대1 미팅 신청", description = "1대1 미팅 신청")
     public ResponseEntity<BaseResponse<String>> requestMeeting(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
@@ -96,7 +108,7 @@ public class MeetingController {
     @PostMapping("/picks/result")
     @Operation(summary = "선택 결과 보기", description = "화상채팅 종료 시 사람 선택2")
     public ResponseEntity<BaseResponse<List<MeetingPickDto>>> showResult(@RequestParam String sessionId, @AuthenticationPrincipal UserDetails userDetails) {
-        List<MeetingPickDto> meetingPickDtos = meetingService.showResult(sessionId);
+        List<MeetingPickDto> meetingPickDtos = meetingService.showResult(sessionId, userDetails.getUsername());
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, meetingPickDtos);
     }
 
@@ -110,4 +122,12 @@ public class MeetingController {
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 거절에 성공했습니다.");
     }
 
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/log")
+    @Operation(summary = "유저의 최근 미팅 목록 가져오기", description = "유저의 최근 미팅 목록 가져오기")
+    public ResponseEntity<BaseResponse<List<MeetingMemberRes>>> findRecentMeetingRoomMembers(@AuthenticationPrincipal UserDetails userDetails){
+        return BaseResponse.success(
+                SuccessCode.SELECT_SUCCESS,
+                meetingService.findRecentMeetingMembers(userDetails));
+    }
 }

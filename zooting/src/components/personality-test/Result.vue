@@ -19,7 +19,7 @@
             {{ personality.match }}
           </span> 유형과 궁합이 맞아요.</li>
         </div>
-        <button class="test-completed" @click.prevent="completedTest">미팅 하러 가기</button>
+        <button class="test-completed w-full" @click.prevent="completedTest">미팅 하러 가기</button>
       </div>
     </transition>
     </div>
@@ -78,16 +78,16 @@ const wait = (sec:number) => {
   @apply text-3xl font-black my-5;
 }
 .summer-text {
-  color: #4CA975;
+  color: #69d387;
 }
 .winter-text {
-  color: #6A5ACD;
+  color: #7669c8;
 }
 .spring-text {
-  color: #FF7493;
+  color: #f06d8a;
 }
 .autumn-text {
-  color: #D27D32;
+  color: #f7a055;
 }
 .result__content {
   @apply bg-white border border-gray-200 rounded-lg shadow-md p-7 my-7 text-left text-xl;

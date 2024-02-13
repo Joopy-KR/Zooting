@@ -1,6 +1,5 @@
 package com.zooting.api.domain.member.api;
 
-import com.zooting.api.domain.friend.dao.FriendRepository;
 import com.zooting.api.domain.member.application.MemberHeartbeatService;
 import com.zooting.api.domain.member.dto.request.HeartBeatReq;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +27,7 @@ public class MemberHeartbeatController {
         template.convertAndSend("/api/sub/" + request.memberId(), heartcheck);
     }
 
-//    @Scheduled(cron = "0 0/1 * * * ?")
+    //    @Scheduled(cron = "0 0/1 * * * ?")
     @Scheduled(fixedRate = 15000L)
     public void checkAllMemberOnline() {
         memberHeartbeatService.updateMemberStatus();

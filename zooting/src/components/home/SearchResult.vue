@@ -98,7 +98,15 @@ const refreshSearch = () => {
   overflow-y: auto; 
 }
 .search-result::-webkit-scrollbar {
-  @apply hidden;
+  width: 6px;
+  background-color: white;
+}
+.search-result::-webkit-scrollbar-thumb {
+  background-color: #d6d6d6;
+  border-radius: 4px;
+}
+.search-result::-webkit-scrollbar-track {
+  background-color: transparent;
 }
 .search-result ul {
   @apply divide-y divide-gray-200 px-1;

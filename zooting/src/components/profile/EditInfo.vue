@@ -175,20 +175,7 @@ const areas: string[] = [
 const getGenderLabel = (value: string) => {
   return value === "man" ? "남자" : "여자";
 };
-const pushIdealType = (value: string) => {
-  if (idealTypeSet.value.has(value)) {
-    idealTypeSet.value.delete(value);
-  } else {
-    idealTypeSet.value.add(value);
-  }
-};
-const idealTypeList = computed(() => {
-  if (gender.value === "man") {
-    return ["강아지", "고양이", "토끼", "사슴", "펭귄"];
-  } else if (gender.value === "woman") {
-    return ["강아지", "고양이", "토끼", "곰", "공룡"];
-  }
-});
+
 const formatter = ref<{ date: string; month: string }>({
   date: "YYYY-MM-DD",
   month: "MMM",
@@ -256,26 +243,22 @@ onMounted(async () => {
 </script>
 
 <template>
-  <FailDialog
-      title="업데이트 실패!"
-      :message="failMessage"
-      :fail-alert="failAlert"
-      @set-fail-alert="setFailAlert"
-  />
-  <SuccessDialog
-      title="업데이트 성공!"
-      message="회원정보 업데이트 완료!"
-      :success-alert="successAlert"
-      @set-success-alert="setSuccessAlert"
-      @on-click-submit="moveToMyPage"
-  />
-  <div class="flex flex-col px-12 py-8">
-    <div class="flex flex-row justify-between">
+  <div>
+    <FailDialog
+        title="업데이트 실패!"
+        :message="failMessage"
+        :fail-alert="failAlert"
+        @set-fail-alert="setFailAlert"
+    />
+    <SuccessDialog
+        title="업데이트 성공!"
+        message="회원정보 업데이트 완료!"
+        :success-alert="successAlert"
+        @set-success-alert="setSuccessAlert"
+        @on-click-submit="moveToMyPage"
+    />
+    <div class="flex flex-col gap-10 p-5">
       <div class="flex flex-row">
-        <span
-            class="flex items-center px-6 py-3 text-lg font-bold text-blue-500 rounded-full bg-blue-50 ring-1 ring-inset ring-blue-700/10"
-        >설정</span
-        >
         <div @click="moveToMyPage()" class="flex flex-col items-center ml-4">
           <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -283,7 +266,7 @@ onMounted(async () => {
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="w-10 h-10 stroke-orange-500 fill-rose-100 mx-auto hover:fill-rose-300"
+              class="w-10 h-10 mx-auto stroke-orange-500 fill-rose-100 hover:fill-rose-300"
           >
             <path
                 stroke-linecap="round"
@@ -291,147 +274,128 @@ onMounted(async () => {
                 d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
             />
           </svg>
-          <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
+          <p class="font-sans text-xs font-semibold tracking-tight text-center">마이페이지</p>
         </div>
       </div>
-      <span
-          class="inline-flex items-center px-4 py-3 text-sm text-gray-800 rounded-full bg-gray-50 ring-1 ring-inset ring-gray-500/10"
-      >떠나기</span
-      >
-    </div>
-    <div class="flex justify-center items-center w-full">
-      <div class="flex flex-col items-center lg:py-14 lg:px-10 w-full">
-        <div class="relative input__div">
-          <label
-              for="nickname"
-              class="absolute inline-block bg-transparent input__label -top-7 left-10"
-          >닉네임</label
-          >
-          <input
-              type="text"
-              name="nickname"
-              id="nickname"
-              :class="isNicknameUpdatable ? 'input__nickname_enabled' : 'input__nickname_disabled'"
-              :value="nickname"
-              @input="updateNicknameValue"
-              :disabled="!isNicknameUpdatable"
-          />
-          <div v-if="!isNicknameUpdatable">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="btn__nickname_enabled"
-                @click="toggleNicknameUpdateStatus"
+      <div class="flex flex-col items-center justify-center w-full gap-5">
+        <div class="flex flex-col items-center w-3/4 gap-5">
+          <div class="relative input__div">
+            <label
+                for="nickname"
+                class="absolute inline-block bg-transparent input__label -top-7 left-10"
+            >닉네임</label
             >
-              <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-              />
-            </svg>
-          </div>
-          <div v-if="isNicknameUpdatable">
-            <svg
-                v-if="isNicknameVerify"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="btn__nickname_disabled"
-                @click="executeUpdateNickname()"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
-            </svg>
-            <p v-if="isNicknameVerify" class="absolute text-xs font-semibold -bottom-4 right-10 text-blue-600">
-              사용 가능한 닉네임 (50 Point 소요)
-            </p>
-            <svg
-                v-if="!isNicknameVerify"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="btn__nickname_disabled"
-                @click="cancelUpdateNickname()"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
-            </svg>
-
-            <p v-if="!isNicknameVerify" class="absolute text-xs font-semibold -bottom-4 right-10 text-red-600">
-              닉네임이 중복 됩니다.
-            </p>
-          </div>
-        </div>
-        <div class="input__div">
-          <label for="gender" class="input__label">성별</label>
-          <RadioGroup v-model="gender" :disabled="true">
-            <div class="gender">
-              <RadioGroupOption
-                  as="template"
-                  v-for="gender in ['man', 'woman']"
-                  :key="gender"
-                  :value="gender"
-                  v-slot="{ checked }"
+            <input
+                type="text"
+                name="nickname"
+                id="nickname"
+                :class="isNicknameUpdatable ? 'input__nickname_enabled' : 'input__nickname_disabled'"
+                :value="nickname"
+                @input="updateNicknameValue"
+                :disabled="!isNicknameUpdatable"
+            />
+            <div v-if="!isNicknameUpdatable">
+              <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.3"
+                  stroke="currentColor"
+                  class="cursor-pointer btn__nickname_enabled"
+                  @click="toggleNicknameUpdateStatus"
               >
-                <div
-                    :class="[
-                    checked ? 'gender__option--checked' : 'gender__option--no-checked',
-                    'gender__option',
-                  ]"
-                >
-                  <RadioGroupLabel as="span">{{ getGenderLabel(gender) }}</RadioGroupLabel>
-                </div>
-              </RadioGroupOption>
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                />
+              </svg>
             </div>
-          </RadioGroup>
-        </div>
-        <div class="input__div">
-          <label for="birth" class="input__label">생년월일</label>
-          <VueTailwindDatepicker
-              id="birth"
-              v-model="birth"
-              as-single
-              :formatter="formatter"
-              weekdays-size="min"
-              class="text-lg font-bold text-center hover:bg-gray-200"
-              :disabled="true"
-          />
-        </div>
-        <div class="input__div">
-          <label for="address" class="input__label">지역</label>
-          <select id="address" v-model="address">
-            <option value="" disabled selected hidden>사는 지역을 선택해 주세요.</option>
-            <option v-for="(area, index) in areas" :key="index">{{ area }}</option>
-          </select>
-        </div>
-        <div class="input__div">
-          <label for="ideal-type" class="input__label">이상형</label>
-          <div class="ideal-type__div">
-            <!-- 선택한 성별에 따라 이상형 동물 목록 출력 -->
-            <div
-                class="ideal-type__item"
-                v-for="(value, index) in idealTypeList"
-                :key="index"
-                @click="pushIdealType(value)"
-                :class="{
-                'ideal-type__item--checked': idealTypeSet.has(value),
-                'ideal-type__item--no-checked': !idealTypeSet.has(value),
-              }"
-            >
-              {{ value }}
+            <div v-if="isNicknameUpdatable">
+              <svg
+                  v-if="isNicknameVerify"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="cursor-pointer btn__nickname_disabled"
+                  @click="executeUpdateNickname()"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
+              </svg>
+              <p v-if="isNicknameVerify" class="absolute text-xs font-semibold text-blue-600 -bottom-4 right-10">
+                사용 가능한 닉네임 (50 Point 소요)
+              </p>
+              <svg
+                  v-if="!isNicknameVerify"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="cursor-pointer btn__nickname_disabled"
+                  @click="cancelUpdateNickname()"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+              </svg>
+  
+              <p v-if="!isNicknameVerify" class="absolute text-xs font-semibold text-red-600 -bottom-4 right-10">
+                닉네임이 중복 됩니다.
+              </p>
             </div>
           </div>
+          <div class="input__div">
+            <label for="gender" class="input__label">성별</label>
+            <RadioGroup v-model="gender" :disabled="true">
+              <div class="gender">
+                <RadioGroupOption
+                    as="template"
+                    v-for="gender in ['man', 'woman']"
+                    :key="gender"
+                    :value="gender"
+                    v-slot="{ checked }"
+                >
+                  <div
+                      :class="[
+                      checked ? 'gender__option--checked' : 'gender__option--no-checked',
+                      'gender__option',
+                    ]"
+                  >
+                    <RadioGroupLabel as="span">{{ getGenderLabel(gender) }}</RadioGroupLabel>
+                  </div>
+                </RadioGroupOption>
+              </div>
+            </RadioGroup>
+          </div>
+          <div class="input__div">
+            <label for="birth" class="input__label">생년월일</label>
+            <VueTailwindDatepicker
+                id="birth"
+                v-model="birth"
+                as-single
+                :formatter="formatter"
+                weekdays-size="min"
+                class="text-lg font-bold text-center cursor-pointer hover:bg-gray-200"
+                :disabled="true"
+            />
+          </div>
+          <div class="input__div">
+            <label for="address" class="input__label">지역</label>
+            <select id="address" v-model="address" class="cursor-pointer">
+              <option value="" disabled selected hidden>사는 지역을 선택해 주세요.</option>
+              <option v-for="(area, index) in areas" :key="index">{{ area }}</option>
+            </select>
+          </div>
+          <div class="flex justify-center w-2/3 py-2 mt-4 text-lg font-semibold text-white bg-red-500 rounded-lg cursor-pointer hover:bg-red-600">
+            탈퇴하기
+          </div>
+        </div>
+        <div class="flex flex-row justify-end w-3/4 gap-3 px-20 m-10">
+          <button type="button" @click="updateChanges" class="btn__save">초기화</button>
+          <button type="button" @click="updateMyInfo" class="btn__cancel">저장</button>
         </div>
       </div>
-    </div>
-    <div class="flex flex-row justify-end w-5/6 mx-10">
-      <button type="button" @click="updateChanges" class="btn__save">초기화</button>
-      <button type="button" @click="updateMyInfo" class="btn__cancel">저장</button>
     </div>
   </div>
 </template>
@@ -446,11 +410,11 @@ onMounted(async () => {
 }
 
 .btn__nickname_enabled {
-  @apply w-8 h-8 absolute bottom-1 right-12 hover:stroke-indigo-600;
+  @apply w-7 h-7 absolute bottom-1 right-12 hover:stroke-indigo-600;
 }
 
 .btn__nickname_disabled {
-  @apply w-8 h-8 absolute bottom-1 right-12 fill-orange-300 hover:stroke-orange-700;
+  @apply w-7 h-7 absolute bottom-1 right-12 fill-orange-300 hover:stroke-orange-700;
 }
 
 .input__div {
@@ -499,10 +463,10 @@ onMounted(async () => {
 }
 
 .btn__save {
-  @apply w-1/6 py-3 px-4 mx-3 text-xl font-semibold text-white bg-orange-400 rounded-full shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300;
+  @apply w-32 py-2 px-4 text-xl font-semibold text-white bg-orange-400 rounded-lg shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300;
 }
 
 .btn__cancel {
-  @apply w-1/6 py-3 px-4 mx-3 text-xl font-semibold text-white bg-indigo-600 rounded-full shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500;
+  @apply w-32 py-2 px-4 text-xl font-semibold text-white bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500;
 }
 </style>

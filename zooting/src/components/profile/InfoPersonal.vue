@@ -12,15 +12,15 @@
       @set-success-alert="setSuccessAlert"
       @on-click-submit="moveToMyPage"
   />
-  <div class="input__container relative">
-    <div @click="moveToMyPage()" class="flex flex-col items-center ml-4 absolute top-5 left-5">
+  <div class="relative input__container">
+    <div @click="moveToMyPage()" class="absolute flex flex-col items-center ml-4 top-5 left-5">
       <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="w-10 h-10 stroke-orange-500 fill-rose-100 mx-auto hover:fill-rose-300"
+          class="w-10 h-10 mx-auto stroke-orange-500 fill-rose-100 hover:fill-rose-300"
       >
         <path
             stroke-linecap="round"
@@ -28,9 +28,9 @@
             d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
         />
       </svg>
-      <p class="font-sans font-semibold text-xs tracking-tight text-center">마이페이지</p>
+      <p class="font-sans text-xs font-semibold tracking-tight text-center">마이페이지</p>
     </div>
-    <p class="lg:px-12 lg:pt-16 lg:pb-4 lg:text-3xl font-bold tracking-tighter text-center">
+    <p class="font-bold tracking-tighter text-center lg:px-12 lg:pt-16 lg:pb-4 lg:text-3xl">
       이상형 & 관심사 수정
     </p>
     <!-- 추가 정보 (관심사, 이상형) -->

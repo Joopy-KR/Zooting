@@ -1,5 +1,5 @@
 <template>
-    <div class="outer-container">
+    <div class="outer-container base-bg">
       <div class="inner-container">
         <!-- 설명 출력 -->
         <transition name="fade">
@@ -195,5 +195,11 @@
   .fade-leave-to {
     opacity: 0;
   }
+.base-bg {
+  background-image: url("/assets/images/login/background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
 </style>
   
