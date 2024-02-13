@@ -25,7 +25,7 @@ public interface MemberService {
     MemberSearchPageRes findMemberList(Pageable pageable, String userId, String nickname);
     void updatePersonality(String userId, PersonalityReq personalityReq);
     PointRes findPoints(String userId);
-    Boolean deductPoints(String userId, Long price);
+    void deductPoints(String userId, Long price);
     void addPoints(String userId, Long points);
     List<MemberSearchRes> extractMembers(String userId, ExtractingReq extractingReq);
     List<MemberSearchRes> findMyBlockList(String userId);
