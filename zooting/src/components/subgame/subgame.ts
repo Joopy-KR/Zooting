@@ -42,7 +42,7 @@ window.onload = function () {
         frameAction();
     })
 
-    
+
     // frame 단위로 그리기
     let obstacleArr:Obstacle[] = [];
     let flag = false;
@@ -56,11 +56,19 @@ window.onload = function () {
         }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         timer++;    // 한 프레임 당 timer += 1
+
         
         // timer가 200이 될 때 장애물 추가
         if (timer % (200 + getRandomInt(-3, 3)) == 0 ) {
             let obstacle = new Obstacle();
             obstacleArr.push(obstacle);
+        }
+        if (descriptionElement) {
+            if (score>= 30 && score <=50) {
+                descriptionElement.innerHTML = "<p>Speed Up</p>"
+            } else {
+                descriptionElement.innerHTML = ""
+            }
         }
         // 한 프레임마다 출력된 장애물 객체의 위치, 충돌 여부 확인
         obstacleArr.forEach((a, idx, o)=>{
@@ -75,7 +83,11 @@ window.onload = function () {
             // 충돌 확인 - 충돌하지 않았다면 객체 위치 왼쪽으로 1씩 이동
             if (! detectedCollision) {
                 collisionDetection(runner, a);
-                a.x --;
+                if (score > 30) {
+                    a.x -= 2;
+                }else {
+                    a.x --;
+                }
                 a.draw();
             }
         })
