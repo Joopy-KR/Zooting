@@ -90,12 +90,13 @@ const onConnected = () => {
   stompClient.subscribe(`/api/sub/${userInfo.value?.email}`,
   (message: any) => {
     const type = JSON.parse(message.body).type;
+    const time = JSON.parse(message.body).time;
     const res = JSON.parse(message.body).result;
     // MESSAGE
     if (type === 'MESSAGE') {
       // 현재 open 된 dmRooId인 경우 메시지 전송
-      if (dmRoomId === res.dmRoomId) {
-        emit('receiveMessage', res)
+      if (dmRoomId.value === res.dmRoomId) {
+        dmRes.value = { ...res, createdAt: new Date(time).toLocaleTimeString('ko-KR', {timeStyle: 'short', hour12: false}) }
       } else {
         // 새로운 메시지 알림
         dmStore.newMessage.push(res.sender)
@@ -105,6 +106,7 @@ const onConnected = () => {
     // 매칭 완료
     else if (type === 'MATCH') {
       store.MatchingComplete()
+
     }
     // 매칭 수락
     else if (type === 'OPENVIDU') {

@@ -112,8 +112,8 @@ onMounted(async () => {
 
 <template>
   <TheSideBar/>
-  <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
-    <div class="w-1/3">
+  <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100 min-w-[1000px]">
+    <div class="w-1/3 ms-14">
       <InfoSideBar v-if="userInfo" :user-info="userInfo" :nickname="route.params.nickname" :is-my-profile="isMyProfile" @load-user-info="loadUserInfo"/>
     </div>
     <div class="w-2/3">
