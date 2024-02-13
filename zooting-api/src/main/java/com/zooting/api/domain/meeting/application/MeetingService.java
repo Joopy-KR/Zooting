@@ -183,9 +183,10 @@ public class MeetingService {
         Session session = Optional.ofNullable(openVidu.getActiveSession(sessionId)).orElseThrow(
                 () -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
 
+        //TODO: OpenViduTokenRes 만들 때 상대 성별 정보 담는 로직 메소드화한것 추가할 것
         try {
             Connection connection = session.createConnection();
-            return new OpenviduTokenRes(connection.getToken());
+            return new OpenviduTokenRes(connection.getToken(), new ArrayList<>());
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             throw new RuntimeException(e);
         }

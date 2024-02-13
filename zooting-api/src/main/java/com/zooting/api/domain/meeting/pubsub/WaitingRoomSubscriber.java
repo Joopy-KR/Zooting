@@ -107,6 +107,7 @@ public class WaitingRoomSubscriber implements MessageListener {
 
 
                 // 미팅 로그 저장
+                //TODO: 메소드화 시킬 것 (1)
                 meetingLogRepository.save(
                         MeetingLog
                         .builder()
@@ -115,6 +116,7 @@ public class WaitingRoomSubscriber implements MessageListener {
                                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER))).build());
 
                 //다른 성별만 찾기
+                //TODO: 메소드화 시킬 것 (2)
                 List<OppositeGenderParticipantsDto> oppositeGenderParticipantsDtos = waitingRoom.getMeetingMembers().stream()
                         .filter(member -> !member.getGender().equals(nicknameGenderMap.get(email)))
                         .map(member -> new OppositeGenderParticipantsDto(member.getNickname(), member.getAnimal()))
