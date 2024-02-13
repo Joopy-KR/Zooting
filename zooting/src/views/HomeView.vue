@@ -132,6 +132,7 @@ const onConnected = () => {
     }
     // 미팅 거절
     else if (type === 'REJECT') {
+      console.log('거절')
       store.isRequesting = false
       store.isMeetingReject = true
     }

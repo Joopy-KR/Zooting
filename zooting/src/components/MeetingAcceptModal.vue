@@ -67,6 +67,7 @@ watch(()=> store.isRecieveMeeting, () => {
 // 미팅 거절
 const meetingReject = () => {
   store.meetingRejectFriend()
+  enterRoomTimeLimit.value = 0
 }
 
 // 미팅 수락

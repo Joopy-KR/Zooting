@@ -6,15 +6,22 @@
         {{ store.formattedTimer }}
       </div>
     </div>
-    <button v-if="!store.isMatching" class="btn-hover color-1" @click="meetingRegister">Match</button>
-    <button v-if="store.isMatching" class="btn-hover color-2" @click="meetingExit">Cancel</button>
+    <button v-if="!store.isMatching && !isRequesting" class="btn-hover color-1" @click="meetingRegister">Match</button>
+    <button v-else-if="store.isMatching" class="btn-hover color-2" @click="meetingExit">Cancel</button>
+    <button v-else class="btn-hover color-3">Match</button>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useAccessTokenStore } from '@/stores/store'
 
 const store = useAccessTokenStore()
+const isRequesting = ref<boolean>(false) // 일대일 미팅 요청 중 여부
+
+watch(()=> store.isRequesting, (update) => {
+  isRequesting.value = update
+})
 
 const matchingButton = () => {
   let imgUrl: URL
@@ -77,5 +84,8 @@ const meetingExit = () => {
 .btn-hover.color-2 {
   background-image: linear-gradient(to right, #eb3941, #f15e64, #e14e53, #e2373f);
   box-shadow: 0 5px 15px rgba(242, 97, 103, .4);
+}
+.btn-hover.color-3 {
+  @apply bg-gray-400;
 }
 </style>
