@@ -5,6 +5,7 @@ import com.zooting.api.domain.background.entity.Background;
 import com.zooting.api.domain.block.entity.Block;
 import com.zooting.api.domain.mask.dao.MaskInventoryRepository;
 import com.zooting.api.domain.mask.entity.Mask;
+import com.zooting.api.domain.mask.entity.MaskInventory;
 import com.zooting.api.domain.member.dao.ExtractObj;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.dto.request.*;
@@ -195,11 +196,14 @@ public class MemberServiceImpl implements MemberService {
     public boolean changeMask(String memberId, MaskReq maskReq) {
         AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER)).getAdditionalInfo();
-        Mask myMask = maskInventoryRepository.findByMask_Id(maskReq.maskId()).orElseThrow(() ->
-                new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR)).getMask();
-        if (myMask.getAnimal().equals(memberInfo.getAnimal())) {
-            memberInfo.setMaskId(myMask.getId());
-            memberInfo.setMaskUrl(myMask.getFile().getImgUrl());
+        List<MaskInventory> myMask = maskInventoryRepository.findByMask_IdAndMember_Email(maskReq.maskId(), memberId);
+        if (myMask.isEmpty()) {
+            throw new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR);
+        }
+        Mask mask = myMask.get(0).getMask();
+        if (mask.getAnimal().equals(memberInfo.getAnimal())) {
+            memberInfo.setMaskId(mask.getId());
+            memberInfo.setMaskUrl(mask.getFile().getImgUrl());
             return true;
         }
         return false;
@@ -210,10 +214,14 @@ public class MemberServiceImpl implements MemberService {
     public void changeBackground(String memberId, BackgroundReq backgroundReq) {
         AdditionalInfo memberInfo = memberRepository.findMemberByEmail(memberId).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER)).getAdditionalInfo();
-        Background myBackground = backgroundInventoryRepository.findBackgroundInventoryByBackground_Id(backgroundReq.backgroundId()).orElseThrow(() ->
-                new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR)).getBackground();
-        memberInfo.setBackgroundId(myBackground.getId());
-        memberInfo.setBackgroundUrl(myBackground.getFile().getImgUrl());
+        var myBackground = backgroundInventoryRepository.findByBackground_IdAndMember_Email(
+                backgroundReq.backgroundId(), memberId);
+        if (myBackground.isEmpty()) {
+            throw new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR);
+        }
+        Background background = myBackground.get(0).getBackground();
+        memberInfo.setBackgroundId(background.getId());
+        memberInfo.setBackgroundUrl(background.getFile().getImgUrl());
     }
 
     @Transactional
