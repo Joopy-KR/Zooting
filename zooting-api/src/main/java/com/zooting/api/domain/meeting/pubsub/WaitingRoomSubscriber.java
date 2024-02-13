@@ -3,6 +3,8 @@ package com.zooting.api.domain.meeting.pubsub;
 import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.application.WaitingRoom;
+import com.zooting.api.domain.meeting.dto.response.OpenviduTokenRes;
+import com.zooting.api.domain.meeting.dto.response.RedisMatchRes;
 import com.zooting.api.global.common.SocketBaseDtoRes;
 import com.zooting.api.global.common.SocketType;
 import com.zooting.api.global.common.code.ErrorCode;
@@ -12,7 +14,10 @@ import io.openvidu.java.client.OpenVidu;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import io.openvidu.java.client.Session;
+
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -85,11 +90,13 @@ public class WaitingRoomSubscriber implements MessageListener {
         try {
             Session session = openVidu.createSession();
             log.info("세션을 만들었습니다.");
+            Map<String, String> participants = waitingRoom.getMeetingMembers().stream()
+                    .collect(Collectors.toMap(MeetingMemberDto::getNickname, MeetingMemberDto::getGender));
             for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
                 String email = meetingMemberDto.getEmail();
                 Connection connection = session.createConnection();
 
-                OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken());
+                OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken(), participants);
                 webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.OPENVIDU, openviduTokenRes));
             }
             waitingRoomRedisRepository.deleteById(waitingRoom.getWaitingRoomId());

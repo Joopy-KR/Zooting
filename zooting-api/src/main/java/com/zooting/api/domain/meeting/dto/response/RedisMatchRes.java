@@ -1,4 +1,4 @@
-package com.zooting.api.domain.meeting.pubsub;
+package com.zooting.api.domain.meeting.dto.response;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -6,7 +6,7 @@ import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.dto.MeetingPickDto;
 import com.zooting.api.domain.meeting.pubsub.MessageType;
-import com.zooting.api.domain.meeting.pubsub.OpenviduTokenRes;
+import com.zooting.api.domain.meeting.dto.response.OpenviduTokenRes;
 import com.zooting.api.domain.meeting.pubsub.RedisPublisher;
 import com.zooting.api.domain.meeting.pubsub.WaitingRoomSubscriber;
 import com.zooting.api.domain.member.dao.MemberRepository;
@@ -189,14 +189,17 @@ public class MeetingService {
 
     /* 1대1 미팅 수락 */
     public Map<String, OpenviduTokenRes> sendOpenViduTokenToClient(String nickname, String loginEmail) {
+        Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
+
         try {
             Map<String, OpenviduTokenRes> openviduTokenResMap = new HashMap<>();
+            Map<String, String> participants = Map.of(friend.getNickname(), friend.getGender(), loginEmail, loginMember.getGender());
             Session session = openVidu.createSession();
             Connection connection = session.createConnection();
-            openviduTokenResMap.put(friend.getEmail(), new OpenviduTokenRes(connection.getToken())); 
+            openviduTokenResMap.put(friend.getEmail(), new OpenviduTokenRes(connection.getToken(), participants));
             connection = session.createConnection();
-            openviduTokenResMap.put(loginEmail, new OpenviduTokenRes(connection.getToken())); 
+            openviduTokenResMap.put(loginEmail, new OpenviduTokenRes(connection.getToken(), participants));
             return openviduTokenResMap;
         } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
             throw new RuntimeException(ex);
