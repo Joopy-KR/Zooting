@@ -86,10 +86,17 @@ window.onload = function () {
 
         // 좌우 이동
         if (rightMoveState == 1 && runner.x < 600 - runner.width) {
-            runner.x += 1;
+            if (jumpState == 0) {
+                runner.x += 1;
+            }else {
+                runner.x += 0.7            }
         }
         else if (leftMoveState == 1 && runner.x > 0) {
-            runner.x -= 1
+            if (jumpState == 0) {
+                runner.x -= 1
+            } else {
+                runner.x -= 0.7
+            }
         }
 
 

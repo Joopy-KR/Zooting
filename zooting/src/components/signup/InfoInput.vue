@@ -44,7 +44,9 @@
       <div class="input__div">
         <label for="birth" class="input__label">생년월일</label>
         <VueTailwindDatepicker id="birth" v-model="birth" as-single :formatter="formatter" weekdays-size="min" class="birth__datepicker date-size"/>
-        <div v-if="birthError" class="error-message">생년월일을 선택해 주세요</div>
+        <div v-if="birthBlankError" class="error-message">생년월일을 선택해 주세요</div>
+        <div v-if="birthWrongError" class="error-message">올바른 생년월일을 선택해 주세요</div>
+
       </div>
       
       <div class="input__div">          
@@ -108,6 +110,8 @@ const address = ref<string>('')
 const idealAnimalSet = ref(new Set<string>())
 const interestSet = ref(new Set<string>())
 
+const birthDate = ref(new Date(birth.value));
+
 const questionMarkImgUrl = new URL('/assets/images/signup/question_mark.png', import.meta.url).href
 
 
@@ -157,7 +161,8 @@ const interestList:string[] = [
 ]
 
 const nicknameError = ref<boolean>(false)
-const birthError = ref<boolean>(false)
+const birthBlankError = ref<boolean>(false)
+const birthWrongError = ref<boolean>(false)
 const addressError = ref<boolean>(false)
 
 const checkNicknameValidate = () => {
@@ -259,9 +264,13 @@ const saveAdditionalInfo = () => {
     nicknameError.value = true
   }
   if (!birth.value) {
-    birthError.value = true
+    birthBlankError.value = true
   } else {
-    birthError.value = false
+    if (new Date() < new Date(birth.value)){
+      birthWrongError.value = true
+    }
+    birthBlankError.value = false
+
   }
    if (!address.value) {
     addressError.value = true
