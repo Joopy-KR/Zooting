@@ -61,9 +61,6 @@ onMounted(async () => {
 })
 
 const startHeartbeat = () => {
-  console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-  console.log("INTERVAL TIME LOG: ", intervalTime.value);
-  console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   intervalId = setInterval(() => {
     stompClient.send('/api/pub/member/heartbeat', {}, JSON.stringify({
       memberId: userInfo.value?.email,
@@ -110,7 +107,7 @@ const onConnected = () => {
     }
     // 매칭 수락
     else if (type === 'OPENVIDU') {
-      store.pushMeetingRoom(res.token)
+      store.pushMeetingRoom(res)
       store.isRequesting = false
     }
     // 유저 상태 정보
