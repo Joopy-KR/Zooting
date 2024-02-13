@@ -1,24 +1,15 @@
 package com.zooting.api.domain.meeting.pubsub;
 
+import com.zooting.api.domain.meeting.application.WaitingRoom;
 import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
-import com.zooting.api.domain.meeting.application.WaitingRoom;
 import com.zooting.api.domain.meeting.dto.response.OpenviduTokenRes;
 import com.zooting.api.domain.meeting.dto.response.RedisMatchRes;
 import com.zooting.api.global.common.SocketBaseDtoRes;
 import com.zooting.api.global.common.SocketType;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
-import io.openvidu.java.client.Connection;
-import io.openvidu.java.client.OpenVidu;
-import io.openvidu.java.client.OpenViduHttpException;
-import io.openvidu.java.client.OpenViduJavaClientException;
-import io.openvidu.java.client.Session;
-
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import io.openvidu.java.client.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +20,11 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Component
@@ -69,6 +65,7 @@ public class WaitingRoomSubscriber implements MessageListener {
 
     /**
      * 꽉 찬 대기실 유저들에게 매칭 수락 버튼 발송
+     *
      * @param waitingRoom 꽉 찬 대기실
      */
 
@@ -84,6 +81,7 @@ public class WaitingRoomSubscriber implements MessageListener {
 
     /**
      * 유저 전원이 수락버튼을 눌렀을 경우 토큰 발급 후 대기실 삭제
+     *
      * @param waitingRoom 매칭이 완료된 대기실
      */
     private void sendOpenViduTokenToClient(WaitingRoom waitingRoom) {
@@ -92,11 +90,12 @@ public class WaitingRoomSubscriber implements MessageListener {
             log.info("세션을 만들었습니다.");
             Map<String, String> participants = waitingRoom.getMeetingMembers().stream()
                     .collect(Collectors.toMap(MeetingMemberDto::getNickname, MeetingMemberDto::getGender));
+            List<String> nicknameList = participants.keySet().stream().collect(Collectors.toList());
+            List<String> genderList = participants.values().stream().collect(Collectors.toList());
             for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
                 String email = meetingMemberDto.getEmail();
                 Connection connection = session.createConnection();
-
-                OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken(), participants);
+                OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken(), nicknameList, genderList);
                 webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.OPENVIDU, openviduTokenRes));
             }
             waitingRoomRedisRepository.deleteById(waitingRoom.getWaitingRoomId());
