@@ -43,15 +43,17 @@
       
       <div class="input__div">
         <label for="birth" class="input__label">생년월일</label>
-        <VueTailwindDatepicker id="birth" v-model="birth" as-single :formatter="formatter" weekdays-size="min" class="birth__datepicker"/>
-        <div v-if="birthError" class="error-message">생년월일을 선택해 주세요</div>
+        <VueTailwindDatepicker id="birth" v-model="birth" as-single :formatter="formatter" weekdays-size="min" class="birth__datepicker date-size"/>
+        <div v-if="birthBlankError" class="error-message">생년월일을 선택해 주세요</div>
+        <div v-if="birthWrongError" class="error-message">올바른 생년월일을 선택해 주세요</div>
+
       </div>
       
       <div class="input__div">          
         <label for="address" class="input__label">지역</label>
         <select id="address" v-model="address">
           <option value="" disabled selected hidden>거주지를 선택해 주세요</option>
-          <option v-for="(area, index) in areas" :key="index">{{ area }}</option>
+          <option v-for="(area, index) in areas" :key="index" class="my-2">{{ area }}</option>
         </select>
         <div v-if="addressError" class="error-message">거주지를 선택해 주세요</div>
       </div>
@@ -75,6 +77,7 @@
         @click="pushidealAnimal(value)"
         :class="{ 'ideal-type__item--checked': idealAnimalSet.has(value), 'ideal-type__item--no-checked': !idealAnimalSet.has(value) }">
         {{ value }}
+          <img :src="getProfileImage(value)" class="ideal-animal ml-2"/>
         </div>
       </div>
   
@@ -106,6 +109,8 @@ const birth = ref<string>('')
 const address = ref<string>('')
 const idealAnimalSet = ref(new Set<string>())
 const interestSet = ref(new Set<string>())
+
+const birthDate = ref(new Date(birth.value));
 
 const questionMarkImgUrl = new URL('/assets/images/signup/question_mark.png', import.meta.url).href
 
@@ -156,7 +161,8 @@ const interestList:string[] = [
 ]
 
 const nicknameError = ref<boolean>(false)
-const birthError = ref<boolean>(false)
+const birthBlankError = ref<boolean>(false)
+const birthWrongError = ref<boolean>(false)
 const addressError = ref<boolean>(false)
 
 const checkNicknameValidate = () => {
@@ -211,6 +217,27 @@ const idealAnimalList = computed(() => {
     return ['강아지', '고양이', '토끼', '곰', '공룡']
   }
 })
+const getProfileImage = (animal: string) => {
+  let imgUrl: URL;
+  if (animal === '강아지') {
+    imgUrl = new URL('/assets/images/animal/dog.png', import.meta.url);
+  } else if (animal === '고양이') {
+    imgUrl = new URL('/assets/images/animal/cat.png', import.meta.url);
+  } else if (animal === '곰') {
+    imgUrl = new URL('/assets/images/animal/bear.png', import.meta.url);
+  } else if (animal === '공룡') {
+    imgUrl = new URL('/assets/images/animal/dino.png', import.meta.url);
+  } else if (animal === '펭귄') {
+    imgUrl = new URL('/assets/images/animal/penguin.png', import.meta.url);
+  } else if (animal === '토끼') {
+    imgUrl = new URL('/assets/images/animal/rabbit.png', import.meta.url);
+  } else if (animal === '사슴') {
+    imgUrl = new URL('/assets/images/animal/deer.png', import.meta.url);
+  } else {
+    imgUrl = new URL('/assets/images/animal/animal_group.png', import.meta.url);
+  }
+  return imgUrl.href;
+}
 
 const pushInterest = (value:string) => {
   if (interestSet.value.size < 6 || interestSet.value.has(value)) {
@@ -237,9 +264,13 @@ const saveAdditionalInfo = () => {
     nicknameError.value = true
   }
   if (!birth.value) {
-    birthError.value = true
+    birthBlankError.value = true
   } else {
-    birthError.value = false
+    if (new Date() < new Date(birth.value)){
+      birthWrongError.value = true
+    }
+    birthBlankError.value = false
+
   }
    if (!address.value) {
     addressError.value = true
@@ -349,6 +380,9 @@ interface Payload {
   right: 5px;
   margin: auto 2px;
 }
+.date-size {
+
+}
 .error-message {
   @apply text-red-500 text-sm mt-1;
 }
@@ -359,6 +393,9 @@ interface Payload {
   opacity: 0.5;
   width: 18px;
   height: 18px;
-
+}
+.ideal-animal{
+  width:20px;
+  height:20px;
 }
 </style>
