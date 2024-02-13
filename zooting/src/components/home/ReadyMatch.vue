@@ -60,7 +60,6 @@ const meetingExit = () => {
 	@apply absolute -bottom-24;
   width: 170px;
   font-size: 25px;
-  /* font-weight: 600; */
   color: #fff;
   cursor: pointer;
   margin: 20px;

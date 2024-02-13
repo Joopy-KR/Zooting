@@ -31,7 +31,7 @@
           <div class="flex items-center gap-4">
             <!-- 프로필 이미지 -->
             <RouterLink :to="getProfileLink(item.nickname)">
-              <img class="friend-list__img" :src="getProfileImage(item.animal)" alt="profile">
+              <img :class="getAvatarPretty(item)" :src="getProfileImage(item.animal)" alt="profile">
             </RouterLink>
             <div class="font-medium">
               <div class="flex items-center">
@@ -172,8 +172,8 @@ const meetingRequestFriend = (reciever: string) => {
   openedMenuNickname.value = null
   // 요청 중이 아닌 상태에서 요청
   if (!store.isRequesting) {
-    // store.meetingRequestFriend(reciever) 
-    store.meetingRequestFriend('윤죠이') 
+    store.meetingRequestFriend(reciever) 
+    // store.meetingRequestFriend('윤죠이') 
     isSuccessRequest.value = true
   } else {
     isSuccessRequest.value = false
