@@ -351,7 +351,7 @@ function getCurrentTime(): string {
 }
 
 // Web socket -----------------------------------------------
-const socket = new SockJS(`${VITE_SERVER_API_URL}/ws/dm`)
+const socket = new SockJS(`${VITE_SERVER_API_URL}/ws`)
 const stompClient = Stomp.over(socket)
 
 // 메시지 전송 함수

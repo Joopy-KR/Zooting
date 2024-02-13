@@ -1,6 +1,7 @@
 package com.zooting.api.domain.dm.dto.request;
 
 import com.zooting.api.domain.file.dto.response.FileRes;
+import com.zooting.api.global.common.SocketType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
@@ -12,9 +13,6 @@ public record DMReq(
         @Schema(description = "DM방 ID")
         @NotNull
         Long dmRoomId,
-        @Schema(description = "Type")
-        @NotNull
-        String type,
         @Schema(description = "메시지")
         @NotNull
         String message,

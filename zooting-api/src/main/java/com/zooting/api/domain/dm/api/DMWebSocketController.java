@@ -2,6 +2,8 @@ package com.zooting.api.domain.dm.api;
 
 import com.zooting.api.domain.dm.application.DMService;
 import com.zooting.api.domain.dm.dto.request.DMReq;
+import com.zooting.api.global.common.SocketBaseDtoRes;
+import com.zooting.api.global.common.SocketType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +12,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -31,6 +32,6 @@ public class DMWebSocketController {
     public void receiveAndSendMessage(DMReq dmReq, SimpMessageHeaderAccessor headerAccessor) {
         log.info("SEND_CHAT_SUCCESS (201 CREATED) ::");
         dmService.saveDM(dmReq);
-        template.convertAndSend("/api/sub/dm/" + dmReq.receiver(), dmReq);
+        template.convertAndSend("/api/sub/" + dmReq.receiver(), new SocketBaseDtoRes<>(SocketType.MESSAGE, dmReq));
     }
 }

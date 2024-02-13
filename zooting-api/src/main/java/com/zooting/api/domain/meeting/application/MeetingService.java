@@ -11,6 +11,8 @@ import com.zooting.api.domain.meeting.pubsub.RedisPublisher;
 import com.zooting.api.domain.meeting.pubsub.WaitingRoomSubscriber;
 import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.domain.member.entity.Member;
+import com.zooting.api.global.common.SocketBaseDtoRes;
+import com.zooting.api.global.common.SocketType;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import io.openvidu.java.client.*;
@@ -180,9 +182,9 @@ public class MeetingService {
     }
 
     private void sendAcceptMessageToClient(Member friend, Member loginMember) {
-        FriendMeetingDto friendMeetingDto = new FriendMeetingDto("meeting", loginMember.getEmail(), loginMember.getNickname());
-        log.info("[sendAcceptMessageToClient] email: {} {} {} {}", friend.getEmail(), friendMeetingDto.type(), loginMember.getEmail(), loginMember.getNickname());
-        webSocketTemplate.convertAndSend("/api/sub/dm/" + friend.getEmail(), friendMeetingDto);
+        FriendMeetingDto friendMeetingDto = new FriendMeetingDto(loginMember.getEmail(), loginMember.getNickname()); // FIXME
+        log.info("[sendAcceptMessageToClient] email: {} {} {}", friend.getEmail(), loginMember.getEmail(), loginMember.getNickname()); // FIXME
+        webSocketTemplate.convertAndSend("/api/sub/" + friend.getEmail(), new SocketBaseDtoRes<>(SocketType.MEETING, friendMeetingDto)); // FIXME
     }
 
     /* 1대1 미팅 수락 */
@@ -191,11 +193,11 @@ public class MeetingService {
         try {
             Session session = openVidu.createSession();
             Connection connection = session.createConnection();
-            OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes("openviduToken", connection.getToken());
-            webSocketTemplate.convertAndSend("/api/sub/dm/" + loginEmail, openviduTokenRes);
+            OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken()); // FIXME
+            webSocketTemplate.convertAndSend("/api/sub/" + loginEmail, new SocketBaseDtoRes<>(SocketType.OPENVIDU, openviduTokenRes)); // FIXME
             connection = session.createConnection();
-            openviduTokenRes = new OpenviduTokenRes("openviduToken", connection.getToken());
-            webSocketTemplate.convertAndSend("/api/sub/dm/" + friend.getEmail(), openviduTokenRes);
+            openviduTokenRes = new OpenviduTokenRes(connection.getToken()); // FIXME
+            webSocketTemplate.convertAndSend("/api/sub/" + friend.getEmail(), new SocketBaseDtoRes<>(SocketType.OPENVIDU, openviduTokenRes)); // FIXME
         } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
             throw new RuntimeException(ex);
         }
@@ -205,15 +207,15 @@ public class MeetingService {
     public void selectPerson(String nickname, String loginEmail) {
         Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        MeetingSelectDto meetingSelectDto = new MeetingSelectDto("select", loginMember.getNickname(), friend.getNickname());
-        webSocketTemplate.convertAndSend("/api/sub/dm/" + friend.getEmail(), meetingSelectDto);
+        MeetingSelectDto meetingSelectDto = new MeetingSelectDto(loginMember.getNickname(), friend.getNickname()); // FIXME
+        webSocketTemplate.convertAndSend("/api/sub/" + friend.getEmail(), new SocketBaseDtoRes<>(SocketType.SELECT, meetingSelectDto)); // FIXME
     }
 
     public void selectsPerson(String sessionId, String nickname, String loginEmail) {
         Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        MeetingSelectDto meetingSelectDto = new MeetingSelectDto("select", loginMember.getNickname(), friend.getNickname());
-        redisTemplate.opsForList().rightPush(sessionId, gson.toJson(meetingSelectDto));
+        MeetingSelectDto meetingSelectDto = new MeetingSelectDto(loginMember.getNickname(), friend.getNickname()); // FIXME
+        redisTemplate.opsForList().rightPush(sessionId, gson.toJson(meetingSelectDto)); // FIXME
         redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
     }
 
@@ -221,7 +223,7 @@ public class MeetingService {
         List<Object> objectList = redisTemplate.opsForList().range(sessionId, 0, -1);
         if (objectList != null && !objectList.isEmpty()) {
             List<MeetingSelectDto> meetingSelectDtoList = objectList.stream()
-                    .map(obj -> gson.fromJson((String) obj, MeetingSelectDto.class))
+                    .map(obj -> gson.fromJson((String) obj, MeetingSelectDto.class)) // FIXME
                     .collect(Collectors.toList());
             redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
             return meetingSelectDtoList;
