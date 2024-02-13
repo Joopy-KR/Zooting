@@ -118,7 +118,7 @@ const onConnected = () => {
     }
     // 미팅 무응답
     else if (type === 'REJECT') {
-      
+      console.log(11111111111)
     }
   })
 }

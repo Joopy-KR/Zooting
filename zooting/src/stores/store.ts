@@ -883,6 +883,10 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 매칭 수락
   const meetingAccept = function () {
+    if (!isMatchingComplete.value) {
+      console.log('Meeting has been canceled')
+      return
+    }
     isMatching.value = false
     isMatchingComplete.value = false
     resetTimer()
