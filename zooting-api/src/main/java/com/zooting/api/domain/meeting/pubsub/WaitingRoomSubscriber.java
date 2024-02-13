@@ -3,6 +3,8 @@ package com.zooting.api.domain.meeting.pubsub;
 import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.application.WaitingRoom;
+import com.zooting.api.global.common.SocketBaseDtoRes;
+import com.zooting.api.global.common.SocketType;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import io.openvidu.java.client.Connection;
@@ -69,9 +71,9 @@ public class WaitingRoomSubscriber implements MessageListener {
         log.info("[onMessage] key: {}, 매칭성공", waitingRoom.getWaitingRoomId());
         for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
             String email = meetingMemberDto.getEmail();
-            RedisMatchRes redisMatchRes = new RedisMatchRes("match", waitingRoom.getWaitingRoomId());
-            log.info("[onMessage] email: {} {} {}", email, redisMatchRes.type(), redisMatchRes.roomId());
-            webSocketTemplate.convertAndSend("/api/sub/dm/" + email, redisMatchRes);
+            RedisMatchRes redisMatchRes = new RedisMatchRes(waitingRoom.getWaitingRoomId());
+            log.info("[onMessage] email: {} {}", email, redisMatchRes.roomId());
+            webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.MATCH, waitingRoom.getWaitingRoomId()));
         }
     }
 
@@ -87,8 +89,8 @@ public class WaitingRoomSubscriber implements MessageListener {
                 String email = meetingMemberDto.getEmail();
                 Connection connection = session.createConnection();
 
-                OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes("openviduToken", connection.getToken());
-                webSocketTemplate.convertAndSend("/api/sub/dm/" + email, openviduTokenRes);
+                OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken());
+                webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.OPENVIDU, openviduTokenRes));
             }
             waitingRoomRedisRepository.deleteById(waitingRoom.getWaitingRoomId());
             redisMessageListener.removeMessageListener(this, new ChannelTopic(waitingRoom.getWaitingRoomId()));

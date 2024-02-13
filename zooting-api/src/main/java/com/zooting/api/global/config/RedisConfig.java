@@ -48,9 +48,4 @@ public class RedisConfig {
         container.setConnectionFactory(connectionFactory);
         return container;
     }
-
-    @Bean
-    public Gson gson() {
-        return new GsonBuilder().create();
-    }
 }

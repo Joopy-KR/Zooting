@@ -27,10 +27,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private static final String[] URL_WHITE_LIST = {"/error", "/login", "/favicon.ico",
+    private static final String[] URL_WHITE_LIST = {
+            "/error", "/login", "/favicon.ico",
             "/health", "/api-docs/**", "/swagger-ui/**",
             "/swagger-resources/**", "/swagger-ui.html", "/api/token/**",
-            "/ws/dm/**", "/api/sub/**", "/api/pub/**"
+            "/ws/**", "/api/sub/**", "/api/pub/**"
     };
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOAuth2FailHandler customOAuth2FailHandler;
@@ -65,8 +66,7 @@ public class WebSecurityConfig {
         final List<String> allowedOriginPatterns = List.of(
                 "http://localhost:8080",
                 "http://localhost:5173",
-                "https://i10a702.p.ssafy.io",
-                "http://70.12.247.212:5173"
+                "https://i10a702.p.ssafy.io"
         );
         return request -> {
             CorsConfiguration config = new CorsConfiguration();
