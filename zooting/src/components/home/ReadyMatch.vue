@@ -1,15 +1,13 @@
 <template>
   <div class="match__container">
-    <div class="matching-button">
-      <img :src="matchingButton()" alt="matching-button">
-      <button v-if="!store.isMatching" class="btn-hover color-1" @click="meetingRegister">Match</button>
-      <button v-if="store.isMatching" class="btn-hover color-2" @click="meetingExit">Cancel</button>
-    </div>
-    <div class="matching" v-show="store.isMatching">
-      <div class="matching__timer">
+    <div class="matching__state">
+      <img :src="matchingButton()" alt="matching">
+      <div class="matching__timer" v-show="store.isMatching">
         {{ store.formattedTimer }}
       </div>
     </div>
+    <button v-if="!store.isMatching" class="btn-hover color-1" @click="meetingRegister">Match</button>
+    <button v-if="store.isMatching" class="btn-hover color-2" @click="meetingExit">Cancel</button>
   </div>
 </template>
 
@@ -41,26 +39,15 @@ const meetingExit = () => {
 .match__container {
   @apply flex flex-col items-center justify-center h-full;
 }
-.match__page {
-  @apply flex flex-col justify-center items-center relative;
-}
-.matching-button {
-  @apply flex justify-center items-center relative;
-}
-.matching-button img {
-  @apply w-5/6;
-}
-.matching {
-  @apply absolute flex flex-col justify-center items-center gap-2;
+.matching__state {
+  @apply w-1/3 flex justify-center items-center;
 }
 .matching__timer {
-  @apply text-5xl;
+  @apply absolute text-6xl;
 }
 .btn-hover {
-	@apply absolute -bottom-24;
   width: 170px;
   font-size: 25px;
-  /* font-weight: 600; */
   color: #fff;
   cursor: pointer;
   margin: 20px;

@@ -7,7 +7,6 @@ import AnimalTestView from "@/views/AnimalTestView.vue";
 import PersonalityTestView from "@/views/PersonalityTestView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import Login from "@/views/LoginView.vue";
-import ChatTestView from "@/views/ChatTestView.vue";
 import VideoChatView from '@/views/VideoChatView.vue';
 
 const router = createRouter({
@@ -47,11 +46,6 @@ const router = createRouter({
       path: "/personality-test",
       name: "personality-test",
       component: PersonalityTestView,
-    },
-    {
-      path: "/chat",
-      name: "chat",
-      component: ChatTestView,
     },
     {
       path: "/profile/:nickname?",
