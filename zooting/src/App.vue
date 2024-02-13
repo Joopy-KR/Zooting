@@ -5,15 +5,16 @@
       @current-dm-room-id="currentDmRoomId"
       :dm-res = "dmRes"
     />
-    <RouterView
-      class="ms-14"
-      :dm-room-id="dmRoomId"
-      @receive-message="receiveMessage"
-    />
-    <MatchingCompleteModal
-      v-if="store.isLogin"
-      class="z-40"
+      <RouterView
+        class="ms-14"
+        :dm-room-id="dmRoomId"
+        @receive-message="receiveMessage"
       />
+      <MatchingCompleteModal
+        v-if="store.isLogin"
+        class="z-40"
+        />
+<!--    <AnimalTestView class="ms-14"/>-->
   </div>
 </template>
 
@@ -23,6 +24,8 @@ import { RouterView } from 'vue-router'
 import TheSideBar from '@/components/TheSideBar.vue'
 import MatchingCompleteModal from "@/components/MatchingCompleteModal.vue"
 import { useAccessTokenStore } from './stores/store'
+
+// import AnimalTestView from "@/views/AnimalTestView.vue";
 
 const store = useAccessTokenStore()
 const dmRoomId = ref<number>(0)
@@ -37,6 +40,10 @@ const receiveMessage = (req: any) => {
 }
 
 </script>
-
 <style scoped>
+
+@import url("https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css");
+* {
+  font-family: 'NanumSquareAcb';
+}
 </style>

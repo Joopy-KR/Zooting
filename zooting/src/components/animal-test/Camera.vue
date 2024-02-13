@@ -10,9 +10,6 @@
           <p class="mb-5 text-2xl font-bold">사진은 저장되지 않아요</p>
           <Popover class="relative flex items-center justify-center">
             <span class="mr-2">촬영이 되지 않나요?</span>
-            <PopoverButton
-              class="inline-flex items-center text-sm font-semibold leading-6 text-gray-900 gap-x-1"
-            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -27,7 +24,6 @@
                   d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
                 />
               </svg>
-            </PopoverButton>
             <transition
               enter-active-class="transition duration-200 ease-out"
               enter-from-class="translate-y-1 opacity-0"
@@ -44,7 +40,9 @@
                 >
                   <div class="flex flex-col items-center justify-center p-4">
                     <div class="mt-10 hide-button">
-                      <div href="#" class="rounded" style="position: static; margin-left: 80px">
+                      <div href="#" class="rounded text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                           style="position: static; margin-left: 80px"  data-tooltip-trigger="hover"
+                           data-tooltip-target="tooltip-top" data-tooltip-placement="top" type="button">
                         <svg
                           version="1.1"
                           x="0px"
@@ -62,7 +60,7 @@
                         </svg>
                       </div>
                     </div>
-                    <div class="flex flex-col">
+                    <div class="flex flex-col" id="tooltip-top" role="tooltip">
                       <p>카메라는 얼굴을 인식해요</p>
                       <p>위처럼 촬영 버튼이 회색이면 촬영되지 않아요</p>
                       <br />
@@ -73,6 +71,7 @@
                         2. 카메라에 두 명 이상 있으면 촬영되지
                         <span class="text-violet-500">않아요</span>
                       </p>
+                      <div class="tooltip-arrow" data-popper-arrow></div>
                     </div>
                   </div>
                 </div>

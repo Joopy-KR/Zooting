@@ -103,32 +103,32 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from) => {
-  const store = useAccessTokenStore();
-
-  // 허용되지 않는 경로 접근
-  if (to.name === 'not-found') {
-    if (store.isLogin) {
-      return {name: 'home'};
-    } else {
-      return {name: 'signin'};
-    }
-  }
-
-  // 로그인이 된 경우
-  if (store.isLogin) {
-    if (to.name === 'home') {
-      store.getUserInfo()
-    } else if (to.name === 'signin') {
-      store.signOut()
-    }
-    return;
-  }
-
-  // 로그인이 안한 경우
-  if (to.name !== 'login' && to.name !== 'signin') {
-    return {name: 'signin'};
-  }
-});
+// router.beforeEach((to, from) => {
+//   const store = useAccessTokenStore();
+//
+//   // 허용되지 않는 경로 접근
+//   if (to.name === 'not-found') {
+//     if (store.isLogin) {
+//       return {name: 'home'};
+//     } else {
+//       return {name: 'signin'};
+//     }
+//   }
+//
+//   // 로그인이 된 경우
+//   if (store.isLogin) {
+//     if (to.name === 'home') {
+//       store.getUserInfo()
+//     } else if (to.name === 'signin') {
+//       store.signOut()
+//     }
+//     return;
+//   }
+//
+//   // 로그인이 안한 경우
+//   if (to.name !== 'login' && to.name !== 'signin') {
+//     return {name: 'signin'};
+//   }
+// });
 
 export default router;
