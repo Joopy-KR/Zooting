@@ -107,6 +107,7 @@ const changeDefaultMask = (maskId: number) => {
         if (data.status === 200 || data.status === 201) {
           setNotify("마스크 변경", data.result);
           setShowSuccess(true);
+          selectedMaskId.value = maskId;
           emits("loadMyInfo");
           getMyMaskList(props.userInfo?.animal);
         } else {
@@ -198,11 +199,6 @@ const getMyMaskList = async (animal: string | undefined) => {
             status: true,
             isSelected: false,
           };
-
-          if (tmp.maskId === props.userInfo?.maskId) {
-            tmp.isSelected = true;
-            selectedMaskId.value = tmp.maskId;
-          }
           masks.push(tmp);
         }
 
@@ -238,11 +234,15 @@ watch(myMaskList, (newMyMaskList) => {
     if (correspondingMask) {
       // myMaskList의 id와 maskList의 id가 같은 경우에만 처리
       correspondingMask.status = myMask.status;
-      if (correspondingMask.maskId === props.userInfo?.maskId) {
+      if (correspondingMask.maskId === selectedMaskId.value) {
         correspondingMask.isSelected = true;
+      } else {
+        correspondingMask.isSelected = false;
       }
     }
   });
+
+  console.log("newMYMASK", newMyMaskList);
 });
 watch(() => props.userInfo, (newValue) => {
   if (newValue?.animal) {
