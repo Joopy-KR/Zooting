@@ -345,14 +345,15 @@ let video: HTMLVideoElement | null = null
 let avatar: Avatar | null = null
 
 // 각각의 가면들 주소 할당
-const bear = "/assets/animal_mask/bear/scene.gltf"
-const cat = "/assets/animal_mask/cat/scene.gltf"
-const deer = "/assets/animal_mask/deer/scene.gltf"
-const dino = "/assets/animal_mask/dino/scene.gltf"
-const dog = "/assets/animal_mask/dog/scene.gltf"
-const penguin = "/assets/animal_mask/penguin/scene.gltf"
-const rabbit = "/assets/animal_mask/rabbit/scene.gltf"
-const raccoon = "/assets/animal_mask/raccoon_head.glb"
+const bear = ref("/assets/animal_mask/bear/scene.gltf")
+const cat = ref("/assets/animal_mask/cat/scene.gltf")
+const deer = ref("/assets/animal_mask/deer/scene.gltf")
+const dino = ref("/assets/animal_mask/dino/scene.gltf")
+const dog = ref("/assets/animal_mask/dog/scene.gltf")
+const penguin = ref("/assets/animal_mask/penguin/scene.gltf")
+const rabbit = ref("/assets/animal_mask/rabbit/scene.gltf")
+const raccoon = ref("/assets/animal_mask/raccoon_head.glb")
+const fs = require('fs')
 
 async function init() {
   const scene = ref<BasicScene | null>(null)
@@ -362,24 +363,48 @@ async function init() {
   avatar = ref<any>(null)
   const maskURL = ref<any>('')
   const animal = store.userInfo?.animal
-
+  const maskId = store.userInfo?.maskId
   // 가면 바꾸는 변수
   if (animal === '강아지') {
-    maskURL.value = dog
+    if(fs.existsSync(`/assets/animal_mask/dog/scene-${maskId}.gltf`)) {
+      dog.value = `/assets/animal_mask/dog/scene-${maskId}.gltf`
+    }
+    maskURL.value = dog.value
   } else if (animal === '고양이') {
-    maskURL.value = cat
+    if(fs.existsSync(`/assets/animal_mask/cat/scene-${maskId}.gltf`)) {
+      cat.value = `/assets/animal_mask/cat/scene-${maskId}.gltf`
+    }
+    maskURL.value = cat.value
   } else if (animal === '곰') {
+    if(fs.existsSync(`/assets/animal_mask/bear/scene-${maskId}.gltf`)) {
+      bear.value = `/assets/animal_mask/bear/scene-${maskId}.gltf`
+    }
     maskURL.value = bear
   } else if (animal === '공룡') {
+    if(fs.existsSync(`/assets/animal_mask/dino/scene-${maskId}.gltf`)) {
+      dino.value = `/assets/animal_mask/dino/scene-${maskId}.gltf`
+    }
     maskURL.value = dino
   } else if (animal === '펭귄') {
-    maskURL.value = penguin
+    if(fs.existsSync(`/assets/animal_mask/penguin/scene-${maskId}.gltf`)) {
+      penguin.value = `/assets/animal_mask/penguin/scene-${maskId}.gltf`
+    }
+    maskURL.value = penguin.value
   } else if (animal === '토끼') {
+    if(fs.existsSync(`/assets/animal_mask/rabbit/scene-${maskId}.gltf`)) {
+      rabbit.value = `/assets/animal_mask/rabbit/scene-${maskId}.gltf`
+    }
     maskURL.value = rabbit
   } else if (animal === '사슴') {
-    maskURL.value = deer
+    if(fs.existsSync(`/assets/animal_mask/deer/scene-${maskId}.gltf`)) {
+      deer.value = `/assets/animal_mask/deer/scene-${maskId}.gltf`
+    }
+    maskURL.value = deer.value
   } else {
-    maskURL.value = raccoon
+    if(fs.existsSync(`/assets/animal_mask/raccoon_head-${maskId}.glb`)) {
+      raccoon.value = `/assets/animal_mask/raccoon_head-${maskId}.glb`
+    }
+    maskURL.value = raccoon.value
   }
 
   avatar.value = new Avatar(
