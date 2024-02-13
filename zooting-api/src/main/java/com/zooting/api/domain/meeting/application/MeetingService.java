@@ -120,7 +120,6 @@ public class MeetingService {
                 .expirationSeconds(-1L)
                 .build();
 
-        log.info("꺄아아악 {}, {}", waitingRoom.getWaitingRoomId(), waitingRoom.getMeetingMembers().toString());
         ChannelTopic channel = new ChannelTopic(MessageType.REDIS_HASH.getPrefix() + randomUUID);
         redisMessageListener.addMessageListener(waitingRoomSubscriber, channel);
 
