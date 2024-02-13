@@ -264,13 +264,26 @@ public class MemberController {
     public ResponseEntity<BaseResponse<String>> addPoints(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody PointsReq pointsReq) {
-        System.out.println(pointsReq.points());
         memberService.addPoints(userDetails.getUsername(), pointsReq.points());
         return BaseResponse.success(
                 SuccessCode.UPDATE_SUCCESS,
                 "포인트 추가 완료"
         );
 
+    }
+    @Operation(
+            summary = "내 포인트 차감"
+    )
+    @PreAuthorize("hasAnyRole('USER')")
+    @PatchMapping("/penalty/points")
+    public ResponseEntity<BaseResponse<String>> deductPoints(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody PointsReq pointsReq) {
+        memberService.deductPoints(userDetails.getUsername(), pointsReq.points());
+        return BaseResponse.success(
+                SuccessCode.UPDATE_SUCCESS,
+                "포인트 차감 완료"
+        );
     }
 
 

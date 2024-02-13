@@ -290,16 +290,15 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public Boolean deductPoints(String userId, Long price) {
+    public void deductPoints(String userId, Long price) {
         Member member = memberRepository.findMemberByEmail(userId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         Long memberPoints = member.getPoint();
         if (memberPoints < price) {
-            return false;
+            member.setPoint(0L);
         }
         member.setPoint(memberPoints - price);
         memberRepository.save(member);
-        return true;
     }
     @Transactional
     @Override
