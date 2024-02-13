@@ -15,7 +15,7 @@ public class BackgroundInventory extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "inventory_id")
     private Long id;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "background_id")
     private Background background;
     @ManyToOne

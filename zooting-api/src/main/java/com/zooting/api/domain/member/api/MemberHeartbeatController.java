@@ -19,16 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberHeartbeatController {
     private final SimpMessageSendingOperations template;
     private final MemberHeartbeatService memberHeartbeatService;
-    private final FriendRepository friendRepository;
 
     @Operation(summary = "Heartbeat 메시지 수신")
     @MessageMapping("/member/heartbeat")
     public void memberHeartbeatCheck(HeartBeatReq request) {
         var heartcheck = memberHeartbeatService.loadOnlineFriends(request);
+        log.info("Heartbeat check: name={}, friends={}", request.nickname(), heartcheck.result().onlineFriends());
         template.convertAndSend("/api/sub/" + request.memberId(), heartcheck);
     }
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+//    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(fixedRate = 15000L)
     public void checkAllMemberOnline() {
         memberHeartbeatService.updateMemberStatus();
     }

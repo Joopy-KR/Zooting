@@ -44,6 +44,7 @@ import type { Search } from "@/types/global"
 const store = useAccessTokenStore()
 const searchResult = ref<Search | null>(store.searchResult)
 const resultRef = ref<HTMLElement | null>(null)
+
 const props = defineProps<{
   searchQuery: string
 }>()

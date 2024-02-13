@@ -184,7 +184,7 @@ const pushIdealType = (value: string) => {
 };
 const idealTypeList = computed(() => {
   if (gender.value === "man") {
-    return ["강아지", "고양이", "토끼", "사슴", "꼬북이"];
+    return ["강아지", "고양이", "토끼", "사슴", "펭귄"];
   } else if (gender.value === "woman") {
     return ["강아지", "고양이", "토끼", "곰", "공룡"];
   }

@@ -80,8 +80,8 @@ import VideoChatSideBarVue from '@/components/video-chat/VideoChatSideBar.vue'
 // 결과 페이지
 import VideoChatResult from '@/components/video-chat/VideoChatResult.vue'
 // Vue
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
-import { onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router'
 import { useAccessTokenStore } from '@/stores/store.ts'
 import axios from 'axios'
 const { VITE_SERVER_API_URL } = import.meta.env

@@ -17,7 +17,7 @@ public class MaskInventory extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mask_inventory_id")
     private Long id;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "mask_id")
     private Mask mask;
     @ManyToOne
