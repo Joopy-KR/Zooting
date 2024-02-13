@@ -188,7 +188,7 @@ const sessionId = ref(undefined)
 // 10분 경과시 실행되는 함수
 const timeOver = function() {
   sessionId.value = session.value.sessionId
-  // 퇴장 허용
+  // 퇴장 페널티 무효
   isMeeting.value = false
   // 선택 페이지로 이동
   currentStatus.value = 'Result'
