@@ -292,7 +292,7 @@ const displayVideoDetections = async (detections: Detection[]) => {
 let model:any, webcam:any;
 
 // 남자는 강아지, 고양이, 토끼, 곰, 공룡
-// 여자는 강아지, 고양이, 토끼, 사슴, 꼬북이
+// 여자는 강아지, 고양이, 토끼, 사슴, 펭귄
 // 강아지 퍼센트
 const dog = ref(0);
 const cat = ref(0);
