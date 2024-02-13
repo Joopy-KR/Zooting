@@ -20,6 +20,10 @@ import { useAccessTokenStore } from './stores/store'
 
 const store = useAccessTokenStore()
 </script>
-
 <style scoped>
+
+@import url("https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css");
+* {
+  font-family: 'NanumSquareAcb';
+}
 </style>

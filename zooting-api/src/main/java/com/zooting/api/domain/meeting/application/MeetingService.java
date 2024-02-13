@@ -5,8 +5,9 @@ import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.dto.MeetingPickDto;
+import com.zooting.api.domain.meeting.dto.OppositeGenderParticipantsDto;
+import com.zooting.api.domain.meeting.dto.response.OpenviduTokenRes;
 import com.zooting.api.domain.meeting.pubsub.MessageType;
-import com.zooting.api.domain.meeting.pubsub.OpenviduTokenRes;
 import com.zooting.api.domain.meeting.pubsub.RedisPublisher;
 import com.zooting.api.domain.meeting.pubsub.WaitingRoomSubscriber;
 import com.zooting.api.domain.member.dao.MemberRepository;
@@ -16,7 +17,6 @@ import com.zooting.api.global.common.SocketType;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import io.openvidu.java.client.*;
-import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Log4j2
 @Service
@@ -182,21 +183,24 @@ public class MeetingService {
     }
 
     private void sendAcceptMessageToClient(Member friend, Member loginMember) {
-        FriendMeetingDto friendMeetingDto = new FriendMeetingDto(loginMember.getEmail(), loginMember.getNickname()); 
-        log.info("[sendAcceptMessageToClient] email: {} {} {}", friend.getEmail(), loginMember.getEmail(), loginMember.getNickname()); 
-        webSocketTemplate.convertAndSend("/api/sub/" + friend.getEmail(), new SocketBaseDtoRes<>(SocketType.MEETING, friendMeetingDto)); 
+        FriendMeetingDto friendMeetingDto = new FriendMeetingDto(loginMember.getEmail(), loginMember.getNickname());
+        log.info("[sendAcceptMessageToClient] email: {} {} {}", friend.getEmail(), loginMember.getEmail(), loginMember.getNickname());
+        webSocketTemplate.convertAndSend("/api/sub/" + friend.getEmail(), new SocketBaseDtoRes<>(SocketType.MEETING, friendMeetingDto));
     }
 
     /* 1대1 미팅 수락 */
     public Map<String, OpenviduTokenRes> sendOpenViduTokenToClient(String nickname, String loginEmail) {
+        Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         try {
             Map<String, OpenviduTokenRes> openviduTokenResMap = new HashMap<>();
+            List<OppositeGenderParticipantsDto> oppositeGenderParticipantsDtoList = new ArrayList<>();
+            oppositeGenderParticipantsDtoList.add(new OppositeGenderParticipantsDto(friend.getNickname(), Objects.nonNull(friend.getAdditionalInfo()) ? friend.getAdditionalInfo().getAnimal() : ""));
             Session session = openVidu.createSession();
             Connection connection = session.createConnection();
-            openviduTokenResMap.put(friend.getEmail(), new OpenviduTokenRes(connection.getToken())); 
+            openviduTokenResMap.put(friend.getEmail(), new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtoList));
             connection = session.createConnection();
-            openviduTokenResMap.put(loginEmail, new OpenviduTokenRes(connection.getToken())); 
+            openviduTokenResMap.put(loginEmail, new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtoList));
             return openviduTokenResMap;
         } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
             throw new RuntimeException(ex);
@@ -214,8 +218,8 @@ public class MeetingService {
     public void picksPerson(String sessionId, String nickname, String loginEmail) {
         Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        MeetingPickDto meetingPickDto = new MeetingPickDto(loginMember.getNickname(), friend.getNickname()); 
-        redisTemplate.opsForList().rightPush(sessionId, gson.toJson(meetingPickDto)); 
+        MeetingPickDto meetingPickDto = new MeetingPickDto(loginMember.getNickname(), friend.getNickname());
+        redisTemplate.opsForList().rightPush(sessionId, gson.toJson(meetingPickDto));
         redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
     }
 
@@ -223,7 +227,7 @@ public class MeetingService {
         List<Object> objectList = redisTemplate.opsForList().range(sessionId, 0, -1);
         if (objectList != null && !objectList.isEmpty()) {
             List<MeetingPickDto> meetingPickDtoList = objectList.stream()
-                    .map(obj -> gson.fromJson((String) obj, MeetingPickDto.class)) 
+                    .map(obj -> gson.fromJson((String) obj, MeetingPickDto.class))
                     .collect(Collectors.toList());
             redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
             return meetingPickDtoList;

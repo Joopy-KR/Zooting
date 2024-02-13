@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface MaskInventoryRepository extends JpaRepository<MaskInventory, Long> {
     List<MaskInventory> findAllByMember_Email(String memberId);
     Boolean existsByMaskIdAndMember(Long maskId, Member member);
-    Optional<MaskInventory> findByMask_Id(Long maskId);
+    List<MaskInventory> findByMask_IdAndMember_Email(Long maskId, String memberId);
 }

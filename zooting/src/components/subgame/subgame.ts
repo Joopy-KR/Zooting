@@ -6,8 +6,7 @@ import PizzaImg from '/assets/images/sub_game/obstacle_pizza.png';
 import { playJumpSound, playCollisionSound} from "@/components/subgame/sound";
 import { addPointsApi} from "@/api/subgame";
 import {ref, nextTick} from "vue";
-import axios from "axios";
-const { VITE_SERVER_API_URL } = import.meta.env;
+
 
 
 const points = ref(0);
@@ -20,6 +19,7 @@ window.onload = function () {
     let descriptionElement = document.querySelector("#description");
     let recordElement = document.querySelector("#record");
     let scoreElement = document.querySelector('#score');
+    let pointsElement = document.querySelector('#points');
 
     let gameState = 0; // 0 : end , 1: start, 3: gameover
     let timer = 0;
@@ -56,7 +56,7 @@ window.onload = function () {
         timer++;    // 한 프레임 당 timer += 1
         
         // timer가 200이 될 때 장애물 추가
-        if (timer % 200 == 0 ) {
+        if (timer % (200 + getRandomInt(-100, 100)) == 0 ) {
             let obstacle = new Obstacle();
             obstacleArr.push(obstacle);
         }
@@ -78,7 +78,7 @@ window.onload = function () {
             }
         })
         // 바닥 그리기
-        drawLine();
+        // drawLine();
         // 캐릭터 그리기
         runner.draw();
 
@@ -87,20 +87,31 @@ window.onload = function () {
             jumpTimer++;
             if (jumpTimer <= 30) { // 30프레임까지는 올라감
                 runner.y -= 4;
-            } else { // 그 이후에는 내려옴
-                if (jumpTimer <= 40 ) {
-                    // 40 프레임까지는 공중에서 멈춘다
+            } else{ // 그 이후에는 내려옴
+                if (runner.y + 3< 160) {
+                    runner.y += 3;
                 }
             }
         }
+        if(jumpState == 2) {
+            jumpTimer ++ ;
+            if (jumpTimer <= 20) { // 30프레임까지는 올라감
+                runner.y -= 4;
+            } else { // 그 이후에는 내려옴
+                if (runner.y + 3 <= 160) {
+                    runner.y += 3;
+                }
+            }
+
+        }
         // jumptimer 시간이 40이 넘었다면 jumpstate, jumptimer 값 초기화
-        if(jumpTimer > 40){ // jump 시간이 50이 되면 시간 초기화, 점프 아닌 상태로 변경
+        if(jumpTimer > 70){ // jump 시간이 50이 되면 시간 초기화, 점프 아닌 상태로 변경
             jumpState = 0;
             jumpTimer = 0;
         }
         // jumpstate가 0인데 공중에 있는 경우 내려온다
         if(jumpState == 0){
-            if(runner.y < 160){
+            if(runner.y + 3< 160){
                 runner.y += 3 ;
             }
         }
@@ -108,14 +119,22 @@ window.onload = function () {
 
 
     // 스페이스 누를 때 점프 및 이미지 변경
-    document.addEventListener('keydown', (e)=>{
+    document.addEventListener('keypress', (e)=>{
         if (e.code == 'Space'){
-             if (gameState == 1 && runner.y > 150) {
+             if (gameState == 1 && runner.y > 150 && jumpState != 2) {
                 jumpState = 1; // 점프 중으로 변경
                 playJumpSound();
                 dogImg.src = RunningDogImg;
                 runner.draw();
             }
+             else if (gameState == 1 && jumpState == 1) {
+                 jumpState = 2; // 2단점프
+                 jumpTimer = 0;
+                 runner.y -= 3;
+                 playJumpSound();
+                 dogImg.src = RunningDogImg;
+                 runner.draw();
+             }
         }
     })
 
@@ -128,6 +147,23 @@ window.onload = function () {
         }
     })
 
+
+    document.addEventListener('keydown', (e)=>{
+        if (e.code == 'ArrowRight'){
+            if (gameState == 1) { // 게임실행 중일 때 스페이스 누르면
+                if (runner.x< 160) {
+                    runner.x += 5
+                }
+            }
+        }
+        else if (e.code == 'ArrowLeft') {
+            if (gameState == 1) {
+                if (runner.x > 0) {
+                    runner.x -= 5
+                }
+            }
+        }
+    })
 
     // 충돌 시 게임 종료
     function collisionDetection(runner:any, obstacle:any) {
@@ -150,7 +186,8 @@ window.onload = function () {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 gameState = 3;
                 if (descriptionElement) {
-                    descriptionElement.innerHTML = "<div class='text-center'><p>Try again?</p><p style='font-size : 20px;'>your score is " + score.toString() + "</p></div>"
+                    descriptionElement.innerHTML = "<div class='text-center'><p class='cursor-pointer'>Try again?</p><p style='font-size : 20px;'>your score is " + score.toString()
+                        + "</p><p id='points' style='font-size : 18px;'> points + "+points.value+"</p></div>"
                 }
                 if (scoreElement) {
                     scoreElement.innerHTML =""
@@ -237,6 +274,7 @@ window.onload = function () {
         score = 0;
         detectedCollision = false;
         flag = false;
+        runner.x = 0;
         dogImg.src = StopDogImg;
         points.value = 0;
 
@@ -249,6 +287,7 @@ window.onload = function () {
         if (scoreElement) {
             scoreElement.innerHTML = score.toString();
         }
+
 
     }
 
@@ -288,3 +327,18 @@ const addPoints = async (points:number) => {
 }
 
 
+let pointsBox = document.querySelector('#points');
+let count = 0;
+let num = points.value;
+
+let counting = setInterval(function () {
+    if (count >= num) {
+        count = num;
+        clearInterval(counting);
+    } else {
+        count += 1;
+    }
+    if (pointsBox) {
+        pointsBox.innerHTML = new Intl.NumberFormat().format(count);
+    }
+}, 100);

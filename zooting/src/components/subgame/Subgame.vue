@@ -1,8 +1,9 @@
 <template>
   <div>
     <div class="canvas-size background-image" id="game" v-if = "pressStart" >
-      <span id="description" class="absolute align-middle animate__shakeY neon drag-prevent">START</span>
+      <span id="description" class="absolute align-middle animate__shakeY neon drag-prevent cursor-pointer blink">Click to Start</span>
       <span id="record" class="mt-3 ml-3 neon-mini drag-prevent"></span><i id="score" class="ml-2 neon-mini drag-prevent"></i>
+      <div id="points"></div>
       <canvas id="canvas" class="z-50 drag-prevent"></canvas>
     </div>
   </div>
@@ -32,6 +33,15 @@ const pressStart = ref(true);
 @keyframes movebg {
   0% {background-position: 600px center;}
   100% {background-position: 0 center;}
+}
+@keyframes blink-effect {
+  80% {
+    opacity: 0;
+  }
+}
+
+.blink {
+  animation: blink-effect 1s step-end infinite;
 }
 #canvas {
   width: 100%;
