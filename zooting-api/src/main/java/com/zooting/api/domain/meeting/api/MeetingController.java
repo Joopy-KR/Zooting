@@ -96,7 +96,7 @@ public class MeetingController {
     @PostMapping("/picks/result")
     @Operation(summary = "선택 결과 보기", description = "화상채팅 종료 시 사람 선택2")
     public ResponseEntity<BaseResponse<List<MeetingPickDto>>> showResult(@RequestParam String sessionId, @AuthenticationPrincipal UserDetails userDetails) {
-        List<MeetingPickDto> meetingPickDtos = meetingService.showResult(sessionId);
+        List<MeetingPickDto> meetingPickDtos = meetingService.showResult(sessionId, userDetails.getUsername());
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, meetingPickDtos);
     }
 
