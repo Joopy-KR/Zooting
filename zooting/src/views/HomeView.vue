@@ -76,7 +76,7 @@ socket.onclose = () => {
 }
 
 const onConnected = () => {
-  stompClient.subscribe(`/api/sub/dm/${userInfo.value?.email}`,
+  stompClient.subscribe(`/api/sub/${userInfo.value?.email}`,
   (message: any) => {
     const type = JSON.parse(message.body).type;
     const res = JSON.parse(message.body).result;
