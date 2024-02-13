@@ -1,9 +1,10 @@
 <template>
-  <div class="personality-test__container">
+  <div class="personality-test__container base-bg">
     <!-- Description -->
     <Description 
       v-show="!istestStart"
       @test-start="testStart"
+      class="rounded"
     />
 
     <!-- Qusetion -->
@@ -11,12 +12,14 @@
       v-show="istestStart && !istestComplete"
       :test="currentTest"
       @select-answer="handleAnswerSelected"
+      class="rounded"
     />
 
     <!-- Result -->
     <Result 
       v-if="istestComplete"
       :test-result="testResult"
+      class="rounded"
     />
   </div>
 </template>
@@ -96,5 +99,11 @@ const test: Test[] = [
 <style scoped>
 .personality-test__container {
   @apply flex flex-col justify-center items-center text-center p-6 w-screen h-screen;
+}
+.base-bg {
+  background-image: url("/assets/images/login/background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 </style>

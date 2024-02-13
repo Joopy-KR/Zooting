@@ -5,8 +5,8 @@
         <p class="text-4xl font-bold">{{ nickname }}님은</p>
         <p class="mt-3 text-4xl font-bold md:mt-5"><span style="color: #F2AFEF;">{{ resultAnimal }}</span>상이네요</p>
 
-        <div class="mt-3 md:mt-8">
-          <button type="button" v-if="!isChartShows" @click.prevent="showCharts" class="rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">결과 자세히 보기</button>
+        <div>
+          <button type="button" v-if="!isChartShows" @click.prevent="showCharts" class="mt-8 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">결과 자세히 보기</button>
           <div id="chart"></div>
         </div>
       </div>

@@ -5,7 +5,7 @@
         <video id="webcam" ref="videoRef" autoplay playsinline></video>
       </div>
 
-      <div class="flex flex-col items-center justify-between ml-10">
+      <div class="flex flex-col items-center justify-between ml-20">
         <div>
           <p class="mb-5 text-2xl font-bold">사진은 저장되지 않아요</p>
           <Popover class="relative flex items-center justify-center">
@@ -292,7 +292,7 @@ const displayVideoDetections = async (detections: Detection[]) => {
 let model:any, webcam:any;
 
 // 남자는 강아지, 고양이, 토끼, 곰, 공룡
-// 여자는 강아지, 고양이, 토끼, 사슴, 펭귄
+// 여자는 강아지, 고양이, 토끼, 사슴, 꼬북이
 // 강아지 퍼센트
 const dog = ref(0);
 const cat = ref(0);

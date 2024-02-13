@@ -221,6 +221,7 @@ watch(()=> props.dmRes, () => {
     sender: props.dmRes.sender,
     message: props.dmRes.message,
     files: props.dmRes.files,
+    createdAt: props.dmRes.createdAt,
   })
 })
 

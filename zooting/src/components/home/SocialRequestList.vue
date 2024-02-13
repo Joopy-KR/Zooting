@@ -42,7 +42,7 @@
     <!-- 보낸 요청 -->
     <div>
       <!-- Title -->
-      <div class="relative">
+      <div class="relative mt-3">
         <div class="absolute inset-0 flex items-center" aria-hidden="true">
           <div class="w-full border-t border-gray-300"></div>
         </div>
@@ -165,7 +165,7 @@ const getProfileImage = (animal: string) => {
   @apply flex items-center gap-4;
 }
 .friend-list__img {
-  @apply w-10 h-10 rounded-full;
+  @apply w-12 h-12 rounded-full border border-gray-200 shadow-sm;
 }
 button {
   @apply rounded px-4 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 h-8;

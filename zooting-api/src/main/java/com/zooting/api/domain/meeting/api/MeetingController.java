@@ -3,10 +3,7 @@ package com.zooting.api.domain.meeting.api;
 import com.zooting.api.domain.meeting.application.MeetingService;
 import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingPickDto;
-import com.zooting.api.domain.meeting.dto.response.MeetingMemberRes;
-import com.zooting.api.domain.meeting.entity.MeetingLog;
-import com.zooting.api.domain.meeting.pubsub.OpenviduTokenRes;
-import com.zooting.api.domain.member.entity.Member;
+import com.zooting.api.domain.meeting.dto.response.OpenviduTokenRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.SocketBaseDtoRes;
 import com.zooting.api.global.common.SocketType;
@@ -110,7 +107,7 @@ public class MeetingController {
     @PostMapping("/picks/result")
     @Operation(summary = "선택 결과 보기", description = "화상채팅 종료 시 사람 선택2")
     public ResponseEntity<BaseResponse<List<MeetingPickDto>>> showResult(@RequestParam String sessionId, @AuthenticationPrincipal UserDetails userDetails) {
-        List<MeetingPickDto> meetingPickDtos = meetingService.showResult(sessionId);
+        List<MeetingPickDto> meetingPickDtos = meetingService.showResult(sessionId, userDetails.getUsername());
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, meetingPickDtos);
     }
 

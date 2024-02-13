@@ -115,6 +115,7 @@ const send = function() {
   props.session?.signal({
     data: inputChat.value,  // 현재 입력한 내용
     to: [],                 // [] - Broadcast
+    type: 'chat',
   })
   .then(() => {
     inputChat.value = ''  // 현재 입력한 내용 지우기
@@ -125,7 +126,7 @@ const send = function() {
 }
 
 // 음소거 기능
-const is_muted = ref(true)
+const is_muted = ref(false)
 
 const doMute = function() {
   console.log(props.publisher.publishAudio)

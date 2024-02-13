@@ -49,7 +49,7 @@
 
     <!-- Side tab -->
     <transition name="side-tab-transition">
-      <div class="side-tab" v-show="isSideTabOpen" v-click-outside="ClickOustsideTab">
+      <div class="side-tab" v-show="isSideTabOpen">
         <section v-show="currentSideTab == 'messagesTab'" class="h-full">
           <DM
               @close-tab="closeTab"
@@ -84,7 +84,7 @@ const isLoggedIn = computed(() => store.isLogin)
 
 const isSideTabOpen = ref<boolean>(false)
 const currentSideTab = ref<string | null>(null)
-const DEFAULT_PAGE_SIZE = 2 // MEMO 매칭 인원
+const DEFAULT_PAGE_SIZE = 6 // MEMO 매칭 인원
 
 const userInfo = ref(store.userInfo)
 
@@ -179,16 +179,6 @@ const ClickOustsideProfileMenu = (isOutSide: boolean, e: Event) => {
   }
 }
 
-const tabRef = ref<HTMLElement | null>(null)
-
-const ClickOustsideTab = (isOutSide: boolean, e: Event) => {
-  if (isOutSide) {
-    if ((e.target !== tabRef.value) && (e.target !== profileRef.value)) {
-      closeTab()
-    }
-  }
-}
-
 const currentDmRoomId = (dmRoomId: number) => {
   emit('currentDmRoomId', dmRoomId)
 }
@@ -197,7 +187,7 @@ const currentDmRoomId = (dmRoomId: number) => {
 
 <style scoped>
 .side-bar {
-  @apply fixed flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-30;
+  @apply fixed flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-50;
 }
 
 .logo {
@@ -209,7 +199,7 @@ const currentDmRoomId = (dmRoomId: number) => {
 }
 
 .user-profile {
-  @apply w-10 h-10 rounded-full cursor-pointer relative;
+  @apply w-12 h-12 border border-gray-200 shadow-sm rounded-full cursor-pointer relative;
 }
 
 .profile-menu {
@@ -217,7 +207,7 @@ const currentDmRoomId = (dmRoomId: number) => {
 }
 
 .side-tab {
-  @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 z-20;
+  @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 z-30;
   width: 430px;
 }
 

@@ -8,8 +8,9 @@ import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.dto.MeetingPickDto;
 import com.zooting.api.domain.meeting.dto.response.MeetingMemberRes;
 import com.zooting.api.domain.meeting.entity.MeetingLog;
+import com.zooting.api.domain.meeting.dto.OppositeGenderParticipantsDto;
+import com.zooting.api.domain.meeting.dto.response.OpenviduTokenRes;
 import com.zooting.api.domain.meeting.pubsub.MessageType;
-import com.zooting.api.domain.meeting.pubsub.OpenviduTokenRes;
 import com.zooting.api.domain.meeting.pubsub.RedisPublisher;
 import com.zooting.api.domain.meeting.pubsub.WaitingRoomSubscriber;
 import com.zooting.api.domain.member.dao.MemberRepository;
@@ -208,11 +209,13 @@ public class MeetingService {
         Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         try {
             Map<String, OpenviduTokenRes> openviduTokenResMap = new HashMap<>();
+            List<OppositeGenderParticipantsDto> oppositeGenderParticipantsDtoList = new ArrayList<>();
+            oppositeGenderParticipantsDtoList.add(new OppositeGenderParticipantsDto(friend.getNickname(), Objects.nonNull(friend.getAdditionalInfo()) ? friend.getAdditionalInfo().getAnimal() : ""));
             Session session = openVidu.createSession();
             Connection connection = session.createConnection();
-            openviduTokenResMap.put(friend.getEmail(), new OpenviduTokenRes(connection.getToken()));
+            openviduTokenResMap.put(friend.getEmail(), new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtoList));
             connection = session.createConnection();
-            openviduTokenResMap.put(loginEmail, new OpenviduTokenRes(connection.getToken()));
+            openviduTokenResMap.put(loginEmail, new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtoList));
             return openviduTokenResMap;
         } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
             throw new RuntimeException(ex);
@@ -235,11 +238,13 @@ public class MeetingService {
         redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
     }
 
-    public List<MeetingPickDto> showResult(String sessionId) {
+    public List<MeetingPickDto> showResult(String sessionId, String loginEmail) {
+        Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         List<Object> objectList = redisTemplate.opsForList().range(sessionId, 0, -1);
         if (objectList != null && !objectList.isEmpty()) {
             List<MeetingPickDto> meetingPickDtoList = objectList.stream()
                     .map(obj -> gson.fromJson((String) obj, MeetingPickDto.class))
+                    .filter(meetingPickDto -> meetingPickDto.pickedNickname().equals(loginMember.getNickname()))
                     .collect(Collectors.toList());
             redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
             return meetingPickDtoList;

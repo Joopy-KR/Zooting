@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import InfoSideBar from "@/components/profile/InfoSideBar.vue";
+import TheSideBar from '@/components/TheSideBar.vue';
 import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 import {checkIsMyProfileApi, loadMyInfoApi, loadUserInfoApi} from "@/api/profile";
@@ -110,8 +111,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
-    <div class="w-1/3">
+  <TheSideBar/>
+  <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100 min-w-[1000px]">
+    <div class="w-1/3 ms-14">
       <InfoSideBar v-if="userInfo" :user-info="userInfo" :nickname="route.params.nickname" :is-my-profile="isMyProfile" @load-user-info="loadUserInfo"/>
     </div>
     <div class="w-2/3">

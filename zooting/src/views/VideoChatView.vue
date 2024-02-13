@@ -46,9 +46,11 @@
       :session="session"
       :publisher="publisher"
       :subscribers="subscribers"
+      :drawData="drawData"
+      :currentDrawingUserId="currentDrawingUserId"
       v-if="currentStatus === 'CatchMind'"
       />
-      
+
       <!-- 사이드바 -->
       <VideoChatSideBarVue class="right-component"
       :session="session"
@@ -57,7 +59,13 @@
       :publisher="publisher"
       :subscribers="subscribers"
       :statusInfo="statusInfo"
+      v-if="currentStatus !== 'Result'"
       /> 
+
+      <!-- 결과 선택 -->
+      <VideoChatResult
+      v-if="currentStatus === 'Result'"
+      />
     </div>
   </div>
 </template>
@@ -69,9 +77,14 @@ import VideoChatTalk from '@/components/video-chat/VideoChatTalk.vue'
 import VideoChatCatchMind from '@/components/video-chat/VideoChatCatchMind.vue'
 // 사이드바
 import VideoChatSideBarVue from '@/components/video-chat/VideoChatSideBar.vue'
+// 결과 페이지
+import VideoChatResult from '@/components/video-chat/VideoChatResult.vue'
 // Vue
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { onBeforeRouteLeave } from 'vue-router'
 import { useAccessTokenStore } from '@/stores/store.ts'
+import axios from 'axios'
+const { VITE_SERVER_API_URL } = import.meta.env
 // Three.js
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
@@ -91,6 +104,22 @@ onMounted(async () => {
 
 onUnmounted(() => {
   leaveSession()
+})
+
+// 미팅 중인지 판단할 플래그 (미팅 중에 나가면 탈주처리)
+const isMeeting = ref(true)
+
+onBeforeRouteLeave((to, from) => {
+  if (isMeeting.value) {
+    const answer = window.confirm('정말 떠나실 건가요?\n탈주시 100포인트가 차감됩니다.')
+    if (answer === false) {
+      return false
+    } else {
+      // 여기에 포인트 차감 axios 차감 들어감
+
+      return true
+    }
+  }
 })
 
 // 진행을 위한 비동기 처리 함수
@@ -182,16 +211,6 @@ class BasicScene {
     this.controls.target = orbitTarget
     this.controls.update()
 
-    // 가면이 벗겨지면 카메라 끄기 (이 부분이 송출 부분에 포함되어야 함)
-    // watch(is_mask_loaded, () => { 
-    //   if (is_mask_loaded.value === false) {
-    //     canvas.style.visibility = "hidden"
-    //   } else {
-    //     canvas.style.visibility = "visible"
-    //   }
-    // })
-
-
     // 재생되는 비디오로 백그라운드 설정
     const video = document.getElementById('landmark-video') as HTMLVideoElement
     const inputFrameTexture = new THREE.VideoTexture(video)
@@ -205,6 +224,7 @@ class BasicScene {
     this.scene.add(inputFramesPlane)
     this.render()
 
+    // 가면 벗겨진 여부에 따라 카메라 토글
     watch(is_mask_loaded, () => { 
       if (is_mask_loaded.value === false) {
         this.scene.remove(inputFramesPlane)
@@ -338,6 +358,7 @@ async function init() {
   const scene = ref<BasicScene | null>(null)
   scene.value = new BasicScene()
 
+  // 이 앞에 자료형 붙이지 말것. 에러의 주 원인
   avatar = ref<any>(null)
   const maskURL = ref<any>('')
   const animal = store.userInfo?.animal
@@ -428,7 +449,7 @@ function detectFaceLandmarks(time: DOMHighResTimeStamp): void {
       
       // 가면 위아래 위치 
       // 너구리 가면은 적용되지 않음.
-      if (avatar.value.url !== '/assets/animal_mask/raccoon_head.glb' ) {
+      if (avatar.value.url !== '/assets/animal_mask/raccoon_head.glb') {
         avatar.value.scene.position.y = -6
       }
       avatar.value?.applyMatrix(matrix, { scale: 50 })
@@ -504,7 +525,6 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
 
 
 // 세션 연결
-
 // 현재 참가중인 동물 목록
 const currentAnimals = ref([])
 
@@ -526,6 +546,8 @@ const mainStreamManager = ref(undefined);
 const publisher = ref(undefined);
 const subscribers = ref([]);
 const currentChat = ref([])
+const drawData = ref(undefined)
+const currentDrawingUserId = ref(undefined)
 
 
 const joinSession = () => {
@@ -553,14 +575,14 @@ const joinSession = () => {
       subscribers.value.splice(index, 1);
     }
   });
-  
+
   // 비동기 예외 발생시
   session.value.on("exception", ({ exception }) => {
     console.warn(exception);
   });
 
-
-  session.value.on('signal', (event) => {
+  // 채팅 이벤트 발생시
+  session.value.on('signal:chat', (event) => {
     const fromData = JSON.parse(event.from.data)
     const chatData: any = {
       'animal': fromData.animal,
@@ -570,6 +592,22 @@ const joinSession = () => {
     }
     currentChat.value.push(chatData)
   });
+
+  session.value.on('signal:drawing', (event) => {
+    drawData.value = JSON.parse(event.data);
+  })
+
+  session.value.on('signal:drawingStart', (event) => {
+    const data = JSON.parse(event.data);
+    currentDrawingUserId.value = data.userId;
+  });
+
+  session.value.on('signal:drawingEnd', (event) => {
+    const data = JSON.parse(event.data);
+    if (currentDrawingUserId.value === data.userId) {
+      currentDrawingUserId.value = undefined
+    }
+  })
 
   // 현재 참가중인 동물목록에 자신 넣어주기
   currentAnimals.value.push(myUserAnimal.value)
@@ -584,7 +622,7 @@ const joinSession = () => {
   // 첫번째 인자는 토큰, 두번째 인자는 모든 유저에 의해 검색 가능
   // 'streamCreated'(Stream.connection.data의 속성), 유저 닉네임으로 DOM에 추가됨
   session.value.connect(token.value, { nickname: myUserName.value, animal: myUserAnimal.value, gender: myGender.value }).then(() => {
-    
+
     // 실제 publish 하는 부분, 이 부분에서 카메라와 오디오 소스 설정 가능
     let pub = OV.value.initPublisher(undefined, {
       audioSource: undefined,
@@ -594,10 +632,10 @@ const joinSession = () => {
       resolution: "640x480",
       frameRate: 30,
       insertMode: "APPEND",
-      mirror: true,
+      mirror: false,
     });
     pub.stream.typeOfVideo = "CUSTOM"
-    
+
     // mainStream과 Publisher(나 자신)에 정보를 담고
     mainStreamManager.value = pub;
     publisher.value = pub;      
@@ -609,7 +647,7 @@ const joinSession = () => {
     isLoaded.value = true
   })
   .catch((error) => {
-    console.log("세션과 연결중 에러가 발생했습니다:", error.code, error.message);
+      console.log("세션과 연결중 에러가 발생했습니다:", error.code, error.message);
   });
 
   // 사용자가 화면을 나가버릴시 세션 나가기
@@ -639,11 +677,12 @@ const leaveSession = () => {
 </script>
 
 
-
 <style scoped>
 .main__container {
   @apply flex w-screen h-screen;
   min-width: 1420px;
+  background-color: white;
+  color: black;
 }
 
 .left-component {
