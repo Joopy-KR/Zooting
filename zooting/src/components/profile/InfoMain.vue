@@ -96,7 +96,7 @@ onMounted(() => {
           </svg>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-5 px-8 py-10 h-1/2">
+      <div class="grid justify-center grid-cols-2 gap-5 px-8 py-10 h-1/2">
         <div class="flex w-full h-5/6">
           <div class="introduce__container">
             <div class="relative w-full">
