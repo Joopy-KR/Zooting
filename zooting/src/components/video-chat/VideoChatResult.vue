@@ -65,6 +65,7 @@ import { onMounted, ref } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { useAccessTokenStore } from '@/stores/store.ts'
+import axios from 'axios'
 
 const store = useAccessTokenStore()
 
@@ -104,6 +105,11 @@ const getProfileImage = (animal: String) => {
   return imgUrl.href;
 }
 
+// 대기 함수
+function wait(sec) {
+    return new Promise(resolve => setTimeout(resolve, sec * 1000));
+}
+
 // 타이머
 const enterRoomTimeLimit = ref<any>(0)
 // 선택시간 끝났는지 판단할 플래그
@@ -116,11 +122,18 @@ onMounted(() => {
  
     if (enterRoomTimeLimit.value >= 100) {
       clearInterval(intervalId)
+      axios
+
+
+
       isTimeOver.value = true
     }
   }, 20)
 })
 
+const afterFinish = async function() {
+  
+}
 </script>
 
 <style scoped>
