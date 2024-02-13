@@ -1,24 +1,32 @@
 package com.zooting.api.domain.meeting.api;
 
 import com.zooting.api.domain.meeting.application.MeetingService;
-import com.zooting.api.domain.meeting.dto.MeetingSelectDto;
+import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
+import com.zooting.api.domain.meeting.dto.MeetingPickDto;
+import com.zooting.api.domain.meeting.pubsub.OpenviduTokenRes;
 import com.zooting.api.global.common.BaseResponse;
+import com.zooting.api.global.common.SocketBaseDtoRes;
+import com.zooting.api.global.common.SocketType;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/meeting")
 @RequiredArgsConstructor
 public class MeetingController {
     private final MeetingService meetingService;
+    private final SimpMessageSendingOperations webSocketTemplate;
+
 
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/register")
@@ -53,46 +61,53 @@ public class MeetingController {
         meetingService.requestMeeting(nickname, userDetails.getUsername());
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 신청에 성공했습니다.");
     }
-    /* 1대1 미팅 거절 */
-    @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/reject/friend")
-    @Operation(summary = "친구 목록 기반 1대1 미팅 거절", description = "1대1 미팅 거절")
-    public ResponseEntity<BaseResponse<String>> rejectMeeting(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
-        meetingService.rejectMeeting(nickname, userDetails.getUsername());
-        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 거절에 성공했습니다.");
-    }
 
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/accept/friend")
     @Operation(summary = "1대1 매칭 수락", description = "1대1 매칭 수락")
     public ResponseEntity<BaseResponse<String>> acceptFriendMeeting(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
-        meetingService.sendOpenViduTokenToClient(nickname, userDetails.getUsername());
+        Map<String, OpenviduTokenRes> openviduTokenResMap = meetingService.sendOpenViduTokenToClient(nickname, userDetails.getUsername());
+        for (Map.Entry<String, OpenviduTokenRes> entry : openviduTokenResMap.entrySet()) {
+            webSocketTemplate.convertAndSend("/api/sub/" + entry.getKey(), new SocketBaseDtoRes<>(SocketType.OPENVIDU, entry.getValue()));
+        }
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅을 수락했습니다.");
     }
 
     /* 간단한 버전 */
     @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/select")
+    @PostMapping("/pick")
     @Operation(summary = "화상채팅 종료 시 사람 선택", description = "화상채팅 종료 시 사람 선택")
-    public ResponseEntity<BaseResponse<String>> selectPerson(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
-        meetingService.selectPerson(nickname, userDetails.getUsername());
+    public ResponseEntity<BaseResponse<String>> pickPerson(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
+        Map.Entry<String, MeetingPickDto> entry = meetingService.pickPerson(nickname, userDetails.getUsername()).entrySet().iterator().next();
+        webSocketTemplate.convertAndSend("/api/sub/" + entry.getKey(), new SocketBaseDtoRes<>(SocketType.PICK, entry.getValue()));
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, nickname + "을 선택했습니다.");
     }
 
     /* 복잡한 버전 */
     @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/selects")
+    @PostMapping("/picks")
     @Operation(summary = "화상채팅 종료 시 사람 선택2", description = "화상채팅 종료 시 사람 선택2")
-    public ResponseEntity<BaseResponse<String>> selectsPerson(@RequestParam String sessionId, @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
-        meetingService.selectsPerson(sessionId, nickname, userDetails.getUsername());
+    public ResponseEntity<BaseResponse<String>> picksPerson(@RequestParam String sessionId, @RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
+        meetingService.picksPerson(sessionId, nickname, userDetails.getUsername());
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, nickname + "을 선택했습니다.");
     }
 
     @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/selects/result")
+    @PostMapping("/picks/result")
     @Operation(summary = "선택 결과 보기", description = "화상채팅 종료 시 사람 선택2")
-    public ResponseEntity<BaseResponse<List<MeetingSelectDto>>> showResult(@RequestParam String sessionId, @AuthenticationPrincipal UserDetails userDetails) {
-        List<MeetingSelectDto> meetingSelectDtos = meetingService.showResult(sessionId);
-        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, meetingSelectDtos);
+    public ResponseEntity<BaseResponse<List<MeetingPickDto>>> showResult(@RequestParam String sessionId, @AuthenticationPrincipal UserDetails userDetails) {
+        List<MeetingPickDto> meetingPickDtos = meetingService.showResult(sessionId);
+        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, meetingPickDtos);
     }
+
+    /* 1대1 미팅 거절 */
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/reject/friend")
+    @Operation(summary = "친구 목록 기반 1대1 미팅 거절", description = "1대1 미팅 거절")
+    public ResponseEntity<BaseResponse<String>> rejectMeeting(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
+        Map.Entry<String, FriendMeetingDto> entry = meetingService.rejectMeeting(nickname, userDetails.getUsername()).entrySet().iterator().next();
+        webSocketTemplate.convertAndSend("/api/sub/" + entry.getKey(), new SocketBaseDtoRes<>(SocketType.REJECT, entry.getValue()));
+        return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 거절에 성공했습니다.");
+    }
+
 }
