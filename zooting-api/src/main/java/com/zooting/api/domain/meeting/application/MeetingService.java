@@ -6,6 +6,7 @@ import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.dto.MeetingPickDto;
+import com.zooting.api.domain.meeting.dto.response.MeetingMemberRes;
 import com.zooting.api.domain.meeting.entity.MeetingLog;
 import com.zooting.api.domain.meeting.pubsub.MessageType;
 import com.zooting.api.domain.meeting.pubsub.OpenviduTokenRes;
@@ -18,20 +19,19 @@ import com.zooting.api.global.common.SocketType;
 import com.zooting.api.global.common.code.ErrorCode;
 import com.zooting.api.global.exception.BaseExceptionHandler;
 import io.openvidu.java.client.*;
-import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Log4j2
 @Service
@@ -120,6 +120,7 @@ public class MeetingService {
                 .expirationSeconds(-1L)
                 .build();
 
+        log.info("꺄아아악 {}, {}", waitingRoom.getWaitingRoomId(), waitingRoom.getMeetingMembers().toString());
         ChannelTopic channel = new ChannelTopic(MessageType.REDIS_HASH.getPrefix() + randomUUID);
         redisMessageListener.addMessageListener(waitingRoomSubscriber, channel);
 
@@ -198,9 +199,9 @@ public class MeetingService {
     }
 
     private void sendAcceptMessageToClient(Member friend, Member loginMember) {
-        FriendMeetingDto friendMeetingDto = new FriendMeetingDto(loginMember.getEmail(), loginMember.getNickname()); 
-        log.info("[sendAcceptMessageToClient] email: {} {} {}", friend.getEmail(), loginMember.getEmail(), loginMember.getNickname()); 
-        webSocketTemplate.convertAndSend("/api/sub/" + friend.getEmail(), new SocketBaseDtoRes<>(SocketType.MEETING, friendMeetingDto)); 
+        FriendMeetingDto friendMeetingDto = new FriendMeetingDto(loginMember.getEmail(), loginMember.getNickname());
+        log.info("[sendAcceptMessageToClient] email: {} {} {}", friend.getEmail(), loginMember.getEmail(), loginMember.getNickname());
+        webSocketTemplate.convertAndSend("/api/sub/" + friend.getEmail(), new SocketBaseDtoRes<>(SocketType.MEETING, friendMeetingDto));
     }
 
     /* 1대1 미팅 수락 */
@@ -210,9 +211,9 @@ public class MeetingService {
             Map<String, OpenviduTokenRes> openviduTokenResMap = new HashMap<>();
             Session session = openVidu.createSession();
             Connection connection = session.createConnection();
-            openviduTokenResMap.put(friend.getEmail(), new OpenviduTokenRes(connection.getToken())); 
+            openviduTokenResMap.put(friend.getEmail(), new OpenviduTokenRes(connection.getToken()));
             connection = session.createConnection();
-            openviduTokenResMap.put(loginEmail, new OpenviduTokenRes(connection.getToken())); 
+            openviduTokenResMap.put(loginEmail, new OpenviduTokenRes(connection.getToken()));
             return openviduTokenResMap;
         } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
             throw new RuntimeException(ex);
@@ -230,8 +231,8 @@ public class MeetingService {
     public void picksPerson(String sessionId, String nickname, String loginEmail) {
         Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        MeetingPickDto meetingPickDto = new MeetingPickDto(loginMember.getNickname(), friend.getNickname()); 
-        redisTemplate.opsForList().rightPush(sessionId, gson.toJson(meetingPickDto)); 
+        MeetingPickDto meetingPickDto = new MeetingPickDto(loginMember.getNickname(), friend.getNickname());
+        redisTemplate.opsForList().rightPush(sessionId, gson.toJson(meetingPickDto));
         redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
     }
 
@@ -239,7 +240,7 @@ public class MeetingService {
         List<Object> objectList = redisTemplate.opsForList().range(sessionId, 0, -1);
         if (objectList != null && !objectList.isEmpty()) {
             List<MeetingPickDto> meetingPickDtoList = objectList.stream()
-                    .map(obj -> gson.fromJson((String) obj, MeetingPickDto.class)) 
+                    .map(obj -> gson.fromJson((String) obj, MeetingPickDto.class))
                     .collect(Collectors.toList());
             redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
             return meetingPickDtoList;
@@ -254,7 +255,28 @@ public class MeetingService {
         return Map.of(friend.getEmail(), friendMeetingDto);
     }
 
-    public List<Member> findRecentMeetingMembers(UserDetails userDetails){
+    public List<MeetingMemberRes> findRecentMeetingMembers(UserDetails userDetails) {
+        String email = userDetails.getUsername();
+        Member member = memberRepository.findMemberByEmail(email).orElseThrow(
+                () -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
+        List<MeetingLog> meetingLogList = member.getMeetingLogList();
+
+        //가장 최근 로그만 가져옴
+        MeetingLog recentMeeting = meetingLogList.stream().max((o1, o2) -> o2.getUpdatedAt().compareTo(o1.getUpdatedAt())).orElseThrow(
+                () -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
+
+        List<MeetingLog> meetingLogListOfMembers = meetingLogRepository.findAllByUuid(recentMeeting.getUuid());
+
+        return meetingLogListOfMembers
+                .stream()
+                .map(MeetingLog::getMember)
+                .filter((meetingMember) -> !meetingMember.getEmail().equals(userDetails.getUsername()))
+                .map((meetingMember) -> new MeetingMemberRes(
+                        meetingMember.getEmail(),
+                        meetingMember.getNickname(),
+                        meetingMember.getAdditionalInfo().getAnimal()
+                ))
+                .toList();
     }
 }

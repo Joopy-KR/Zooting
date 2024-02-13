@@ -3,8 +3,10 @@ package com.zooting.api.domain.meeting.api;
 import com.zooting.api.domain.meeting.application.MeetingService;
 import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingPickDto;
+import com.zooting.api.domain.meeting.dto.response.MeetingMemberRes;
 import com.zooting.api.domain.meeting.entity.MeetingLog;
 import com.zooting.api.domain.meeting.pubsub.OpenviduTokenRes;
+import com.zooting.api.domain.member.entity.Member;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.SocketBaseDtoRes;
 import com.zooting.api.global.common.SocketType;
@@ -123,8 +125,11 @@ public class MeetingController {
     }
 
     @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/meeting-log")
-    public ResponseEntity<BaseResponse<MeetingLog>> findRecentMeetingRoomMembers(@AuthenticationPrincipal UserDetails userDetails){
-
+    @PostMapping("/log")
+    @Operation(summary = "유저의 최근 미팅 목록 가져오기", description = "유저의 최근 미팅 목록 가져오기")
+    public ResponseEntity<BaseResponse<List<MeetingMemberRes>>> findRecentMeetingRoomMembers(@AuthenticationPrincipal UserDetails userDetails){
+        return BaseResponse.success(
+                SuccessCode.SELECT_SUCCESS,
+                meetingService.findRecentMeetingMembers(userDetails));
     }
 }

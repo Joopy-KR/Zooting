@@ -11,14 +11,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 @Getter
 @Setter
 @Entity
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "meeting_log")
 public class MeetingLog extends BaseEntity {
 
@@ -26,7 +27,7 @@ public class MeetingLog extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "meeting_room_id", columnDefinition = "uuid2")
+    @Column(name = "meeting_room_id", columnDefinition = "BINARY(16)")
     private UUID uuid;
 
     @ManyToOne

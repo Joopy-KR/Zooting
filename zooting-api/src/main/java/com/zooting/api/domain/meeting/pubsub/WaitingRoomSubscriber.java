@@ -1,8 +1,11 @@
 package com.zooting.api.domain.meeting.pubsub;
 
+import com.zooting.api.domain.meeting.dao.MeetingLogRepository;
 import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.application.WaitingRoom;
+import com.zooting.api.domain.meeting.entity.MeetingLog;
+import com.zooting.api.domain.member.dao.MemberRepository;
 import com.zooting.api.global.common.SocketBaseDtoRes;
 import com.zooting.api.global.common.SocketType;
 import com.zooting.api.global.common.code.ErrorCode;
@@ -13,6 +16,7 @@ import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import io.openvidu.java.client.Session;
 import java.util.Objects;
+import java.util.UUID;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,8 @@ public class WaitingRoomSubscriber implements MessageListener {
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisMessageListenerContainer redisMessageListener;
     private final WaitingRoomRedisRepository waitingRoomRedisRepository;
+    private final MeetingLogRepository meetingLogRepository;
+    private final MemberRepository memberRepository;
     private final SimpMessageSendingOperations webSocketTemplate;
     private final OpenVidu openVidu;
 
@@ -87,6 +93,16 @@ public class WaitingRoomSubscriber implements MessageListener {
             log.info("세션을 만들었습니다.");
             for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
                 String email = meetingMemberDto.getEmail();
+
+
+                // 미팅 로그 저장
+                meetingLogRepository.save(
+                        MeetingLog
+                        .builder()
+                        .uuid(UUID.fromString(waitingRoom.getWaitingRoomId()))
+                        .member(memberRepository.findMemberByEmail(email)
+                                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER))).build());
+
                 Connection connection = session.createConnection();
 
                 OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken());
