@@ -34,6 +34,7 @@ const dmSound = new Audio(DmSound)  // dm 알림 소리
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws`)
 // @ts-ignore
 const stompClient = Stomp.over(socket)
+stompClient.debug = null
 let intervalId: any;
 const START_HEART_CHECK = 5 * 1000;
 const HEART_CHECK_INTERVAL = VITE_HEART_CHECK_INTERVAL * 1000;
@@ -93,8 +94,8 @@ const onConnected = () => {
     // MESSAGE
     if (type === 'MESSAGE') {
       // 현재 open 된 dmRooId인 경우 메시지 전송
-      if (dmRoomId === res.dmRoomId) {
-        emit('receiveMessage', res)
+      if (dmRoomId.value === res.dmRoomId) {
+        dmRes.value = res
       } else {
         // 새로운 메시지 알림
         dmStore.newMessage.push(res.sender)
@@ -104,6 +105,7 @@ const onConnected = () => {
     // 매칭 완료
     else if (type === 'MATCH') {
       store.MatchingComplete()
+
     }
     // 매칭 수락
     else if (type === 'OPENVIDU') {
