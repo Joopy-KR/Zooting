@@ -1,33 +1,29 @@
 <template>
   <div class="flex">
-    <TheSideBar
-      @current-dm-room-id="currentDmRoomId"
-      :dm-req = "dmReq"
-    />
-    <RouterView
-      class="ms-14"
-      :dm-room-id="dmRoomId"
-      @receive-message="receiveMessage"
+    <RouterView/>
+    <MatchingCompleteModal
+      v-if="store.isLogin"
+      class="z-40"
+      />
+    <MeetingAcceptModal
+      v-if="store.isLogin"
+      class="z-40"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { RouterView } from 'vue-router'
-import TheSideBar from '@/components/TheSideBar.vue'
+import MatchingCompleteModal from "@/components/MatchingCompleteModal.vue"
+import MeetingAcceptModal from "@/components/MeetingAcceptModal.vue"
+import { useAccessTokenStore } from './stores/store'
 
-const dmRoomId = ref<number>(0)
-const dmReq = ref<any>(null)
-
-const currentDmRoomId = (id: number) => {
-  dmRoomId.value = id
-}
-
-const receiveMessage = (req: any) => {
-  dmReq.value = req
-}
+const store = useAccessTokenStore()
 </script>
-
 <style scoped>
+
+@import url("https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css");
+* {
+  font-family: 'NanumSquareAcb';
+}
 </style>

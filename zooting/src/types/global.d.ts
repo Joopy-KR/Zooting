@@ -34,6 +34,15 @@ declare interface Mask {
     isSelected: boolean;
 }
 
+declare interface Background {
+    backgroundId: number,
+    fileName: string | undefined,
+    imgUrl: string,
+    price: number,
+    status: boolean,
+    isSelected: boolean,
+}
+
 declare interface TokenState {
     accessToken: string | null;
     refreshToken: string | null;
@@ -54,6 +63,7 @@ declare interface Friend {
     nickname: string;
     animal: string;
     gender: string;
+    isOnline: boolean;
 }
 
 declare interface MaskReq {
@@ -88,11 +98,14 @@ declare interface DmItem {
     sender: string;
     message: string;
     files: DmFile[] | [];
+    createdAt: string;
 }
 
 declare interface DmFile {
+    S3Id: string;
     imgUrl: string;
     thumbnailUrl: string;
+    fileName: string;
 }
 
 declare interface Notice {
@@ -103,18 +116,32 @@ declare interface Notice {
 }
 
 declare interface NoticePage {
-    noticeList : Notice[];
-    currentPage : number;
-    totalPage : number;
+    noticeList: Notice[];
+    currentPage: number;
+    totalPage: number;
 }
 
 declare interface Notify {
-    title: string,
-    message: any,
+    title: string;
+    message: any;
+}
+
+declare interface Search {
+    searchResList: {
+        nickname: string;
+        gender: string;
+    }[];
+    currentPage: number;
+    totalPage: number;
+}
+
+
+declare interface PointsReq {
+    points : number;
 }
 
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
-    PersonalityList, Personality, Friend, MaskReq, ReportUserReq,
-    DM, DmItem, FriendRequest, Notice, NoticePage, Notify
+    PersonalityList, Personality, Friend, MaskReq, ReportUserReq, PointsReq
+    DM, DmItem, FriendRequest, Notice, NoticePage, Notify, Background, Search
 };

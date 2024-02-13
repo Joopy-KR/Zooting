@@ -7,7 +7,7 @@ import AnimalTestView from "@/views/AnimalTestView.vue";
 import PersonalityTestView from "@/views/PersonalityTestView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import Login from "@/views/LoginView.vue";
-import ChatTestView from "@/views/ChatTestView.vue";
+import VideoChatView from '@/views/VideoChatView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,19 +33,19 @@ const router = createRouter({
       component: SignUpView,
     },
     {
-      path: "/animal_test",
-      name: "animal_test",
+      path: "/animal-test",
+      name: "animal-test",
       component: AnimalTestView,
     },
     {
-      path: "/personality_test",
-      name: "personality_test",
-      component: PersonalityTestView,
+      path: "/video-chat",
+      name: "video-chat",
+      component: VideoChatView
     },
     {
-      path: "/chat",
-      name: "chat",
-      component: ChatTestView,
+      path: "/personality-test",
+      name: "personality-test",
+      component: PersonalityTestView,
     },
     {
       path: "/profile/:nickname?",
@@ -113,6 +113,8 @@ router.beforeEach((to, from) => {
   if (store.isLogin) {
     if (to.name === 'home') {
       store.getUserInfo()
+    } else if (to.name === 'signin') {
+      store.signOut()
     }
     return;
   }

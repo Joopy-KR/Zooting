@@ -10,9 +10,6 @@
           <p class="mb-5 text-2xl font-bold">사진은 저장되지 않아요</p>
           <Popover class="relative flex items-center justify-center">
             <span class="mr-2">촬영이 되지 않나요?</span>
-            <PopoverButton
-              class="inline-flex items-center text-sm font-semibold leading-6 text-gray-900 gap-x-1"
-            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -27,7 +24,6 @@
                   d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
                 />
               </svg>
-            </PopoverButton>
             <transition
               enter-active-class="transition duration-200 ease-out"
               enter-from-class="translate-y-1 opacity-0"
@@ -44,7 +40,9 @@
                 >
                   <div class="flex flex-col items-center justify-center p-4">
                     <div class="mt-10 hide-button">
-                      <div href="#" class="rounded" style="position: static; margin-left: 80px">
+                      <div href="#" class="rounded text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                           style="position: static; margin-left: 80px"  data-tooltip-trigger="hover"
+                           data-tooltip-target="tooltip-top" data-tooltip-placement="top" type="button">
                         <svg
                           version="1.1"
                           x="0px"
@@ -62,7 +60,7 @@
                         </svg>
                       </div>
                     </div>
-                    <div class="flex flex-col">
+                    <div class="flex flex-col" id="tooltip-top" role="tooltip">
                       <p>카메라는 얼굴을 인식해요</p>
                       <p>위처럼 촬영 버튼이 회색이면 촬영되지 않아요</p>
                       <br />
@@ -73,6 +71,7 @@
                         2. 카메라에 두 명 이상 있으면 촬영되지
                         <span class="text-violet-500">않아요</span>
                       </p>
+                      <div class="tooltip-arrow" data-popper-arrow></div>
                     </div>
                   </div>
                 </div>
@@ -80,8 +79,12 @@
             </transition>
           </Popover>
         </div>
-
-        <div class="mt-14 md:mt-48 show-button" v-show="showButton">
+        
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mt-7 md:mt-40 animate-bounce">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+        </svg>
+        
+        <div class="mt-12 md:mt-17 show-button" v-show="showButton">
           <a href="javascript:void(0)" class="rounded" @click="stop">
             <svg
               version="1.1"
@@ -101,7 +104,7 @@
           </a>
         </div>
 
-        <div class="mt-14 md:mt-48 hide-button" v-show="!showButton">
+        <div class="mt-12 md:mt-17 hide-button" v-show="!showButton">
           <div href="#" class="rounded">
             <svg
               version="1.1"
@@ -270,12 +273,12 @@ const displayVideoDetections = async (detections: Detection[]) => {
   // 예상치 측정
   for (let detection of detections) {
     isPlaying.value = true;
-    // 유사도가 89 이상이면 촬영 버튼 출력
+    // 유사도가 90 이상이면 촬영 버튼 출력
     if (Math.round(parseFloat(String(detection.categories[0].score)) * 100) >= 90) {
-      // 유사도가 89 이상일때 촬영버튼 출력
+      // 유사도가 90 이상일때 촬영버튼 출력
       showButton.value = true;
     } else {
-      // 유사도가 89 미만일때 촬영버튼 숨김
+      // 유사도가 90 미만일때 촬영버튼 숨김
       showButton.value = false;
     }
   }
@@ -288,7 +291,7 @@ const displayVideoDetections = async (detections: Detection[]) => {
 let model:any, webcam:any;
 
 // 남자는 강아지, 고양이, 토끼, 곰, 공룡
-// 여자는 강아지, 고양이, 토끼, 사슴, 꼬북이
+// 여자는 강아지, 고양이, 토끼, 사슴, 펭귄
 // 강아지 퍼센트
 const dog = ref(0);
 const cat = ref(0);

@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 public interface FileService {
 
@@ -13,7 +14,7 @@ public interface FileService {
 
     void removeFile(Long fileId);
 
-    Object[] downloadFile(Long fileId) throws IOException;
+    Object[] downloadFile(UUID S3Id) throws IOException;
 
 
 }

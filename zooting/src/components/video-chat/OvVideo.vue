@@ -6,18 +6,12 @@
 import { ref, onMounted } from 'vue';
 
 const props = defineProps({
-  streamManager: Object,
-	cameraHeight: Number,
-  cameraWidth: Number
+  streamManager: Object
 });
 
 const videoElement = ref(null);
 
 onMounted(() => {
-	const videoHeight = props.cameraHeight + 'px'
-	const videoWidth = props.cameraWidth + 'px'
-	videoElement.value.style.height = videoHeight
-	videoElement.value.style.width = videoWidth
   props.streamManager.addVideoElement(videoElement.value);
 });
 

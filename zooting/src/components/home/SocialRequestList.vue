@@ -29,7 +29,6 @@
                   </svg>
                 </div>
               </div>
-              <div class="friend-list__content">Content</div>
             </div>
           </RouterLink>
           <div class="flex items-center">
@@ -69,7 +68,6 @@
                   </svg>
                 </div>
               </div>
-              <div class="friend-list__content">Content</div>
             </div>
           </RouterLink>
           <div class="flex items-center">
@@ -167,10 +165,7 @@ const getProfileImage = (animal: string) => {
   @apply flex items-center gap-4;
 }
 .friend-list__img {
-  @apply w-10 h-10 rounded-full;
-}
-.friend-list__content {
-  @apply text-sm text-gray-500;
+  @apply w-12 h-12 rounded-full border border-gray-200 shadow-sm;
 }
 button {
   @apply rounded px-4 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 h-8;

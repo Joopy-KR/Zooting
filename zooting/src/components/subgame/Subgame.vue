@@ -1,9 +1,10 @@
 <template>
   <div>
-    <div class="canvas-size background-image border-2" id="game" v-if = "pressStart" >
-      <span id="description" class="animate__shakeY absolute align-middle neon drag-prevent">Press Spacebar</span>
-      <span id="record" class="neon-mini ml-3 mt-3 drag-prevent"></span><i id="score" class="neon-mini ml-2 drag-prevent"></i>
-      <canvas id="canvas" class="z-40 drag-prevent"></canvas>
+    <div class="canvas-size background-image" id="game" v-if = "pressStart" >
+      <span id="description" class="absolute align-middle animate__shakeY neon drag-prevent cursor-pointer blink">Click to Start</span>
+      <span id="record" class="mt-3 ml-3 neon-mini drag-prevent"></span><i id="score" class="ml-2 neon-mini drag-prevent"></i>
+      <div id="points"></div>
+      <canvas id="canvas" class="z-50 drag-prevent"></canvas>
     </div>
   </div>
 </template>
@@ -17,13 +18,14 @@ const pressStart = ref(true);
 </script>
 
 <style scoped>
-.canvas-size{
+.canvas-size {
+  @apply border-[#E1BAFF] border-4 rounded-lg shadow-lg m-5;
   position: relative;
   width : 600px;
   height: 200px;
 }
 .background-image {
-  background: url("../../../public/assets/images/sub_game/background.gif") 0 center / 200px 600px repeat-x;
+  background: url("/assets/images/sub_game/background.gif") 0 center / 200px 600px repeat-x;
   background-size: 600px 200px;
   animation: movebg 40s linear infinite;
 
@@ -31,6 +33,15 @@ const pressStart = ref(true);
 @keyframes movebg {
   0% {background-position: 600px center;}
   100% {background-position: 0 center;}
+}
+@keyframes blink-effect {
+  80% {
+    opacity: 0;
+  }
+}
+
+.blink {
+  animation: blink-effect 1s step-end infinite;
 }
 #canvas {
   width: 100%;

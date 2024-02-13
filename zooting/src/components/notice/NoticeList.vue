@@ -22,7 +22,6 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, ref} from 'vue'
 import type { Notice } from "@/types/global";
 const props = defineProps(["noticeList"])
 const emits = defineEmits(["noticeContents", "openDetailModal"])
@@ -70,9 +69,13 @@ const getNoticeContents = (item : Notice) => {
 }
 .notice-list__content {
   @apply text-sm text-gray-500;
+  white-space : normal;
+  display : -webkit-box;;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical ;
+  overflow: hidden;
+
 }
-
-
 button {
   @apply rounded bg-white px-4 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 h-8;
 }

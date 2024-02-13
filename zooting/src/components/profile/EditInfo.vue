@@ -184,7 +184,7 @@ const pushIdealType = (value: string) => {
 };
 const idealTypeList = computed(() => {
   if (gender.value === "man") {
-    return ["강아지", "고양이", "토끼", "사슴", "꼬북이"];
+    return ["강아지", "고양이", "토끼", "사슴", "펭귄"];
   } else if (gender.value === "woman") {
     return ["강아지", "고양이", "토끼", "곰", "공룡"];
   }
@@ -296,7 +296,7 @@ onMounted(async () => {
       </div>
       <span
           class="inline-flex items-center px-4 py-3 text-sm text-gray-800 rounded-full bg-gray-50 ring-1 ring-inset ring-gray-500/10"
-      >탈퇴</span
+      >떠나기</span
       >
     </div>
     <div class="flex justify-center items-center w-full">

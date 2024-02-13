@@ -11,12 +11,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class DMWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     /**
      * 소켓 연결을 위해 사용할 엔드포인트 등록과 cors 오류 방지를 위해 허용할 Origin을 등록해둔다.
-     * 엔드포인트: /ws/dm
+     * 엔드포인트: /ws
      * SockJS 사용
      */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry endpointRegistry) {
-        endpointRegistry.addEndpoint("/ws/dm")
+        endpointRegistry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("https://i10a702.p.ssafy.io",
                         "http://localhost:5173",
                         "http://70.12.247.212:5173")
