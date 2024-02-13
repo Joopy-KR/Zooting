@@ -99,7 +99,7 @@ public class WaitingRoomSubscriber implements MessageListener {
                 //다른 성별만 찾기
                 List<OppositeGenderParticipantsDto> oppositeGenderParticipantsDtos = waitingRoom.getMeetingMembers().stream()
                         .filter(member -> !member.getGender().equals(nicknameGenderMap.get(email)))
-                        .map(member -> new OppositeGenderParticipantsDto(member.getEmail(), member.getAnimal()))
+                        .map(member -> new OppositeGenderParticipantsDto(member.getNickname(), member.getAnimal()))
                         .collect(Collectors.toList());
                 Connection connection = session.createConnection();
                 OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtos);
