@@ -1,7 +1,7 @@
 <template>
   <div class="main__container">
     <div class="flex flex-col items-center justify-center w-screen h-screen" v-show="!isLoaded">
-      <p class="mb-8 text-5xl font-bold">미팅 입장 중</p>
+      <p class="mb-8 text-5xl font-bold">1:1 통화 입장 중</p>
       <h3 class="mb-5">잠시만 기다려 주세요</h3>
       <div class="flex items-center justify-center" role="status">
         <svg
@@ -38,19 +38,8 @@
       :session="session"
       :publisher="publisher"
       :subscribers="subscribers"
-      v-if="currentStatus === 'FreeTalk'"
       />
       
-      <!-- 캐치마인드 -->
-      <VideoChatCatchMind class="left-component"
-      :session="session"
-      :publisher="publisher"
-      :subscribers="subscribers"
-      :drawData="drawData"
-      :currentDrawingUserId="currentDrawingUserId"
-      v-if="currentStatus === 'CatchMind'"
-      />
-
       <!-- 사이드바 -->
       <VideoChatSideBarVue class="right-component"
       :session="session"
@@ -59,16 +48,9 @@
       :publisher="publisher"
       :subscribers="subscribers"
       :statusInfo="statusInfo"
-      :is-one-to-one="false"
+      :is-one-to-one="true"
       @time-over="timeOver"
-      v-if="currentStatus !== 'Result'"
       /> 
-      
-      <!-- 결과 선택 -->
-      <VideoChatResult
-      :session-id="sessionId"
-      v-if="currentStatus === 'Result'"
-      />
     </div>
   </div>
 </template>
@@ -76,12 +58,8 @@
 <script setup lang="ts">
 // 자유대화 페이지
 import VideoChatTalk from '@/components/video-chat/VideoChatTalk.vue'
-// 캐치마인드 페이지
-import VideoChatCatchMind from '@/components/video-chat/VideoChatCatchMind.vue'
 // 사이드바
 import VideoChatSideBarVue from '@/components/video-chat/VideoChatSideBar.vue'
-// 결과 페이지
-import VideoChatResult from '@/components/video-chat/VideoChatResult.vue'
 // Vue
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
@@ -109,28 +87,13 @@ onUnmounted(() => {
   leaveSession()
 })
 
-// 미팅 중인지 판단할 플래그 (미팅 중에 나가면 탈주처리)
-const isMeeting = ref(true)
-// 탈주 판단하는 함수
+// 나가기 전에 한번 물어보기
 onBeforeRouteLeave((to, from) => {
-  if (isMeeting.value) {
-    const answer = window.confirm('정말 떠나실 건가요?\n탈주시 100포인트가 차감됩니다.')
-    if (answer === false) {
-      return false
-    } else {
-      // 탈주시 100포인트 차감
-      subPointsApi(
-        {points : 100 as number},
-        ({data}: any) => {
-          if (data.status == 200 || data.status == 201) {
-              console.log("포인트 차감 성공")
-          }
-        },
-        (error: any) => {
-            console.log("포인트 차감 실패")
-        })
-      return true
-    }
+  const answer = window.confirm('정말 떠나실 건가요?')
+  if (answer === false) {
+    return false
+  } else {
+    return true
   }
 })
 
@@ -150,48 +113,19 @@ const isLoaded = ref(false)
 
 // 현재 진행중인 컴포넌트
 const currentStatus = ref<String>('')  // 현재 진행중인 프로그램 (FreeTalk, CatchMind 등) 
-const statusInfo = ref<any>('')  // 사이드바에 나타나는 현재 진행중인 프로그램
 currentStatus.value = 'FreeTalk'
+const statusInfo = ref<any>('')  // 사이드바에 나타나는 현재 진행중인 프로그램
+statusInfo.value = "1:1 대화"
 
 // 카메라 사이즈 조정
 const cameraHeight = ref<Number>(0)
+cameraHeight.value = 260
 const cameraWidth = ref<Number>(0)
-
-// 초기 변수 속성 설저 
-// 현재 진행중인 프로그램 이름
-if (currentStatus.value === 'CatchMind') {
-    statusInfo.value = "캐치마인드"
-    cameraHeight.value = 160
-    cameraWidth.value = 266
-  } else if (currentStatus.value === 'FreeTalk') {
-    statusInfo.value = "자유 대화 시간"
-    cameraHeight.value = 260
-    cameraWidth.value = 462
-  }
-
-// watch로 현재 진행중인 프로그램에 따라 변수 변경
-watch(currentStatus.value, ()=> {
-  if (currentStatus.value === 'CatchMind') {
-    statusInfo.value = "캐치마인드"
-    cameraHeight.value = 160
-    cameraWidth.value = 266
-  } else if (currentStatus.value === 'FreeTalk') {
-    statusInfo.value = "자유 대화 시간"
-    cameraHeight.value = 260
-    cameraWidth.value = 462
-  }
-})
-
-// sessionId 기록해두기
-const sessionId = ref(undefined)
+cameraWidth.value = 462
 
 // 10분 경과시 실행되는 함수
 const timeOver = function() {
-  sessionId.value = session.value.sessionId
-  // 퇴장 허용
-  isMeeting.value = false
-  // 선택 페이지로 이동
-  currentStatus.value = 'Result'
+  console.log("1:1 대화는 시간제한이 없어요!")
 }
 
 // 동물상 가면 설정
@@ -690,7 +624,6 @@ const leaveSession = () => {
   subscribers.value = []
   OV.value = undefined
   currentAnimals.value = []
-  isMeeting.value = false
 
   // 동물상 canvas 지우기
   const canvas: any = document.getElementById('threeCanvas')
