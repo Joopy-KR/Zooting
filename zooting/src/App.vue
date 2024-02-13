@@ -14,7 +14,6 @@
         v-if="store.isLogin"
         class="z-40"
         />
-<!--    <AnimalTestView class="ms-14"/>-->
   </div>
 </template>
 
@@ -25,7 +24,6 @@ import TheSideBar from '@/components/TheSideBar.vue'
 import MatchingCompleteModal from "@/components/MatchingCompleteModal.vue"
 import { useAccessTokenStore } from './stores/store'
 
-// import AnimalTestView from "@/views/AnimalTestView.vue";
 
 const store = useAccessTokenStore()
 const dmRoomId = ref<number>(0)
