@@ -14,7 +14,7 @@
     </div>
 
     <!-- 공지사항 디테일 -->
-    <TransitionRoot as="template" class="z-40" :show="detailModalOpen">
+    <TransitionRoot as="template" class="z-40 ft-family" :show="detailModalOpen">
       <Dialog as="div" class="relative z-10" @close="detailModalOpen = false">
         <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
@@ -71,7 +71,9 @@ const detailContent = ref({ noticeId : null, title : null, content : null, creat
 const detailModalOpen = ref(false);
 const movePage = (item: number) => {
   store.getNoticeList({page: item-1, size : DEFAULT_PAGE_SIZE})
+  console.log(store.noticeList);
 }
+
 
 watch(()=> store.noticePage, (UpdatePage)=>{
   noticePage.value = UpdatePage
@@ -95,11 +97,15 @@ function openDetailModal(data : Boolean) {
 </script>
 
 <style scoped>
+@import url("https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css");
 .notice-title{
   @apply  text-indigo-600 py-6 px-6;
   font-weight : bold;
   font-size: medium;
 }
+ * {
+   font-family:'NanumSquareAcb' ;
+ }
 .notifications__container {
   width: 100%;
   height: 100%;

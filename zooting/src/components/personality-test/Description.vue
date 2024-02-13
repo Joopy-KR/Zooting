@@ -33,6 +33,12 @@ const wait = (sec:number) => {
 .description__container {
  @apply flex flex-col items-center justify-center w-full h-full text-center bg-white border border-gray-200 p-3; 
 }
+.base-bg {
+  background-image: url("/assets/images/login/background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
 .description__container p {
   @apply text-4xl font-bold
 }

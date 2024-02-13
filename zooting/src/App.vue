@@ -25,5 +25,10 @@ const store = useAccessTokenStore()
 @import url("https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css");
 * {
   font-family: 'NanumSquareAcb';
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
 }
 </style>

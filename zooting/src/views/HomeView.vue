@@ -61,9 +61,9 @@ onMounted(async () => {
 })
 
 const startHeartbeat = () => {
-  console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-  console.log("INTERVAL TIME LOG: ", intervalTime.value);
-  console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  // console.log("INTERVAL TIME LOG: ", intervalTime.value);
+  // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   intervalId = setInterval(() => {
     stompClient.send('/api/pub/member/heartbeat', {}, JSON.stringify({
       memberId: userInfo.value?.email,
