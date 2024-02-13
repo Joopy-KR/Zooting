@@ -3,7 +3,7 @@ package com.zooting.api.domain.meeting.api;
 import com.zooting.api.domain.meeting.application.MeetingService;
 import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingPickDto;
-import com.zooting.api.domain.meeting.pubsub.OpenviduTokenRes;
+import com.zooting.api.domain.meeting.dto.response.OpenviduTokenRes;
 import com.zooting.api.global.common.BaseResponse;
 import com.zooting.api.global.common.SocketBaseDtoRes;
 import com.zooting.api.global.common.SocketType;
