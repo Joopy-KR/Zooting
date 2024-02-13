@@ -3,7 +3,7 @@
       <transition name="fade">
       <div v-if="isShow">
         <div class="result__title">
-          <h1>{{ nickname }} 님의 성격 유형은</h1>
+          <h1>{{ nickname }}님의 성격 유형은</h1>
           <h1>
             <span :class="getColorClass(personality.title)">
               {{ personality.title }}
@@ -34,12 +34,12 @@ const props = defineProps<{
 }>()
 
 const store = useStore()
+const tokenStore = useAccessTokenStore();
 const accessTokenStore = useAccessTokenStore()
 
 const personality = store.personality[props.testResult]
-
-const nickname = ref<string>('nickname')
-
+const userInfo = ref<any>();
+const nickname = ref<string>('회원')
 const getColorClass = (value: string) => {
   if (value.includes('여름')) {
     return 'summer-text'
