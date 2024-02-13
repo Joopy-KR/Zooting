@@ -108,7 +108,7 @@ const onConnected = () => {
     }
     // 매칭 수락
     else if (type === 'OPENVIDU') {
-      store.pushMeetingRoom(res.token)
+      store.pushMeetingRoom(res)
       store.isRequesting = false
     }
     // 유저 상태 정보

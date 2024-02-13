@@ -140,8 +140,14 @@ declare interface PointsReq {
     points : number;
 }
 
+declare interface IdealUserSelect {
+    sessionId : string;
+    nickname: string;
+}
+
 export {
     UserInfo, Mask, TokenState, BlockUserReq,
-    PersonalityList, Personality, Friend, MaskReq, ReportUserReq, PointsReq
-    DM, DmItem, FriendRequest, Notice, NoticePage, Notify, Background, Search
+    PersonalityList, Personality, Friend, MaskReq, ReportUserReq, PointsReq,
+    DM, DmItem, FriendRequest, Notice, NoticePage, Notify, Background, Search,
+    IdealUserSelect
 };
