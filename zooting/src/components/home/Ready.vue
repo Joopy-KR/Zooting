@@ -14,7 +14,6 @@
 import ReadyMatch from '@/components/home/ReadyMatch.vue'
 import Subgame from '@/components/subgame/Subgame.vue'
 import ReadyRecordList from '@/components/home/ReadyRecordList.vue'
-import ReadyMeeting from '@/components/home/ReadyMeeting.vue'
 </script>
 
 <style scoped>
