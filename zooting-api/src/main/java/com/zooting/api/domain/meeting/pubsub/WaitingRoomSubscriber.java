@@ -3,6 +3,7 @@ package com.zooting.api.domain.meeting.pubsub;
 import com.zooting.api.domain.meeting.application.WaitingRoom;
 import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
+import com.zooting.api.domain.meeting.dto.OppositeGenderParticipantsDto;
 import com.zooting.api.domain.meeting.dto.response.OpenviduTokenRes;
 import com.zooting.api.domain.meeting.dto.response.RedisMatchRes;
 import com.zooting.api.global.common.SocketBaseDtoRes;
@@ -19,8 +20,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -88,14 +92,17 @@ public class WaitingRoomSubscriber implements MessageListener {
         try {
             Session session = openVidu.createSession();
             log.info("세션을 만들었습니다.");
-            Map<String, String> participants = waitingRoom.getMeetingMembers().stream()
-                    .collect(Collectors.toMap(MeetingMemberDto::getNickname, MeetingMemberDto::getGender));
-            List<String> nicknameList = participants.keySet().stream().collect(Collectors.toList());
-            List<String> genderList = participants.values().stream().collect(Collectors.toList());
+            Map<String, String> nicknameGenderMap = waitingRoom.getMeetingMembers().stream()
+                    .collect(Collectors.toMap(MeetingMemberDto::getEmail, MeetingMemberDto::getGender));
             for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
                 String email = meetingMemberDto.getEmail();
+                //다른 성별만 찾기
+                List<OppositeGenderParticipantsDto> oppositeGenderParticipantsDtos = waitingRoom.getMeetingMembers().stream()
+                        .filter(member -> !member.getGender().equals(nicknameGenderMap.get(email)))
+                        .map(member -> new OppositeGenderParticipantsDto(member.getEmail(), member.getAnimal()))
+                        .collect(Collectors.toList());
                 Connection connection = session.createConnection();
-                OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken(), nicknameList, genderList);
+                OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtos);
                 webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.OPENVIDU, openviduTokenRes));
             }
             waitingRoomRedisRepository.deleteById(waitingRoom.getWaitingRoomId());

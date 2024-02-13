@@ -5,6 +5,7 @@ import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
 import com.zooting.api.domain.meeting.dto.MeetingMemberDto;
 import com.zooting.api.domain.meeting.dto.MeetingPickDto;
+import com.zooting.api.domain.meeting.dto.OppositeGenderParticipantsDto;
 import com.zooting.api.domain.meeting.dto.response.OpenviduTokenRes;
 import com.zooting.api.domain.meeting.pubsub.MessageType;
 import com.zooting.api.domain.meeting.pubsub.RedisPublisher;
@@ -193,15 +194,13 @@ public class MeetingService {
         Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         try {
             Map<String, OpenviduTokenRes> openviduTokenResMap = new HashMap<>();
-            Map<String, String> participants = Map.of(friend.getNickname(), friend.getGender(), loginEmail, loginMember.getGender());
-
-            List<String> nicknameList = new ArrayList<>(participants.keySet());
-            List<String> genderList = new ArrayList<>(participants.values());
+            List<OppositeGenderParticipantsDto> oppositeGenderParticipantsDtoList = new ArrayList<>();
+            oppositeGenderParticipantsDtoList.add(new OppositeGenderParticipantsDto(friend.getNickname(), Objects.nonNull(friend.getAdditionalInfo()) ? friend.getAdditionalInfo().getAnimal() : ""));
             Session session = openVidu.createSession();
             Connection connection = session.createConnection();
-            openviduTokenResMap.put(friend.getEmail(), new OpenviduTokenRes(connection.getToken(), nicknameList, genderList));
+            openviduTokenResMap.put(friend.getEmail(), new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtoList));
             connection = session.createConnection();
-            openviduTokenResMap.put(loginEmail, new OpenviduTokenRes(connection.getToken(), nicknameList, genderList));
+            openviduTokenResMap.put(loginEmail, new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtoList));
             return openviduTokenResMap;
         } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
             throw new RuntimeException(ex);
