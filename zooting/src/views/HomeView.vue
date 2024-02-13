@@ -1,6 +1,12 @@
 <template>
   <div class="home__container">
-    <Social/>
+    <TheSideBar
+      :dm-res = "dmRes"
+      @current-dm-room-id="currentDmRoomId"
+    />
+    <Social
+      class="ms-14"
+    />
     <Ready/>
   </div>
 </template>
@@ -8,6 +14,7 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from 'vue'
 import {useAccessTokenStore, useStore} from "@/stores/store"
+import TheSideBar from '@/components/TheSideBar.vue'
 import Social from '@/components/home/Social.vue'
 import Ready from '@/components/home/Ready.vue'
 import DmSound from '/assets/sounds/dm.mp3'
@@ -15,12 +22,13 @@ const { VITE_SERVER_API_URL } = import.meta.env
 
 const store = useAccessTokenStore()
 const dmStore = useStore()
-const props = defineProps<{
-  dmRoomId: number
-}>()
-const emit = defineEmits(['receiveMessage'])
 
 const userInfo = ref(store.userInfo)
+
+const emit = defineEmits(['receiveMessage'])
+const dmRes = ref<any>(null)  // dm 메시지 객체
+const dmRoomId = ref<number>(0) // dm 방 id
+const dmSound = new Audio(DmSound)  // dm 알림 소리
 
 // @ts-ignore
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws`)
@@ -31,11 +39,13 @@ const START_HEART_CHECK = 5 * 1000;
 const HEART_CHECK_INTERVAL = 30 * 1000;
 const intervalTime = ref<number>(START_HEART_CHECK);
 
-const dmSound = new Audio(DmSound)
-
 function playSound(sound:any) {
     sound.currentTime = 0
     sound.play()
+}
+
+const currentDmRoomId = (id: number) => {
+  dmRoomId.value = id
 }
 
 watch(() => store.userInfo, (update) => {
@@ -83,7 +93,7 @@ const onConnected = () => {
     // MESSAGE
     if (type === 'MESSAGE') {
       // 현재 open 된 dmRooId인 경우 메시지 전송
-      if (props.dmRoomId === res.dmRoomId) {
+      if (dmRoomId === res.dmRoomId) {
         emit('receiveMessage', res)
       } else {
         // 새로운 메시지 알림
@@ -93,11 +103,12 @@ const onConnected = () => {
     } 
     // 매칭 완료
     else if (type === 'MATCH') {
-          store.MatchingComplete()
+      store.MatchingComplete()
     }
     // 매칭 수락
     else if (type === 'OPENVIDU') {
-          store.pushMeetingRoom(res.token)
+      store.pushMeetingRoom(res.token)
+      store.isRequesting = false
     }
     // 유저 상태 정보
     else if (type == 'HEARTBEAT') {
@@ -116,9 +127,10 @@ const onConnected = () => {
       store.meetingSender = res.nickname
       store.isRecieveMeeting = true
     }
-    // 미팅 무응답
+    // 미팅 거절
     else if (type === 'REJECT') {
-      console.log(11111111111)
+      store.isRequesting = false
+      store.isMeetingReject = true
     }
   })
 }

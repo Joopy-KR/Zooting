@@ -939,9 +939,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   }
 
   // -------------------------- 일대일 미팅 ---------------------------
-  // 일대일 미팅 요청 중
-  const isRequesting = ref<boolean>(false)
-  const isRecieveMeeting = ref<boolean>(false)
+  const isRequesting = ref<boolean>(false)  // 일대일 미팅 요청 중 (sender)
+  const isRecieveMeeting = ref<boolean>(false)  // 일대일 미팅 요청 수락/거절 대기 중 (reciever)
+  const isMeetingReject = ref<boolean>(false)
   const meetingSender = ref<string>('')
 
   // 일대일 미팅 요청
@@ -979,7 +979,27 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
       .then((res) => {
         console.log(res)
-        isRequesting.value = false
+        isRecieveMeeting.value = false
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
+  // 일대일 미팅 거절
+  const meetingRejectFriend = function () {
+    axios({
+      method: "post",
+      url: `${VITE_SERVER_API_URL}/api/meeting/reject/friend`,
+      params: {
+        nickname: meetingSender.value,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+    })
+      .then((res) => {
+        console.log(res)
         isRecieveMeeting.value = false
       })
       .catch((err) => {
@@ -1045,6 +1065,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       meetingAcceptFriend,
       isRequesting,
       isRecieveMeeting,
+      isMeetingReject,
       meetingSender,
+      meetingRejectFriend,
   };
 });

@@ -23,8 +23,8 @@
                 </div>
               </div>
               <div class="mt-6 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="meetingReject">거절</div>
-                <div class="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm cursor-pointer hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2" ref="cancelButtonRef" @click="meetingAccept">수락</div>
+                <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm cursor-pointer hover:bg-indigo-500 sm:col-start-1 sm:mt-0" @click="meetingAccept">수락</div>
+                <div class="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2" @click="meetingReject">거절</div>
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -56,18 +56,18 @@ watch(()=> store.isRecieveMeeting, () => {
       if (enterRoomTimeLimit.value >= 100) {
         clearInterval(intervalId)
         // 미팅 거절
-        store.isRecieveMeeting = false
+        store.meetingRejectFriend()
       }
     }, 20)
   }
 })
 
-// 미팅 수락
+// 미팅 거절
 const meetingReject = () => {
-  store.isRecieveMeeting = false
+  store.meetingRejectFriend()
 }
 
-// 미팅 거절
+// 미팅 수락
 const meetingAccept = () => {
   store.meetingAcceptFriend()
 }

@@ -187,7 +187,7 @@ const currentDmRoomId = (dmRoomId: number) => {
 
 <style scoped>
 .side-bar {
-  @apply fixed flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-40;
+  @apply fixed flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-50;
 }
 
 .logo {
@@ -199,7 +199,7 @@ const currentDmRoomId = (dmRoomId: number) => {
 }
 
 .user-profile {
-  @apply w-10 h-10 rounded-full cursor-pointer relative;
+  @apply w-12 h-12 border border-gray-200 shadow-sm rounded-full cursor-pointer relative;
 }
 
 .profile-menu {

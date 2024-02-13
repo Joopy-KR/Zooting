@@ -3,7 +3,7 @@
     <!-- 일대일 화상 채팅 신청 상태 알림 -->
     <transition name="fade">
       <div class="video-chat-alert" v-if="isOpenAlert">
-        <div role="alert" class="alert" v-if="isSuccessRequest">
+        <div role="alert" class="alert" v-if="isSuccessRequest && !isOpenRejectAlert">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-500 stroke-current shrink-0" fill="none" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -17,8 +17,9 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
           <div class="flex flex-col">
-            <span class="font-semibold">화상 채팅 신청 실패</span>
-            <span class="text-gray-500">이미 화상 채팅을 신청한 상태예요</span>
+            <span class="font-semibold">미팅 신청 실패</span>
+            <span v-if="isOpenRejectAlert" class="text-gray-500">상대방이 미팅에 응답하지 않았어요</span>
+            <span v-else class="text-gray-500">현재 다른 미팅 요청 중이에요</span>
           </div>
         </div>
       </div>
@@ -53,7 +54,7 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m12 18-7 3 7-18 7 18-7-3Zm0 0v-5"/>
           </svg>
           <!-- 새로운 채팅 알림 -->
-          <div class="absolute bottom-[10px] left-[10px] cursor-pointer" v-show="isNewSender(item.email)" @click="entryChat(item)">
+          <div class="absolute bottom-[12px] left-[11px] cursor-pointer" v-show="isNewSender(item.email)" @click="entryChat(item)">
             <span class="relative flex w-2 h-2">
               <span class="absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping bg-[#DF75DB]"></span>
               <span class="relative inline-flex w-2 h-2 rounded-full bg-[#DF75DB]"></span>
@@ -66,7 +67,8 @@
         </div>
         <div class="menu" v-show="isOpenMenu && openedMenuNickname === item.nickname">
           <div class="py-2">
-            <div class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" @click="meetingRequestFriend(item.nickname)">미팅 신청</div>
+            <div v-if="item.isOnline" class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" @click="meetingRequestFriend(item.nickname)">미팅 신청</div>
+            <p v-else class="block px-4 py-2 text-sm text-gray-300">미팅 신청</p>
           </div>
           <div class="py-2 text-sm text-gray-700">
             <RouterLink :to="getProfileLink(item.nickname)" class="block px-4 py-2 hover:bg-gray-100">프로필 보기</RouterLink>
@@ -87,15 +89,31 @@ import type { Friend } from "@/types/global"
 
 const store = useAccessTokenStore()
 const dmStore = useStore()
-const emit = defineEmits(['readMessage'])
 const friendList = ref(store.friendList)
 const isOpenMenu = ref<boolean>(false)
 const openedMenuNickname = ref<string | null>(null)
 const isOpenAlert = ref<boolean>(false)
+const isOpenRejectAlert = ref<boolean>(false)
 const isSuccessRequest = ref<boolean>(true)
+
+const emit = defineEmits(['readMessage'])
 
 watch(() => store.friendList, (update) => {
   friendList.value = update
+})
+
+// 일대일 미팅 거절
+watch(() => store.isMeetingReject, (update) => {
+  if (update) {
+    isOpenAlert.value = true
+    isOpenRejectAlert.value = true
+    isSuccessRequest.value = false
+  }
+  setTimeout(() => {
+    isOpenAlert.value = false
+    isOpenRejectAlert.value = false
+    store.isMeetingReject = false
+  }, 2000)
 })
 
 const getProfileLink = (value: string) => `/profile/${value}`
@@ -161,29 +179,23 @@ const openMenu = (nickname: string) => {
 // 새로운 메시지를 보낸 친구일 경우 알림 표시
 const isNewSender = computed(() => (email: string) => dmStore.newMessage.includes(email))
 
-const closeAlert = () => {
-  isOpenAlert.value = false;
-}
-
 // 일대일 미팅 요청
 const meetingRequestFriend = (reciever: string) => {
   isOpenAlert.value = true
   isOpenMenu.value = false
   openedMenuNickname.value = null
   // 요청 중이 아닌 상태에서 요청
-  if (!store.isRequesting) {
-    store.meetingRequestFriend(reciever) 
-    // store.meetingRequestFriend('윤죠이') 
+  if (!store.isRequesting &&  !store.isMatching) {
+    // store.meetingRequestFriend(reciever)  
+    store.meetingRequestFriend('윤죠이')  
     isSuccessRequest.value = true
   } else {
     isSuccessRequest.value = false
   }
   setTimeout(() => {
-    closeAlert()
+    isOpenAlert.value = false
   }, 2000)
 }
-
-
 </script>
 
 <style scoped>
@@ -212,13 +224,15 @@ const meetingRequestFriend = (reciever: string) => {
   @apply flex items-center justify-between gap-4;
 }
 .friend-list__img__woman__online {
-  @apply w-10 h-10 rounded-full border-red-500 border-2;
+  @apply w-12 h-12 rounded-full;
+  box-shadow: 0 0 5px 2px rgb(253, 108, 108);
 }
 .friend-list__img__man__online {
-  @apply w-10 h-10 rounded-full border-blue-500 border-2;
+  @apply w-12 h-12 rounded-full;
+  box-shadow: 0 0 5px 2px rgb(93, 161, 249);
 }
 .friend-list__img__offline {
-  @apply w-10 h-10 rounded-full;
+  @apply w-12 h-12 rounded-full border border-gray-200 shadow-sm;
 }
 .buttons {
   @apply flex items-center relative;
