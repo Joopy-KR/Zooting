@@ -941,10 +941,10 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   }
 
   // -------------------------- 일대일 미팅 ---------------------------
-  const isRequesting = ref<boolean>(false)  // 일대일 미팅 요청 중 (sender)
+  const isRequesting = ref<boolean>(false)  // 일대일 미팅 요청 중 (sender), 현재 요청 중인지 확인할 변수
   const isRecieveMeeting = ref<boolean>(false)  // 일대일 미팅 요청 수락/거절 대기 중 (reciever)
-  const isMeetingReject = ref<boolean>(false)
-  const meetingSender = ref<string>('')
+  const isMeetingReject = ref<boolean>(false) // 미팅 거절 여부
+  const meetingSender = ref<string>('') // 나에게 미팅 신청 보낸 사람
 
   // 일대일 미팅 요청
   const meetingRequestFriend = function (nickname: string) {
