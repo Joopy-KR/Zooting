@@ -63,6 +63,13 @@ window.onload = function () {
             let obstacle = new Obstacle();
             obstacleArr.push(obstacle);
         }
+        if (descriptionElement) {
+            if (score>= 30 && score <=50) {
+                descriptionElement.innerHTML = "<p>Speed Up</p>"
+            } else {
+                descriptionElement.innerHTML = ""
+            }
+        }
         // 한 프레임마다 출력된 장애물 객체의 위치, 충돌 여부 확인
         obstacleArr.forEach((a, idx, o)=>{
             // 화면 왼쪽으로 사라지는 객체 삭제
