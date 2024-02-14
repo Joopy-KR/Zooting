@@ -113,9 +113,10 @@ watch(() => store.friendList, (update) => {
   friendList.value = update
 })
 
-// 일대일 미팅 거절
+// 미팅 거절 여부 감시
 watch(() => store.isMeetingReject, (update) => {
-  if (update) {
+  // 거절 당했다면
+  if (update) { 
     isOpenAlert.value = true
     isOpenRejectAlert.value = true
     isSuccessRequest.value = false
@@ -198,7 +199,7 @@ const meetingRequestFriend = (reciever: string) => {
   // 요청 중이 아닌 상태에서 요청
   if (!store.isRequesting &&  !store.isMatching) {
     meetingReciver.value = reciever
-    store.meetingRequestFriend(reciever)
+    store.meetingRequestFriend('윤죠이')
     isSuccessRequest.value = true
   } else {
     isSuccessRequest.value = false

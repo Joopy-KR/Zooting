@@ -81,7 +81,7 @@ const handleSearchQuery = (query: string) => {
 
 <style scoped>
 .social__container {
-  @apply flex flex-col h-screen bg-white;
+  @apply flex flex-col h-screen bg-white border-r border-gray-200;
   min-width: 430px;
 }
 </style>

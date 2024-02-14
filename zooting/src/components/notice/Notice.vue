@@ -71,7 +71,6 @@ const detailContent = ref({ noticeId : null, title : null, content : null, creat
 const detailModalOpen = ref(false);
 const movePage = (item: number) => {
   store.getNoticeList({page: item-1, size : DEFAULT_PAGE_SIZE})
-  console.log(store.noticeList);
 }
 
 

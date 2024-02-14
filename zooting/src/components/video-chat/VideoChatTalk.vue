@@ -40,10 +40,10 @@ const router = useRouter()
 const toggleMute = () => {
   if (isMuted.value) {
     isMuted.value = false
-    props.publisher?.publishAudio(false)
+    props.publisher?.publishAudio(true)
   } else {
     isMuted.value = true
-    props.publisher?.publishAudio(true)
+    props.publisher?.publishAudio(false)
   }
 }
 

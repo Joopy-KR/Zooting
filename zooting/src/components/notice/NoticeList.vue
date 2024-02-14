@@ -1,9 +1,9 @@
 <template>
   <div class="notice__container">
     <ul role="list" class="notice-list">
-      <li v-for="(notice, index) in noticeList" :key="index" class="notice-list__item cursor-pointer" @click="getNoticeContents(notice)">
-        <div class="flex items-center gap-4 w-full">
-          <div class="font-medium w-full">
+      <li v-for="(notice, index) in noticeList" :key="index" class="cursor-pointer notice-list__item" @click="getNoticeContents(notice)">
+        <div class="flex items-center w-full gap-4">
+          <div class="w-full font-medium">
             <div class="flex items-center">
             </div>
             <div class="flex justify-between w-full" >
@@ -27,10 +27,8 @@ const props = defineProps(["noticeList"])
 const emits = defineEmits(["noticeContents", "openDetailModal"])
 const getNoticeContents = (item : Notice) => {
     emits("noticeContents", item);
-    emits("openDetailModal", true) // 함수 따로 뺴기
+    emits("openDetailModal", true) // 함수 따로 빼기
 }
-
-
 
 </script>
 

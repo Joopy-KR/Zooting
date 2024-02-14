@@ -42,16 +42,17 @@
 import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { CheckIcon } from '@heroicons/vue/24/outline'
-import { useAccessTokenStore } from '../stores/store'
+import { useAccessTokenStore } from '@/stores/store'
 
 const store = useAccessTokenStore()
 const enterRoomTimeLimit = ref<any>(0)
 const isMatchingComplete = ref<boolean>(false)
+const emit = defineEmits(['matchingAccept'])
 
 watch(()=> store.isMatchingComplete, (update) => {
   isMatchingComplete.value = update
-
-  if (store.isMatchingComplete) {
+  // 매칭 완료됐으면 타이머 시작
+  if (update) {
     const intervalId = setInterval(() => {
       enterRoomTimeLimit.value += 0.2
   
@@ -64,9 +65,12 @@ watch(()=> store.isMatchingComplete, (update) => {
 
 const meetingAccept = () => {
   store.meetingAccept()
+  enterRoomTimeLimit.value = 0
+  emit('matchingAccept')
 }
 
 const meetingExit = () => {
   store.meetingExit()
+  enterRoomTimeLimit.value = 0
 }
 </script>

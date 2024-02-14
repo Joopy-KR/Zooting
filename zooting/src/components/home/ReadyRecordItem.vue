@@ -8,8 +8,9 @@
         <div class="text-xl underline decoration-pink-300 decoration-wavy">
           {{ nickname }}
         </div>
-        <button v-if="!isFriendInList(nickname)" class="flex justify-center w-20 py-1 bg-pink-300 rounded-md shadow-md hover:bg-pink-400" @click="sendFriendRequest(nickname)">친구 신청</button>
-        <div v-else class="text-sm text-gray-400">이미 친구인 유저입니다</div>
+        <button v-if="!isFriendInList(nickname) && !isRequestInList(nickname)" class="flex justify-center w-20 py-1 bg-pink-300 rounded-md shadow-md hover:bg-pink-400" @click="sendFriendRequest(nickname)">친구 신청</button>
+        <div v-else-if="isFriendInList(nickname)" class="text-sm text-gray-400">이미 친구인 유저입니다</div>
+        <div v-else class="text-sm text-gray-400">친구 요청 중입니다</div>
       </div>
     </div>
   </div>
@@ -27,7 +28,6 @@ const nickname = ref("")
 watch(()=> props.recordItem, (update) => {
    animal.value = props.recordItem.animal
    nickname.value = props.recordItem.nickName
-
 })
 
 const getProfileLink = (value: string) => `/profile/${value}`
@@ -60,6 +60,10 @@ const sendFriendRequest = (nickname: string) => {
 
 const isFriendInList = (nickname: string) => {
   return store.friendList.some(item => item.nickname === nickname)
+}
+
+const isRequestInList = (nickname: string) => {
+  return store.requestToList.some(item => item.nickname === nickname) || store.requestFromList.some(item => item.nickname === nickname)
 }
 </script>
 

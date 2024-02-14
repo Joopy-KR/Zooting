@@ -205,7 +205,7 @@ const currentDmRoomId = (dmRoomId: number) => {
 }
 
 .side-tab {
-  @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white z-30 ps-14;
+  @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white z-30 ps-14 border-r border-gray-200 shadow-md;
   width: 486px;
 }
 
