@@ -56,7 +56,7 @@ public class MeetingController {
     }
 
     @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/refresh")
+    @GetMapping("/refresh")
     @Operation(summary = "접속이 끊긴 유저에게 Openvidu Token 재발급",
             description = "접속이 끊긴 유저에게 Openvidu Token 재발급")
     public ResponseEntity<BaseResponse<OpenviduTokenRes>> refreshOpenviduToken(
