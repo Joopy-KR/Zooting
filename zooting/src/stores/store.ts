@@ -939,13 +939,42 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     if (isMatchingComplete.value) {
       // 끝나는 시간
       // 615000 = 10분 15초
-      // 테스트를 위해 10초 미팅으로 바꿔둠 (10000)
-      sessionEndTime.value = time + 20000
+      // 테스트를 위해 30초 미팅으로 바꿔둠 (30000)
+      sessionEndTime.value = time + 30000
       isMatchingComplete.value = false
       router.push({ name: "video-chat"})
     } else {
       router.push({ name: "one-to-one-chat"})
     }
+  }
+
+  // 최종 선택(자기를 좋다고 한 사람들) 결과
+  const meetingResult = ref([])
+  const showResult = ref(false)
+  // 최종 선택 이후 자기를 선택한 사람을 가지고 홈으로 이동시키기
+  const pushHomeAfterMeeting = function (sessionId: any) {
+    console.log(sessionId)
+    axios({
+      method: "post",
+      url: `${VITE_SERVER_API_URL}/api/meeting/picks/result`,
+      params: {
+        sessionId: sessionId,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+      })
+      .then((res) => {
+        meetingResult.value = res.data.result
+        router.push({ name: 'home' })
+      })
+      .then((res) => {
+        console.log(11)
+        showResult.value = true
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   }
 
   // -------------------------- 일대일 미팅 ---------------------------
@@ -1080,5 +1109,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       isMeetingReject,
       meetingSender,
       meetingRejectFriend,
+      pushHomeAfterMeeting,
+      meetingResult,
+      showResult,
   };
 });
