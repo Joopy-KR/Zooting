@@ -18,5 +18,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
+.videoElement {
+  @apply rounded-lg;
+}
 </style>
