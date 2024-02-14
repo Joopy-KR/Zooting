@@ -36,7 +36,7 @@ public class  MemberRepositoryImpl implements MemberRepositoryCustom {
                         // 멤버 role이 USER
                         member.role.contains(Privilege.USER)
                         // 다른 성별
-//                        member.gender.ne(extractObj.getGender()) // todo:  1: 3 매칭을 하게 할시 booleanexpression으로 수정
+//                        member.gender.ne(extractObj.getGender())
                 ).orderBy(
                         // 관심사가 일치하는 유저가 먼저 오도록 sort
                         member.additionalInfo.interest.in(extractObj.getMemberInterests()).count().desc(),

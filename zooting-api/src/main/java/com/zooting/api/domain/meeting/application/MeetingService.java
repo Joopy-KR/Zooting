@@ -51,9 +51,6 @@ public class MeetingService {
     private final Gson gson;
 
     /**
-     * TODO: synchronized VS Lettuce의 Spin Lock VS Redisson의 분산락
-     *   Mutex / Semaphore / Monitoring (Java의 synchronized 구현 방식)
-     *
      * @param userDetails 대기열에 등록하려는 유저의 정보
      * @return 유저가 등록한 대기실의 ID
      */
@@ -93,8 +90,6 @@ public class MeetingService {
     }
 
     /**
-     * TODO: meetingMemberDto를 파라미터로 받아 최적의 대기실을 찾는 알고리즘 작성할 것
-     *
      * @param meetingMemberDto 대기열에 등록하려는 유저의 정보
      * @return 현재 유저가 들어갈수 있는 가장 이상적인 방
      */
@@ -179,14 +174,16 @@ public class MeetingService {
         return waitingRoom.orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_WAITING_ROOM));
     }
 
-    public OpenviduTokenRes refreshOpenviduToken(String sessionId) {
+    public OpenviduTokenRes refreshOpenviduToken(String sessionId, String loginEmail) {
         Session session = Optional.ofNullable(openVidu.getActiveSession(sessionId)).orElseThrow(
                 () -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
-
-        //TODO: OpenViduTokenRes 만들 때 상대 성별 정보 담는 로직 메소드화한것 추가할 것
         try {
             Connection connection = session.createConnection();
-            return new OpenviduTokenRes(connection.getToken(), new ArrayList<>());
+            List<Member> meetingMembers = meetingLogRepository.findMembersByUuidAssociatedWithEmail(loginEmail);
+            List<OppositeGenderParticipantsDto> oppositeGenderParticipantsDtoList = meetingMembers.stream()
+                    .map(member -> new OppositeGenderParticipantsDto(member.getNickname(), member.getAdditionalInfo().getAnimal()))
+                    .collect(Collectors.toList());
+            return new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtoList);
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             throw new RuntimeException(e);
         }
