@@ -46,7 +46,7 @@
                 <div class="flex flex-col items-center justify-center w-full h-full mt-0 ml-4 bmt-3">
                     <div class="mt-16">
                       <h1 class="text-4xl font-bold text-black">미팅이 종료되었어요</h1>
-                      <p class="mt-5 text-gray-500">잠시 후 메인 화면으로 이동할께요</p>
+                      <p class="mt-5 text-gray-500">잠시 후 메인 화면으로 이동할게요</p>
                     </div>
                     <div class="flex items-center justify-center gap-40 mt-12">
                       <img class="rounded-full w-80 h-80 " src="/assets/images/animal/pupple_cat.png" alt="프로필 사진">
@@ -105,6 +105,14 @@ const getProfileImage = (animal: String) => {
   return imgUrl.href;
 }
 
+// 대기 함수
+function wait(sec) {
+    let start = Date.now(), now = start;
+    while (now - start < sec * 1000) {
+        now = Date.now();
+    }
+}
+
 // 타이머
 const enterRoomTimeLimit = ref<any>(0)
 // 선택시간 끝났는지 판단할 플래그
@@ -117,31 +125,30 @@ onMounted(() => {
  
     if (enterRoomTimeLimit.value >= 100) {
       isTimeOver.value = true
-      // 3~5초의 간격
-      if (enterRoomTimeLimit.value >= 180) {
-        console.log('3초인가?')
-        clearInterval(intervalId)
-        // 선택한 이성 보내는 API
-        if (selectNickname.value !== '') {
-          axios({
-          method: "post",
-          url: `${VITE_SERVER_API_URL}/api/meeting/picks`,
-          params: {
-            sessionId: props.sessionId,
-            nickname: selectNickname.value
-          },
-          headers: {
-            Authorization: `Bearer ${store.getAccessToken()}`,
-          },
-          })
-          .then((res) => {
-            // 이 부분에서 홈으로 넘어가야함 (홈으로 넘어갔을시 모달을 띄워야 하므로 store이용)
-            console.log(res)
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-        }
+      clearInterval(intervalId)
+
+      // 선택한 이성 보내는 API
+      if (selectNickname.value !== '') {
+        axios({
+        method: "post",
+        url: `${VITE_SERVER_API_URL}/api/meeting/picks`,
+        params: {
+          sessionId: props.sessionId,
+          nickname: selectNickname.value
+        },
+        headers: {
+          Authorization: `Bearer ${store.getAccessToken()}`,
+        },
+        })
+        .then((res) => {
+          // 7초의 간격
+          wait(7)
+          // 홈으로 이동시키기
+          store.pushHomeAfterMeeting(props.sessionId)  // 홈으로 넘어갔을시 모달을 띄워야 하므로 store이용
+        })
+        .catch((err) => {
+          console.log(err)
+        })
       }
     }
   }, 20)

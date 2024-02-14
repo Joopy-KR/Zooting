@@ -948,6 +948,27 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     router.push({ name: "video-chat"})
   }
 
+  // 최종 선택 이후 자기를 선택한 사람을 가지고 홈으로 이동시키기
+  const pushHomeAfterMeeting = function (sessionId: any) {
+    console.log(sessionId)
+    axios({
+      method: "post",
+      url: `${VITE_SERVER_API_URL}/api/meeting/picks/result`,
+      params: {
+        sessionId: sessionId,
+      },
+      headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+      },
+      })
+      .then((res) => {
+        console.log(res)  
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
   // -------------------------- 일대일 미팅 ---------------------------
   const isRequesting = ref<boolean>(false)  // 일대일 미팅 요청 중 (sender), 현재 요청 중인지 확인할 변수
   const isRecieveMeeting = ref<boolean>(false)  // 일대일 미팅 요청 수락/거절 대기 중 (reciever)
@@ -1080,5 +1101,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       isMeetingReject,
       meetingSender,
       meetingRejectFriend,
+      pushHomeAfterMeeting,
   };
 });
