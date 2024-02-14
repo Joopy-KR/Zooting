@@ -948,6 +948,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     router.push({ name: "video-chat"})
   }
 
+  // 최종 선택(자기를 좋다고 한 사람들) 결과
+  const meetingResult = ref([])
+  const showResult = ref(false)
   // 최종 선택 이후 자기를 선택한 사람을 가지고 홈으로 이동시키기
   const pushHomeAfterMeeting = function (sessionId: any) {
     console.log(sessionId)
@@ -962,7 +965,12 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
       })
       .then((res) => {
-        console.log(res)  
+        meetingResult.value = res.data.result
+        router.push({ name: 'home' })
+      })
+      .then((res) => {
+        console.log(11)
+        showResult.value = true
       })
       .catch((err) => {
         console.log(err)
@@ -1102,5 +1110,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       meetingSender,
       meetingRejectFriend,
       pushHomeAfterMeeting,
+      meetingResult,
+      showResult,
   };
 });

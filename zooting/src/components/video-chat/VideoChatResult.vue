@@ -1,5 +1,6 @@
 <template>
-  <TransitionRoot as="template" :show="!isTimeOver">
+  <!-- 최종 선택 -->
+  <TransitionRoot as="template" :show="!isTimeOver && !isTakingInfo">
     <Dialog as="div" class="relative">
       <TransitionChild as="template" enter="ease-out durastion-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 transition-opacity bg-pink-100 bg-opacity-75" />
@@ -33,7 +34,35 @@
     </Dialog>
   </TransitionRoot>
 
-  <TransitionRoot as="template" :show="isTimeOver">
+  <!-- 정보 취합중 -->
+  <TransitionRoot as="template" :show="isTakingInfo">
+    <Dialog as="div" class="relative">
+      <TransitionChild as="template" enter="ease-out durastion-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+        <div class="fixed inset-0 transition-opacity bg-pink-100 bg-opacity-75" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 w-screen overflow-y-auto">
+        <div class="flex items-end justify-center min-h-full p-4 text-center sm:items-center sm:p-0">
+          <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-0 scale-95" enter-to="opacity-100 translate-y-0 scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 scale-100" leave-to="opacity-0 translate-y-0 scale-95">
+            <DialogPanel class="relative p-6 px-4 pt-5 pb-4 my-8 overflow-hidden text-center transition-all transform bg-white rounded-lg shadow-xl dialog-panel min-w-6xl">
+                <div class="flex flex-col items-center justify-center w-full h-full mt-0 ml-4 bmt-3">
+                    <div class="mt-16">
+                      <h1 class="text-4xl font-bold text-black">다른 사람들의 선택을 기다리는 중이에요</h1>
+                      <p class="mt-5 text-gray-500">잠시만 기다려주세요</p>
+                    </div>
+                    <div class="flex items-center justify-center gap-40 mt-12">
+                      <img class="w-80 h-80 " src="/assets/images/animal/animal_group.png" alt="프로필 사진">
+                    </div>
+                </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
+  <!-- 미팅 종료 안내 -->
+  <TransitionRoot as="template" :show="isTimeOver && !isTakingInfo">
     <Dialog as="div" class="relative">
       <TransitionChild as="template" enter="ease-out durastion-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 transition-opacity bg-pink-100 bg-opacity-75" />
@@ -117,38 +146,52 @@ function wait(sec) {
 const enterRoomTimeLimit = ref<any>(0)
 // 선택시간 끝났는지 판단할 플래그
 const isTimeOver = ref(false)
+// 정보를 취합중인지 판단할 플래그
+const isTakingInfo = ref(false)
+// axios를 한번만 보내기 위한 플래그
+const isAxios = ref(false)
+
 
 // 0.1에 20이 20초. 시연을 위해 빨리 해두기
+// 0.5에 20일경우 100이 4초
 onMounted(() => {
   const intervalId = setInterval(() => {
     enterRoomTimeLimit.value += 0.5
  
     if (enterRoomTimeLimit.value >= 100) {
+      isTakingInfo.value = true
       isTimeOver.value = true
-      clearInterval(intervalId)
-
+      
       // 선택한 이성 보내는 API
       if (selectNickname.value !== '') {
-        axios({
-        method: "post",
-        url: `${VITE_SERVER_API_URL}/api/meeting/picks`,
-        params: {
-          sessionId: props.sessionId,
-          nickname: selectNickname.value
-        },
-        headers: {
-          Authorization: `Bearer ${store.getAccessToken()}`,
-        },
-        })
-        .then((res) => {
-          // 7초의 간격
-          wait(7)
-          // 홈으로 이동시키기
-          store.pushHomeAfterMeeting(props.sessionId)  // 홈으로 넘어갔을시 모달을 띄워야 하므로 store이용
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+        if (!isAxios.value) {
+          isAxios.value = true
+          axios({
+          method: "post",
+          url: `${VITE_SERVER_API_URL}/api/meeting/picks`,
+          params: {
+            sessionId: props.sessionId,
+            nickname: selectNickname.value
+          },
+          headers: {
+            Authorization: `Bearer ${store.getAccessToken()}`,
+          },
+          })
+          .then((res) => {
+            console.log(res)
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+        }
+      }
+      
+      if (enterRoomTimeLimit.value >= 250) {
+        isTakingInfo.value = false
+      }
+      if (enterRoomTimeLimit.value >= 400) {
+        clearInterval(intervalId)
+        store.pushHomeAfterMeeting(props.sessionId)
       }
     }
   }, 20)
