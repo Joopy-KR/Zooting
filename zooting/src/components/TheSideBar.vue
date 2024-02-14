@@ -76,9 +76,7 @@ import Notice from './notice/Notice.vue'
 const store = useAccessTokenStore()
 const router = useRouter()
 const emit = defineEmits(['currentDmRoomId'])
-const props = defineProps<{
-  dmRes: any
-}>()
+const props = defineProps(['dmRes'])
 
 const isLoggedIn = computed(() => store.isLogin)
 

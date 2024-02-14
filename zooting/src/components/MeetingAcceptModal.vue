@@ -56,7 +56,9 @@ watch(()=> store.isRecieveMeeting, () => {
       if (enterRoomTimeLimit.value >= 100) {
         clearInterval(intervalId)
         // 미팅 거절
-        store.meetingRejectFriend()
+        if (store.isRecieveMeeting) {
+          store.meetingRejectFriend()
+        }
       }
     }, 20)
   }
@@ -65,6 +67,7 @@ watch(()=> store.isRecieveMeeting, () => {
 // 미팅 거절
 const meetingReject = () => {
   store.meetingRejectFriend()
+  enterRoomTimeLimit.value = 0
 }
 
 // 미팅 수락

@@ -29,12 +29,12 @@ public class QMeetingLog extends EntityPathBase<MeetingLog> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final QMeetingParticipants meetingParticipants;
-
     public final com.zooting.api.domain.member.entity.QMember member;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
+
+    public final ComparablePath<java.util.UUID> uuid = createComparable("uuid", java.util.UUID.class);
 
     public QMeetingLog(String variable) {
         this(MeetingLog.class, forVariable(variable), INITS);
@@ -54,7 +54,6 @@ public class QMeetingLog extends EntityPathBase<MeetingLog> {
 
     public QMeetingLog(Class<? extends MeetingLog> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.meetingParticipants = inits.isInitialized("meetingParticipants") ? new QMeetingParticipants(forProperty("meetingParticipants"), inits.get("meetingParticipants")) : null;
         this.member = inits.isInitialized("member") ? new com.zooting.api.domain.member.entity.QMember(forProperty("member"), inits.get("member")) : null;
     }
 

@@ -64,10 +64,9 @@ watch(props.userInfo!, (newValue) => {
                            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel
                 class="relative px-4 pt-5 pb-4 overflow-hidden text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-screen-md sm:p-6">
-              <div class="flex justify-end">
-                <font-awesome-icon :icon="['fas', 'times']" size="2x" color="red"
-                                   @click="setIsOpenPersonalityDialog(false)"/>
-              </div>
+                <svg class="text-gray-500 border-none cursor-pointer w-7 h-7 hover:text-gray-700" @click="setIsOpenPersonalityDialog(false)" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m15 19-7-7 7-7"/>
+                </svg>
               <div class="result__container">
                 <div>
                   <div class="result__title">
@@ -84,7 +83,7 @@ watch(props.userInfo!, (newValue) => {
                       {{ content }}
                     </li>
                     <li><span :class="getColorClass(personality?.match)">
-            {{ personality?.title }}
+            {{ personality?.match }}
           </span> 유형과 궁합이 맞아요.
                     </li>
                   </div>
@@ -107,7 +106,7 @@ watch(props.userInfo!, (newValue) => {
 
 <style scoped>
 .result__container {
-  @apply h-full w-full flex flex-col justify-center bg-white border border-gray-200 shadow py-8 items-center;
+  @apply h-full w-full flex flex-col justify-center bg-white py-8 items-center;
 }
 
 .result__title {
@@ -115,19 +114,16 @@ watch(props.userInfo!, (newValue) => {
 }
 
 .summer-text {
-  color: #4CA975;
+  color: #69d387;
 }
-
 .winter-text {
-  color: #6A5ACD;
+  color: #7669c8;
 }
-
 .spring-text {
-  color: #FF7493;
+  color: #f06d8a;
 }
-
 .autumn-text {
-  color: #D27D32;
+  color: #f7a055;
 }
 
 .result__content {

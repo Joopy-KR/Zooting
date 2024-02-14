@@ -148,7 +148,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useAccessTokenStore } from "../stores/store"
+import { useAccessTokenStore } from '@/stores/store'
 import type { Friend, DM, DmItem } from "@/types/global"
 import axios from 'axios'
 const { VITE_SERVER_API_URL } = import.meta.env
@@ -221,6 +221,7 @@ watch(()=> props.dmRes, () => {
     sender: props.dmRes.sender,
     message: props.dmRes.message,
     files: props.dmRes.files,
+    createdAt: props.dmRes.createdAt,
   })
 })
 

@@ -934,17 +934,25 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   // 매칭 완료 시 미팅방으로 이동시키기
   const meetingRoomToken = ref<String>('')
   const oppositeGenderList = ref<any>(null)
-  const pushMeetingRoom = function (Info: any) {
+  // 세션이 끝나야하는 시간 (시작 시간 + 10분 15초)
+  const sessionEndTime = ref<number>(0)
+  const pushMeetingRoom = function (Info: any, time: number) {
+    // 토큰
     meetingRoomToken.value = Info.token
+    // 이성 정보
     oppositeGenderList.value = Info.oppositeGenderList
+    // 끝나는 시간
+    // 615000 = 10분 15초
+    // 테스트를 위해 10초 미팅으로 바꿔둠 (10000)
+    sessionEndTime.value = time + 10000
     router.push({ name: "video-chat"})
   }
 
   // -------------------------- 일대일 미팅 ---------------------------
-  const isRequesting = ref<boolean>(false)  // 일대일 미팅 요청 중 (sender)
+  const isRequesting = ref<boolean>(false)  // 일대일 미팅 요청 중 (sender), 현재 요청 중인지 확인할 변수
   const isRecieveMeeting = ref<boolean>(false)  // 일대일 미팅 요청 수락/거절 대기 중 (reciever)
-  const isMeetingReject = ref<boolean>(false)
-  const meetingSender = ref<string>('')
+  const isMeetingReject = ref<boolean>(false) // 미팅 거절 여부
+  const meetingSender = ref<string>('') // 나에게 미팅 신청 보낸 사람
 
   // 일대일 미팅 요청
   const meetingRequestFriend = function (nickname: string) {
@@ -1055,6 +1063,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       meetingRegister,
       meetingRoomToken,
       oppositeGenderList,
+      sessionEndTime,
       pushMeetingRoom,
       fileDownload,
       formattedTimer,

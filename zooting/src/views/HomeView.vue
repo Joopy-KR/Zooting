@@ -34,7 +34,7 @@ const dmSound = new Audio(DmSound)  // dm 알림 소리
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws`)
 // @ts-ignore
 const stompClient = Stomp.over(socket)
-stompClient.debug = null;
+stompClient.debug = null
 let intervalId: any;
 const START_HEART_CHECK = 5 * 1000;
 const HEART_CHECK_INTERVAL = 15 * 1000; // heartbeat check interval time
@@ -90,12 +90,14 @@ const onConnected = () => {
   stompClient.subscribe(`/api/sub/${userInfo.value?.email}`,
   (message: any) => {
     const type = JSON.parse(message.body).type;
+    const time = JSON.parse(message.body).time;
     const res = JSON.parse(message.body).result;
+    
     // MESSAGE
     if (type === 'MESSAGE') {
       // 현재 open 된 dmRooId인 경우 메시지 전송
-      if (dmRoomId === res.dmRoomId) {
-        emit('receiveMessage', res)
+      if (dmRoomId.value === res.dmRoomId) {
+        dmRes.value = { ...res, createdAt: new Date(time).toLocaleTimeString('ko-KR', {timeStyle: 'short', hour12: false}) }
       } else {
         // 새로운 메시지 알림
         dmStore.newMessage.push(res.sender)
@@ -105,10 +107,11 @@ const onConnected = () => {
     // 매칭 완료
     else if (type === 'MATCH') {
       store.MatchingComplete()
+
     }
     // 매칭 수락
     else if (type === 'OPENVIDU') {
-      store.pushMeetingRoom(res)
+      store.pushMeetingRoom(res, Date.parse(time))
       store.isRequesting = false
     }
     // 유저 상태 정보
@@ -130,6 +133,7 @@ const onConnected = () => {
     }
     // 미팅 거절
     else if (type === 'REJECT') {
+      console.log('거절')
       store.isRequesting = false
       store.isMeetingReject = true
     }

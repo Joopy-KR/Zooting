@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import InfoSideBar from "@/components/profile/InfoSideBar.vue";
 import TheSideBar from '@/components/TheSideBar.vue';
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import {useRoute} from "vue-router";
 import {checkIsMyProfileApi, loadMyInfoApi, loadUserInfoApi} from "@/api/profile";
 import type {UserInfo} from "@/types/global";
@@ -93,7 +93,18 @@ const checkIsMyProfile = async (nickname: string) => {
   );
 };
 
-onMounted(async () => {
+onMounted(() => {
+  // 초기 로딩
+  handleProfileUpdate();
+
+  // watch를 사용하여 route.params.nickname을 감시
+  watch(() => route.params.nickname, async (newNickname, oldNickname) => {
+    // 파라미터가 변경되었을 때 수행할 로직
+    handleProfileUpdate();
+  });
+});
+
+const handleProfileUpdate = async () => {
   const nickname = route.params.nickname;
   if (typeof nickname === "string") {
     await checkIsMyProfile(nickname);
@@ -106,14 +117,13 @@ onMounted(async () => {
   } else {
     await loadMyInfo();
   }
-  console.log(isMyProfile.value);
-});
+};
 </script>
 
 <template>
   <TheSideBar/>
-  <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100">
-    <div class="w-1/3">
+  <div class="flex flex-row w-screen h-screen divide-x-2 divide-gray-100 min-w-[1000px]">
+    <div class="w-1/3 ms-14">
       <InfoSideBar v-if="userInfo" :user-info="userInfo" :nickname="route.params.nickname" :is-my-profile="isMyProfile" @load-user-info="loadUserInfo"/>
     </div>
     <div class="w-2/3">
