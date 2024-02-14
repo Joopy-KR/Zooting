@@ -134,14 +134,6 @@ const getProfileImage = (animal: String) => {
   return imgUrl.href;
 }
 
-// 대기 함수
-function wait(sec) {
-    let start = Date.now(), now = start;
-    while (now - start < sec * 1000) {
-        now = Date.now();
-    }
-}
-
 // 타이머
 const enterRoomTimeLimit = ref<any>(0)
 // 선택시간 끝났는지 판단할 플래그
@@ -156,7 +148,7 @@ const isAxios = ref(false)
 // 0.5에 20일경우 100이 4초
 onMounted(() => {
   const intervalId = setInterval(() => {
-    enterRoomTimeLimit.value += 0.5
+    enterRoomTimeLimit.value += 0.2
  
     if (enterRoomTimeLimit.value >= 100) {
       isTakingInfo.value = true
@@ -186,10 +178,10 @@ onMounted(() => {
         }
       }
       
-      if (enterRoomTimeLimit.value >= 250) {
+      if (enterRoomTimeLimit.value >= 170) {
         isTakingInfo.value = false
       }
-      if (enterRoomTimeLimit.value >= 400) {
+      if (enterRoomTimeLimit.value >= 210) {
         clearInterval(intervalId)
         store.pushHomeAfterMeeting(props.sessionId)
       }
