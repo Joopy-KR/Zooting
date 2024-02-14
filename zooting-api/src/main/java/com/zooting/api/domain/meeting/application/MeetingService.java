@@ -1,6 +1,7 @@
 package com.zooting.api.domain.meeting.application;
 
 import com.google.gson.Gson;
+import com.zooting.api.domain.BaseEntity;
 import com.zooting.api.domain.meeting.dao.MeetingLogRepository;
 import com.zooting.api.domain.meeting.dao.WaitingRoomRedisRepository;
 import com.zooting.api.domain.meeting.dto.FriendMeetingDto;
@@ -273,7 +274,7 @@ public class MeetingService {
         List<MeetingLog> meetingLogList = member.getMeetingLogList();
 
         //가장 최근 로그만 가져옴
-        MeetingLog recentMeeting = meetingLogList.stream().max((o1, o2) -> o2.getUpdatedAt().compareTo(o1.getUpdatedAt())).orElseThrow(
+        MeetingLog recentMeeting = meetingLogList.stream().max(Comparator.comparing(BaseEntity::getUpdatedAt)).orElseThrow(
                 () -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
 
         List<MeetingLog> meetingLogListOfMembers = meetingLogRepository.findAllByUuid(recentMeeting.getUuid());
