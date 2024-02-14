@@ -369,14 +369,14 @@ let video: HTMLVideoElement | null = null
 let avatar: Avatar | null = null
 
 // 각각의 가면들 주소 할당
-const bear = ref("/assets/animal_mask/bear/scene.gltf")
-const cat = ref("/assets/animal_mask/cat/scene.gltf")
-const deer = ref("/assets/animal_mask/deer/scene.gltf")
-const dino = ref("/assets/animal_mask/dino/scene.gltf")
-const dog = ref("/assets/animal_mask/dog/scene.gltf")
-const penguin = ref("/assets/animal_mask/penguin/scene.gltf")
-const rabbit = ref("/assets/animal_mask/rabbit/scene.gltf")
-const raccoon = ref("/assets/animal_mask/raccoon_head.glb")
+var bear = "/assets/animal_mask/bear/scene.gltf"
+var cat = "/assets/animal_mask/cat/scene.gltf"
+var deer = "/assets/animal_mask/deer/scene.gltf"
+var dino = "/assets/animal_mask/dino/scene.gltf"
+var dog = "/assets/animal_mask/dog/scene.gltf"
+var penguin = "/assets/animal_mask/penguin/scene.gltf"
+var rabbit = "/assets/animal_mask/rabbit/scene.gltf"
+var raccoon = "/assets/animal_mask/raccoon_head.glb"
 
 async function init() {
   const scene = ref<BasicScene | null>(null)
@@ -390,41 +390,41 @@ async function init() {
   // 가면 바꾸는 변수
   if (animal === '강아지') {
     if(maskId == 235) {
-      dog.value = `/assets/animal_mask/dog/scene-${maskId}.gltf`
+      dog = `/assets/animal_mask/dog/scene-${maskId}.gltf`
     }
-    maskURL.value = dog.value
+    maskURL.value = dog
   } else if (animal === '고양이') {
     if(maskId == 236) {
-      cat.value = `/assets/animal_mask/cat/scene-${maskId}.gltf`
+      cat = `/assets/animal_mask/cat/scene-${maskId}.gltf`
     }
-    maskURL.value = cat.value
+    maskURL.value = cat
   } else if (animal === '곰') {
     if(maskId == 238) {
-      bear.value = `/assets/animal_mask/bear/scene-${maskId}.gltf`
+      bear = `/assets/animal_mask/bear/scene-${maskId}.gltf`
     }
     maskURL.value = bear
   } else if (animal === '공룡') {
     if(maskId == 233) {
-      dino.value = `/assets/animal_mask/dino/scene-${maskId}.gltf`
+      dino = `/assets/animal_mask/dino/scene-${maskId}.gltf`
     }
     maskURL.value = dino
   } else if (animal === '펭귄') {
     if(maskId == -1) {
-      penguin.value = `/assets/animal_mask/penguin/scene-${maskId}.gltf`
+      penguin = `/assets/animal_mask/penguin/scene-${maskId}.gltf`
     }
-    maskURL.value = penguin.value
+    maskURL.value = penguin
   } else if (animal === '토끼') {
     if(maskId == 237) {
-      rabbit.value = `/assets/animal_mask/rabbit/scene-${maskId}.gltf`
+      rabbit = `/assets/animal_mask/rabbit/scene-${maskId}.gltf`
     }
     maskURL.value = rabbit
   } else if (animal === '사슴') {
     if(maskId == 234) {
-      deer.value = `/assets/animal_mask/deer/scene-${maskId}.gltf`
+      deer = `/assets/animal_mask/deer/scene-${maskId}.gltf`
     }
-    maskURL.value = deer.value
+    maskURL.value = deer
   } else {
-    maskURL.value = raccoon.value
+    maskURL.value = raccoon
   }
 
   avatar.value = new Avatar(
