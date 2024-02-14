@@ -119,8 +119,7 @@ const onConnected = () => {
     }
     // 매칭 수락
     else if (type === 'OPENVIDU') {
-      store.pushMeetingRoom(res, Date.parse(time))
-      store.isRequesting = false
+      store.pushMeetingRoom(res, Date.parse(time), type)
     }
     // 유저 상태 정보
     else if (type == 'HEARTBEAT') {
@@ -141,9 +140,11 @@ const onConnected = () => {
     }
     // 미팅 거절
     else if (type === 'REJECT') {
-      console.log('거절')
       store.isRequesting = false
       store.isMeetingReject = true
+    }
+    else if (type === 'ONETOONE') {
+      store.pushMeetingRoom(res, Date.parse(time), type)
     }
   })
 }

@@ -956,20 +956,17 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const oppositeGenderList = ref<any>(null)
   // 세션이 끝나야하는 시간 (시작 시간 + 10분 15초)
   const sessionEndTime = ref<number>(0)
-  const pushMeetingRoom = function (Info: any, time: number) {
+  const pushMeetingRoom = function (Info: any, time: number, type:string) {
     // 토큰
     meetingRoomToken.value = Info.token
     // 이성 정보
     oppositeGenderList.value = Info.oppositeGenderList
-    if (isMatchingComplete.value) {
-      // 끝나는 시간
-      // 615000 = 10분 15초
-      // 테스트를 위해 30초 미팅으로 바꿔둠 (30000)
-      sessionEndTime.value = time + 30000
+    if (type === 'OPENVIDU') {
+      sessionEndTime.value = time + 30000 // 끝나는 시간
       isMatchingComplete.value = false
       router.push({ name: "video-chat"})
     } else {
-      isMatchingComplete.value = false
+      isRequesting.value = false
       router.push({ name: "one-to-one-chat"})
     }
   }
