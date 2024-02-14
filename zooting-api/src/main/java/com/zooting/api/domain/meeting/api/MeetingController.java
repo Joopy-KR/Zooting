@@ -123,7 +123,7 @@ public class MeetingController {
     }
 
     @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/log")
+    @GetMapping("/log")
     @Operation(summary = "유저의 최근 미팅 목록 가져오기", description = "유저의 최근 미팅 목록 가져오기")
     public ResponseEntity<BaseResponse<List<MeetingMemberRes>>> findRecentMeetingRoomMembers(@AuthenticationPrincipal UserDetails userDetails){
         return BaseResponse.success(
