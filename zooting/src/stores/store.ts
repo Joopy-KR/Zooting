@@ -992,9 +992,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         router.push({ name: "home" })
       })
       .then((res) => {
-        router.go(0)  // 새로고침
-      })
-      .then((res) => {
         showResult.value = true
       })
       .catch((err) => {
