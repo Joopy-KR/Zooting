@@ -330,14 +330,14 @@ let video: HTMLVideoElement | null = null
 let avatar: Avatar | null = null
 
 // 각각의 가면들 주소 할당
-const bear = "/assets/animal_mask/bear/scene.gltf"
-const cat = "/assets/animal_mask/cat/scene.gltf"
-const deer = "/assets/animal_mask/deer/scene.gltf"
-const dino = "/assets/animal_mask/dino/scene.gltf"
-const dog = "/assets/animal_mask/dog/scene.gltf"
-const penguin = "/assets/animal_mask/penguin/scene.gltf"
-const rabbit = "/assets/animal_mask/rabbit/scene.gltf"
-const raccoon = "/assets/animal_mask/raccoon_head.glb"
+var bear = "/assets/animal_mask/bear/scene.gltf"
+var cat = "/assets/animal_mask/cat/scene.gltf"
+var deer = "/assets/animal_mask/deer/scene.gltf"
+var dino = "/assets/animal_mask/dino/scene.gltf"
+var dog = "/assets/animal_mask/dog/scene.gltf"
+var penguin = "/assets/animal_mask/penguin/scene.gltf"
+var rabbit = "/assets/animal_mask/rabbit/scene.gltf"
+var raccoon = "/assets/animal_mask/raccoon_head.glb"
 
 async function init() {
   const scene = ref<BasicScene | null>(null)
@@ -347,21 +347,43 @@ async function init() {
   avatar = ref<any>(null)
   const maskURL = ref<any>('')
   const animal = store.userInfo?.animal
+  const maskId = store.userInfo?.maskId
 
   // 가면 바꾸는 변수
   if (animal === '강아지') {
+    if(maskId == 235) {
+      dog = `/assets/animal_mask/dog/scene-${maskId}.gltf`
+    }
     maskURL.value = dog
   } else if (animal === '고양이') {
+    if(maskId == 236) {
+      cat = `/assets/animal_mask/cat/scene-${maskId}.gltf`
+    }
     maskURL.value = cat
   } else if (animal === '곰') {
+    if(maskId == 238) {
+      bear = `/assets/animal_mask/bear/scene-${maskId}.gltf`
+    }
     maskURL.value = bear
   } else if (animal === '공룡') {
+    if(maskId == 233) {
+      dino = `/assets/animal_mask/dino/scene-${maskId}.gltf`
+    }
     maskURL.value = dino
   } else if (animal === '펭귄') {
+    if(maskId == -1) {
+      penguin = `/assets/animal_mask/penguin/scene-${maskId}.gltf`
+    }
     maskURL.value = penguin
   } else if (animal === '토끼') {
+    if(maskId == 237) {
+      rabbit = `/assets/animal_mask/rabbit/scene-${maskId}.gltf`
+    }
     maskURL.value = rabbit
   } else if (animal === '사슴') {
+    if(maskId == 234) {
+      deer = `/assets/animal_mask/deer/scene-${maskId}.gltf`
+    }
     maskURL.value = deer
   } else {
     maskURL.value = raccoon
