@@ -921,6 +921,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       .then((res) => {
         console.log(res)
         localStorage.removeItem("sessionRoomId")
+        isMatchingComplete.value = false
       })
       .catch((err) => {
         console.log(err)
@@ -945,6 +946,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       .then((res) => {
         console.log(res)
         localStorage.removeItem("sessionRoomId")
+        isMatchingComplete.value = false
       })
       .catch((err) => {
         console.log(err)
@@ -963,10 +965,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     oppositeGenderList.value = Info.oppositeGenderList
     if (type === 'OPENVIDU') {
       sessionEndTime.value = time + 30000 // 끝나는 시간
-      isMatchingComplete.value = false
       router.push({ name: "video-chat"})
     } else {
-      isRequesting.value = false
       router.push({ name: "one-to-one-chat"})
     }
   }
