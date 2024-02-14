@@ -46,6 +46,6 @@ const getGender = computed(() => gender.value === 'man' ? '남자' : '여자')
 
 <style scoped>
 .info {
-  @apply absolute bottom-0 bg-slate-600 text-white flex gap-1 px-3 opacity-10;
+  @apply absolute bottom-0 bg-slate-900 text-white flex gap-1 px-5 opacity-70 text-sm;
 }
 </style>

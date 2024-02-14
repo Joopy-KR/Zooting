@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
@@ -815,7 +815,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   // -------------------------- 매칭 ---------------------------
   const isMatching = ref<boolean>(false)  // 매칭 대기
   const isMatchingComplete = ref<boolean>(false) // 매칭 완료 여부
-  const roomId = ref<string>('')  // 미팅방 id
   const formattedTimer = ref("00:00") // 매칭 대기 시간
   let timerInterval: any = null
 
@@ -869,7 +868,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
       .then((res) => {
         console.log(res)
-        roomId.value = res.data.result
+        localStorage.setItem("sessionRoomId", res.data.result)
         isMatching.value = true
       })
       .catch((err) => {
@@ -889,7 +888,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "post",
       url: `${VITE_SERVER_API_URL}/api/meeting/accept`,
       params: {
-        room: roomId.value,
+        room: localStorage.getItem("sessionRoomId"),
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -897,6 +896,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
       .then((res) => {
         console.log(res)
+        localStorage.removeItem("sessionRoomId")
       })
       .catch((err) => {
         console.log(err)
@@ -912,7 +912,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "delete",
       url: `${VITE_SERVER_API_URL}/api/meeting/exit`,
       params: {
-        room: roomId.value,
+        room: localStorage.getItem("sessionRoomId"),
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -920,6 +920,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
       .then((res) => {
         console.log(res)
+        localStorage.removeItem("sessionRoomId")
       })
       .catch((err) => {
         console.log(err)

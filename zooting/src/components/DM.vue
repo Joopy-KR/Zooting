@@ -216,7 +216,6 @@ watch(() => store.isEntryDmRoom, () => {
 })
 
 watch(()=> props.dmRes, () => {
-  console.log(props.dmRes)
   sockDmList.value.push({
     sender: props.dmRes.sender,
     message: props.dmRes.message,
