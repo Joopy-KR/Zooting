@@ -1,20 +1,28 @@
 <template>
   <div class="flex flex-col items-center justify-center gap-2">
     <div class="record__profile">
-      <img :src="getProfileImage(recordItem.animal)" alt="profile">
+      <img :src="getProfileImage(animal)" alt="profile">
     </div>
     <div class="record__nickname">
-      {{ recordItem.nickname }}
+      {{ nickname }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
-  recordItem: any
-}>()
+import {watch, ref} from "vue";
 
+const props = defineProps(["recordItem"])
+const animal = ref("");
+const nickname = ref("")
+
+watch(()=> props.recordItem, (update) => {
+   animal.value = props.recordItem.animal;
+   nickname.value = props.recordItem.nickName;
+
+})
 const getProfileImage = (animal: string) => {
+  // console.log(props.recordItem.nickName)
   let imgUrl: URL;
   if (animal === '강아지') {
     imgUrl = new URL('/assets/images/animal/dog.png', import.meta.url);
@@ -23,6 +31,7 @@ const getProfileImage = (animal: string) => {
   } else if (animal === '곰') {
     imgUrl = new URL('/assets/images/animal/bear.png', import.meta.url);
   } else if (animal === '공룡') {
+    console.log('**' + animal)
     imgUrl = new URL('/assets/images/animal/dino.png', import.meta.url);
   } else if (animal === '펭귄') {
     imgUrl = new URL('/assets/images/animal/penguin.png', import.meta.url);

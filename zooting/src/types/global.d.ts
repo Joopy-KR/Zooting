@@ -125,6 +125,11 @@ declare interface Notify {
     title: string;
     message: any;
 }
+declare interface MeetingLog {
+    email: string | undefined;
+    nickName: string| undefined;
+    animal: string | undefined;
+}
 
 declare interface Search {
     searchResList: {
@@ -149,5 +154,5 @@ export {
     UserInfo, Mask, TokenState, BlockUserReq,
     PersonalityList, Personality, Friend, MaskReq, ReportUserReq, PointsReq,
     DM, DmItem, FriendRequest, Notice, NoticePage, Notify, Background, Search,
-    IdealUserSelect
+    MeetingLog, IdealUserSelect
 };

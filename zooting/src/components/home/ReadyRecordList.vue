@@ -8,7 +8,7 @@
       </button>
     </div>
     <ReadyRecordItem
-    :record-item="recordList[index]"
+    :record-item=recordList[index]
     />
     <div class="button">
       <button v-show="index !== recordList.length - 1" @click="index++">
@@ -21,15 +21,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import {onMounted, ref, watch} from 'vue'
 import ReadyRecordItem from '@/components/home/ReadyRecordItem.vue'
-
 const index = ref<number>(0)
-const recordList = [
-  {nickname: 'nickname1', animal: '강아지', gender: 'man', isSelected: true},
-  {nickname: 'nickname2', animal: '공룡', gender: 'man', isSelected: true},
-  {nickname: 'nickname3', animal: '펭귄', gender: 'woman', isSelected: false},
-]
+import {useAccessTokenStore} from "@/stores/store";
+import type {MeetingLog} from "@/types/global";
+const store = useAccessTokenStore();
+let recordList =  ref<MeetingLog[]>([]);
+
+
+
+watch(()=> store.recordList, (update) => {
+  recordList.value = update;
+})
+
 </script>
 
 <style scoped>

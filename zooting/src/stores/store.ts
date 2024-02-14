@@ -1,9 +1,22 @@
 import axios from "axios";
-import { ref, computed, watch } from "vue";
-import { defineStore } from "pinia";
-import { useRouter } from "vue-router";
-import { loadMyInfoApi } from "@/api/profile";
-import type {DM, DmItem, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage, Search} from "@/types/global";
+import {computed, ref} from "vue";
+import {defineStore} from "pinia";
+import {useRouter} from "vue-router";
+import {loadMyInfoApi} from "@/api/profile";
+import type {
+    DM,
+    DmItem,
+    Friend,
+    MeetingLog,
+    Notice,
+    NoticePage,
+    PersonalityList,
+    Search,
+    TokenState,
+    UserInfo
+} from "@/types/global";
+import {getMeetingLogApi} from "@/api/recentlog";
+
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -230,7 +243,18 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       }
     }
   };
-
+  const recordList = ref<MeetingLog[]>([]);
+  const getMeetingLog = async function () {
+    await getMeetingLogApi(
+        ({data}:any)=>{
+          console.log(data.result)
+          recordList.value = data.result;
+        },
+        (error : any) =>{
+          console.log(error);
+        }
+    )
+  }
   // 유저 정보
   const userInfo = ref<UserInfo | null>(null);
 
@@ -926,7 +950,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         console.log(err)
       })
   }
- 
+
   // 매칭 완료 시 미팅방으로 이동시키기
   const meetingRoomToken = ref<String>('')
   const oppositeGenderList = ref<any>(null)
@@ -1112,5 +1136,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       pushHomeAfterMeeting,
       meetingResult,
       showResult,
+      recordList,
+      getMeetingLog,
   };
 });

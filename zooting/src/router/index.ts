@@ -119,6 +119,7 @@ router.beforeEach((to, from) => {
   if (store.isLogin) {
     if (to.name === 'home') {
       store.getUserInfo()
+      store.getMeetingLog()
     } else if (to.name === 'signin') {
       store.signOut()
     }
