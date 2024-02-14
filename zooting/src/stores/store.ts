@@ -3,7 +3,19 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import { loadMyInfoApi } from "@/api/profile";
-import type {DM, DmItem, Friend, PersonalityList, TokenState, UserInfo, Notice, NoticePage, Search} from "@/types/global";
+import type {
+  DM,
+  DmItem,
+  Friend,
+  PersonalityList,
+  TokenState,
+  UserInfo,
+  Notice,
+  NoticePage,
+  Search,
+  MeetingLog
+} from "@/types/global";
+import {getMeetingLogApi} from "@/api/recentlog";
 const { VITE_SERVER_API_URL } = import.meta.env;
 
 export const useStore = defineStore("store", () => {
@@ -230,7 +242,18 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       }
     }
   };
-
+  const recordList = ref<MeetingLog[]>([]);
+  const getMeetingLog = async function () {
+    await getMeetingLogApi(
+        ({data}:any)=>{
+          console.log(data.result)
+          recordList.value = data.result;
+        },
+        (error : any) =>{
+          console.log(error);
+        }
+    )
+  }
   // 유저 정보
   const userInfo = ref<UserInfo | null>(null);
 
@@ -1068,5 +1091,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       isMeetingReject,
       meetingSender,
       meetingRejectFriend,
+      recordList,
+      getMeetingLog,
   };
 });

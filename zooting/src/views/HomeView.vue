@@ -34,10 +34,13 @@ const dmSound = new Audio(DmSound)  // dm 알림 소리
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws`)
 // @ts-ignore
 const stompClient = Stomp.over(socket)
+stompClient.debug = null
 let intervalId: any;
 const START_HEART_CHECK = 5 * 1000;
 const HEART_CHECK_INTERVAL = VITE_HEART_CHECK_INTERVAL * 1000;
 const intervalTime = ref<number>(START_HEART_CHECK);
+
+
 
 function playSound(sound:any) {
     sound.currentTime = 0
