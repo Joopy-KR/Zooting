@@ -80,7 +80,7 @@ public class MeetingController {
     public ResponseEntity<BaseResponse<String>> acceptFriendMeeting(@RequestParam String nickname, @AuthenticationPrincipal UserDetails userDetails) {
         Map<String, OpenviduTokenRes> openviduTokenResMap = meetingService.sendOpenViduTokenToClient(nickname, userDetails.getUsername());
         for (Map.Entry<String, OpenviduTokenRes> entry : openviduTokenResMap.entrySet()) {
-            webSocketTemplate.convertAndSend("/api/sub/" + entry.getKey(), new SocketBaseDtoRes<>(SocketType.OPENVIDU, entry.getValue()));
+            webSocketTemplate.convertAndSend("/api/sub/" + entry.getKey(), new SocketBaseDtoRes<>(SocketType.ONETOONE, entry.getValue()));
         }
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅을 수락했습니다.");
     }
