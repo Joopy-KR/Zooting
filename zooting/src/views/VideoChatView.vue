@@ -353,7 +353,6 @@ const dog = ref("/assets/animal_mask/dog/scene.gltf")
 const penguin = ref("/assets/animal_mask/penguin/scene.gltf")
 const rabbit = ref("/assets/animal_mask/rabbit/scene.gltf")
 const raccoon = ref("/assets/animal_mask/raccoon_head.glb")
-const fs = require('fs')
 
 async function init() {
   const scene = ref<BasicScene | null>(null)
@@ -366,44 +365,41 @@ async function init() {
   const maskId = store.userInfo?.maskId
   // 가면 바꾸는 변수
   if (animal === '강아지') {
-    if(fs.existsSync(`/assets/animal_mask/dog/scene-${maskId}.gltf`)) {
+    if(maskId == 235) {
       dog.value = `/assets/animal_mask/dog/scene-${maskId}.gltf`
     }
     maskURL.value = dog.value
   } else if (animal === '고양이') {
-    if(fs.existsSync(`/assets/animal_mask/cat/scene-${maskId}.gltf`)) {
+    if(maskId == 236) {
       cat.value = `/assets/animal_mask/cat/scene-${maskId}.gltf`
     }
     maskURL.value = cat.value
   } else if (animal === '곰') {
-    if(fs.existsSync(`/assets/animal_mask/bear/scene-${maskId}.gltf`)) {
+    if(maskId == 238) {
       bear.value = `/assets/animal_mask/bear/scene-${maskId}.gltf`
     }
     maskURL.value = bear
   } else if (animal === '공룡') {
-    if(fs.existsSync(`/assets/animal_mask/dino/scene-${maskId}.gltf`)) {
+    if(maskId == 233) {
       dino.value = `/assets/animal_mask/dino/scene-${maskId}.gltf`
     }
     maskURL.value = dino
   } else if (animal === '펭귄') {
-    if(fs.existsSync(`/assets/animal_mask/penguin/scene-${maskId}.gltf`)) {
+    if(maskId == -1) {
       penguin.value = `/assets/animal_mask/penguin/scene-${maskId}.gltf`
     }
     maskURL.value = penguin.value
   } else if (animal === '토끼') {
-    if(fs.existsSync(`/assets/animal_mask/rabbit/scene-${maskId}.gltf`)) {
+    if(maskId == 237) {
       rabbit.value = `/assets/animal_mask/rabbit/scene-${maskId}.gltf`
     }
     maskURL.value = rabbit
   } else if (animal === '사슴') {
-    if(fs.existsSync(`/assets/animal_mask/deer/scene-${maskId}.gltf`)) {
+    if(maskId == 234) {
       deer.value = `/assets/animal_mask/deer/scene-${maskId}.gltf`
     }
     maskURL.value = deer.value
   } else {
-    if(fs.existsSync(`/assets/animal_mask/raccoon_head-${maskId}.glb`)) {
-      raccoon.value = `/assets/animal_mask/raccoon_head-${maskId}.glb`
-    }
     maskURL.value = raccoon.value
   }
 

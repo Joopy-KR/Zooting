@@ -257,7 +257,7 @@
   ],
   "images": [
     {
-      "uri": "textures/CrocodileHead_baseColor.png"
+      "uri": "textures/CrocodileHead_baseColor_216.png"
     },
     {
       "uri": "textures/CrocodileHead_metallicRoughness.png"
