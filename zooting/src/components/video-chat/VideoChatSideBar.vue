@@ -1,8 +1,9 @@
 <template>
-    <div class="main">
+  <div class="hidden h-full p-3 xl:block">
+    <div class="h-full main">
       <div class="main__info">
         <div class="main__room-time">	
-        <div>
+        <div class="px-3 py-1 text-black bg-white rounded-md shadow-sm">
           <span>{{ min }}</span> :
           <span>{{ sec }}</span>
         </div>
@@ -14,9 +15,6 @@
            :src="getProfileImage(animal)"
            alt="프로필 사진">
         </div>
-      </div>
-      <div class="main__title">
-        <p>{{ props.statusInfo }}</p>
       </div>
       <div class="unzo">
         <div class="main__body">
@@ -39,12 +37,6 @@
         </div>
       </div>
       <div class="main__feature">
-        <!-- 음소거 버튼 -->
-        <div class="w-6 h-6">
-          <font-awesome-icon :icon="['fas', 'microphone']" v-show="!is_muted" @click="doMute()" style="cursor: pointer; margin-left: 4px;"/>
-          <font-awesome-icon :icon="['fas', 'microphone-slash']" v-show="is_muted" @click="doUnmute()" style="cursor: pointer;"/>
-        </div>
-        
         <form @submit.prevent="send()" class="flex justify-between flex-grow">
           <!-- 텍스트 입력창 -->
           <input type="text" :value="inputChat" @input="onInput" placeholder="Say something" class="main__feature--input">
@@ -56,8 +48,9 @@
             </svg>
           </button>
         </form>
+      </div>
     </div>
-    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -147,20 +140,6 @@ const send = function() {
   })
 }
 
-// 음소거 기능
-const is_muted = ref(false)
-
-const doMute = function() {
-  console.log(props.publisher.publishAudio)
-  props.publisher.publishAudio(false)
-  is_muted.value = true
-}
-
-const doUnmute = function() {
-  props.publisher.publishAudio(true)
-  is_muted.value = false
-}
-
 // 프로필 이미지 경로구하는 함수
 const getProfileImage = (animal: String) => {
   let imgUrl: URL;
@@ -187,15 +166,13 @@ const getProfileImage = (animal: String) => {
 
 <style scoped>
 .main {
-  @apply border-gray-300 border-solid border-s-2 h-screen flex flex-col;
+  @apply flex flex-col border-gray-300 border rounded-md shadow-lg;
 }
-
 .main__info {
-  @apply flex items-center justify-between border-b-2 border-gray-300 bg-violet-500 shadow-sm;
+  @apply flex items-center justify-between border-gray-300 bg-violet-500 rounded-t-md;
   height: 60px;
   min-height: 60px;
 }
-
 .main__room-num {
   @apply ml-5 font-bold text-white
 }
@@ -211,8 +188,7 @@ const getProfileImage = (animal: String) => {
 }
 
 .main__body {
-  @apply flex flex-col items-start justify-end;
-  /* overflow-y: auto; */
+  @apply flex flex-col items-start justify-end grow;
 }
 
 .unzo::-webkit-scrollbar {
@@ -236,12 +212,11 @@ const getProfileImage = (animal: String) => {
 }
 
 .main__feature--send-button {
-  @apply cursor-pointer bg-violet-500 p-2 ms-2 rounded-3xl hover:bg-violet-600 shadow-lg;
+  @apply cursor-pointer bg-violet-500 p-2 ms-3 rounded-3xl hover:bg-violet-600 shadow-lg;
 }
 
 .unzo {
   @apply flex-grow flex flex-col-reverse;
   overflow-y: auto;
-  /* overflow: hidden; */
 }
 </style>  

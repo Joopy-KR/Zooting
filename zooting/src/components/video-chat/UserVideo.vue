@@ -1,25 +1,33 @@
 <template>
 	<div v-if="streamManager" class="relative">
 		<ov-video
-    :stream-manager="streamManager"  
+      :stream-manager="streamManager"  
+      @mouseover="showInfo = true"
+      @mouseleave="showInfo = false"
     />
-    <div class="absolute bottom-0 bg-red-400">
-      {{ nickname }}
-      {{ gender }}
+    <div 
+      class="info" 
+      v-show="showInfo"
+      @mouseover="showInfo = true"
+      @mouseleave="showInfo = false"
+      >
+      <span>{{ nickname }}</span>
+      <span>({{ getGender }})</span>
     </div>
 	</div>
 </template>
 
-<script setup>
-import { ref, watchEffect } from 'vue'
-import OvVideo from './OvVideo.vue'
+<script setup lang="ts">
+import { ref, watchEffect, computed } from 'vue'
+import OvVideo from '@/components/video-chat/OvVideo.vue'
 
 const props = defineProps({
   streamManager: Object
 })
 
-const nickname = ref('')
-const gender = ref('')
+const nickname = ref<string>('')
+const gender = ref<string>('')
+const showInfo = ref<boolean>(false)
 
 watchEffect(() => {
   if (props.streamManager && props.streamManager.stream && props.streamManager.stream.connection && props.streamManager.stream.connection.data) {
@@ -33,4 +41,11 @@ watchEffect(() => {
   }
 });
 
+const getGender = computed(() => gender.value === 'man' ? '남자' : '여자')
 </script>
+
+<style scoped>
+.info {
+  @apply absolute bottom-0 bg-slate-600 text-white flex gap-1 px-3 opacity-10;
+}
+</style>
