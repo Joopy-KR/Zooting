@@ -13,7 +13,7 @@
                 <div class="flex flex-col items-center justify-center w-full h-full mt-0 ml-4 bmt-3">
                     <div class="mt-16">
                       <h1 class="text-4xl font-bold text-black">이성 선택</h1>
-                      <p class="mt-5 text-gray-500">미팅 중 가장 마음에 든 이성을 골라주세요! (20초)</p>
+                      <p class="mt-5 text-xl text-gray-500">미팅 중 가장 마음에 든 이성을 골라 주세요! (20초)</p>
                     </div>
                     <div class="flex items-center justify-center gap-40 mt-12">
                       <div class="flex flex-col items-center justify-center" v-for="(item, index) in oppositeGenderList" :key="index">
@@ -48,10 +48,10 @@
                 <div class="flex flex-col items-center justify-center w-full h-full mt-0 ml-4 bmt-3">
                     <div class="mt-16">
                       <h1 class="text-4xl font-bold text-black">다른 사람들의 선택을 기다리는 중이에요</h1>
-                      <p class="mt-5 text-gray-500">잠시만 기다려주세요</p>
+                      <p class="mt-5 text-xl text-gray-500">잠시만 기다려주세요</p>
                     </div>
                     <div class="flex items-center justify-center gap-40 mt-12">
-                      <img class="w-80 h-80 " src="/assets/images/animal/animal_group.png" alt="프로필 사진">
+                      <img class="rounded-full w-80 h-80 " src="/assets/images/animal/pupple_dog.png" alt="프로필 사진">
                     </div>
                 </div>
             </DialogPanel>
@@ -75,7 +75,7 @@
                 <div class="flex flex-col items-center justify-center w-full h-full mt-0 ml-4 bmt-3">
                     <div class="mt-16">
                       <h1 class="text-4xl font-bold text-black">미팅이 종료되었어요</h1>
-                      <p class="mt-5 text-gray-500">잠시 후 메인 화면으로 이동할게요</p>
+                      <p class="mt-5 text-xl text-gray-500">잠시 후 매칭 결과 화면을 보여드릴게요</p>
                     </div>
                     <div class="flex items-center justify-center gap-40 mt-12">
                       <img class="rounded-full w-80 h-80 " src="/assets/images/animal/pupple_cat.png" alt="프로필 사진">

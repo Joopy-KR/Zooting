@@ -185,7 +185,7 @@ const currentDmRoomId = (dmRoomId: number) => {
 
 <style scoped>
 .side-bar {
-  @apply fixed flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-50;
+  @apply fixed flex flex-col items-center flex-shrink-0 w-14 h-screen py-3 bg-white border-r-2 border-gray-300 shadow-sm rounded-tr-3xl rounded-br-3xl z-40;
 }
 
 .logo {

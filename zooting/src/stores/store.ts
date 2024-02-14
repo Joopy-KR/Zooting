@@ -954,7 +954,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const showResult = ref(false)
   // 최종 선택 이후 자기를 선택한 사람을 가지고 홈으로 이동시키기
   const pushHomeAfterMeeting = function (sessionId: any) {
-    console.log(sessionId)
     axios({
       method: "post",
       url: `${VITE_SERVER_API_URL}/api/meeting/picks/result`,
@@ -967,10 +966,9 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
       .then((res) => {
         meetingResult.value = res.data.result
-        router.push({ name: 'home' })
+        router.push({ name: "home" })
       })
       .then((res) => {
-        console.log(11)
         showResult.value = true
       })
       .catch((err) => {

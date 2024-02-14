@@ -387,9 +387,6 @@ onMounted(async () => {
               <option v-for="(area, index) in areas" :key="index">{{ area }}</option>
             </select>
           </div>
-          <div class="flex justify-center w-2/3 py-2 mt-4 text-lg font-semibold text-white bg-red-500 rounded-lg cursor-pointer hover:bg-red-600">
-            탈퇴하기
-          </div>
         </div>
         <div class="flex flex-row justify-end w-3/4 gap-3 px-20 m-10">
           <button type="button" @click="updateChanges" class="btn__save">초기화</button>
