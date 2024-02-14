@@ -8,6 +8,7 @@ import PersonalityTestView from "@/views/PersonalityTestView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import Login from "@/views/LoginView.vue";
 import VideoChatView from '@/views/VideoChatView.vue';
+import OnetoOneChatView from '@/views/OnetoOneChatView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,6 +42,11 @@ const router = createRouter({
       path: "/video-chat",
       name: "video-chat",
       component: VideoChatView
+    },
+    {
+      path: "/one-to-one-chat",
+      name: "one-to-one-chat",
+      component: OnetoOneChatView
     },
     {
       path: "/personality-test",

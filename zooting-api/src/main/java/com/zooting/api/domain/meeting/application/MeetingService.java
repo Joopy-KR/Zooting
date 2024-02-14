@@ -227,14 +227,22 @@ public class MeetingService {
     public Map<String, MeetingPickDto> pickPerson(String nickname, String loginEmail) {
         Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        MeetingPickDto meetingPickDto = new MeetingPickDto(loginMember.getNickname(), friend.getNickname());
+        MeetingPickDto meetingPickDto = new MeetingPickDto(
+                loginMember.getNickname(),
+                friend.getNickname(),
+                Objects.nonNull(loginMember.getAdditionalInfo())? loginMember.getAdditionalInfo().getAnimal() : ""
+        );
         return Map.of(friend.getEmail(), meetingPickDto);
     }
 
     public void picksPerson(String sessionId, String nickname, String loginEmail) {
         Member loginMember = memberRepository.findMemberByEmail(loginEmail).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         Member friend = memberRepository.findMemberByNickname(nickname).orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        MeetingPickDto meetingPickDto = new MeetingPickDto(loginMember.getNickname(), friend.getNickname());
+        MeetingPickDto meetingPickDto = new MeetingPickDto(
+                loginMember.getNickname(),
+                friend.getNickname(),
+                Objects.nonNull(loginMember.getAdditionalInfo())? loginMember.getAdditionalInfo().getAnimal() : ""
+        );
         redisTemplate.opsForList().rightPush(sessionId, gson.toJson(meetingPickDto));
         redisTemplate.expire(sessionId, 180L, java.util.concurrent.TimeUnit.SECONDS);
     }

@@ -70,8 +70,8 @@
 import {ref, computed, watch} from 'vue'
 import {RouterLink, useRouter} from 'vue-router'
 import {useAccessTokenStore} from "@/stores/store"
-import DM from './DM.vue'
-import Notice from './notice/Notice.vue'
+import DM from '@/components/DM.vue'
+import Notice from '@/components/notice/Notice.vue'
 
 const store = useAccessTokenStore()
 const router = useRouter()

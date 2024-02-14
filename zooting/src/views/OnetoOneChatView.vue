@@ -52,6 +52,19 @@
       @time-over="timeOver"
       /> 
     </div>
+    <div class="leave-modal" v-if="leaveModal">
+      <div class="leave-modal__box">
+        <div class="flex flex-col items-center justify-center grow">
+          <h1 class="mb-5 text-3xl">정말 떠나시겠습니까?</h1>
+        </div>
+        <div class="flex gap-4">
+          <button class="w-20 h-10 text-white bg-red-500 rounded-md shadow-md hover:bg-red-600" @click="leaveChat">나가기</button>
+          <button class="w-20 h-10 bg-white rounded-md shadow-md hover:bg-gray-50" @click="stayChat">취소</button>
+        </div>
+      </div>
+      <div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -75,6 +88,7 @@ const { FaceLandmarker, FilesetResolver } = vision
 import { OpenVidu } from "openvidu-browser";
 // API
 import { subPointsApi } from "@/api/videochat";
+import router from '@/router'
 
 const store = useAccessTokenStore()
 
@@ -88,14 +102,27 @@ onUnmounted(() => {
 })
 
 // 나가기 전에 한번 물어보기
+const leaveModal = ref<boolean>(false)
+const leaveFlag = ref<boolean>(true)
 onBeforeRouteLeave((to, from) => {
-  const answer = window.confirm('정말 떠나실 건가요?')
-  if (answer === false) {
+  if (leaveFlag.value) {
+    leaveModal.value = true
+    leaveFlag.value = false
     return false
   } else {
     return true
   }
 })
+
+const leaveChat = () => {
+  leaveModal.value = false
+  router.push({name: 'home'})
+}
+
+const stayChat = () => {
+  leaveModal.value = false
+  leaveFlag.value = true
+}
 
 // 진행을 위한 비동기 처리 함수
 async function startSession() {
@@ -638,21 +665,28 @@ const leaveSession = () => {
 <style scoped>
 .main__container {
   @apply flex w-screen h-screen;
-  min-width: 1420px;
   background-color: white;
   color: black;
 }
 
 .left-component {
-  @apply flex-grow;
+  @apply flex-grow p-3;
 }
 
 .right-component {
-  width: 380px;
+  width: 340px;
 }
 
 #landmark-video {
   display: none;
 }
+.leave-modal {
+  @apply fixed flex w-screen h-screen justify-center items-center;
+}
 
+.leave-modal__box {
+  @apply flex flex-col justify-between items-center bg-white border p-5 border-gray-300 shadow-lg rounded-xl;
+  width: 450px;
+  height: 250px;
+}
 </style>

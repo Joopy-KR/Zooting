@@ -661,6 +661,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const isEntryDmRoom = ref<boolean>(false);
   const dmInfo = ref<DM | null>(null);
   const receiverInfo = ref<Friend | null>(null);
+  const isRefreshing = ref<boolean>(false);
+  const pastDmList = ref<DmItem[]>([])
 
   const entryDmRoom = function (params: Friend) {
     const receiver = params.email;
@@ -688,8 +690,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // DM 커서
-  const isRefreshing = ref<boolean>(false);
-  const pastDmList = ref<DmItem[]>([])
   const cursorDmRoom = function (params: { cursor: number; dmRoomId: number }) {
     const {dmRoomId, cursor} = params;
     axios({
@@ -813,14 +813,10 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   };
 
   // -------------------------- 매칭 ---------------------------
-  // 매칭 대기
-  const isMatching = ref<boolean>(false)
-  // 매칭 완료 여부
-  const isMatchingComplete = ref<boolean>(false) // default false
-  // 미팅방 id
-  const roomId = ref<string>('')
-  // 매칭 대기 시간
-  const formattedTimer = ref("00:00")
+  const isMatching = ref<boolean>(false)  // 매칭 대기
+  const isMatchingComplete = ref<boolean>(false) // 매칭 완료 여부
+  const roomId = ref<string>('')  // 미팅방 id
+  const formattedTimer = ref("00:00") // 매칭 대기 시간
   let timerInterval: any = null
 
   // 타이머 시작
@@ -888,7 +884,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       return
     }
     isMatching.value = false
-    isMatchingComplete.value = false
     resetTimer()
     axios({
       method: "post",
@@ -930,7 +925,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         console.log(err)
       })
   }
-
+ 
   // 매칭 완료 시 미팅방으로 이동시키기
   const meetingRoomToken = ref<String>('')
   const oppositeGenderList = ref<any>(null)
@@ -941,11 +936,16 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     meetingRoomToken.value = Info.token
     // 이성 정보
     oppositeGenderList.value = Info.oppositeGenderList
-    // 끝나는 시간
-    // 615000 = 10분 15초
-    // 테스트를 위해 10초 미팅으로 바꿔둠 (10000)
-    sessionEndTime.value = time + 10000
-    router.push({ name: "video-chat"})
+    if (isMatchingComplete.value) {
+      // 끝나는 시간
+      // 615000 = 10분 15초
+      // 테스트를 위해 10초 미팅으로 바꿔둠 (10000)
+      sessionEndTime.value = time + 20000
+      isMatchingComplete.value = false
+      router.push({ name: "video-chat"})
+    } else {
+      router.push({ name: "one-to-one-chat"})
+    }
   }
 
   // 최종 선택(자기를 좋다고 한 사람들) 결과
