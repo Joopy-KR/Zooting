@@ -104,26 +104,10 @@ public class WaitingRoomSubscriber implements MessageListener {
 
             for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
                 String email = meetingMemberDto.getEmail();
-
-
                 // 미팅 로그 저장
-                //TODO: 메소드화 시킬 것 (1)
-                meetingLogRepository.save(
-                        MeetingLog
-                        .builder()
-                        .uuid(UUID.fromString(waitingRoom.getWaitingRoomId()))
-                        .member(memberRepository.findMemberByEmail(email)
-                                .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER))).build());
-
+                saveMeetingLog(meetingMemberDto, waitingRoom);
                 //다른 성별만 찾기
-                //TODO: 메소드화 시킬 것 (2)
-                List<OppositeGenderParticipantsDto> oppositeGenderParticipantsDtos = waitingRoom.getMeetingMembers().stream()
-                        .filter(member -> !member.getGender().equals(nicknameGenderMap.get(email)))
-                        .map(member -> new OppositeGenderParticipantsDto(member.getNickname(), member.getAnimal()))
-                        .collect(Collectors.toList());
-
-                Connection connection = session.createConnection();
-                OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtos);
+                OpenviduTokenRes openviduTokenRes = getOpenViduTokenRes(meetingMemberDto, waitingRoom, nicknameGenderMap, session);
                 webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.OPENVIDU, openviduTokenRes));
             }
             waitingRoomRedisRepository.deleteById(waitingRoom.getWaitingRoomId());
@@ -131,6 +115,26 @@ public class WaitingRoomSubscriber implements MessageListener {
         } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    private void saveMeetingLog(MeetingMemberDto meetingMemberDto, WaitingRoom waitingRoom) {
+            String email = meetingMemberDto.getEmail();
+            meetingLogRepository.save(
+                    MeetingLog
+                            .builder()
+                            .uuid(UUID.fromString(waitingRoom.getWaitingRoomId()))
+                            .member(memberRepository.findMemberByEmail(email)
+                                    .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER))).build());
+    }
+
+    private OpenviduTokenRes getOpenViduTokenRes(MeetingMemberDto meetingMemberDto, WaitingRoom waitingRoom, Map<String, String> nicknameGenderMap, Session session) throws OpenViduJavaClientException, OpenViduHttpException {
+        List<OppositeGenderParticipantsDto> oppositeGenderParticipantsDtos = waitingRoom.getMeetingMembers().stream()
+                .filter(member -> !member.getGender().equals(nicknameGenderMap.get(meetingMemberDto.getEmail())))
+                .map(member -> new OppositeGenderParticipantsDto(member.getNickname(), member.getAnimal()))
+                .collect(Collectors.toList());
+        Connection connection = session.createConnection();
+        OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtos);
+        return openviduTokenRes;
     }
 
     private WaitingRoomMessageDto waitingRoomMessageParser(Message message) {
