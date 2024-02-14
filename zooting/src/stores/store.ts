@@ -990,6 +990,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       .then((res) => {
         meetingResult.value = res.data.result
         router.push({ name: "home" })
+      })
+      .then((res) => {
         router.go(0)  // 새로고침
       })
       .then((res) => {
