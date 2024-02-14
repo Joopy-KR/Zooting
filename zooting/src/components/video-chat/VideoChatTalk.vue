@@ -2,9 +2,6 @@
   <div class="talk__container">
     <div id="video-container" class="grid grid-cols-2 gap-3 my-4" v-if="session">
       <user-video :stream-manager="publisher"/>
-      <user-video :stream-manager="publisher"/>
-      <user-video :stream-manager="publisher"/>
-      <user-video :stream-manager="publisher"/>
       <user-video v-for="sub in subscribers" :key="sub.stream.connection.connectionId" :stream-manager="sub"/>
     </div>
     <div class="bottom-bar">
