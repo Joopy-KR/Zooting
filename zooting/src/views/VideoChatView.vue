@@ -134,11 +134,12 @@ const leaveFlag = ref<boolean>(true)
 
 // 탈주 판단하는 함수
 onBeforeRouteLeave((to, from) => {
-  if (leaveFlag.value) {
-    leaveModal.value = true
-    leaveFlag.value = false
-    return false
-  } else {
+  if (isMeeting.value) {
+    if (leaveFlag.value) {
+      leaveModal.value = true
+      leaveFlag.value = false
+      return false
+    } else {
       // 탈주시 100포인트 차감
       subPointsApi(
         { points: 100 as number },
@@ -153,6 +154,9 @@ onBeforeRouteLeave((to, from) => {
       )
       return true
     }
+  } else {
+    return true
+  }
 });
 
 const leaveChat = () => {
