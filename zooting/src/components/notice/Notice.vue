@@ -25,7 +25,7 @@
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <DialogPanel class="relative px-4 pt-5 pb-4 overflow-hidden text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
-                  <button type="button" class="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" @click="detailModalOpen = false;">
+                  <button type="button" class="text-gray-400 bg-white rounded-md hover:text-gray-500" @click="detailModalOpen = false;">
                     <span class="sr-only">Close</span>
                     <XMarkIcon class="w-6 h-6" aria-hidden="true" />
                   </button>
@@ -99,9 +99,7 @@ function openDetailModal(data : Boolean) {
 <style scoped>
 @import url("https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css");
 .notice-title{
-  @apply  text-indigo-600 py-6 px-6;
-  font-weight : bold;
-  font-size: medium;
+  @apply  text-[#A297F6] pt-10 pb-5 px-6 flex justify-center text-2xl;
 }
  * {
    font-family:'NanumSquareAcb' ;
@@ -111,7 +109,7 @@ function openDetailModal(data : Boolean) {
   height: 100%;
 }
 .page-number--active {
-  @apply  text-indigo-600;
+  @apply  text-[#A297F6];
 }
 .page-number--inactive {
   @apply border-transparent text-gray-400 hover:border-gray-200 hover:text-gray-500;

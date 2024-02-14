@@ -1,6 +1,6 @@
 <template>
   <div class="interest__container">
-    <div v-if="blockList.length === 0" class="mt-3 text-center text-gray-500">
+    <div v-if="blockList.length === 0" class="mt-5 text-center text-gray-500">
         차단한 사용자가 없습니다
       </div>
     <ul role="list" class="friend-list">

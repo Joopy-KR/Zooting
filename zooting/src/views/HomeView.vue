@@ -14,7 +14,6 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from 'vue'
 import {useAccessTokenStore, useStore} from "@/stores/store"
-import { onBeforeRouteLeave } from 'vue-router'
 import TheSideBar from '@/components/TheSideBar.vue'
 import Social from '@/components/home/Social.vue'
 import Ready from '@/components/home/Ready.vue'
@@ -77,6 +76,7 @@ const startHeartbeat = () => {
     }));
   }, intervalTime.value);
 }
+
 // 소켓 통신 연결 요청
 stompClient.connect(
     {},

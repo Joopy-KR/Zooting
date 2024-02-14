@@ -15,7 +15,7 @@
         <!-- Search icon -->
         <div v-show="!isSearching" class="search__cancel" @click="startSearch">
           <svg class="w-5 h-5 text-[#A297F6] cursor-pointer hover:text-[#8072EF]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-width="2.5" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="3" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
           </svg>
         </div>
 
@@ -29,8 +29,11 @@
       </div>
     </div>
     
-    <div v-show="isSearching && !searchQuery" class="flex justify-center pt-5 pb-2 text-xl font-semibold text-[#A297F6]">
+    <div v-show="isSearching && !searchQuery" class="flex justify-center pt-5 pb-3 text-xl font-semibold text-white bg-[#A297F6]">
       <h1>당신과의 인연을 기다리고 있어요</h1>
+    </div>
+
+    <div class="absolute bg-[#A297F6] w-10 h-10 top-0 -left-6">
     </div>
   </div>
 </template>
@@ -72,11 +75,14 @@ const handleSearch = function (event: any) {
 </script>
 
 <style scoped>
+.search__container {
+  @apply relative;
+}
 .search__input-container {
-  @apply mt-3 mb-1 mx-3 flex items-center;
+  @apply pt-6 px-3 pb-1 flex items-center bg-[#A297F6];
 }
 .search__input {
-  @apply border-2 border-[#A297F6] shadow-sm rounded-3xl w-full py-2 px-5;  
+  @apply border-2 border-[#A297F6] shadow-sm rounded-3xl w-full py-2.5 px-5;  
 }
 .search__cancel {
   @apply absolute z-10 right-4 top-1/2 transform -translate-y-1/2;

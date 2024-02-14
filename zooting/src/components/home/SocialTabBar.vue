@@ -44,7 +44,7 @@ const selectTab = (selectedTab: string) => {
 
 <style scoped>
 .tab-bar__container {
-  @apply bg-white;
+  @apply bg-[#A297F6];
 }
 .tab-bar__div {
   @apply border-b border-gray-200 px-4;
@@ -53,14 +53,14 @@ const selectTab = (selectedTab: string) => {
   @apply flex -mb-px space-x-8;
 }
 .tab-bar__item {
-  @apply w-1/3 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-bold text-center cursor-pointer;
+  @apply w-1/3 whitespace-nowrap border-b-2 py-4 px-1 font-bold text-center cursor-pointer;
   position: relative;
 }
 .tab-bar__item--active {
-  @apply border-[#A297F6] text-[#8072EF];
+  @apply border-[#e6ff75] text-white;
 }
 .tab-bar__item--inactive {
-  @apply border-transparent text-gray-400 hover:border-gray-200 hover:text-gray-500;
+  @apply border-transparent text-gray-300 hover:text-gray-200;
 }
 .tab-bar__text {
   @apply ml-2 rounded-full py-0.5 px-2 text-xs font-medium;

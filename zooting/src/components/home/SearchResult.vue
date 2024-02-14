@@ -94,7 +94,6 @@ const refreshSearch = () => {
 
 <style scoped>
 .search-result {
-  @apply px-5 py-3;
   overflow-y: auto; 
 }
 .search-result::-webkit-scrollbar {
@@ -109,10 +108,10 @@ const refreshSearch = () => {
   background-color: transparent;
 }
 .search-result ul {
-  @apply divide-y divide-gray-200 px-1;
+  @apply divide-y divide-gray-200;
 }
 .search-result li {
-  @apply flex justify-between items-center h-20 px-3 hover:bg-gray-50 cursor-pointer;
+  @apply flex justify-between items-center h-20 px-7 hover:bg-gray-50 cursor-pointer;
 }
 .search-result__item {
   @apply flex items-center h-full flex-grow;

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-red-200">
     <nav class="side-bar">
       <div class="logo">
         <RouterLink :to="getHomeLink()" @click="closeTab">
@@ -189,7 +189,7 @@ const currentDmRoomId = (dmRoomId: number) => {
 }
 
 .logo {
-  @apply flex-shrink-0 py-4;
+  @apply flex-shrink-0 py-6;
 }
 
 .side-bar__item {
@@ -205,8 +205,8 @@ const currentDmRoomId = (dmRoomId: number) => {
 }
 
 .side-tab {
-  @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white border-r-2 border-gray-300 left-14 z-30;
-  width: 430px;
+  @apply fixed inset-y-0 flex-shrink-0 transition-transform duration-300 transform bg-white z-30 ps-14;
+  width: 486px;
 }
 
 .side-tab-transition-enter-active,

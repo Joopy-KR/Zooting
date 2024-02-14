@@ -11,9 +11,17 @@
 </template>
 
 <script setup lang="ts">
+import {onMounted} from 'vue';
 import ReadyMatch from '@/components/home/ReadyMatch.vue'
 import Subgame from '@/components/subgame/Subgame.vue'
 import ReadyRecordList from '@/components/home/ReadyRecordList.vue'
+import { useAccessTokenStore } from '@/stores/store'
+
+const store = useAccessTokenStore()
+
+onMounted(async () => {
+  store.getMeetingLog()
+})
 
 </script>
 
@@ -26,11 +34,5 @@ import ReadyRecordList from '@/components/home/ReadyRecordList.vue'
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-}
-.ready__header img {
-  @apply h-5/6;
-}
-.ready__main {
-  @apply h-full;
 }
 </style>
