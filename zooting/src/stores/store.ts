@@ -945,6 +945,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       isMatchingComplete.value = false
       router.push({ name: "video-chat"})
     } else {
+      isMatchingComplete.value = false
       router.push({ name: "one-to-one-chat"})
     }
   }

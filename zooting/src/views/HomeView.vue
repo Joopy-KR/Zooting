@@ -117,7 +117,6 @@ const onConnected = () => {
     }
     // 매칭 수락
     else if (type === 'OPENVIDU') {
-      // 1970년 1월 1일 00:00:00 UTC로부터 지난 시간을 밀리초로 변환
       store.pushMeetingRoom(res, Date.parse(time))
       store.isRequesting = false
     }

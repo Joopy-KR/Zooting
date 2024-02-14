@@ -146,13 +146,13 @@ statusInfo.value = "1:1 대화"
 
 // 카메라 사이즈 조정
 const cameraHeight = ref<Number>(0)
-cameraHeight.value = 260
+cameraHeight.value = 300
 const cameraWidth = ref<Number>(0)
-cameraWidth.value = 462
+cameraWidth.value = 500
 
 // 10분 경과시 실행되는 함수
 const timeOver = function() {
-  console.log("1:1 대화는 시간제한이 없어요!")
+  console.log("1:1 대화는 시간 제한이 없어요!")
 }
 
 // 동물상 가면 설정
