@@ -24,7 +24,6 @@ public class FileServiceImpl implements FileService {
     private final S3Util s3Util;
     private final FileRepository fileRepository;
 
-    //TODO thumbnail
     @Override
     public List<FileRes> uploadFiles(List<MultipartFile> multipartFiles) throws IOException {
         return s3Util.uploadFiles(multipartFiles);
