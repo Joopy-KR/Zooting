@@ -56,7 +56,7 @@ public class MeetingController {
     }
 
     @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/refresh")
+    @GetMapping("/refresh")
     @Operation(summary = "접속이 끊긴 유저에게 Openvidu Token 재발급",
             description = "접속이 끊긴 유저에게 Openvidu Token 재발급")
     public ResponseEntity<BaseResponse<OpenviduTokenRes>> refreshOpenviduToken(
@@ -123,7 +123,7 @@ public class MeetingController {
     }
 
     @PreAuthorize("hasAnyRole('USER')")
-    @PostMapping("/log")
+    @GetMapping("/log")
     @Operation(summary = "유저의 최근 미팅 목록 가져오기", description = "유저의 최근 미팅 목록 가져오기")
     public ResponseEntity<BaseResponse<List<MeetingMemberRes>>> findRecentMeetingRoomMembers(@AuthenticationPrincipal UserDetails userDetails){
         return BaseResponse.success(
