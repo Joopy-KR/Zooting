@@ -46,7 +46,6 @@ class FriendServiceTest {
     private MemberAndFriendRequestUsecase memberAndFriendRequestUsecase;
 
 
-    // TODO: 이메일을 닉네임 기준으로 수정 필요
 //    @Test
 //    @DisplayName("친구 수락 테스트")
 //    @WithMockUser(username = "x", roles = "USER")

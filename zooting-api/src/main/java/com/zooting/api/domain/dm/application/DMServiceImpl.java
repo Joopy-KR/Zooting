@@ -43,7 +43,6 @@ public class DMServiceImpl implements DMService {
 
     @Override
     public DMRoom getDMRoom(String sender, String receiver) {
-        //ToDO : 입력받은 값에 대해 검증 -> sender 는 로그인한 사람 receiver만 검증
         Member newSender = Member.builder().email(sender).build();
         Member newReceiver = memberRepository.findByEmail(receiver).orElseThrow(() ->
                 new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
