@@ -199,7 +199,7 @@ const meetingRequestFriend = (reciever: string) => {
   // 요청 중이 아닌 상태에서 요청
   if (!store.isRequesting &&  !store.isMatching) {
     meetingReciver.value = reciever
-    store.meetingRequestFriend('윤죠이')
+    store.meetingRequestFriend(reciever)
     isSuccessRequest.value = true
   } else {
     isSuccessRequest.value = false
