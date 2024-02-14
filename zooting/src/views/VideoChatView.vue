@@ -70,6 +70,22 @@
       v-if="currentStatus === 'Result'"
       />
     </div>
+
+    <!-- 탈주 경고 모달 -->
+    <div class="leave-modal" v-if="leaveModal">
+      <div class="leave-modal__box">
+        <div class="flex flex-col items-center justify-center grow">
+          <h1 class="mb-5 text-3xl">정말 떠나시겠습니까?</h1>
+          <p class="text-lg text-red-600">탈주 패널티 100 point 차감</p>
+        </div>
+        <div class="flex gap-4">
+          <button class="w-20 h-10 text-white bg-red-500 rounded-md shadow-md hover:bg-red-600" @click="leaveChat">나가기</button>
+          <button class="w-20 h-10 bg-white rounded-md shadow-md hover:bg-gray-50" @click="stayChat">취소</button>
+        </div>
+      </div>
+      <div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -97,6 +113,7 @@ const { FaceLandmarker, FilesetResolver } = vision
 import { OpenVidu } from "openvidu-browser";
 // API
 import { subPointsApi } from "@/api/videochat";
+import router from '@/router'
 
 const store = useAccessTokenStore()
 
@@ -111,28 +128,42 @@ onUnmounted(() => {
 
 // 미팅 중인지 판단할 플래그 (미팅 중에 나가면 탈주처리)
 const isMeeting = ref(true)
+
+const leaveModal = ref<boolean>(false)
+const leaveFlag = ref<boolean>(true)
+
 // 탈주 판단하는 함수
 onBeforeRouteLeave((to, from) => {
-  if (isMeeting.value) {
-    const answer = window.confirm('정말 떠나실 건가요?\n탈주시 100포인트가 차감됩니다.')
-    if (answer === false) {
-      return false
-    } else {
+  if (leaveFlag.value) {
+    leaveModal.value = true
+    leaveFlag.value = false
+    return false
+  } else {
       // 탈주시 100포인트 차감
       subPointsApi(
-        {points : 100 as number},
-        ({data}: any) => {
+        { points: 100 as number },
+        ({ data }: any) => {
           if (data.status == 200 || data.status == 201) {
-              console.log("포인트 차감 성공")
+            console.log("포인트 차감 성공")
           }
         },
         (error: any) => {
-            console.log("포인트 차감 실패")
-        })
+          console.log("포인트 차감 실패")
+        }
+      )
       return true
     }
-  }
-})
+});
+
+const leaveChat = () => {
+  leaveModal.value = false
+  router.push({name: 'home'})
+}
+
+const stayChat = () => {
+  leaveModal.value = false
+  leaveFlag.value = true
+}
 
 // 진행을 위한 비동기 처리 함수
 async function startSession() {
@@ -165,8 +196,8 @@ if (currentStatus.value === 'CatchMind') {
     cameraWidth.value = 266
   } else if (currentStatus.value === 'FreeTalk') {
     statusInfo.value = "자유 대화 시간"
-    cameraHeight.value = 260
-    cameraWidth.value = 462
+    cameraHeight.value = 300
+    cameraWidth.value = 500
   }
 
 // watch로 현재 진행중인 프로그램에 따라 변수 변경
@@ -177,8 +208,8 @@ watch(currentStatus.value, ()=> {
     cameraWidth.value = 266
   } else if (currentStatus.value === 'FreeTalk') {
     statusInfo.value = "자유 대화 시간"
-    cameraHeight.value = 260
-    cameraWidth.value = 462
+    cameraHeight.value = 300
+    cameraWidth.value = 500
   }
 })
 
@@ -186,13 +217,13 @@ watch(currentStatus.value, ()=> {
 const sessionId = ref(undefined)
 
 // 10분 경과시 실행되는 함수
-const timeOver = function() {
-  sessionId.value = session.value.sessionId
-  // 퇴장 허용
-  isMeeting.value = false
-  // 선택 페이지로 이동
-  currentStatus.value = 'Result'
-}
+// const timeOver = function() {
+//   sessionId.value = session.value.sessionId
+//   // 퇴장 허용
+//   isMeeting.value = false
+//   // 선택 페이지로 이동
+//   currentStatus.value = 'Result'
+// }
 
 // 동물상 가면 설정
 class BasicScene {
@@ -543,7 +574,7 @@ async function streamWebcamThroughFaceLandmarker(): Promise<void> {
     onAcquiredUserMedia(evt)
     video!.requestVideoFrameCallback(onVideoFrame)
   } catch (e: unknown) {
-      window.alert('에러가 발생했어요. 비디오 접근 권한을 확인해주세요')
+      window.alert('에러가 발생했어요. 비디오 접근 권한을 확인해 주세요')
   }
 }
 
@@ -671,7 +702,7 @@ const joinSession = () => {
     isLoaded.value = true
   })
   .catch((error) => {
-      console.log("세션과 연결중 에러가 발생했습니다:", error.code, error.message);
+      console.log("세션과 연결 중 에러가 발생했습니다:", error.code, error.message);
   });
 
   // 사용자가 화면을 나가버릴시 세션 나가기
@@ -705,21 +736,29 @@ const leaveSession = () => {
 <style scoped>
 .main__container {
   @apply flex w-screen h-screen;
-  min-width: 1420px;
   background-color: white;
   color: black;
 }
 
 .left-component {
-  @apply flex-grow;
+  @apply flex-grow p-3;
 }
 
 .right-component {
-  width: 380px;
+  width: 340px;
 }
 
 #landmark-video {
   display: none;
 }
 
+.leave-modal {
+  @apply fixed flex w-screen h-screen justify-center items-center;
+}
+
+.leave-modal__box {
+  @apply flex flex-col justify-between items-center bg-white border p-5 border-gray-300 shadow-lg rounded-xl;
+  width: 450px;
+  height: 250px;
+}
 </style>

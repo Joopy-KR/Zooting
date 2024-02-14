@@ -944,7 +944,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     // 끝나는 시간
     // 615000 = 10분 15초
     // 테스트를 위해 10초 미팅으로 바꿔둠 (10000)
-    sessionEndTime.value = time + 10000
+    sessionEndTime.value = time + 20000
     router.push({ name: "video-chat"})
   }
 
