@@ -132,6 +132,8 @@
 
 ## 5. Redis
 
+![](./assets/skills/redis.png)
+
 > Redis는 주로 애플리케이션 캐시나 빠른 응답 속도를 가진 데이터베이스로 사용되는 오픈 소스 인메모리 NoSQL 저장소 입니다.
 
 ### 적용
@@ -144,7 +146,14 @@
   과거 채팅 내역을 캐싱하기 위해 사용
 
 - **멤버의 online/offline 상태 관리**
-  멤버의 online/offline 상태를 관리하기 위해서 사용했습니다.
+  멤버의 online/offline 상태를 관리하기 위해서 `WebSocket`과 함께 사용했습니다.
+  - Client -> Heartbeat -> Server
+    > - Client에서 일정 주기(2분 - 1TTL)로 WebSocket을 통해 heartbeat 신호 전송
+    > - 처음 접속시 멤버 친구의 상태 정보를 로드해서 Redis에 저장하고 유저한테 반환 (expiredTime: 3TTL)
+    > - 이후 접속시 Schedular을 통해 지속적으로 업데이트 되고 있는 접속 정보를 가져오고 만료시간을 갱신
+  - Server (Scheduling)
+    > - Scheduler을 이용해서 만료시간이 1TTL 미만의 key값에 대해 현재 접속하지 않은 것으로 생각
+    > - 접속하지 않은 것으로 판단되면 접속 상태 해당 키를 삭제하고 해당 유저를 온라인인 다른 사람의 redis 정보에서 삭제
 
 ## 6. Amazon S3
 
