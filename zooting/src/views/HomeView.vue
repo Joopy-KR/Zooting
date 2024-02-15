@@ -7,9 +7,7 @@
     <Social
       class="ms-14"
     />
-    <Ready
-      @matching-start="matchingStart"
-    />
+    <Ready/>
   </div>
 </template>
 
@@ -119,7 +117,6 @@ const onConnected = () => {
     // 미팅 시작 (다대다 / 일대일)
     else if (type === 'OPENVIDU') {
       store.pushMeetingRoom(res, Date.parse(time), type)
-      emit('getOpenviduToken')
     }
     else if (type === 'ONETOONE') {
       store.pushMeetingRoom(res, Date.parse(time), type)
