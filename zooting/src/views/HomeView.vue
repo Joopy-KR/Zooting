@@ -67,7 +67,7 @@ onMounted(async () => {
 })
 
 const startHeartbeat = () => {
-  if (userInfo.value) {
+  if (!userInfo.value) {
     return;
   }
   intervalId = setInterval(() => {
