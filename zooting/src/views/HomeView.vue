@@ -7,7 +7,9 @@
     <Social
       class="ms-14"
     />
-    <Ready/>
+    <Ready
+      @matching-start="matchingStart"
+    />
   </div>
 </template>
 
@@ -29,6 +31,14 @@ const emit = defineEmits(['receiveMessage', 'getOpenviduToken', 'getMatchingComp
 const dmRes = ref<any>(null)  // dm 메시지 객체
 const dmRoomId = ref<number>(0) // dm 방 id
 const dmSound = new Audio(DmSound)  // dm 알림 소리
+
+const matchingStart = () => {
+  window.addEventListener("beforeunload", meetingExit)
+}
+
+const meetingExit = () => {
+  store.meetingExit()
+}
 
 // @ts-ignore
 const socket = new SockJS(`${VITE_SERVER_API_URL}/ws`)
@@ -112,6 +122,7 @@ const onConnected = () => {
     } 
     // 매칭 완료
     else if (type === 'MATCH') {
+      window.removeEventListener("beforeunload", meetingExit)
       store.MatchingComplete()
     }
     // 미팅 시작 (다대다 / 일대일)

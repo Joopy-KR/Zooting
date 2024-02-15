@@ -21,6 +21,7 @@ const store = useAccessTokenStore()
 const isMatching = ref<boolean>(false)  // 매칭 중 여부
 const isRequesting = ref<boolean>(false) // 일대일 미팅 요청 중 여부
 const isMatchingComplete = ref<boolean>(false)  // 매칭 완료 여부
+const emit = defineEmits(['matchingStart'])
 
 watch(()=> store.isRequesting, (update) => {
   isRequesting.value = update
@@ -47,6 +48,7 @@ const matchingButton = () => {
 
 const meetingRegister = () => {
   store.meetingRegister()
+  emit('matchingStart')
 }
 
 const meetingExit = () => {
