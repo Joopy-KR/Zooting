@@ -270,16 +270,19 @@ watch(() => animalType.value, async (newValue) => {
   await getMaskList(newValue, 0);
   await getMyMaskList(newValue);
 })
-onMounted(() => {
+
+onMounted(async () => {
   if (props.userInfo) {
     if (props.userInfo?.animal) {
       animalType.value = props.userInfo?.animal;
+      await getMaskList(animalType.value, 0);
+      await getMyMaskList(animalType.value);
     }
     if (props.userInfo?.maskId) {
       selectedMaskId.value = props.userInfo?.maskId;
     }
   }
-})
+});
 </script>
 
 <template>
