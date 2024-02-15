@@ -56,10 +56,6 @@ watch(()=> store.isRecieveMeeting, (update) => {
       // 시간이 지나면 자동으로 미팅 거절
       if (enterRoomTimeLimit.value >= 100) {
         clearInterval(intervalId)
-        // 아직 거절하지 않은 상태라면
-        if (store.isRecieveMeeting) {
-          store.meetingRejectFriend()
-        }
       }
     }, 20)
   }
