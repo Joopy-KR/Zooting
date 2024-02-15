@@ -50,101 +50,47 @@
 
 # 🌹 화면 소개
 
-### 로그인
+![](./assets/scenario/SSAFY%201st%20Project%20기능%20소개.jpg)
 
-![Untitled](./resources/zooting-signin.png)
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(1).jpg>)
 
-- TODO: 메인화면 왼쪽의 서비스 소개 및 튜토리얼 동영상 변경
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(2).jpg>)
 
-## 회원가입
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(3).jpg>)
 
-### 개인정보 입력 화면
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(4).jpg>)
 
-![Untitled](./resources/zooting-signup.png)
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(5).jpg>)
 
-### 동물상 분석을 위한 촬영 화면
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(6).jpg>)
 
-![Untitled](./resources/zooting-animal-test1.png)
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(7).jpg>)
 
-### 동물상 분석 결과 화면
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(8).jpg>)
 
-![Untitled](./resources/zooting-animal-test2.png)
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(9).jpg>)
 
-### 성격 분석 화면
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(10).jpg>)
 
-![Untitled](./resources/zooting-personality-test1.png)
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(11).jpg>)
 
-### 성격 분석 결과 화면
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(12).jpg>)
 
-![Untitled](./resources/zooting-personality-test2.png)
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(13).jpg>)
 
-## 메인화면
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(14).jpg>)
 
-### 메인화면
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(15).jpg>)
 
-![Alt text](./resources/zooting-home.png)
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(16).jpg>)
 
-### 채팅 화면
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(17).jpg>)
 
-- 접속중인 친구들과 메시지가 도착했는지를 확인할 수 있어요.
-  ![Alt text](zooting-home-chat.png)
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(18).jpg>)
 
-### 매칭 대기화면
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(19).jpg>)
 
-- 매칭중인 화면
-  ![Alt text](./resources/zooting-matching-wait.png)
-
-- 매칭 완료된 화면
-  ![Alt text](./resources/zooting-matching-complete.png)
-
-- 매칭 대기중 미니게임
-  ![Alt text](./resources/zooting-home-minigame.png)
-
-## 마이페이지
-
-### 유저 정보 표시 페이지
-
-![Alt text](./resources/zooting-my-page.png)
-
-### 내 정보 수정 페이지
-
-![Alt text](./resources/zooting-edit-info.png)
-
-### 동물상 선택 페이지
-
-![Alt text](./resources/zooting-edit-mask1.png)
-
-- 마스크 구매 및 변경
-  ![Alt text](./resources/zooting-edit-mask-purchase.png)
-
-### 이상형 관심사 수정 페이지
-
-![Alt text](./resources/zooting-edit-interest.png)
-
-### 배경 구매 화면
-
-![Alt text](./resources/zooting-edit-bg.png)
-![Alt text](./resources/zooting-edit-bg-purchase.png)
-
-## 미팅 화면
-
-// TODO
-
-### 가면 착용중인 나의 화면 예시
-
-![image.png](./resources/zooting-meeting-mask.png)
-
-### 화상 미팅중 화면 예시
-
-// TODO
-![image (1).png](<./resources/image_(1).png>)
-
-### 캐치마인드 등 미니게임 화면 예시
-
-// TODO
-![image (2).png](<./resources/image_(2).png>)
-
----
+![](<./assets/scenario/SSAFY%201st%20Project%20기능%20소개%20(20).jpg>)
 
 # 🐱‍🐉 기술 스택
 
@@ -174,13 +120,13 @@ P2P 파일 공유 등으로 활용될 수 있습니다.
 
 ## 3. Face Landmark Detection
 
-![landmark_grid_ex.png](./resources/zooting-landmark_grid.png)
+![landmark_grid_ex.png](./assets/skills/zooting-landmark_grid.png)
 
 > MediaPipe의 Face Landmark Detection은 실시간으로 468개의 3D 얼굴 랜드마크를 추정하는 얼굴 형상 솔루션입니다. ML 기술을 사용하여 단일 카메라가 화면 좌표 공간에서 3D표면 현상을 유추하므로 전용 센서가 필요 없습니다. 또한 지오메트리 파이프라인, GPU가속, 경량 모델 아키텍처 등을 활용하여 실시간으로 엄청난 성능을 낼 수 있습니다.
 
 ## 4. Three js
 
-![Animation.gif](./resources/zooting-animation.gif)
+![Animation.gif](./assets/skills/zooting-animation.gif)
 
 > Three.js는 웹 브라우저에서 3차원 컴퓨터 그래픽스 애니메이션 응용을 만들고 표현하기 위해 사용되는 자바스크립트 라이브러리입니다. 바닐라 자바스크립트 만으로도 웹에서 3D를 구현할 수 있으며 Zooting은 3D 동물상 가면을 Three.js를 통해 렌더하고 추출한 얼굴 랜드마크를 기반으로 가면의 동작 및 위치를 결정하게 됩니다.
 
@@ -212,21 +158,21 @@ P2P 파일 공유 등으로 활용될 수 있습니다.
 
 ### DM (채팅) 시퀸스
 
-![image.png](./resources/zooting-sequence-dm.png)
+![](./assets/sequence/zooting-sequence-dm.png)
 
 ### 친구 요청 시퀸스
 
-![image-1.png](./resources/zooting-sequence-freind.png)
+![](./assets/sequence/zooting-sequence-freind.png)
 
 ### 회원 가입 및 로그인 시퀸스
 
-![image-2.png](./resources/zooting-sequence-social1.png)
+![](./assets/sequence/zooting-sequence-social1.png)
 
-![image-3.png](./resources/zooting-sequence-social2.png)
+![](./assets/sequence/zooting-sequence-social2.png)
 
 ### 화상 매칭 관련 시퀸스
 
-![image-4.png](./resources/zooting-sequence-meeting.png)
+![](./assets/sequence/zooting-sequence-meeting.png)
 
 ---
 
@@ -238,22 +184,22 @@ P2P 파일 공유 등으로 활용될 수 있습니다.
 
 Git flow 사용을 위해 `sourcetree` 프로그램을 사용하였고 `git convention`을 지켜가며 프로젝트 개발에 임하였습니다.
 
-![gitflow.gif](./resources/zooting-gitflow.gif)
+![gitflow.gif](./assets/skills/zooting-gitflow.gif)
 
 ## 프로젝트 산출물
 
 ### 1. Figma
 
-![figma.JPG](./resources/zooting-figma.jpg)
+![figma.JPG](./assets/skills/zooting-figma.jpg)
 
 ### 2. ERD
 
-![Untitled](./resources/zooting-erd.png)
+![Untitled](./assets/erd/zooting-erd.png)
 
 ### 3. API 문
 
-![swagger.gif](./resources/zooting-swagger.gif)
+![swagger.gif](./assets/skills/zooting-swagger.gif)
 
 ### 4. Gitlab 이슈 관리를 통한 기능 구현
 
-![Untitled](./resources/zooting-gitlab.png)
+![Untitled](./assets/skills/zooting-gitlab.png)
