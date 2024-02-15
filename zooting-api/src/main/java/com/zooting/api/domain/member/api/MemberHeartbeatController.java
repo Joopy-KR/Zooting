@@ -11,6 +11,8 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
+
 @Log4j2
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +24,9 @@ public class MemberHeartbeatController {
     @Operation(summary = "Heartbeat 메시지 수신")
     @MessageMapping("/member/heartbeat")
     public void memberHeartbeatCheck(HeartBeatReq request) {
+        if (Objects.isNull(request) || Objects.isNull(request.memberId())) {
+            return;
+        }
         var heartcheck = memberHeartbeatService.loadOnlineFriends(request);
         template.convertAndSend("/api/sub/" + request.memberId(), heartcheck);
     }
