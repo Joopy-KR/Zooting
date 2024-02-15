@@ -59,9 +59,10 @@ public class MeetingService {
         Member member = loadMemberFromDatabase(userDetails);
         MeetingMemberDto meetingMemberDto = member.toMeetingMemberDto();
 
+        log.info("유저가 입장할 수 있는 대기실을 찾습니다: {}", userDetails.getUsername());
+
         Iterable<WaitingRoom> waitingRooms = waitingRoomRedisRepository.findAll();
         WaitingRoom idealWaitingRoom = findIdealWaitingRoom(waitingRooms, meetingMemberDto);
-
         return registerMemberToWaitingRoom(idealWaitingRoom, meetingMemberDto);
     }
 
@@ -83,6 +84,7 @@ public class MeetingService {
 
     public synchronized void acceptMatching(String waitingRoomId) {
         WaitingRoom waitingRoom = loadWaitingRoomFromRedis(waitingRoomId);
+        log.info("매칭을 수락했습니다. 대기실: {}", waitingRoomId);
 
         waitingRoom.setAcceptCount(waitingRoom.getAcceptCount() + 1);
         waitingRoomRedisRepository.save(waitingRoom);
@@ -104,6 +106,7 @@ public class MeetingService {
 
             return idealWaitingRoom.orElseGet(this::createWaitingRoom);
         }
+        log.info("유저가 입장 가능한 대기실이 없습니다. 대기실을 만듭니다.");
         return createWaitingRoom();
     }
 
@@ -135,7 +138,8 @@ public class MeetingService {
                 () -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_WAITING_ROOM)
         );
 
-        log.info("유저가 입장할 대기방의 정보를 가져옵니다: {}", waitingRoomMembers.toString());
+        log.info("유저가 입장할 대기방의 정보를 가져옵니다: {}", waitingRoom.getWaitingRoomId());
+        log.info("현재 참가중인 멤버 목록: {}", waitingRoomMembers.toString());
 
         waitingRoomMembers.add(meetingMemberDto);
         waitingRoomRedisRepository.save(waitingRoom);
