@@ -102,9 +102,6 @@ const onConnected = () => {
         const time = JSON.parse(message.body).time;
         const res = JSON.parse(message.body).result;
 
-        console.log("WEB SOCKET")
-        console.log(type, time);
-        console.log(res);
         // MESSAGE
         if (type === 'MESSAGE') {
           // 현재 open 된 dmRooId인 경우 메시지 전송
