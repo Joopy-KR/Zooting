@@ -10,7 +10,7 @@
           <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel class="relative px-4 pt-5 pb-4 overflow-hidden text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
               <!-- 입장 대기 -->
-              <div v-if="!isSessionClose">
+              <div>
                 <div class="mt-3 text-center sm:mt-5">
                   <DialogTitle as="h3" class="text-2xl font-semibold leading-6 text-gray-900 ">입장 중</DialogTitle>
                   <div class="mt-5">
@@ -22,18 +22,6 @@
                       <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
                     </svg>
                   </div>
-                </div>
-              </div>
-              <!-- 입장 취소 -->
-              <div v-else>
-                <div class="mt-3 text-center sm:mt-5">
-                  <DialogTitle as="h3" class="text-2xl font-semibold leading-6 text-gray-900 ">매칭 취소</DialogTitle>
-                  <div class="mt-5">
-                      <p class="text-lg text-gray-500">다른 사용자가 매칭에 응답하지 않았어요</p>
-                  </div>
-                  <div class="mt-5 sm:mt-6">
-                  <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="closeModal">닫기</div>
-                </div>
                 </div>
               </div>
 
@@ -50,44 +38,12 @@ import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
 const isMatchingLoad = ref<boolean>(false)
-const countdown = ref<number | null>(null)
-const isSessionClose = ref<boolean>(false)
 
 const props = defineProps<{
   isMatchingLoad: boolean,
 }>()
 
-const emit = defineEmits(['sessionClose'])
-
 watch(() => props.isMatchingLoad, (update) => {
   isMatchingLoad.value = update
-  if (update) {
-    countdown.value = null
-    startCountDown()
-  }
 })
-
-const startCountDown = () => {
-  // 카운트다운 시작 (10초)
-  if (isMatchingLoad.value && !countdown.value) {
-    countdown.value = 10
-
-    const interval = setInterval(() => {
-      if (countdown.value && countdown.value > 0) {
-        countdown.value -= 1
-      } else {
-        // 카운트다운이 0에 도달하면 초기화하고 interval을 지움
-        countdown.value = null
-        clearInterval(interval)
-        isSessionClose.value = true
-      }
-    }, 1000)
-  }
-}
-
-const closeModal = () => {
-  isMatchingLoad.value = false
-  isSessionClose.value = false
-  emit('sessionClose')
-}
 </script>

@@ -24,7 +24,6 @@
       v-if="store.isLogin"
       class="z-50"
       :is-matching-load="isMatchingLoad"
-      @session-close="isMatchingLoad = false"
     />
   </div>
 </template>

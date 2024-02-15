@@ -7,12 +7,14 @@
     <Social
       class="ms-14"
     />
-    <Ready/>
+    <Ready
+      @matching-start="matchingStart"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue'
+import {onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import {useAccessTokenStore, useStore} from "@/stores/store"
 import TheSideBar from '@/components/TheSideBar.vue'
 import Social from '@/components/home/Social.vue'

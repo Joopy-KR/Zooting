@@ -5,7 +5,9 @@
       <ReadyRecordList class="record"/>
     </div>
     <div>
-      <ReadyMatch/>
+      <ReadyMatch
+        @matching-start="$emit('matchingStart')"
+      />
     </div>
   </div>
 </template>
@@ -18,6 +20,7 @@ import ReadyRecordList from '@/components/home/ReadyRecordList.vue'
 import { useAccessTokenStore } from '@/stores/store'
 
 const store = useAccessTokenStore()
+const emit = defineEmits(['matchingStart'])
 
 onMounted(async () => {
   store.getMeetingLog()
