@@ -49,30 +49,27 @@ public class WaitingRoomSubscriber implements MessageListener {
     private final MemberRepository memberRepository;
     private final SimpMessageSendingOperations webSocketTemplate;
     private final OpenVidu openVidu;
+    private final int MEETING_CAPACITY = 4;
 
     @Override
     public void onMessage(@NonNull Message message, byte[] pattern) {
-        final int MEETING_CAPACITY = 4;
+
         final WaitingRoomMessageDto parsedMessage = waitingRoomMessageParser(message);
         final String waitingRoomId = parsedMessage.getId();
         final String type = parsedMessage.getType();
         final int count = parsedMessage.getCount();
 
-        log.info("[onMessage] Type: {}, WaitingRoomId: {}, Count: {}", type, waitingRoomId, count);
-
         WaitingRoom waitingRoom = waitingRoomRedisRepository.findById(waitingRoomId)
                 .orElseThrow(() -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_ERROR));
 
         if (MessageType.REGISTER.getPrefix().contains(type) && count == MEETING_CAPACITY) {
-            log.info("[onMessage] 유저 {}명이 대기열 등록을 완료했습니다. ", MEETING_CAPACITY);
-            log.info("[onMessage] 대기열에 있는 유저들에게 수락 메시지를 전달합니다.");
             sendAcceptMessageToClient(waitingRoom);
 
             // 매칭 완료되었울 경우 10초내로 수락 버튼 누르도록
-            waitingRoom.setExpirationSeconds(10L);
+            waitingRoom.setExpirationSeconds(15L);
             waitingRoomRedisRepository.save(waitingRoom);
         } else if (MessageType.ACCEPTANCE.getPrefix().contains(type) && count == MEETING_CAPACITY) {
-            log.info("[onMessage] 유저 {}명이 수락 버튼을 눌렀습니다. ", MEETING_CAPACITY);
+            log.info("미팅 Pub Sub: 유저 {}명이 수락 버튼을 눌렀습니다. OpenVidu 토큰을 유저들에게 전달합니다.", MEETING_CAPACITY);
             sendOpenViduTokenToClient(waitingRoom);
         }
     }
@@ -83,12 +80,12 @@ public class WaitingRoomSubscriber implements MessageListener {
      */
 
     private void sendAcceptMessageToClient(WaitingRoom waitingRoom) {
-        log.info("[onMessage] key: {}, 매칭성공", waitingRoom.getWaitingRoomId());
+        log.info("미팅 Pub Sub: 유저 {}명이 대기열 등록을 완료. 대기실에 있는 유저들에게 매칭 완료 메시지를 전달합니다.", MEETING_CAPACITY);
 
         for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
             String email = meetingMemberDto.getEmail();
             RedisMatchRes redisMatchRes = new RedisMatchRes(waitingRoom.getWaitingRoomId());
-            log.info("[onMessage] 유저 {}에게 수락 메시지를 보냅니다. 대기방: {}", email, redisMatchRes.roomId());
+            log.info("미팅 Pub Sub: 유저 {}에게 수락 메시지를 보냅니다. 대기방: {}", email, redisMatchRes.roomId());
             webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.MATCH, waitingRoom.getWaitingRoomId()));
         }
     }
@@ -100,7 +97,7 @@ public class WaitingRoomSubscriber implements MessageListener {
     private void sendOpenViduTokenToClient(WaitingRoom waitingRoom) {
         try {
             Session session = openVidu.createSession();
-            log.info("세션을 만들었습니다.");
+            log.info("미팅 Pub Sub: Openvidu 세션을 만들었습니다.");
             Map<String, String> nicknameGenderMap = waitingRoom.getMeetingMembers().stream()
                     .collect(Collectors.toMap(MeetingMemberDto::getEmail, MeetingMemberDto::getGender));
 
@@ -111,7 +108,7 @@ public class WaitingRoomSubscriber implements MessageListener {
                 //다른 성별만 찾기
                 OpenviduTokenRes openviduTokenRes = getOpenViduTokenRes(meetingMemberDto, waitingRoom, nicknameGenderMap, session);
 
-                log.info("유저 {}에게 Openvidu Token을 발급합니다: {}", meetingMemberDto.getEmail(), openviduTokenRes.token());
+                log.info("미팅 Pub Sub: 유저 {}에게 Openvidu Token을 발급합니다: {}", meetingMemberDto.getEmail(), openviduTokenRes.token());
                 webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.OPENVIDU, openviduTokenRes));
             }
             waitingRoomRedisRepository.deleteById(waitingRoom.getWaitingRoomId());
