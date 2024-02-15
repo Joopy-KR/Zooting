@@ -59,7 +59,7 @@ public class MeetingService {
         Member member = loadMemberFromDatabase(userDetails);
         MeetingMemberDto meetingMemberDto = member.toMeetingMemberDto();
 
-        log.info("유저가 입장할 수 있는 대기실을 찾습니다: {}", userDetails.getUsername());
+        log.info("미팅: 대기실 등록 요청: 등록 요청한 유저 이메일: {}", userDetails.getUsername());
 
         Iterable<WaitingRoom> waitingRooms = waitingRoomRedisRepository.findAll();
         WaitingRoom idealWaitingRoom = findIdealWaitingRoom(waitingRooms, meetingMemberDto);
@@ -69,6 +69,8 @@ public class MeetingService {
     public synchronized void exitFromWaitingRoom(UserDetails userDetails, String waitingRoomId) {
         Member member = loadMemberFromDatabase(userDetails);
         MeetingMemberDto meetingMemberDto = member.toMeetingMemberDto();
+
+        log.info("미팅: 대기실 퇴장 요청: 퇴장 요청한 유저 이메일{}", userDetails.getUsername());
 
         WaitingRoom waitingRoom = loadWaitingRoomFromRedis(waitingRoomId);
         Set<MeetingMemberDto> waitingRoomMembers = waitingRoom.getMeetingMembers();
@@ -84,9 +86,10 @@ public class MeetingService {
 
     public synchronized void acceptMatching(String waitingRoomId) {
         WaitingRoom waitingRoom = loadWaitingRoomFromRedis(waitingRoomId);
-        log.info("매칭을 수락했습니다. 대기실: {}", waitingRoomId);
+        log.info("미팅: 매칭 대기실 수락: 대기실 아이디: {}", waitingRoomId);
 
         waitingRoom.setAcceptCount(waitingRoom.getAcceptCount() + 1);
+        log.info("미팅: 매칭 대기실 수락 총 개수: {}, 대기실 아이디: {}", waitingRoom.getAcceptCount(), waitingRoomId);
         waitingRoomRedisRepository.save(waitingRoom);
 
         acceptMatchingMessagePublisher(waitingRoom);
@@ -106,7 +109,7 @@ public class MeetingService {
 
             return idealWaitingRoom.orElseGet(this::createWaitingRoom);
         }
-        log.info("유저가 입장 가능한 대기실이 없습니다. 대기실을 만듭니다.");
+        log.info("미팅: 요청 유저가 입장 가능한 대기실 없음: 유저 아이디: {}", meetingMemberDto.getEmail());
         return createWaitingRoom();
     }
 
@@ -138,8 +141,8 @@ public class MeetingService {
                 () -> new BaseExceptionHandler(ErrorCode.NOT_FOUND_WAITING_ROOM)
         );
 
-        log.info("유저가 입장할 대기방의 정보를 가져옵니다: {}", waitingRoom.getWaitingRoomId());
-        log.info("현재 참가중인 멤버 목록: {}", waitingRoomMembers.toString());
+        log.info("미팅: 유저가 입장할 대기방의 아이디: {}, 참여자 목록: {}",
+                waitingRoom.getWaitingRoomId(), waitingRoomMembers.stream().map(MeetingMemberDto::getEmail).toList().toString());
 
         waitingRoomMembers.add(meetingMemberDto);
         waitingRoomRedisRepository.save(waitingRoom);
