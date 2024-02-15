@@ -130,7 +130,7 @@ const onConnected = () => {
       }
       const onlineFriends: String[] = res.onlineFriends;
       for (const friend of store.friendList) {
-        friend.isOnline = onlineFriends.includes(friend.nickname);
+        friend.isOnline = onlineFriends.includes(friend.email);
       }
     }
     // 일대일 미팅 요청 수신
