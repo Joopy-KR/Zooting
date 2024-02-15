@@ -48,16 +48,18 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         var result = redisTemplate.opsForSet().members(HEARTBEAT_HASH + heartBeatReq.memberId());
         if (Objects.isNull(result)) return Set.of();
         int myFriendCount = friendRepository.countByFollower_Email(heartBeatReq.memberId());
-        if (result.size() != myFriendCount) {
+        log.info("Heartbeaet: name={}, friends={}, db_friend_count={}", heartBeatReq.memberId(), result, myFriendCount);
+        if (result.size() != (myFriendCount + 1)) {
             return checkFriendOnline(heartBeatReq);
         }
         return result.stream().map(Object::toString).collect(Collectors.toSet());
     }
 
     public Set<String> checkFriendOnline(HeartBeatReq heartBeatReq) {
-        redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.memberId(), heartBeatReq.memberId());
-
         Set<String> onlineFriends = new HashSet<>();
+        redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.memberId(), heartBeatReq.memberId());
+        onlineFriends.add(heartBeatReq.memberId());
+
         var friends = friendRepository.findFriendByFollower(heartBeatReq.memberId());
         for (var friend : friends) {
             var check = redisTemplate.getExpire(HEARTBEAT_HASH + friend.getFollowing().getEmail());
