@@ -1,5 +1,5 @@
 <template>
-  <div class="flex">
+  <div class="text-black bg-white">
     <RouterView/>
     <!-- 다대다 매칭 완료 -->
     <MatchingCompleteModal
@@ -25,7 +25,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { RouterView } from 'vue-router'
 import MatchingCompleteModal from "@/components/MatchingCompleteModal.vue"
 import MeetingAcceptModal from "@/components/MeetingAcceptModal.vue"
