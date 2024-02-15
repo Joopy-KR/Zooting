@@ -30,7 +30,7 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
 
     @Transactional(readOnly = true)
     public SocketBaseDtoRes<HeartBeatRes> loadOnlineFriends(HeartBeatReq heartBeatReq) {
-        var online = redisTemplate.getExpire(HEARTBEAT_HASH + heartBeatReq.nickname(), TimeUnit.SECONDS);
+        var online = redisTemplate.getExpire(HEARTBEAT_HASH + heartBeatReq.memberId(), TimeUnit.SECONDS);
 
         Set<String> onlineFriends;
         // 처음 접속하는 경우
@@ -40,12 +40,12 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         else {
             onlineFriends = getOnlineFriends(heartBeatReq);
         }
-        redisTemplate.expire(HEARTBEAT_HASH + heartBeatReq.nickname(), TIME_TO_LIVE * 3, TimeUnit.SECONDS);
+        redisTemplate.expire(HEARTBEAT_HASH + heartBeatReq.memberId(), TIME_TO_LIVE * 3, TimeUnit.SECONDS);
         return new SocketBaseDtoRes<>(SOCKET_TYPE, new HeartBeatRes(onlineFriends.stream().toList()));
     }
 
     private Set<String> getOnlineFriends(HeartBeatReq heartBeatReq) {
-        var result = redisTemplate.opsForSet().members(HEARTBEAT_HASH + heartBeatReq.nickname());
+        var result = redisTemplate.opsForSet().members(HEARTBEAT_HASH + heartBeatReq.memberId());
         if (Objects.isNull(result)) return Set.of();
         return result.stream().map(Object::toString).collect(Collectors.toSet());
     }
@@ -55,16 +55,16 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         Set<String> onlineFriends = new HashSet<>();
         var friends = friendRepository.findFriendByFollower(heartBeatReq.memberId());
         for (var friend : friends) {
-            var check = redisTemplate.getExpire(HEARTBEAT_HASH + friend.getFollowing().getNickname());
+            var check = redisTemplate.getExpire(HEARTBEAT_HASH + friend.getFollowing().getEmail());
             // 친구가 접속해 있는 경우 내가 접속해 있다는 것도 알린다.
             if (Objects.nonNull(check) && check >= TIME_TO_LIVE) {
-                onlineFriends.add(friend.getFollowing().getNickname());
-                redisTemplate.opsForSet().add(HEARTBEAT_HASH + friend.getFollowing().getNickname(), heartBeatReq.nickname());
-                redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.nickname(), friend.getFollowing().getNickname());
+                onlineFriends.add(friend.getFollowing().getEmail());
+                redisTemplate.opsForSet().add(HEARTBEAT_HASH + friend.getFollowing().getEmail(), heartBeatReq.memberId());
+                redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.memberId(), friend.getFollowing().getEmail());
             }
         }
         if (onlineFriends.isEmpty()) {
-            redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.nickname(), heartBeatReq.nickname());
+            redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.memberId(), heartBeatReq.memberId());
         }
         return onlineFriends;
     }
@@ -95,11 +95,11 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         List<String> offlineMembers = new ArrayList<>();
         for (var hashId : hashIds) {
             var expireTime = redisTemplate.getExpire(hashId);
-            var nickname = hashId.substring(HEARTBEAT_HASH.length());
+            var email = hashId.substring(HEARTBEAT_HASH.length());
             if (Objects.isNull(expireTime) || expireTime < TIME_TO_LIVE) {
-                offlineMembers.add(nickname);
+                offlineMembers.add(email);
             } else {
-                onlineMembers.add(nickname);
+                onlineMembers.add(email);
             }
         }
         // 오프라인 유저의 데이터 삭제
