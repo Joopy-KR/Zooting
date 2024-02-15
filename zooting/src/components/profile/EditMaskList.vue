@@ -257,8 +257,6 @@ watch(myMaskList, (newMyMaskList) => {
       }
     }
   });
-
-  console.log("newMYMASK", newMyMaskList);
 });
 watch(() => props.userInfo, (newValue) => {
   if (newValue?.animal) {
