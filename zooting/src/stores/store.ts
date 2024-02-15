@@ -958,7 +958,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   // 매칭 완료 시 미팅방으로 이동시키기
   const meetingRoomToken = ref<String>('')
   const oppositeGenderList = ref<any>(null)
-  // 세션이 끝나야하는 시간 (시작 시간 + 10분 15초)
+  // 세션이 끝나야하는 시간
   const sessionEndTime = ref<number>(0)
   const pushMeetingRoom = function (Info: any, time: number, type:string) {
     isMatchingLoad.value = false
@@ -967,7 +967,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     // 이성 정보
     oppositeGenderList.value = Info.oppositeGenderList
     if (type === 'OPENVIDU') {
-      sessionEndTime.value = time + 30000 // 끝나는 시간
+      sessionEndTime.value = time + 60000 // 끝나는 시간
       isMatchingComplete.value = false
       router.push({ name: "video-chat"})
     } else {
