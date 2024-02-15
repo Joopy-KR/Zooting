@@ -47,10 +47,13 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
     private Set<String> getOnlineFriends(HeartBeatReq heartBeatReq) {
         var result = redisTemplate.opsForSet().members(HEARTBEAT_HASH + heartBeatReq.memberId());
         if (Objects.isNull(result)) return Set.of();
+        int myFriendCount = friendRepository.countByFollower_Email(heartBeatReq.memberId());
+        if (result.size() == myFriendCount) {
+            return checkFriendOnline(heartBeatReq);
+        }
         return result.stream().map(Object::toString).collect(Collectors.toSet());
     }
 
-    @Transactional(readOnly = true)
     public Set<String> checkFriendOnline(HeartBeatReq heartBeatReq) {
         Set<String> onlineFriends = new HashSet<>();
         var friends = friendRepository.findFriendByFollower(heartBeatReq.memberId());

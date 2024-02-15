@@ -20,8 +20,11 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
             """)
     List<Friend> findFriendByFollower(@Param("follower") String follower);
 
+    int countByFollower_Email(String followerEmail);
+
     //searchFriend
     Page<Friend> findFriendsByFollower_EmailAndFollowing_NicknameContaining(Pageable pageable, String followerEmail, String nickname);
+
     List<Friend> findByFollower_EmailAndFollowing_NicknameContaining(String followerEmail, String nickname);
 
 
