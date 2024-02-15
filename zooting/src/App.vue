@@ -1,13 +1,10 @@
 <template>
   <div class="flex">
-    <RouterView
-      @get-openvidu-token="isMatchingLoad = false"
-    />
+    <RouterView/>
     <!-- 다대다 매칭 완료 -->
     <MatchingCompleteModal
       v-if="store.isLogin"
       class="z-50"
-      @matching-accept="isMatchingLoad = true"
       />
       <!-- 일대일 매칭 요청 수신 -->
     <MeetingAcceptModal
@@ -23,7 +20,6 @@
     <MatchingLoadModal
       v-if="store.isLogin"
       class="z-50"
-      :is-matching-load="isMatchingLoad"
     />
   </div>
 </template>
@@ -38,7 +34,6 @@ import MatchingLoadModal from '@/components/MatchingLoadModal.vue'
 import { useAccessTokenStore } from '@/stores/store'
 
 const store = useAccessTokenStore()
-const isMatchingLoad = ref<boolean>(false)  // 미팅방 이동 대기
 </script>
 <style scoped>
 

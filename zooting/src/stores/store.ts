@@ -839,6 +839,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   // -------------------------- 매칭 ---------------------------
   const isMatching = ref<boolean>(false)  // 매칭 대기
   const isMatchingComplete = ref<boolean>(false) // 매칭 완료 여부
+  const isMatchingLoad = ref<boolean>(false)
   const formattedTimer = ref("00:00") // 매칭 대기 시간
   const sessionId = ref<string>('')
   let timerInterval: any = null
@@ -924,6 +925,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       .then((res) => {
         console.log(res)
         localStorage.removeItem("sessionRoomId")
+        isMatchingLoad.value = true
       })
       .catch((err) => {
         console.log(err)
@@ -960,6 +962,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   // 세션이 끝나야하는 시간 (시작 시간 + 10분 15초)
   const sessionEndTime = ref<number>(0)
   const pushMeetingRoom = function (Info: any, time: number, type:string) {
+    isMatchingLoad.value = false
     // 토큰
     meetingRoomToken.value = Info.token
     // 이성 정보
@@ -1138,5 +1141,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       showResult,
       recordList,
       getMeetingLog,
+      isMatchingLoad,
   };
 });
