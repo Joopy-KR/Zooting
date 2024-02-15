@@ -840,6 +840,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const isMatching = ref<boolean>(false)  // 매칭 대기
   const isMatchingComplete = ref<boolean>(false) // 매칭 완료 여부
   const formattedTimer = ref("00:00") // 매칭 대기 시간
+  const sessionId = ref<string>('')
   let timerInterval: any = null
 
   // 타이머 시작
@@ -892,6 +893,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
       .then((res) => {
         console.log(res)
+        sessionId.value = res.data.result
         localStorage.setItem("sessionRoomId", res.data.result)
         isMatching.value = true
       })
@@ -913,7 +915,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "post",
       url: `${VITE_SERVER_API_URL}/api/meeting/accept`,
       params: {
-        room: localStorage.getItem("sessionRoomId"),
+        room: sessionId.value,
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -921,7 +923,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
       .then((res) => {
         console.log(res)
-        console.log(localStorage.getItem("sessionRoomId"))
         localStorage.removeItem("sessionRoomId")
       })
       .catch((err) => {
@@ -938,7 +939,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "delete",
       url: `${VITE_SERVER_API_URL}/api/meeting/exit`,
       params: {
-        room: localStorage.getItem("sessionRoomId"),
+        room: sessionId.value,
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -946,7 +947,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
       .then((res) => {
         console.log(res)
-        console.log(localStorage.getItem("sessionRoomId"))
         localStorage.removeItem("sessionRoomId")
       })
       .catch((err) => {
