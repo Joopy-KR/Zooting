@@ -113,9 +113,10 @@ watch(() => store.friendList, (update) => {
   friendList.value = update
 })
 
-// 일대일 미팅 거절
+// 미팅 거절 여부 감시
 watch(() => store.isMeetingReject, (update) => {
-  if (update) {
+  // 거절 당했다면
+  if (update) { 
     isOpenAlert.value = true
     isOpenRejectAlert.value = true
     isSuccessRequest.value = false

@@ -25,7 +25,7 @@ const persistStore = useStore()
 
 const userInfo = ref(store.userInfo)
 
-const emit = defineEmits(['receiveMessage'])
+const emit = defineEmits(['receiveMessage', 'getOpenviduToken', 'getMatchingCompleteTime'])
 const dmRes = ref<any>(null)  // dm 메시지 객체
 const dmRoomId = ref<number>(0) // dm 방 id
 const dmSound = new Audio(DmSound)  // dm 알림 소리
@@ -39,8 +39,6 @@ let intervalId: any;
 const START_HEART_CHECK = 5 * 1000;
 const HEART_CHECK_INTERVAL = 15 * 1000; // heartbeat check interval time
 const intervalTime = ref<number>(START_HEART_CHECK);
-
-
 
 function playSound(sound:any) {
     sound.currentTime = 0
@@ -115,10 +113,13 @@ const onConnected = () => {
     // 매칭 완료
     else if (type === 'MATCH') {
       store.MatchingComplete()
-
     }
-    // 매칭 수락
+    // 미팅 시작 (다대다 / 일대일)
     else if (type === 'OPENVIDU') {
+      store.pushMeetingRoom(res, Date.parse(time), type)
+      emit('getOpenviduToken')
+    }
+    else if (type === 'ONETOONE') {
       store.pushMeetingRoom(res, Date.parse(time), type)
     }
     // 유저 상태 정보
@@ -137,14 +138,12 @@ const onConnected = () => {
     else if (type === 'MEETING') {
       store.meetingSender = res.nickname
       store.isRecieveMeeting = true
+      console.log(time)
     }
     // 미팅 거절
     else if (type === 'REJECT') {
       store.isRequesting = false
       store.isMeetingReject = true
-    }
-    else if (type === 'ONETOONE') {
-      store.pushMeetingRoom(res, Date.parse(time), type)
     }
   })
 }

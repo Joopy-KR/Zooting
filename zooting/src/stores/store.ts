@@ -248,7 +248,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const getMeetingLog = async function () {
     await getMeetingLogApi(
       ({ data }: any) => {
-        // console.log(data.result)
         recordList.value = data.result;
       },
       (error: any) => {
@@ -307,7 +306,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
         return res.data.result;
       })
       .catch((err) => {
@@ -344,7 +342,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         router.push({ name: "animal-test" });
       })
       .catch((err) => {
@@ -366,7 +363,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         isDuplication.value = res.data.result;
       })
       .catch((err) => {
@@ -389,7 +385,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         router.push({ name: "home" });
       })
       .catch((err) => {
@@ -436,7 +431,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
         friendList.value = res.data.result;
       })
       .catch((err) => {
@@ -455,7 +449,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
         requestFromList.value = res.data.result;
       })
       .catch((err) => {
@@ -474,7 +467,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
         requestToList.value = res.data.result;
       })
       .catch((err) => {
@@ -514,7 +506,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getRequestToList();
       })
       .catch((err) => {
@@ -536,7 +527,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getRequestFromList();
         getFriendList();
       })
@@ -559,7 +549,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getRequestFromList();
       })
       .catch((err) => {
@@ -581,7 +570,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getRequestToList();
       })
       .catch((err) => {
@@ -603,7 +591,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getBlockList();
       })
       .catch((err) => {
@@ -625,7 +612,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getFriendList();
       })
       .catch((err) => {
@@ -662,25 +648,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       });
   };
 
-  // 친구 검색
-  const friendSearch = function (params: { page: number, size: number, sort: string[], nickname: string }) {
-    axios({
-      method: "get",
-      url: `${API_URL}/api/friends/search`,
-      params: params,
-      headers: {
-        Authorization: `Bearer ${getAccessToken()}`,
-      },
-    })
-      .then((res) => {
-        console.log(res);
-        searchResult.value = res.data.result;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
   // -------------------------- DM ---------------------------
   // DM 방 입장
   const isEntryDmRoom = ref<boolean>(false);
@@ -702,7 +669,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
         dmInfo.value = res.data.result;
         receiverInfo.value = params;
       })
@@ -729,7 +695,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
         if (dmInfo.value) {
           dmInfo.value.cursor = res.data.result.cursor;
           pastDmList.value = [...pastDmList.value, ...res.data.result.dmList];
@@ -757,7 +722,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -870,20 +834,16 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     return `${formattedMinutes}:${formattedSeconds}`
   }
 
-  // 매칭 완료
-  const MatchingComplete = function () {
-    isMatchingComplete.value = true
-    isMatching.value = false
-    resetTimer()
-  }
-
   // 매칭 요청
   const meetingRegister = function () {
-    startTimer()
+    // 이미 매칭 중인 상태에서 매칭을 요청할 경우
     if (isMatching.value) {
       console.log('이미 매칭 중입니다')
       return
-    }
+    } 
+    // 타이머 시작
+    startTimer()
+    // 매칭 중이 아닌 경우 요청 허가
     axios({
       method: "post",
       url: `${VITE_SERVER_API_URL}/api/meeting/register`,
@@ -901,14 +861,15 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
   }
 
+  // 매칭 완료
+  const MatchingComplete = function () {
+    isMatchingComplete.value = true // 매칭 완료
+    isMatching.value = false  // 매칭 대기 종료
+    resetTimer()  // 매칭 대기 시간 초기화
+  }
+
   // 매칭 수락
   const meetingAccept = function () {
-    if (!isMatchingComplete.value) {
-      console.log('Meeting has been canceled')
-      return
-    }
-    isMatching.value = false
-    resetTimer()
     axios({
       method: "post",
       url: `${VITE_SERVER_API_URL}/api/meeting/accept`,
@@ -931,8 +892,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
 
   // 매칭 거절
   const meetingExit = function () {
-    isMatching.value = false
-    isMatchingComplete.value = false
     resetTimer()
     axios({
       method: "delete",
@@ -948,6 +907,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         console.log(res)
         localStorage.removeItem("sessionRoomId")
         isMatchingComplete.value = false
+        isMatching.value = false
       })
       .catch((err) => {
         console.log(err)
@@ -960,13 +920,13 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   // 세션이 끝나야하는 시간 (시작 시간 + 10분 15초)
   const sessionEndTime = ref<number>(0)
   const pushMeetingRoom = function (Info: any, time: number, type: string) {
-    // 토큰
-    meetingRoomToken.value = Info.token
-    // 이성 정보
-    oppositeGenderList.value = Info.oppositeGenderList
+    meetingRoomToken.value = Info.token // 토큰
+    oppositeGenderList.value = Info.oppositeGenderList  // 이성 정보
+    // 다대다 미팅
     if (type === 'OPENVIDU') {
       sessionEndTime.value = time + 30000 // 끝나는 시간
       router.push({ name: "video-chat" })
+    // 일대일 미팅
     } else {
       router.push({ name: "one-to-one-chat" })
     }
@@ -992,9 +952,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         router.push({ name: "home" })
       })
       .then((res) => {
-        router.go(0)  // 새로고침
-      })
-      .then((res) => {
         showResult.value = true
       })
       .catch((err) => {
@@ -1005,8 +962,8 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   // -------------------------- 일대일 미팅 ---------------------------
   const isRequesting = ref<boolean>(false)  // 일대일 미팅 요청 중 (sender), 현재 요청 중인지 확인할 변수
   const isRecieveMeeting = ref<boolean>(false)  // 일대일 미팅 요청 수락/거절 대기 중 (reciever)
-  const isMeetingReject = ref<boolean>(false) // 미팅 거절 여부
-  const meetingSender = ref<string>('') // 나에게 미팅 신청 보낸 사람
+  const isMeetingReject = ref<boolean>(false) // 미팅 거절 여부 (sender)
+  const meetingSender = ref<string>('') // 나에게 미팅 신청 보낸 사람 (reciever)
 
   // 일대일 미팅 요청
   const meetingRequestFriend = function (nickname: string) {
@@ -1022,7 +979,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     })
       .then((res) => {
         console.log(res)
-        isRequesting.value = true
+        isRequesting.value = true // 일대일 미팅 요청 완료 시
       })
       .catch((err) => {
         console.log(err)
@@ -1070,7 +1027,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         console.log(err)
       })
   }
-
+  
   return {
     setAccessToken,
     getAccessToken,
@@ -1100,7 +1057,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     friendRequestCancel,
     blockCancel,
     friendDelete,
-    friendSearch,
     userSearch,
     searchResult,
     entryDmRoom,

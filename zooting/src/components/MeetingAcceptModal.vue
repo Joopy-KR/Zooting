@@ -38,24 +38,25 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { useAccessTokenStore } from '../stores/store'
+import { useAccessTokenStore } from '@/stores/store'
 
 const store = useAccessTokenStore()
 const enterRoomTimeLimit = ref<any>(0)
 const isRecieveMeeting = ref<boolean>(false)
 const meetingSender = ref<string>(store.meetingSender)
 
-watch(()=> store.isRecieveMeeting, () => {
+watch(()=> store.isRecieveMeeting, (update) => {
   isRecieveMeeting.value = store.isRecieveMeeting
   meetingSender.value = store.meetingSender
-
-  if (store.isRecieveMeeting) {
+  // 일대일 미팅 요청을 받았다면
+  if (update) {
+    // 타이머 시작 
     const intervalId = setInterval(() => {
       enterRoomTimeLimit.value += 0.1
-  
+      // 시간이 지나면 자동으로 미팅 거절
       if (enterRoomTimeLimit.value >= 100) {
         clearInterval(intervalId)
-        // 미팅 거절
+        // 아직 거절하지 않은 상태라면
         if (store.isRecieveMeeting) {
           store.meetingRejectFriend()
         }
@@ -73,5 +74,6 @@ const meetingReject = () => {
 // 미팅 수락
 const meetingAccept = () => {
   store.meetingAcceptFriend()
+  enterRoomTimeLimit.value = 0
 }
 </script>

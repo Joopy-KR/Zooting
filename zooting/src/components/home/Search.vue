@@ -29,11 +29,8 @@
       </div>
     </div>
     
-    <div v-show="isSearching && !searchQuery" class="flex justify-center pt-5 pb-3 text-xl font-semibold text-white bg-[#A297F6]">
+    <div v-show="isSearching && !searchQuery" class="flex justify-center pt-5 pb-3 text-xl font-semibold text-[#8072EF] bg-white">
       <h1>당신과의 인연을 기다리고 있어요</h1>
-    </div>
-
-    <div class="absolute bg-[#A297F6] w-10 h-10 top-0 -left-6">
     </div>
   </div>
 </template>
@@ -79,7 +76,7 @@ const handleSearch = function (event: any) {
   @apply relative;
 }
 .search__input-container {
-  @apply pt-6 px-3 pb-1 flex items-center bg-[#A297F6];
+  @apply pt-6 px-3 pb-1 flex items-center bg-white;
 }
 .search__input {
   @apply border-2 border-[#A297F6] shadow-sm rounded-3xl w-full py-2.5 px-5;  

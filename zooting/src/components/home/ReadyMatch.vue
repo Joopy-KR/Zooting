@@ -6,8 +6,9 @@
         {{ store.formattedTimer }}
       </div>
     </div>
-    <button v-if="!store.isMatching && !isRequesting" class="btn-hover color-1" @click="meetingRegister">Match</button>
-    <button v-else-if="store.isMatching" class="btn-hover color-2" @click="meetingExit">Cancel</button>
+    <!-- 매칭 중이거나 일대일 매칭 중이면 매칭 시도 금지 -->
+    <button v-if="!isMatching && !isRequesting" class="btn-hover color-1" @click="meetingRegister">Match</button>
+    <button v-else-if="isMatching" class="btn-hover color-2" @click="meetingExit">Cancel</button>
     <button v-else class="btn-hover color-3">Match</button>
   </div>
 </template>
@@ -17,15 +18,26 @@ import { ref, watch } from 'vue'
 import { useAccessTokenStore } from '@/stores/store'
 
 const store = useAccessTokenStore()
+const isMatching = ref<boolean>(false)  // 매칭 중 여부
 const isRequesting = ref<boolean>(false) // 일대일 미팅 요청 중 여부
+const isMatchingComplete = ref<boolean>(false)  // 매칭 완료 여부
 
 watch(()=> store.isRequesting, (update) => {
   isRequesting.value = update
 })
 
+watch(()=> store.isMatching, (update) => {
+  isMatching.value = update
+})
+
+watch(()=> store.isMatchingComplete, (update) => {
+  isMatchingComplete.value = update
+})
+
 const matchingButton = () => {
   let imgUrl: URL
-  if (store.isMatching && !store.isMatchingComplete) {
+  // 매칭 중이면서 매칭 완료가 되기 전이라면 하트가 돌아감
+  if (isMatching.value && !isMatchingComplete.value) {
     imgUrl = new URL('/assets/images/home/heart-active.gif', import.meta.url)
   } else {
     imgUrl = new URL('/assets/images/home/heart-static.png', import.meta.url)
