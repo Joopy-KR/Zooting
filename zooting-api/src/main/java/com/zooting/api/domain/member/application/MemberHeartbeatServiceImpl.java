@@ -48,13 +48,15 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         var result = redisTemplate.opsForSet().members(HEARTBEAT_HASH + heartBeatReq.memberId());
         if (Objects.isNull(result)) return Set.of();
         int myFriendCount = friendRepository.countByFollower_Email(heartBeatReq.memberId());
-        if (result.size() == myFriendCount) {
+        if (result.size() != myFriendCount) {
             return checkFriendOnline(heartBeatReq);
         }
         return result.stream().map(Object::toString).collect(Collectors.toSet());
     }
 
     public Set<String> checkFriendOnline(HeartBeatReq heartBeatReq) {
+        redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.memberId(), heartBeatReq.memberId());
+
         Set<String> onlineFriends = new HashSet<>();
         var friends = friendRepository.findFriendByFollower(heartBeatReq.memberId());
         for (var friend : friends) {
@@ -66,9 +68,7 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
                 redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.memberId(), friend.getFollowing().getEmail());
             }
         }
-        if (onlineFriends.isEmpty()) {
-            redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.memberId(), heartBeatReq.memberId());
-        }
+
         return onlineFriends;
     }
 
