@@ -907,6 +907,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
         console.log(res)
         localStorage.removeItem("sessionRoomId")
         isMatchingComplete.value = false
+        isMatching.value = false
       })
       .catch((err) => {
         console.log(err)

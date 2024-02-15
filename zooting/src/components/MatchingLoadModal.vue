@@ -1,5 +1,5 @@
 <template>
-  <TransitionRoot as="template" :show="isMatchingAccept">
+  <TransitionRoot as="template" :show="isMatchingLoad">
     <Dialog as="div" class="relative z-10">
       <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
@@ -10,9 +10,9 @@
           <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel class="relative px-4 pt-5 pb-4 overflow-hidden text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
               <!-- 입장 대기 -->
-              <div>
+              <div v-if="!isSessionClose">
                 <div class="mt-3 text-center sm:mt-5">
-                  <DialogTitle as="h3" class="text-2xl font-semibold leading-6 text-gray-900 ">잠시만 기다려 주세요</DialogTitle>
+                  <DialogTitle as="h3" class="text-2xl font-semibold leading-6 text-gray-900 ">입장 중</DialogTitle>
                   <div class="mt-5">
                       <p class="text-lg text-gray-500">다른 사용자의 응답을 기다리는 중이에요</p>
                   </div>
@@ -25,9 +25,20 @@
                 </div>
               </div>
               <!-- 입장 취소 -->
+              <div v-else>
+                <div class="mt-3 text-center sm:mt-5">
+                  <DialogTitle as="h3" class="text-2xl font-semibold leading-6 text-gray-900 ">매칭 취소</DialogTitle>
+                  <div class="mt-5">
+                      <p class="text-lg text-gray-500">다른 사용자가 매칭에 응답하지 않았어요</p>
+                  </div>
+                  <div class="mt-5 sm:mt-6">
+                  <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="closeModal">닫기</div>
+                </div>
+                </div>
+              </div>
+
             </DialogPanel>
           </TransitionChild>
-
         </div>
       </div>
     </Dialog>
@@ -38,19 +49,45 @@
 import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
-const isMatchingAccept = ref<boolean>(false)
-const matchingCompleteTime = ref<Date | null>(null)
+const isMatchingLoad = ref<boolean>(false)
+const countdown = ref<number | null>(null)
+const isSessionClose = ref<boolean>(false)
 
 const props = defineProps<{
-  isMatchingAccept: boolean,
-  matchingCompleteTime: Date
+  isMatchingLoad: boolean,
 }>()
 
-watch(() => props.isMatchingAccept, (update) => {
-  isMatchingAccept.value = update
+const emit = defineEmits(['sessionClose'])
+
+watch(() => props.isMatchingLoad, (update) => {
+  isMatchingLoad.value = update
+  if (update) {
+    countdown.value = null
+    startCountDown()
+  }
 })
 
-watch(() => props.matchingCompleteTime, (update) => {
-  matchingCompleteTime.value = update
-})
+const startCountDown = () => {
+  // 카운트다운 시작 (10초)
+  if (isMatchingLoad.value && !countdown.value) {
+    countdown.value = 10
+
+    const interval = setInterval(() => {
+      if (countdown.value && countdown.value > 0) {
+        countdown.value -= 1
+      } else {
+        // 카운트다운이 0에 도달하면 초기화하고 interval을 지움
+        countdown.value = null
+        clearInterval(interval)
+        isSessionClose.value = true
+      }
+    }, 1000)
+  }
+}
+
+const closeModal = () => {
+  isMatchingLoad.value = false
+  isSessionClose.value = false
+  emit('sessionClose')
+}
 </script>

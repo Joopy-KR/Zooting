@@ -113,7 +113,6 @@ const onConnected = () => {
     // 매칭 완료
     else if (type === 'MATCH') {
       store.MatchingComplete()
-      emit('getMatchingCompleteTime', time)
     }
     // 미팅 시작 (다대다 / 일대일)
     else if (type === 'OPENVIDU') {

@@ -2,7 +2,6 @@
   <div class="flex">
     <RouterView
       @get-openvidu-token="isMatchingLoad = false"
-      @get-matching-complete-time="getMatchingCompleteTime"
     />
     <!-- 다대다 매칭 완료 -->
     <MatchingCompleteModal
@@ -24,8 +23,8 @@
     <MatchingLoadModal
       v-if="store.isLogin"
       class="z-50"
-      :is-matching-accept="isMatchingLoad"
-      :matching-complete-time="matchingCompleteTime"
+      :is-matching-load="isMatchingLoad"
+      @session-close="isMatchingLoad = false"
     />
   </div>
 </template>
@@ -41,11 +40,6 @@ import { useAccessTokenStore } from '@/stores/store'
 
 const store = useAccessTokenStore()
 const isMatchingLoad = ref<boolean>(false)  // 미팅방 이동 대기
-const matchingCompleteTime = ref<Date | null>(null)
-
-const getMatchingCompleteTime = (time: Date) => {
-  matchingCompleteTime.value = time
-}
 </script>
 <style scoped>
 
