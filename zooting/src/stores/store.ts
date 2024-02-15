@@ -247,7 +247,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   const getMeetingLog = async function () {
     await getMeetingLogApi(
         ({data}:any)=>{
-          console.log(data.result)
           recordList.value = data.result;
         },
         (error : any) =>{
