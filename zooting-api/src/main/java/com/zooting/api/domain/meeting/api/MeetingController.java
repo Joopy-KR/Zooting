@@ -11,6 +11,7 @@ import com.zooting.api.global.common.SocketType;
 import com.zooting.api.global.common.code.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +25,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/meeting")
 @RequiredArgsConstructor
+@Log4j2
 public class MeetingController {
     private final MeetingService meetingService;
     private final SimpMessageSendingOperations webSocketTemplate;
@@ -34,6 +36,7 @@ public class MeetingController {
     @Operation(summary = "미팅 대기방 등록", description = "미팅 대기방 등록")
     public ResponseEntity<BaseResponse<String>> registerToWaitingRoom(
             @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("유저가 미팅 대기방에 등록을 요청했습니다: {}", userDetails.getUsername());
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, meetingService.registerToWaitingRoom(userDetails));
     }
 
@@ -43,6 +46,7 @@ public class MeetingController {
     public ResponseEntity<BaseResponse<String>> exitFromWaitingRoom(
             @AuthenticationPrincipal UserDetails userDetails, @RequestParam(name = "room") String waitingRoomId) {
         meetingService.exitFromWaitingRoom(userDetails, waitingRoomId);
+        log.info("유저가 미팅 대기방 등록을 취소했습니다. 유저: {}, 대기방: {}", userDetails.getUsername(), waitingRoomId);
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅 대기방 등록 취소에 성공했습니다.");
     }
 
@@ -52,6 +56,7 @@ public class MeetingController {
     public ResponseEntity<BaseResponse<String>> acceptMatching(
             @RequestParam(name = "room") String waitingRoomId) {
         meetingService.acceptMatching(waitingRoomId);
+        log.info("유저가 대기방에서 미팅을 수락했습니다 대기방 : {} ", waitingRoomId);
         return BaseResponse.success(SuccessCode.CHECK_SUCCESS, "미팅을 수락했습니다.");
     }
 

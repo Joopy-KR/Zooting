@@ -65,6 +65,7 @@ public class WaitingRoomSubscriber implements MessageListener {
 
         if (MessageType.REGISTER.getPrefix().contains(type) && count == MEETING_CAPACITY) {
             log.info("[onMessage] 유저 {}명이 대기열 등록을 완료했습니다. ", MEETING_CAPACITY);
+            log.info("[onMessage] 대기열에 있는 유저들에게 수락 메시지를 전달합니다.");
             sendAcceptMessageToClient(waitingRoom);
 
             // 매칭 완료되었울 경우 10초내로 수락 버튼 누르도록
@@ -83,10 +84,11 @@ public class WaitingRoomSubscriber implements MessageListener {
 
     private void sendAcceptMessageToClient(WaitingRoom waitingRoom) {
         log.info("[onMessage] key: {}, 매칭성공", waitingRoom.getWaitingRoomId());
+
         for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
             String email = meetingMemberDto.getEmail();
             RedisMatchRes redisMatchRes = new RedisMatchRes(waitingRoom.getWaitingRoomId());
-            log.info("[onMessage] email: {} {}", email, redisMatchRes.roomId());
+            log.info("[onMessage] 유저 {}에게 수락 메시지를 보냅니다. 대기방: {}", email, redisMatchRes.roomId());
             webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.MATCH, waitingRoom.getWaitingRoomId()));
         }
     }
@@ -108,6 +110,8 @@ public class WaitingRoomSubscriber implements MessageListener {
                 saveMeetingLog(meetingMemberDto, waitingRoom);
                 //다른 성별만 찾기
                 OpenviduTokenRes openviduTokenRes = getOpenViduTokenRes(meetingMemberDto, waitingRoom, nicknameGenderMap, session);
+
+                log.info("유저 {}에게 Openvidu Token을 발급합니다: {}", meetingMemberDto.getEmail(), openviduTokenRes.token());
                 webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.OPENVIDU, openviduTokenRes));
             }
             waitingRoomRedisRepository.deleteById(waitingRoom.getWaitingRoomId());
@@ -133,8 +137,7 @@ public class WaitingRoomSubscriber implements MessageListener {
                 .map(member -> new OppositeGenderParticipantsDto(member.getNickname(), member.getAnimal()))
                 .collect(Collectors.toList());
         Connection connection = session.createConnection();
-        OpenviduTokenRes openviduTokenRes = new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtos);
-        return openviduTokenRes;
+        return new OpenviduTokenRes(connection.getToken(), oppositeGenderParticipantsDtos);
     }
 
     private WaitingRoomMessageDto waitingRoomMessageParser(Message message) {
