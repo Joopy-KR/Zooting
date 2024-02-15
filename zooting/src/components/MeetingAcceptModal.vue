@@ -53,7 +53,6 @@ watch(()=> store.isRecieveMeeting, (update) => {
     // 타이머 시작 
     const intervalId = setInterval(() => {
       enterRoomTimeLimit.value += 0.1
-      // 시간이 지나면 자동으로 미팅 거절
       if (enterRoomTimeLimit.value >= 100) {
         clearInterval(intervalId)
       }
