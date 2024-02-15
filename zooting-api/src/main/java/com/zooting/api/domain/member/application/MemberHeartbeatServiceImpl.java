@@ -31,7 +31,6 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
     @Transactional(readOnly = true)
     public SocketBaseDtoRes<HeartBeatRes> loadOnlineFriends(HeartBeatReq heartBeatReq) {
         var online = redisTemplate.getExpire(HEARTBEAT_HASH + heartBeatReq.memberId(), TimeUnit.SECONDS);
-
         Set<String> onlineFriends;
         // 처음 접속하는 경우
         if (Objects.isNull(online) || online < TIME_TO_LIVE) {
@@ -48,7 +47,6 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         var result = redisTemplate.opsForSet().members(HEARTBEAT_HASH + heartBeatReq.memberId());
         if (Objects.isNull(result)) return Set.of();
         int myFriendCount = friendRepository.countByFollower_Email(heartBeatReq.memberId());
-        log.info("Heartbeaet: name={}, friends={}, db_friend_count={}", heartBeatReq.memberId(), result, myFriendCount);
         if (result.size() != (myFriendCount + 1)) {
             return checkFriendOnline(heartBeatReq);
         }
