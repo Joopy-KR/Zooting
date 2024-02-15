@@ -462,7 +462,7 @@ min-height: 300px;
   @apply flex flex-col items-center justify-center pt-5 pb-6;
 }
 .zoom-file {
-  @apply absolute flex items-center justify-center w-full h-full;
+  @apply absolute flex items-center w-full h-full left-20 ms-2;
 }
 .zoom-file__box {
   @apply w-3/4 rounded-lg bg-gray-300 shadow-lg;

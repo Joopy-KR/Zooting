@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from 'vue'
+import {ref, watch} from 'vue'
 import ReadyRecordItem from '@/components/home/ReadyRecordItem.vue'
 import {useAccessTokenStore} from "@/stores/store";
 import type {MeetingLog} from "@/types/global";
@@ -32,7 +32,7 @@ import type {MeetingLog} from "@/types/global";
 const index = ref<number>(0)
 const existRecordList = ref<boolean>(false);
 const store = useAccessTokenStore();
-let recordList =  ref<MeetingLog[]>([]);
+const recordList = ref<MeetingLog[]>([]);
 
 watch(()=> store.recordList, (update) => {
   if (store.recordList != null) {
@@ -43,7 +43,7 @@ watch(()=> store.recordList, (update) => {
 
 const checkListLength = function () {
   if (store.recordList != null) {
-    return index != recordList.length - 1;
+    return index.value != recordList.value.length - 1;
   }
   return false;
 }
