@@ -98,24 +98,25 @@
 
 ### WebRTC란?
 
-WebRTC (Web Real-Time Communication)는 웹 브라우저 간에 플러그인의
+> WebRTC (Web Real-Time Communication)는 웹 브라우저 간에 플러그인의
 도움 없이 서로 통신할 수 있도록 설계된 API 입니다. 음성 통화, 영상 통화,
 P2P 파일 공유 등으로 활용될 수 있습니다.
 
 ### openvidu
 
-무료 오픈 소스 멀티 플랫폼 화상 회의 솔루션으로, 모든 하위 수준의 작업들을 래핑함으로써 사용자로 하여금 WebRTC를 보다 간단하게 적용할 수 있게 합니다. Zooting은 Openvidu를 통해 화상 시스템을 구축합니다.
+> 무료 오픈 소스 멀티 플랫폼 화상 회의 솔루션으로, 모든 하위 수준의 작업들을 래핑함으로써 사용자로 하여금 WebRTC를 보다 간단하게 적용할 수 있게 합니다. Zooting은 Openvidu를 통해 화상 시스템을 구축합니다.
 
 ## 2. Web Socket
 
 ![https://upload.wikimedia.org/wikipedia/commons/1/10/Websocket_connection.png](https://upload.wikimedia.org/wikipedia/commons/1/10/Websocket_connection.png)
 
-Websocket이란 ws 프로토콜을 기반으로 클라이언트와 서버 사이에 지속적인 양방향 연결 스트림을 만들어주는 기술입니다. 이는 stateless한 성질을 가지는 HTTP 일부 통신의 한계를 극복해 주는 것으로 서버는 클라이언트에 데이터를 실시간으로 전달할 수 있게 됩니다.
+> Websocket이란 ws 프로토콜을 기반으로 클라이언트와 서버 사이에 지속적인 양방향 연결 스트림을 만들어주는 기술입니다. 이는 stateless한 성질을 가지는 HTTP 일부 통신의 한계를 극복해 주는 것으로 서버는 클라이언트에 데이터를 실시간으로 전달할 수 있게 됩니다.
 
 ### 적용
 
 - 친구와의 실시간 통신을 통한 채팅 기능
 - 멤버의 online/offline 체크를 위해 Redis와 연동하여 사용
+- 화상 미팅 수락/거절/토큰 전송 등의 실시간 통신을 위해 사용
 
 ## 3. Face Landmark Detection
 
@@ -134,10 +135,22 @@ Websocket이란 ws 프로토콜을 기반으로 클라이언트와 서버 사이
 > Redis는 주로 애플리케이션 캐시나 빠른 응답 속도를 가진 데이터베이스로 사용되는 오픈 소스 인메모리 NoSQL 저장소 입니다.
 
 ### 적용
-
 - 로그인시 사용되는 Refresh-token을 저장하기 위해서 사용하였으며 보안성을 강화하기 위해서 엑세스 토큰 갱신시에 리프레시 토큰도 같이 갱신되는 `Refresh Token Rotation` 방식을 채용하였습니다.
+  ![RedisPubSub.png](./assets/skills/redis-pub-sub.png)
 - 미팅 매칭을 위해서 회원이 대기하는 중 대기 및 미팅 참여를 위한 회원을 관리하기 위한 용도로 사용
 - 멤버의 online/offline 상태를 관리하기 위해서 WebSocket과 연동해서 사용
+- 과거 채팅 내역을 캐싱하기 위해 사용
+
+## 6. Amazon S3
+  ![AmazonS3.png](./assets/skills/amazon-s3.png)
+
+> AmazonS3는 주로 웹 서비스를 위한 온라인 파일 저장소로 사용되는 클라우드 스토리지 서비스입니다.
+> 
+> Zooting은 S3를 통해 사용자의 프로필 이미지, 배경 이미지, 동물상 가면 이미지 등을 저장하고 관리합니다.
+
+### 적용
+- 배경 이미지, 동물상 가면 이미지 등을 저장하고 관리
+- 실시간 채팅 시, 이미지 파일을 저장하고 관리하기 위해 사용
 
 ---
 
