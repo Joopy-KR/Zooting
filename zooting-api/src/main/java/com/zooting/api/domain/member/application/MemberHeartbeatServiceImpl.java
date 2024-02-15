@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
     private static final SocketType SOCKET_TYPE = SocketType.HEARTBEAT;
     private static final String HEARTBEAT_HASH = "heartbeat:";
+    private static final String ALERT_NEW_FRIEND = "friend_alert:";
     @Value("${heartbeat.interval.time}")
     private Long TIME_TO_LIVE;
     private final FriendRepository friendRepository;
@@ -46,8 +48,10 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
     private Set<String> getOnlineFriends(HeartBeatReq heartBeatReq) {
         var result = redisTemplate.opsForSet().members(HEARTBEAT_HASH + heartBeatReq.memberId());
         if (Objects.isNull(result)) return Set.of();
-        int myFriendCount = friendRepository.countByFollower_Email(heartBeatReq.memberId());
-        if (result.size() != (myFriendCount + 1)) {
+
+        // 나의 친구 목록에 변화가 생겼다는 것을 감지
+        Object alertFriendStatus = redisTemplate.opsForValue().getAndDelete(ALERT_NEW_FRIEND + heartBeatReq.memberId()); // 온라인 상태일때 조회 이후 바로 삭제
+        if (Objects.nonNull(alertFriendStatus)) {
             return checkFriendOnline(heartBeatReq);
         }
         return result.stream().map(Object::toString).collect(Collectors.toSet());
@@ -108,5 +112,18 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         // 오프라인 유저의 데이터 삭제
         redisTemplate.delete(offlineMembers.stream().map(s -> HEARTBEAT_HASH + s).toList());
         return new AccessMemberStatus(onlineMembers, offlineMembers);
+    }
+
+    /**
+     * 친구 목록에 변화가 생겼을 경우 Heartbeat에서 친구 목록을 새로 조회해야 한다.
+     * @param following
+     * @param follower
+     */
+    public void alertFriendUpdate(String following, String follower) { // 닉네임 기준
+        if (Objects.isNull(follower) || Objects.isNull(following)) {
+            return;
+        }
+        redisTemplate.opsForValue().set(ALERT_NEW_FRIEND + follower, true, Duration.ofSeconds(TIME_TO_LIVE * 3));
+        redisTemplate.opsForValue().set(ALERT_NEW_FRIEND + following, true, Duration.ofSeconds(TIME_TO_LIVE * 3));
     }
 }
