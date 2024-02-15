@@ -49,14 +49,16 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         var result = redisTemplate.opsForSet().members(HEARTBEAT_HASH + heartBeatReq.memberId());
         if (Objects.isNull(result)) return Set.of();
 
-        // 나의 친구 목록에 변화가 생겼다는 것을 감지
-        Object alertFriendStatus = redisTemplate.opsForValue().getAndDelete(ALERT_NEW_FRIEND + heartBeatReq.memberId()); // 온라인 상태일때 조회 이후 바로 삭제
-        if (Objects.nonNull(alertFriendStatus)) {
-            return checkFriendOnline(heartBeatReq);
+        // 나의 친구 목록에 변화가 생겼다는 것을 감지 (친구 추가에 대해서만 고려하면 됨)
+        List<Object> friendList = redisTemplate.opsForList().range(ALERT_NEW_FRIEND + heartBeatReq.memberId(), 0, -1);
+        if (Objects.nonNull(friendList)) {
+            for (var friend : friendList) {
+                redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.memberId(), friend); // 친구 email을 추가
+            }
+            redisTemplate.delete(ALERT_NEW_FRIEND + heartBeatReq.memberId());
         }
         return result.stream().map(Object::toString).collect(Collectors.toSet());
     }
-
     public Set<String> checkFriendOnline(HeartBeatReq heartBeatReq) {
         Set<String> onlineFriends = new HashSet<>();
         redisTemplate.opsForSet().add(HEARTBEAT_HASH + heartBeatReq.memberId(), heartBeatReq.memberId());
@@ -116,6 +118,7 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
 
     /**
      * 친구 목록에 변화가 생겼을 경우 Heartbeat에서 친구 목록을 새로 조회해야 한다.
+     *
      * @param following
      * @param follower
      */
@@ -123,7 +126,11 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
         if (Objects.isNull(follower) || Objects.isNull(following)) {
             return;
         }
-        redisTemplate.opsForValue().set(ALERT_NEW_FRIEND + follower, true, Duration.ofSeconds(TIME_TO_LIVE * 3));
-        redisTemplate.opsForValue().set(ALERT_NEW_FRIEND + following, true, Duration.ofSeconds(TIME_TO_LIVE * 3));
+        // follower
+        redisTemplate.opsForList().rightPush(ALERT_NEW_FRIEND + follower, following);
+        redisTemplate.expire(HEARTBEAT_HASH + follower, TIME_TO_LIVE * 3, TimeUnit.SECONDS);
+        // following
+        redisTemplate.opsForList().rightPush(ALERT_NEW_FRIEND + following, follower);
+        redisTemplate.expire(ALERT_NEW_FRIEND + following, TIME_TO_LIVE * 3, TimeUnit.SECONDS);
     }
 }

@@ -48,13 +48,11 @@ public class MemberAndFriendAndFriendRequestUsecase {
         return member2.getEmail();
     }
     @Transactional
-    public String deleteFriend(String loginUserEmail, String nickname) {
+    public void deleteFriend(String loginUserEmail, String nickname) {
         Member member1 = Member.builder().email(loginUserEmail).build();
         Member member2 = memberRepository.findMemberByNickname(nickname)
                 .orElseThrow(()->new BaseExceptionHandler(ErrorCode.NOT_FOUND_USER));
         friendRepository.deleteFriendByFollowerAndFollowingOrFollowingAndFollower(member1, member2, member1, member2);
-
-        return member2.getEmail();
     }
     @Transactional
     public void rejectFriendRequest(String requestFrom, String requestTo) {
