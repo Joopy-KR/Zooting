@@ -23,7 +23,6 @@ public class MemberHeartbeatController {
     @MessageMapping("/member/heartbeat")
     public void memberHeartbeatCheck(HeartBeatReq request) {
         var heartcheck = memberHeartbeatService.loadOnlineFriends(request);
-        log.info("Heartbeat check: name={}, friends={}", request.nickname(), heartcheck.result().onlineFriends());
         template.convertAndSend("/api/sub/" + request.memberId(), heartcheck);
     }
 

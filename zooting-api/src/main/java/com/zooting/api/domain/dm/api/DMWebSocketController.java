@@ -30,7 +30,6 @@ public class DMWebSocketController {
     @Operation(summary = "DM 메시지 전송")
     @MessageMapping("/dm/message")
     public void receiveAndSendMessage(DMReq dmReq, SimpMessageHeaderAccessor headerAccessor) {
-        log.info("SEND_CHAT_SUCCESS (201 CREATED) ::");
         dmService.saveDM(dmReq);
         template.convertAndSend("/api/sub/" + dmReq.receiver(), new SocketBaseDtoRes<>(SocketType.MESSAGE, dmReq));
     }

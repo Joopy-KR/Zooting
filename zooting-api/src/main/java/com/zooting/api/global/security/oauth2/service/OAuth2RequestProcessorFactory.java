@@ -14,9 +14,9 @@ public class OAuth2RequestProcessorFactory {
 
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public OAuth2RequestProcessor createOAuth2Processor(OAuth2UserRequest oAuth2UserRequest){
-        log.info("3. 유저가 로그인한 플랫폼을 판별합니다");
+        log.trace("3. 유저가 로그인한 플랫폼을 판별합니다");
         String oAuth2registrationId = oAuth2UserRequest.getClientRegistration().getRegistrationId();
-        log.info("4. 유저가 로그인한 플랫폼은 '" + oAuth2registrationId + "'입니다.");
+        log.trace("4. 유저가 로그인한 플랫폼은 '" + oAuth2registrationId + "'입니다.");
 
         try {
             return switch (oAuth2registrationId) {

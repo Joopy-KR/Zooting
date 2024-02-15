@@ -33,7 +33,6 @@ public class FriendController {
     @Operation(summary = "친구 리스트", description = "로그인 한 사람 기준 친구리스트 반환")
     @GetMapping("")
     public ResponseEntity<BaseResponse<List<FriendRes>>> findFriendList(@AuthenticationPrincipal UserDetails userDetails){
-        log.info("enter");
         List<FriendRes> friendResList = friendService.getFriends(userDetails.getUsername());
         return BaseResponse.success(
                 SuccessCode.CHECK_SUCCESS,

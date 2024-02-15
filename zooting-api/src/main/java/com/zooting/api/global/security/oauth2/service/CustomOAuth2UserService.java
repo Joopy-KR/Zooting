@@ -17,8 +17,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) {
-        log.info("1. OAuth2 로그인에 성공했습니다.");
-        log.info("2. OAuth2 리소스 서버로부터 유저 정보를 가져옵니다.");
+        log.trace("1. OAuth2 로그인에 성공했습니다.");
+        log.trace("2. OAuth2 리소스 서버로부터 유저 정보를 가져옵니다.");
         OAuth2RequestProcessor oAuth2Parser = oAuth2RequestProcessorFactory.createOAuth2Processor(oAuth2UserRequest);
 
         return new DefaultOAuth2User(

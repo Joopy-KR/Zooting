@@ -57,7 +57,7 @@ public class JwtService {
         String token = requestHeaderJwtParser(request);
         Claims claims = verifyJwtToken(token);
 
-        log.info("토큰의 Claims에 저장된 닉네임:" + claims.get("nickname"));
+        log.trace("토큰의 Claims에 저장된 닉네임:" + claims.get("nickname"));
 
         UserDetails userDetails = CustomUserDetails.builder().email(claims.getSubject())
                 .nickname((String) claims.get("nickname")).authorities(JwtClaimsParser.getPrivileges(claims)).build();
@@ -109,10 +109,10 @@ public class JwtService {
 
         CustomUserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-        log.info("Refresh Token Rotation 요청이 들어왔습니다.");
+        log.trace("Refresh Token Rotation 요청이 들어왔습니다.");
 
         if (refreshTokenInServer.equals(refreshToken)) {
-            log.info("요청의 Refresh Token이 Redis에 저장된 값과 일치합니다.");
+            log.trace("요청의 Refresh Token이 Redis에 저장된 값과 일치합니다.");
             String newAccessToken = createAccessToken(userDetails);
             String newRefreshToken = createRefreshToken(userDetails);
             jwtRedisDao.save(email, newRefreshToken, refreshTokenExpiration);

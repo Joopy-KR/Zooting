@@ -72,7 +72,7 @@ public class MemberHeartbeatServiceImpl implements MemberHeartbeatService {
     public void updateMemberStatus() {
         // 접속 해제한 유저 정보 불러오기
         AccessMemberStatus accessMemberStatus = updateOfflineMemberStatus();
-        log.info("online: {}, offline: {}", accessMemberStatus.onlineMembers().size(), accessMemberStatus.offlineMembers().size());
+        log.trace("online: {}, offline: {}", accessMemberStatus.onlineMembers().size(), accessMemberStatus.offlineMembers().size());
         // 친구 정보에서 삭제 처리하기
         updateOnlineMemberStatus(accessMemberStatus);
     }

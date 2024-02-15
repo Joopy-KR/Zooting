@@ -325,7 +325,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     idealAnimal: string[];
   }) {
     const { nickname, gender, birth, address, interest, idealAnimal } = payload;
-    console.log(payload);
     axios({
       method: "put",
       url: `${API_URL}/api/members`,

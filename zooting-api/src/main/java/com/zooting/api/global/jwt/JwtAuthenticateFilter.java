@@ -32,30 +32,30 @@ public class JwtAuthenticateFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        log.info("Request URI: {}", request.getRequestURI());
-        log.info("Request Method: {}", request.getMethod());
-        log.info("Request Params: {}", request.getParameterMap());
-        log.info("Access-token: {}", request.getHeader("Authorization"));
+        log.trace("Request URI: {}", request.getRequestURI());
+        log.trace("Request Method: {}", request.getMethod());
+        log.trace("Request Params: {}", request.getParameterMap());
+        log.trace("Access-token: {}", request.getHeader("Authorization"));
         if (PatternMatchUtils.simpleMatch(URL_WHITE_LIST, request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            log.info("유저의 토큰을 검증합니다.");
+            log.trace("유저의 토큰을 검증합니다.");
             Authentication authentication = jwtService.authenticateAccessToken(request);
 
-            log.info("유저의 토큰이 검증되었습니다. 유저를 SecurityContextHolder에 저장합니다.");
+            log.trace("유저의 토큰이 검증되었습니다. 유저를 SecurityContextHolder에 저장합니다.");
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-            log.info("유저의 액세스 토큰이 만료되었습니다.");
+            log.trace("유저의 액세스 토큰이 만료되었습니다.");
             sendJwtErrorResponse(ErrorCode.EXPIRED_ACCESS_TOKEN_EXCEPTION, response);
         } catch (MalformedJwtException | SignatureException | UnsupportedJwtException e) {
-            log.info("유저의 액세스 토큰이 타당하지 않습니다.");
+            log.trace("유저의 액세스 토큰이 타당하지 않습니다.");
             sendJwtErrorResponse(ErrorCode.INVALID_ACCESS_TOKEN_EXCEPTION, response);
         } catch (IllegalArgumentException e) {
-            log.info("유저의 액세스 토큰이 존재하지 않습니다.");
+            log.trace("유저의 액세스 토큰이 존재하지 않습니다.");
             sendJwtErrorResponse(ErrorCode.ILLEGAL_TOKEN_EXCEPTION, response);
         }
     }
