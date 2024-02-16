@@ -300,8 +300,9 @@ public class MemberServiceImpl implements MemberService {
         Long memberPoints = member.getPoint();
         if (memberPoints < price) {
             member.setPoint(0L);
+        } else {
+            member.setPoint(memberPoints - price);
         }
-        member.setPoint(memberPoints - price);
         memberRepository.save(member);
     }
     @Transactional
