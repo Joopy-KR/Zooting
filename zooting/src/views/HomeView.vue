@@ -63,6 +63,7 @@ onMounted(async () => {
 
   // 매칭 중에 새로고침했을 시 매칭 취소
   if (localStorage.getItem("sessionRoomId")) {
+    console.log(1111)
     store.meetingExit()
   }
 })

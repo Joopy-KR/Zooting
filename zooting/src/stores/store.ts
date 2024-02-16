@@ -939,7 +939,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       method: "delete",
       url: `${VITE_SERVER_API_URL}/api/meeting/exit`,
       params: {
-        room: sessionId.value,
+        room: localStorage.getItem("sessionRoomId"),
       },
       headers: {
         Authorization: `Bearer ${getAccessToken()}`,
