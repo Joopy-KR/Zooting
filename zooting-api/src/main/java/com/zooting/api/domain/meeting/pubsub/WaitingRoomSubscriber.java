@@ -88,6 +88,11 @@ public class WaitingRoomSubscriber implements MessageListener {
             log.info("미팅 Pub Sub: 유저 {}에게 수락 메시지를 보냅니다. 대기방: {}", email, redisMatchRes.roomId());
             webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.MATCH, waitingRoom.getWaitingRoomId()));
         }
+        /* 매칭인원 체크*/
+        redisTemplate.opsForValue().decrement("matchingCount", 4);
+        webSocketTemplate.convertAndSend("/api/sub/matching-count", redisTemplate.opsForValue().get("matchingCount"));
+        log.info("미팅 Pub Sub: 매칭 인원을 4명 감소시켰습니다. 현재 매칭 인원: {}", redisTemplate.opsForValue().get("matchingCount"));
+        redisMessageListener.removeMessageListener(this, new ChannelTopic(waitingRoom.getWaitingRoomId()));
     }
 
     /**
@@ -100,7 +105,6 @@ public class WaitingRoomSubscriber implements MessageListener {
             log.info("미팅 Pub Sub: Openvidu 세션을 만들었습니다.");
             Map<String, String> nicknameGenderMap = waitingRoom.getMeetingMembers().stream()
                     .collect(Collectors.toMap(MeetingMemberDto::getEmail, MeetingMemberDto::getGender));
-
             for (MeetingMemberDto meetingMemberDto : waitingRoom.getMeetingMembers()) {
                 String email = meetingMemberDto.getEmail();
                 // 미팅 로그 저장
@@ -110,9 +114,9 @@ public class WaitingRoomSubscriber implements MessageListener {
 
                 log.info("미팅 Pub Sub: 유저 {}에게 Openvidu Token을 발급합니다: {}", meetingMemberDto.getEmail(), openviduTokenRes.token());
                 webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.OPENVIDU, openviduTokenRes));
+
             }
             waitingRoomRedisRepository.deleteById(waitingRoom.getWaitingRoomId());
-            redisMessageListener.removeMessageListener(this, new ChannelTopic(waitingRoom.getWaitingRoomId()));
         } catch (OpenViduJavaClientException | OpenViduHttpException ex) {
             throw new RuntimeException(ex);
         }
