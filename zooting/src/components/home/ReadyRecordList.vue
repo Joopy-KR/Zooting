@@ -54,7 +54,7 @@ const checkListLength = function () {
 .record__container {
   @apply flex flex-col p-3;
   @apply border-[#E1BAFF] border-4 rounded-lg shadow-lg m-5 end-0 bg-white;
-  width: 300px;
+  min-width: 300px;
   height: 200px;
 }
 .button {
