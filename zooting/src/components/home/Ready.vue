@@ -16,7 +16,6 @@ import {onMounted} from 'vue';
 import ReadyMatch from '@/components/home/ReadyMatch.vue'
 import Subgame from '@/components/subgame/Subgame.vue'
 import ReadyRecordList from '@/components/home/ReadyRecordList.vue'
-import ReadyVideo from '@/components/home/ReadyVideo.vue'
 import { useAccessTokenStore } from '@/stores/store'
 
 const store = useAccessTokenStore()
