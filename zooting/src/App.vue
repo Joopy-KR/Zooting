@@ -3,19 +3,23 @@
     <RouterView/>
     <!-- 다대다 매칭 완료 -->
     <MatchingCompleteModal
-v-if="store.isLogin"
+      v-if="store.isLogin"
+      class="z-50"
       />
       <!-- 일대일 매칭 요청 수신 -->
     <MeetingAcceptModal
       v-if="store.isLogin"
+      class="z-50"
       />
-    <!-- 매칭 종료 후 선택 결과 -->
+    <!-- 매칭 종료 후 결과 선택 -->
     <SelecteResultModal
       v-if="store.isLogin"
+      class="z-50"
     />
     <!-- 다대다 매칭 대기 -->
     <MatchingLoadModal
       v-if="store.isLogin"
+      class="z-50"
     />
   </div>
 </template>

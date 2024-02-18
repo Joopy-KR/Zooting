@@ -116,7 +116,7 @@ onBeforeRouteLeave((to, from) => {
 
 const leaveChat = () => {
   leaveModal.value = false
-  router.replace({name: 'home'})
+  router.push({name: 'home'})
 }
 
 const stayChat = () => {
