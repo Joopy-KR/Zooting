@@ -87,6 +87,8 @@ public class WaitingRoomSubscriber implements MessageListener {
             RedisMatchRes redisMatchRes = new RedisMatchRes(waitingRoom.getWaitingRoomId());
             log.info("미팅 Pub Sub: 유저 {}에게 수락 메시지를 보냅니다. 대기방: {}", email, redisMatchRes.roomId());
             webSocketTemplate.convertAndSend("/api/sub/" + email, new SocketBaseDtoRes<>(SocketType.MATCH, waitingRoom.getWaitingRoomId()));
+            redisTemplate.opsForValue().set(email, 0);
+            log.info("미팅 Pub Sub: 유저 {}의 매칭상태: {}", email, redisTemplate.opsForValue().get(email)=="1"? "매칭중" : "대기중");
         }
         /* 매칭인원 체크*/
         redisTemplate.opsForValue().decrement("matchingCount", 4);
