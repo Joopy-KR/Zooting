@@ -4,6 +4,7 @@
       <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
       </TransitionChild>
+
       <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div class="flex items-end justify-center min-h-full p-4 text-center sm:items-center sm:p-0">
           <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
@@ -19,6 +20,11 @@
                   </div>
                 </div>
               </div>
+              <!-- <div class="relative h-5 mx-10 mt-10 overflow-hidden bg-gray-300 rounded-full">
+                <div class="absolute top-0 bottom-0 left-0 rounded-full bg-gradient-to-r from-pink-500 to-purple-500"
+                     :style="{ width : enterRoomTimeLimit +'%'}">
+                </div>
+              </div> -->
               <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                 <div class="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm cursor-pointer hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2" @click="meetingAccept">입장</div>
                 <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="meetingExit">취소</div>
@@ -45,14 +51,26 @@ const emit = defineEmits(['matchingAccept'])
 
 watch(()=> store.isMatchingComplete, (update) => {
   isMatchingComplete.value = update
+  // 매칭 완료됐으면 타이머 시작
+  // if (update) {
+  //   const intervalId = setInterval(() => {
+  //     enterRoomTimeLimit.value += 0.2
+  
+  //     if (enterRoomTimeLimit.value >= 100) {
+  //       clearInterval(intervalId)
+  //     }
+  //   }, 20)
+  // }
 })
 
 const meetingAccept = () => {
   store.meetingAccept()
+  // enterRoomTimeLimit.value = 0
   emit('matchingAccept')
 }
 
 const meetingExit = () => {
   store.meetingExit()
+  // enterRoomTimeLimit.value = 0
 }
 </script>
