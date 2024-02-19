@@ -32,7 +32,7 @@ const props = defineProps({
   subscribers: Object,
 })
 
-const isMuted = ref<boolean>(false)
+const isMuted = ref<boolean>(true)
 const isVideo = ref<boolean>(true)
 
 const router = useRouter()

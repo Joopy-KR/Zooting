@@ -30,7 +30,7 @@ build: # JOB 이름
   artifacts:
     # 보관이 이루어질 경로 설정
     paths:
-      - zooting-api/build/libs/zooting-api-0.0.1.jar # Dockerfile에 지정한 경로로 지정
+      - zooting-api/build/libs/zooting-api-0.0.1-SNAPSHOT.jar # Dockerfile에 지정한 경로로 지정
     # 유효기간 설정
     expire_in: 1 days
   # JOB이 수행될 branch 설정 (설정된 branch에 push가 발생될 시 JOB 수행)

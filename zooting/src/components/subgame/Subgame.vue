@@ -190,7 +190,7 @@ function frameAction () {
 function collisionDetection(runner:any, obstacle:any) {
   let xValue = 0;
   let yValue = obstacle.y - ( runner.y + runner.height );
-  
+
   if (obstacle.x > runner.x) {
     xValue = obstacle.x - ( runner.x + runner.width );
   }else {

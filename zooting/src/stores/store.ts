@@ -243,17 +243,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       }
     }
   };
-  const recordList = ref<MeetingLog[]>([]);
-  const getMeetingLog = async function () {
-    await getMeetingLogApi(
-        ({data}:any)=>{
-          recordList.value = data.result;
-        },
-        (error : any) =>{
-          console.log(error);
-        }
-    )
-  }
+
   // 유저 정보
   const userInfo = ref<UserInfo | null>(null);
 
@@ -305,7 +295,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
         return res.data.result;
       })
       .catch((err) => {
@@ -363,7 +352,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         isDuplication.value = res.data.result;
       })
       .catch((err) => {
@@ -386,7 +374,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         router.push({ name: "home" });
       })
       .catch((err) => {
@@ -433,7 +420,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
         friendList.value = res.data.result;
       })
       .catch((err) => {
@@ -452,7 +438,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
         requestFromList.value = res.data.result;
       })
       .catch((err) => {
@@ -471,7 +456,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
         requestToList.value = res.data.result;
       })
       .catch((err) => {
@@ -511,7 +495,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getRequestToList();
       })
       .catch((err) => {
@@ -533,7 +516,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getRequestFromList();
         getFriendList();
       })
@@ -556,7 +538,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getRequestFromList();
       })
       .catch((err) => {
@@ -578,7 +559,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getRequestToList();
       })
       .catch((err) => {
@@ -600,7 +580,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getBlockList();
       })
       .catch((err) => {
@@ -622,7 +601,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         getFriendList();
       })
       .catch((err) => {
@@ -670,7 +648,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res);
         searchResult.value = res.data.result;
       })
       .catch((err) => {
@@ -699,7 +676,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
         dmInfo.value = res.data.result;
         receiverInfo.value = params;
       })
@@ -726,7 +702,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
     .then((res) => {
-      // console.log(res);
       if (dmInfo.value) {
         dmInfo.value.cursor = res.data.result.cursor;
         pastDmList.value = [...pastDmList.value, ...res.data.result.dmList];
@@ -754,7 +729,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        // console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -803,11 +777,11 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       params : params,
     })
       .then((res) => {
-          noticePage.value = res.data.result;
-          noticeList.value = res.data.result["noticeResList"];
+        noticePage.value = res.data.result;
+        noticeList.value = res.data.result["noticeResList"];
       })
       .catch((err) => {
-          console.log(err);
+        console.log(err);
       });
   };
 
@@ -879,7 +853,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
   // 매칭 요청
   const meetingRegister = function () {
     startTimer()
-    if (isMatching.value) {
+    if (localStorage.getItem("sessionRoomId")) {
       console.log('이미 매칭 중입니다')
       return
     }
@@ -891,7 +865,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res)
         sessionId.value = res.data.result
         localStorage.setItem("sessionRoomId", res.data.result)
         isMatching.value = true
@@ -921,7 +894,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res)
         localStorage.removeItem("sessionRoomId")
         isMatchingLoad.value = true
       })
@@ -946,7 +918,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res)
         localStorage.removeItem("sessionRoomId")
       })
       .catch((err) => {
@@ -992,7 +963,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       })
       .then((res) => {
         meetingResult.value = res.data.result
-        router.push({ name: "home" })
+        router.replace({ name: "home" })
       })
       .then((res) => {
         showResult.value = true
@@ -1000,6 +971,19 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       .catch((err) => {
         console.log(err)
       })
+  }
+
+  // 최근 미팅 유저
+  const recordList = ref<MeetingLog[]>([]);
+  const getMeetingLog = async function () {
+    await getMeetingLogApi(
+        ({data}:any)=>{
+          recordList.value = data.result;
+        },
+        (error : any) =>{
+          console.log(error);
+        }
+    )
   }
 
   // -------------------------- 일대일 미팅 ---------------------------
@@ -1021,7 +1005,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res)
         isRequesting.value = true
       })
       .catch((err) => {
@@ -1042,7 +1025,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res)
         isRecieveMeeting.value = false
       })
       .catch((err) => {
@@ -1063,7 +1045,6 @@ export const useAccessTokenStore = defineStore("access-token", () => {
       },
     })
       .then((res) => {
-        console.log(res)
         isRecieveMeeting.value = false
       })
       .catch((err) => {

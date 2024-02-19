@@ -116,7 +116,7 @@ onBeforeRouteLeave((to, from) => {
 
 const leaveChat = () => {
   leaveModal.value = false
-  router.push({name: 'home'})
+  router.replace({name: 'home'})
 }
 
 const stayChat = () => {
@@ -634,7 +634,7 @@ const joinSession = () => {
     let pub = OV.value.initPublisher(undefined, {
       audioSource: undefined,
       videoSource: videoTrack,
-      publishAudio: true,
+      publishAudio: false,
       publishVideo: true,
       resolution: "640x480",
       frameRate: 30,
