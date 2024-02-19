@@ -125,6 +125,9 @@ const close = () => {
 .matching__state {
   @apply w-1/2 flex justify-center items-center relative;
 }
+.matching__state img {
+  @apply w-2/3;
+}
 .btn-hover {
   width: 170px;
   font-size: 25px;
