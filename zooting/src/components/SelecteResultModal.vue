@@ -1,7 +1,7 @@
 <template>
   <div>
     <TransitionRoot as="div" :show="store.showResult">
-      <Dialog as="div" class="relative z-10" @close="store.showResult = false">
+      <Dialog as="div" class="relative z-50" @close="close">
         <TransitionChild as="div" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" />
         </TransitionChild>
@@ -27,7 +27,7 @@
                   </div>
                 </div>
                 <div class="mt-5 sm:mt-6">
-                  <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="store.showResult = false">닫기</div>
+                  <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="close">닫기</div>
                 </div>
               </DialogPanel>
             </TransitionChild>
@@ -39,11 +39,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { useAccessTokenStore } from '@/stores/store';
+import { useRouter } from 'vue-router';
 
 const store = useAccessTokenStore()
+const router = useRouter()
 
 // 프로필 이미지 경로구하는 함수
 const getProfileImage = (animal: String) => {
@@ -66,6 +67,11 @@ const getProfileImage = (animal: String) => {
     imgUrl = new URL('/assets/images/animal/animal_group.png', import.meta.url);
   }
   return imgUrl.href;
+}
+
+const close = () => {
+  store.showResult = false
+  router.go(0)
 }
 </script>
 
