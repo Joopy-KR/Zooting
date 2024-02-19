@@ -49,7 +49,7 @@
                         <p class="text-lg text-gray-500">다른 사용자가 응답을 하지 않아요</p>
                     </div>
                     <div class="mt-5 sm:mt-6">
-                      <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="isMatchingFail = false">닫기</div>
+                      <div class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm cursor-pointer hover:bg-gray-50 sm:col-start-1 sm:mt-0" ref="cancelButtonRef" @click="matchingFail">닫기</div>
                     </div>
                   </div>
                 </div>
@@ -66,7 +66,9 @@
 import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { useAccessTokenStore } from '@/stores/store'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const store = useAccessTokenStore()
 const isMatchingLoad = ref<boolean>(false)
 const isMatchingFail = ref<boolean>(false)
@@ -102,5 +104,10 @@ function resetTimer() {
     clearTimeout(timer)
     timer = null
   }
+}
+
+const matchingFail = () => {
+  isMatchingFail.value = false
+  router.go(0)
 }
 </script>
