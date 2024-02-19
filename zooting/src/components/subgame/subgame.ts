@@ -19,6 +19,7 @@ window.onload = function () {
     let descriptionElement = document.querySelector("#description");
     let recordElement = document.querySelector("#record");
     let scoreElement = document.querySelector('#score');
+    let pointsElement = document.querySelector('#points');
 
     let gameState = 0; // 0 : end , 1: start, 3: gameover
     let timer = 0;
@@ -364,3 +365,19 @@ const addPoints = async (points:number) => {
         })
 }
 
+
+let pointsBox = document.querySelector('#points');
+let count = 0;
+let num = points.value;
+
+let counting = setInterval(function () {
+    if (count >= num) {
+        count = num;
+        clearInterval(counting);
+    } else {
+        count += 1;
+    }
+    if (pointsBox) {
+        pointsBox.innerHTML = new Intl.NumberFormat().format(count);
+    }
+}, 100);
