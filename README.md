@@ -217,7 +217,7 @@ Git flow 사용을 위해 `sourcetree` 프로그램을 사용하였고 `git conv
 
 ![Untitled](./assets/erd/zooting-erd.png)
 
-### 3. API 문
+### 3. API 문서
 
 ![swagger.gif](./assets/skills/zooting-swagger.gif)
 
