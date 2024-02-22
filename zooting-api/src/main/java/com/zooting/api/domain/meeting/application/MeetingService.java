@@ -51,15 +51,24 @@ public class MeetingService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final Gson gson;
 
-    /**
+    /*
      * @param userDetails 대기열에 등록하려는 유저의 정보
      * @return 유저가 등록한 대기실의 ID
      */
+
     public synchronized String registerToWaitingRoom(UserDetails userDetails) {
         Member member = loadMemberFromDatabase(userDetails);
         MeetingMemberDto meetingMemberDto = member.toMeetingMemberDto();
 
         log.info("미팅: 대기실 등록 요청: 등록 요청한 유저 이메일: {}", userDetails.getUsername());
+
+        /* 매칭인원 체크 */
+        if(redisTemplate.opsForValue().get(userDetails.getUsername()) == null){
+            redisTemplate.opsForValue().set(userDetails.getUsername(), "1");
+            redisTemplate.opsForValue().increment("matchingCount", 1);
+            webSocketTemplate.convertAndSend("/api/sub/matching-count", redisTemplate.opsForValue().get("matchingCount"));
+        }
+        log.info("미팅: 매칭 인원 체크: {}", redisTemplate.opsForValue().get("matchingCount"));
 
         Iterable<WaitingRoom> waitingRooms = waitingRoomRedisRepository.findAll();
         WaitingRoom idealWaitingRoom = findIdealWaitingRoom(waitingRooms, meetingMemberDto);
@@ -77,6 +86,13 @@ public class MeetingService {
 
         waitingRoomMembers.remove(meetingMemberDto);
 
+        /* 매칭인원 체크 */
+        if(redisTemplate.opsForValue().get(userDetails.getUsername()) != null){
+            redisTemplate.opsForValue().getAndDelete(userDetails.getUsername());
+            redisTemplate.opsForValue().decrement("matchingCount", 1);
+            webSocketTemplate.convertAndSend("/api/sub/matching-count", redisTemplate.opsForValue().get("matchingCount"));
+        }
+        log.info("미팅: 매칭 인원 체크: {}", redisTemplate.opsForValue().get("matchingCount"));
         if (waitingRoomMembers.isEmpty()) {
             waitingRoomRedisRepository.deleteById(waitingRoomId);
         } else { // 아니면 갱신함

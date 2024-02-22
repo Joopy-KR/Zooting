@@ -1,13 +1,15 @@
 <template>
   <div class="home__container">
     <TheSideBar
-        :dm-res="dmRes"
-        @current-dm-room-id="currentDmRoomId"
+      :dm-res="dmRes"
+      @current-dm-room-id="currentDmRoomId"
     />
     <Social
-        class="ms-14"
+      class="ms-14"
     />
-    <Ready/>
+    <Ready
+      :matching-count="matchingCount"
+    />
   </div>
 </template>
 
@@ -41,6 +43,8 @@ const START_HEART_CHECK = 5 * 1000;
 const HEART_CHECK_INTERVAL = 15 * 1000; // heartbeat check interval time
 const intervalTime = ref<number>(START_HEART_CHECK);
 
+const matchingCount = ref<number>(0)  // 매칭 대기 인원 수
+
 function playSound(sound: any) {
   sound.currentTime = 0
   sound.play()
@@ -63,7 +67,6 @@ onMounted(async () => {
 
   // 매칭 중에 새로고침했을 시 매칭 취소
   if (localStorage.getItem("sessionRoomId")) {
-    console.log(1111)
     store.meetingExit()
   }
 })
@@ -97,61 +100,65 @@ socket.onclose = () => {
 }
 
 const onConnected = () => {
-  stompClient.subscribe(`/api/sub/${userInfo.value?.email}`,
-      (message: any) => {
-        const type = JSON.parse(message.body).type;
-        const time = JSON.parse(message.body).time;
-        const res = JSON.parse(message.body).result;
+  stompClient.subscribe(`/api/sub/${userInfo.value?.email}`, (message: any) => {
+    const type = JSON.parse(message.body).type;
+    const time = JSON.parse(message.body).time;
+    const res = JSON.parse(message.body).result;
 
-        // MESSAGE
-        if (type === 'MESSAGE') {
-          // 현재 open 된 dmRooId인 경우 메시지 전송
-          if (dmRoomId.value === res.dmRoomId) {
-            dmRes.value = {
-              ...res,
-              createdAt: new Date(time).toLocaleTimeString('ko-KR', {timeStyle: 'short', hour12: false})
-            }
-          } else {
-            // 새로운 메시지 알림
-            persistStore.newMessage.push(res.sender)
-            playSound(dmSound)
-          }
-        }
-        // 매칭 완료
-        else if (type === 'MATCH') {
-          store.MatchingComplete()
-        }
-        // 미팅 시작 (다대다 / 일대일)
-        else if (type === 'OPENVIDU') {
-          store.pushMeetingRoom(res, Date.parse(time), type)
-        } else if (type === 'ONETOONE') {
-          store.pushMeetingRoom(res, Date.parse(time), type)
-        }
-        // 유저 상태 정보
-        else if (type == 'HEARTBEAT') {
-          if (intervalTime.value === START_HEART_CHECK) {
-            clearInterval(intervalId);
-            intervalTime.value = HEART_CHECK_INTERVAL;
-            startHeartbeat();
-          }
-          const onlineFriends: String[] = res.onlineFriends;
-          for (const friend of store.friendList) {
-            friend.isOnline = onlineFriends.includes(friend.email);
-          }
-        }
-        // 일대일 미팅 요청 수신
-        else if (type === 'MEETING') {
-          store.meetingSender = res.nickname
-          store.isRecieveMeeting = true
-          console.log(time)
-        }
-        // 미팅 거절
-        else if (type === 'REJECT') {
-          store.isRequesting = false
-          store.isMeetingReject = true
-        }
-      })
-}
+    // MESSAGE
+    if (type === 'MESSAGE') {
+      // 현재 open 된 dmRooId인 경우 메시지 전송
+      if (dmRoomId.value === res.dmRoomId) {
+        dmRes.value = {
+          ...res,
+          createdAt: new Date(time).toLocaleTimeString('ko-KR', {timeStyle: 'short', hour12: false})
+        };
+      } else {
+        // 새로운 메시지 알림
+        persistStore.newMessage.push(res.sender);
+        playSound(dmSound);
+      }
+    }
+    // 매칭 완료
+    else if (type === 'MATCH') {
+      store.MatchingComplete();
+    }
+    // 미팅 시작 (다대다 / 일대일)
+    else if (type === 'OPENVIDU') {
+      store.pushMeetingRoom(res, Date.parse(time), type);
+    } else if (type === 'ONETOONE') {
+      store.pushMeetingRoom(res, Date.parse(time), type);
+    }
+    // 유저 상태 정보
+    else if (type == 'HEARTBEAT') {
+      if (intervalTime.value === START_HEART_CHECK) {
+        clearInterval(intervalId);
+        intervalTime.value = HEART_CHECK_INTERVAL;
+        startHeartbeat();
+      }
+      const onlineFriends = res.onlineFriends;
+      for (const friend of store.friendList) {
+        friend.isOnline = onlineFriends.includes(friend.email);
+      }
+    }
+    // 일대일 미팅 요청 수신
+    else if (type === 'MEETING') {
+      store.meetingSender = res.nickname;
+      store.isRecieveMeeting = true;
+      console.log(time);
+    }
+    // 미팅 거절
+    else if (type === 'REJECT') {
+      store.isRequesting = false;
+      store.isMeetingReject = true;
+    }
+  });
+
+  // 매칭 중인 인원
+  stompClient.subscribe(`/api/sub/matching-count`, (matchingCountMessage: any) => {
+    matchingCount.value = JSON.parse(matchingCountMessage.body);
+  });
+};
 </script>
 
 <style scoped>
