@@ -937,7 +937,7 @@ export const useAccessTokenStore = defineStore("access-token", () => {
     // 이성 정보
     oppositeGenderList.value = Info.oppositeGenderList
     if (type === 'OPENVIDU') {
-      sessionEndTime.value = time + 60000 // 끝나는 시간
+      sessionEndTime.value = time + 600000 // 끝나는 시간
       isMatchingComplete.value = false
       router.push({ name: "video-chat"})
     } else {
