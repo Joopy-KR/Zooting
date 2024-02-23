@@ -175,6 +175,12 @@
 
 ![](./assets/skills/zooting-diagram.png)
 
+- 사용자의 요청이 들어오는 `검정색` 라인에 대하여 `nginx`의 `reverse proxy`를 이용하여 라우팅
+  - `/` 주소에 대해서 frontend page로 라우팅
+  - `/api` 주소에 대해서 backend api 요청
+  - `/openvidu` 주소에 대해서 openvidu backend server로 요청
+- `주황색` 라인에 대해서 `gitlab-runner`를 이용하여 자동 배포를 위한 `cicd` 구축
+
 # 🦝 시퀸스 다이어그램
 
 ### DM (채팅) 시퀸스
@@ -194,6 +200,17 @@
 ### 화상 매칭 관련 시퀸스
 
 ![](./assets/sequence/zooting-sequence-meeting.png)
+
+### 유저의 접속 상태 관리 시퀸스
+
+1. 최초 접속 상태 업데이트 시퀸스
+   ![](./assets/sequence/heartbeat-member-initial.png)
+
+2. 지속적인 접속 상태 업데이트 시퀸스
+   ![](./assets/sequence/heartbeat-member-purse.png)
+
+3. 스케줄링을 통한 접속 상태 관리 시퀸스
+   ![](./assets/sequence/heartbeat-server.png)
 
 ---
 
