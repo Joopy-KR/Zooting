@@ -203,12 +203,10 @@
 
 ### 유저의 접속 상태 관리 시퀸스
 
-1. 최초 접속 상태 업데이트 시퀸스
+1. 최초 접속 상태 업데이트 시퀸스  
    ![](./assets/sequence/heartbeat-member-initial.png)
-
-2. 지속적인 접속 상태 업데이트 시퀸스
+2. 지속적인 접속 상태 업데이트 시퀸스  
    ![](./assets/sequence/heartbeat-member-purse.png)
-
 3. 스케줄링을 통한 접속 상태 관리 시퀸스
    ![](./assets/sequence/heartbeat-server.png)
 
