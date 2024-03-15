@@ -41,6 +41,8 @@
 
 - 🏅 공통프로젝트 UCC경진대회 입상
 
+  <img src=".\assets\skills\awards.jpg" height="700" align="left"/>
+
 
 
 # 🐹기획 배경
